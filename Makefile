@@ -3,7 +3,7 @@
 OUT:=out
 ESP32HEX:=$(addprefix esp32-s3/, $(addsuffix .ino.elf, dankdryer/dankdryer))
 HEX:=$(addprefix $(OUT)/, $(ESP32HEX))
-
+CFLAGS:=--warnings all
 ACLI:=arduino-cli
 
 all: $(HEX)
