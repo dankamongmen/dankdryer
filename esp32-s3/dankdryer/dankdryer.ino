@@ -22,12 +22,12 @@ float getAmbient(void){
 
 // the esp32-s3 has a built in temperature sensor
 int setup_esp32temp(void){
-  temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 100);
-  if(temperature_sensor_install(&conf, &temp)){
+  temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
+  if(temperature_sensor_install(&conf, &temp) != ESP_OK){
     printf("failed to set up thermostat\n");
     return -1;
   }
-  if(temperature_sensor_enable(temp)){
+  if(temperature_sensor_enable(temp) != ESP_OK){
     printf("failed to enable thermostat\n");
     return -1;
   }
@@ -36,7 +36,9 @@ int setup_esp32temp(void){
 
 void setup(void){
   Load.begin(LOAD_DATAPIN, LOAD_CLOCKPIN);
-  setup_esp32temp();
+  while(setup_esp32temp()){
+    ;
+  }
 }
 
 void loop(void){
