@@ -14,7 +14,7 @@ deps:
 
 $(OUT)/esp32-s3/dankdryer/dankdryer.ino.elf: $(addprefix esp32-s3/dankdryer/, dankdryer.ino) $(ESPCOMMON)
 	@mkdir -p $(@D)
-	$(ACLI) compile $(CFLAGS) -b esp32:esp32:node32s -v --output-dir $(@D) $<
+	$(ACLI) compile $(CFLAGS) -b esp32:esp32:esp32s3 -v --output-dir $(@D) $<
 
 clean:
 	rm -rf $(OUT)
