@@ -3,6 +3,8 @@
 // holds the MCU, motor, AC adapter, etc.
 include <core.scad>
 
+$fn = 64;
+
 module croomcore(){
     rotate([0, 0, 45]){
         mirror([0, 0, 1]){
@@ -12,8 +14,6 @@ module croomcore(){
         }
     }
 }
-
-mh = 8; // mount height
 
 adj = croomz - cbottomz;
 hyp = sqrt(14 * 14 + adj * adj);
@@ -64,6 +64,32 @@ module lmsmount(){
     cylinder(mh, 3.25 / 2, 3.25 / 2, true);
 }
 
+module motorholder(){
+    d = (28.75 + 3) / 2;
+    difference(){
+        cylinder(1, 37 / 2, 37 / 2, true);
+        translate([d, 0, 0]){
+            cylinder(1, 1.5, 1.5, true);
+        }
+        translate([-d, 0, 0]){
+            cylinder(1, 1.5, 1.5, true);
+        }
+        translate([cos(60) * -d, sin(60) * d, 0]){
+            cylinder(1, 1.5, 1.5, true);
+        }
+        translate([cos(60) * d, sin(60) * d, 0]){
+            cylinder(1, 1.5, 1.5, true);
+        }
+        translate([cos(60) * d, sin(60) * -d, 0]){
+            cylinder(1, 1.5, 1.5, true);
+        }
+        translate([cos(60) * -d, sin(60) * -d, 0]){
+            cylinder(1, 1.5, 1.5, true);
+        }
+        cylinder(1, 12 / 2, 12 / 2, true);
+    }
+}
+
 // inverted frustrum
 module controlroom(){
     difference(){
@@ -112,6 +138,21 @@ module controlroom(){
                     }
                     mirror([1, 1, 0]){
                         cornercut();
+                    }
+                    // screw holes for central shield
+                    translate([0, 0, flr - mh - 2]){
+                        shieldscrew();
+                        mirror([1, 0, 0]){
+                            shieldscrew();
+                        }
+                        mirror([0, 1, 0]){
+                            shieldscrew();
+                        }
+                        mirror([0, 1, 0]){
+                            mirror([1, 0, 0]){
+                                shieldscrew();
+                            }
+                        }
                     }
                 }
            }
@@ -179,19 +220,24 @@ module controlroom(){
         }
     }
     // mount for motor
-    translate([50, -50, flr + 37 / 2]){
+    translate([55, -55, flr + 37 / 2]){
         rotate([0, 0, 135]){
             cube([65, 37, 37], true);
             translate([0, 0, 37]){
                 difference(){
                     translate([0, 0, -37 / 2]){
-                        cube([65, 37, 37 / 2], true);
+                        cube([65, 37, 37], true);
                     }
                     rotate([0, 90, 0]){
                         cylinder(65, 37 / 2, 37 / 2, true);
                     }
                 }
             }
+        }
+    }
+    translate([57 / 2 + 4, -57 / 2 - 4, flr + 37 + 37 / 2]){
+        rotate([90, 0, 45]){
+            motorholder();
         }
     }
 }
@@ -211,17 +257,15 @@ module motor(){
     }
 }
 
-multicolor("black"){
-    controlroom();
-        /*multicolor("silver"){
-            translate([0, 60, flr + 30 / 2]){
-                acadapter();
-            }
-            translate([0, 0, flr + 13.5 / 2]){
-                loadcell();                
-            }
-        }*/
-}
+controlroom();
+/*multicolor("silver"){
+    translate([0, 60, flr + 30 / 2]){
+        acadapter();
+    }
+    translate([0, 0, flr + 13.5 / 2]){
+        loadcell();                
+    }
+}*/
 
 module acadapter(){
     difference(){

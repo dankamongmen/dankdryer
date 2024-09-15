@@ -42,3 +42,20 @@ cbottomz = 8; // for M4x8 screw, given 2mm of adapter rim
 ctopz = wallz;
 croomz = wallz + cbottomz + ctopz + 90; // 80mm fan; ought just need sin(theta)80
 outerxy = (totalxy + 14) * sqrt(2);
+
+mh = 8; // mount height
+
+module shieldscrew(){
+    translate([(-82 + 6) / 2, (19.5 + 6) / 2, mh / 2]){
+        cylinder(mh, 4 / 2, 4 / 2, true);
+    }
+}
+
+module shieldbinder(){
+    difference(){
+        translate([(-82 + 6) / 2, (19.5 + 6) / 2, mh / 2]){
+            cube([6, 6, mh], true);
+        }
+        shieldscrew();
+    }
+}
