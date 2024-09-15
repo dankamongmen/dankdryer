@@ -3,66 +3,6 @@
 // holds the MCU, motor, AC adapter, etc.
 include <core.scad>
 
-// we need to hold a spool up to 205mm in diameter and 75mm wide
-spoold = 205;
-spoolh = 75;
-spoolholed = 55;
-
-// we'll want some room around the spool, but the larger our
-// chamber, the more heat we lose.
-wallz = 2; // bottom thickness; don't want much
-gapxy = 2; // gap between spool and walls; spool might expand with heat!
-wallxy = 2;
-topz = 5; // height of top piece
-gapz = 2; // spool distance from bottom of top
-elevation = 10; // spool distance from bottom
-chordxy = 33;
-
-totalxy = spoold + wallxy * 2 + gapxy * 2;
-totalz = spoolh + wallz + topz + gapz + elevation;
-totald = sqrt(totalxy * totalxy + totalxy * totalxy);
-
-// motor is 37x33mm diameter gearbox and 6x14mm shaft
-motorboxh = 33;
-motorboxd = 37;
-motorshafth = 14;
-motorshaftd = 6;
-
-opoints = [
-            [-totalxy / 2 + chordxy, -totalxy / 2],
-            [totalxy / 2 - chordxy, -totalxy / 2], 
-            [totalxy / 2, -totalxy / 2 + chordxy],
-            [totalxy / 2, totalxy / 2 - chordxy],
-            [totalxy / 2 - chordxy, totalxy / 2],
-            [-totalxy / 2 + chordxy, totalxy / 2],
-            [-totalxy / 2, totalxy / 2 - chordxy],
-            [-totalxy / 2, -totalxy / 2 + chordxy]
-        ];
-
-ipoints = [[-totalxy / 2 + (chordxy + wallxy), -totalxy / 2 + wallxy],
-                [totalxy / 2 - (chordxy + wallxy), -totalxy / 2 + wallxy], 
-                [totalxy / 2 - wallxy, -totalxy / 2 + (chordxy + wallxy)],
-                [totalxy / 2 - wallxy, totalxy / 2 - (chordxy + wallxy)],
-                [totalxy / 2 - (chordxy + wallxy), totalxy / 2 - wallxy],
-                [-totalxy / 2 + (chordxy + wallxy), totalxy / 2 - wallxy],
-                [-totalxy / 2 + wallxy, totalxy / 2 - (chordxy + wallxy)],
-                [-totalxy / 2 + wallxy, -totalxy / 2 + (chordxy + wallxy)]];
-iipoints = concat(opoints, ipoints);
-
-module topbottom(height){
-    linear_extrude(wallz){
-        polygon(opoints);
-    }
-}
-
-
-jointsx = 10;
-jointsy = 60;
-cbottomz = 8; // for M4x8 screw, given 2mm of adapter rim
-ctopz = wallz;
-croomz = wallz + cbottomz + ctopz + 90; // 80mm fan; ought just need sin(theta)80
-outerxy = (totalxy + 14) * sqrt(2);
-
 module croomcore(){
     rotate([0, 0, 45]){
         mirror([0, 0, 1]){
@@ -101,6 +41,29 @@ module fansupportleft(){
     }
 }
 
+module corner(){
+    translate([-totalxy / 2, -totalxy / 2, -10]){
+        cube([60, 60, 20], true);
+        translate([0, 0, -35]){
+            rotate([0, 0, 45]){
+                cylinder(50, 0, sqrt(2) * 30, true, $fn = 4);
+            }
+        }
+    }
+}
+
+module cornercut(){
+    translate([-totalxy / 2 + 15, -totalxy / 2 + 15, -10]){
+        cylinder(20, 5 / 2, 5 / 2, true);
+    }
+}
+
+flr = -0.95 * croomz + cbottomz; // floor z offset
+
+module lmsmount(){
+    cylinder(mh, 3.25 / 2, 3.25 / 2, true);
+}
+
 // inverted frustrum
 module controlroom(){
     difference(){
@@ -108,29 +71,59 @@ module controlroom(){
             difference(){
                 croomcore();
                 union(){
-                    scale(0.95){
-                        croomcore();
+                    difference(){
+                        scale(0.95){
+                            croomcore();
+                        }
+                        // cut top corners out of removal, leaving supports for top
+                        corner();
+                        mirror([1, 0, 0]){
+                            corner();
+                        }
+                        mirror([0, 1, 0]){
+                            corner();
+                        }
+                        mirror([1, 1, 0]){
+                            corner();
+                        }
                     }
                     // holes for AC adapter mounting screws
                     translate([0, 60, -croomz + 2]){
                         acadapterscrews(cbottomz - 2);
                     }
                     // hole for AC wire
-                    translate([-totalxy / 2 - 10, 60, -croomz + 5 + cbottomz]){
+                    translate([-totalxy / 2 - 10, 60, flr + 5]){
                         rotate([0, 90, 0]){
                             cylinder(10, 5, 5);
                         }
                     }
                     // fan hole
-                    translate([0, -totalxy / 2, -croomz + cbottomz + 40 + 10]){
+                    translate([0, -totalxy / 2, flr + 40]){
                         rotate([asin(-14/hyp), 0, 0]){
                             cube([80, 25, 80], true);
                         }
                     }
+                    cornercut();
+                    mirror([1, 0, 0]){
+                        cornercut();
+                    }
+                    mirror([0, 1, 0]){
+                        cornercut();
+                    }
+                    mirror([1, 1, 0]){
+                        cornercut();
+                    }
                 }
            }
+           // 12->5V mounts
+           translate([5, -totalxy / 2 + 20, flr + mh / 2]){
+               lmsmount();
+               translate([30.35, 16.4, 0]){
+                   lmsmount();
+               }
+           }
            // fan mounts
-           translate([-40 + 5 / 2, -(0.95 * totalxy + 14) / 2 + 1, -croomz + cbottomz + 10 + 5/2]){
+           translate([-40 + 5 / 2, -(0.95 * totalxy + 14) / 2 + 1, flr + 5/2]){
             fanmount();
             translate([0, 5, 75]){
                 fanmount();
@@ -139,7 +132,7 @@ module controlroom(){
                 }
             }
            }
-           translate([40 - 5 / 2, -(0.95 * totalxy + 14) / 2 + 1, -croomz + cbottomz + 10 + 5/2]){
+           translate([40 - 5 / 2, -(0.95 * totalxy + 14) / 2 + 1, flr + 5/2]){
             fanmount();
             translate([0, 5, 75]){
                 fanmount();
@@ -147,11 +140,11 @@ module controlroom(){
             }
            }
            // load cell mounting base
-           translate([-76 / 2 + 21.05 / 2, 0, -croomz + cbottomz + mh / 2]){
+           translate([-76 / 2 + 21.05 / 2, 0, flr + mh / 2]){
                cube([21.05, 13.5, mh], true);
            }
            // mount for perfboard
-            translate([-mh, -0.95 * totalxy / 2 + mh, -croomz + cbottomz + mh / 2]){
+            translate([-mh, -0.95 * totalxy / 2 + mh, flr + mh / 2]){
                 perfmount();
                 translate([-80 - 3.3, 0, 0]){
                     perfmount();
@@ -165,14 +158,14 @@ module controlroom(){
             }
        }
        // holes for loadcell screws
-       translate([-76 / 2 + 5.425, 0, -croomz + (cbottomz - 2 + 8) / 2 + 2]){
+       translate([-76 / 2 + 5.425, 0, flr - 2 + 8 / 2 + 2]){
            cylinder(cbottomz - 2 + 8, 2, 2, true);
        }
-       translate([-76 / 2 + 15.625, 0, -croomz + (cbottomz - 2 + 8) / 2 + 2]){
+       translate([-76 / 2 + 15.625, 0, flr - 2 + 8 / 2 + 2]){
            cylinder(cbottomz - 2 + 8, 2, 2, true);
        }
        // perfboard holes
-        translate([-mh, -0.95 * totalxy / 2 + mh, -croomz + 2 + (mh + cbottomz - 2) / 2]){
+        translate([-mh, -0.95 * totalxy / 2 + mh, flr + 2 + mh - 2 / 2]){
             perfmounthole();
             translate([-80 - 3.3, 0, 0]){
                 perfmounthole();
@@ -185,15 +178,8 @@ module controlroom(){
             }
         }
     }
-    // shield around load cell
-    translate([0, 0, -croomz + cbottomz + 17.5 / 2]){
-        difference(){
-            cube([82, 19.5, 17.5], true);
-            cube([78, 14.5, 17.5], true);
-        }
-    }
     // mount for motor
-    translate([50, -50, -croomz + cbottomz + 37 / 2]){
+    translate([50, -50, flr + 37 / 2]){
         rotate([0, 0, 135]){
             cube([65, 37, 37], true);
             translate([0, 0, 37]){
@@ -228,10 +214,10 @@ module motor(){
 multicolor("black"){
     controlroom();
         /*multicolor("silver"){
-            translate([0, 60, -croomz + cbottomz + 30 / 2]){
+            translate([0, 60, flr + 30 / 2]){
                 acadapter();
             }
-            translate([0, 0, -croomz + cbottomz + 13.5 / 2]){
+            translate([0, 0, flr + 13.5 / 2]){
                 loadcell();                
             }
         }*/
