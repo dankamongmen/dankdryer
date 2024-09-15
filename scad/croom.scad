@@ -15,7 +15,8 @@ module croomcore(){
     }
 }
 
-adj = croomz - cbottomz;
+flr = -0.95 * croomz; // floor z offset
+adj = 0.95 * croomz;
 hyp = sqrt(14 * 14 + adj * adj);
 module fanmount(){
     rotate([asin(-14/hyp), 0, 0]){
@@ -58,10 +59,11 @@ module cornercut(){
     }
 }
 
-flr = -0.95 * croomz + cbottomz; // floor z offset
-
 module lmsmount(){
-    cylinder(mh, 3.25 / 2, 3.25 / 2, true);
+    difference(){
+        cube([5, 5, mh], true);
+        cylinder(mh, 3.25 / 2, 3.25 / 2, true);
+    }
 }
 
 module motorholder(){
@@ -115,7 +117,7 @@ module controlroom(){
                     }
                     // holes for AC adapter mounting screws
                     translate([0, 60, -croomz + 2]){
-                        acadapterscrews(cbottomz - 2);
+                        acadapterscrews(6);
                     }
                     // hole for AC wire
                     translate([-totalxy / 2 - 10, 60, flr + 5]){
@@ -124,7 +126,7 @@ module controlroom(){
                         }
                     }
                     // fan hole
-                    translate([0, -totalxy / 2, flr + 40]){
+                    translate([0, -totalxy / 2, flr + 50]){
                         rotate([asin(-14/hyp), 0, 0]){
                             cube([80, 25, 80], true);
                         }
@@ -140,7 +142,7 @@ module controlroom(){
                         cornercut();
                     }
                     // screw holes for central shield
-                    translate([0, 0, flr - mh - 2]){
+                    translate([0, 0, flr - mh / 2]){
                         shieldscrew();
                         mirror([1, 0, 0]){
                             shieldscrew();
@@ -164,7 +166,7 @@ module controlroom(){
                }
            }
            // fan mounts
-           translate([-40 + 5 / 2, -(0.95 * totalxy + 14) / 2 + 1, flr + 5/2]){
+           translate([-40 + 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 5/2 + 10]){
             fanmount();
             translate([0, 5, 75]){
                 fanmount();
@@ -173,7 +175,7 @@ module controlroom(){
                 }
             }
            }
-           translate([40 - 5 / 2, -(0.95 * totalxy + 14) / 2 + 1, flr + 5/2]){
+           translate([40 - 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 5/2 + 10]){
             fanmount();
             translate([0, 5, 75]){
                 fanmount();
@@ -185,39 +187,39 @@ module controlroom(){
                cube([21.05, 13.5, mh], true);
            }
            // mount for perfboard
-            translate([-mh, -0.95 * totalxy / 2 + mh, flr + mh / 2]){
-                perfmount();
-                translate([-80 - 3.3, 0, 0]){
-                    perfmount();
-                }
-                translate([0, 61.75 + 3.3, 0]){
-                    perfmount();
-                    translate([-80 - 3.3, 0, 0]){
-                        perfmount();
-                    }
-                }
-            }
+           translate([-mh, -0.95 * totalxy / 2 + mh, flr + mh / 2]){
+               perfmount();
+               translate([-80 - 3.3, 0, 0]){
+                   perfmount();
+               }
+               translate([0, 61.75 + 3.3, 0]){
+                   perfmount();
+                   translate([-80 - 3.3, 0, 0]){
+                       perfmount();
+                   }
+               }
+           }
        }
        // holes for loadcell screws
        translate([-76 / 2 + 5.425, 0, flr - 2 + 8 / 2 + 2]){
-           cylinder(cbottomz - 2 + 8, 2, 2, true);
+           cylinder(6 + 8, 2, 2, true);
        }
        translate([-76 / 2 + 15.625, 0, flr - 2 + 8 / 2 + 2]){
-           cylinder(cbottomz - 2 + 8, 2, 2, true);
+           cylinder(6 + 8, 2, 2, true);
        }
        // perfboard holes
-        translate([-mh, -0.95 * totalxy / 2 + mh, flr + 2 + mh - 2 / 2]){
-            perfmounthole();
-            translate([-80 - 3.3, 0, 0]){
-                perfmounthole();
-            }
-            translate([0, 61.75 + 3.3, 0]){
-                perfmounthole();
-                translate([-80 - 3.3, 0, 0]){
-                    perfmounthole();
-                }
-            }
-        }
+       translate([-mh, -0.95 * totalxy / 2 + mh, flr + 2 + mh - 2 / 2]){
+           perfmounthole();
+           translate([-80 - 3.3, 0, 0]){
+               perfmounthole();
+           }
+           translate([0, 61.75 + 3.3, 0]){
+               perfmounthole();
+               translate([-80 - 3.3, 0, 0]){
+                   perfmounthole();
+               }
+           }
+       }
     }
     // mount for motor
     translate([55, -55, flr + 37 / 2]){
@@ -247,7 +249,7 @@ module perfmount(){
 }
 
 module perfmounthole(){
-    cylinder(mh + cbottomz - 2, 2, 2, true);
+    cylinder(mh + 6, 2, 2, true);
 }
 
 module motor(){

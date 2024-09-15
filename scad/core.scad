@@ -38,9 +38,9 @@ motorshaftd = 6;
 
 jointsx = 10;
 jointsy = 60;
-cbottomz = 8; // for M4x8 screw, given 2mm of adapter rim
+//cbottomz = 8; // for M4x8 screw, given 2mm of adapter rim
 ctopz = wallz;
-croomz = wallz + cbottomz + ctopz + 90; // 80mm fan; ought just need sin(theta)80
+croomz = wallz + 8 + ctopz + 90; // 80mm fan; ought just need sin(theta)80
 outerxy = (totalxy + 14) * sqrt(2);
 
 mh = 8; // mount height
