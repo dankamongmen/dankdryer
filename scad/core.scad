@@ -45,15 +45,16 @@ outerxy = (totalxy + 14) * sqrt(2);
 
 mh = 8; // mount height
 
+shieldw = 88;
 module shieldscrew(){
-    translate([(-82 + 6) / 2, (19.5 + 6) / 2, mh / 2]){
+    translate([(-shieldw + 6) / 2, (19.5 + 6) / 2, mh / 2]){
         cylinder(mh, 4 / 2, 4 / 2, true);
     }
 }
 
 module shieldbinder(){
     difference(){
-        translate([(-82 + 6) / 2, (19.5 + 6) / 2, mh / 2]){
+        translate([(-shieldw + 6) / 2, (19.5 + 6) / 2, mh / 2]){
             cube([6, 6, mh], true);
         }
         shieldscrew();
@@ -100,20 +101,24 @@ module top(){
 
 module fanmount(){
     difference(){
-        cube([5, 2, 5], true);
-        rotate([90, 0, 0]){
-            cylinder(2, 2, 2, true);
+        cube([11.5, 2, 11.5], true);
+        translate([-2, 0, -2]){
+            rotate([90, 0, 0]){
+                cylinder(2, 2, 2, true);
+            }
         }
     }
 }
 
 // support underneath the upper left fan mount, so it's not hanging
 module fansupportleft(){
-    linear_extrude(2){
-        polygon([
-            [-2.5, 2.5],
-            [2.5, 2.5],
-            [2.5, 7.5]
-        ]);
+    translate([0.25, 0.25, 0]){
+        linear_extrude(2){
+            polygon([
+                [-6, 5.5],
+                [5.5, 5.5],
+                [5.5, 17]
+            ]);
+        }
     }
 }

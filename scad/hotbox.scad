@@ -68,6 +68,39 @@ module ceramheat230(height, bh){
 	fourstubs(holegapw, holegapl, "M3", height, bh);
 }
 
+// 40x80mm worth of air passage through one quadrant of floor
+module floorcuts(){
+    d = wallz;
+    for(i=[0:1:10]){
+        translate([-80, 25 + i * 6, d / 2]){
+            rotate([0, 0, 45]){
+                cube([40, 4, d], true);
+            }
+        }
+        translate([-42, 40 + i * 6, d / 2]){
+            cube([40, 4, d], true);
+        }
+    }
+}
+
+module fanmounts(){
+    translate([-40 + 11.5 / 2, -(0.95 * totalxy + 16) / 2 + wallxy * 2, 10.5]){
+        fanmount();
+        translate([0, 0, 70]){
+            mirror([0, 0, 1]){
+                fanmount();
+            }
+            translate([0, -1, 0]){
+                mirror([1, 0, 0]){
+                    rotate([270, 0,0]){
+                        fansupportleft();
+                    }
+                }
+            }
+        }
+    }
+}
+
 module hotbox(){
     difference(){
         union(){
@@ -96,6 +129,11 @@ module hotbox(){
         }
         // now remove all other interacting pieces
         union(){
+            // 80x80mm worth of air passage cut into the floor
+            floorcuts();
+            mirror([1, 0, 0]){
+                floorcuts();
+            }
             translate([0, 0, totalz - wallz]){
                 mirror([0, 0, 1]){
                     top();
@@ -106,8 +144,14 @@ module hotbox(){
                 cylinder(wallz, 4, 4);
             }
             // exhaust fan hole
-            translate([0, -totalxy / 2, 80 / 2 + 5]){
-                cube([80, 25, 80], true);
+            difference(){
+                translate([0, -totalxy / 2, 80 / 2 + 5]){
+                    cube([80, 25, 80], true);
+                }
+                fanmounts();
+                mirror([1, 0, 0]){
+                    fanmounts();
+                }
             }
             // central column
             cylinder(10, 30 / 2, 30 / 2, true);
@@ -118,27 +162,6 @@ module hotbox(){
     // than the center
     translate([0, totalxy / 4 + 10, wallz / 2]){
         ceramheat230(10, wallz);
-    }
-    // fan mounts
-    translate([-40 + 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, 7.5]){
-        fanmount();
-        translate([0, 5, 75]){
-            fanmount();
-            mirror([1, 0, 0]){
-                rotate([270, 0,0]){
-                    fansupportleft();
-                }
-            }
-        }
-    }
-    translate([40 - 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, 7.5]){
-        fanmount();
-        translate([0, 5, 75]){
-            fanmount();
-            rotate([270, 0,0]){
-                fansupportleft();
-            }
-        }
     }
 }
 

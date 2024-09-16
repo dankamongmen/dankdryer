@@ -80,25 +80,64 @@ module motorholder(){
 // radius away from the center.
 module motormount(){
     translate([55.5, -46, flr + 37 / 2]){
-            cube([66, 37, 37], true);
-            translate([0, 0, 37]){
-                difference(){
-                    translate([0, 0, -37 / 2]){
-                        cube([66, 37, 37], true);
-                    }
-                    rotate([0, 90, 0]){
-                        cylinder(66, 37 / 2, 37 / 2, true);
-                    }
+        cube([66, 37, 37], true);
+        translate([0, 0, 37]){
+            difference(){
+                translate([0, 0, -37 / 2]){
+                    cube([66, 37, 37], true);
+                }
+                rotate([0, 90, 0]){
+                    cylinder(66, 37 / 2, 37 / 2, true);
                 }
             }
-    }
-    translate([25, -58 / 2 - 16, flr + 37 + 37 / 2]){
-        rotate([0, 90, 0]){
-            motorholder();
+        }
+        translate([-30.5, 1, 37]){
+            rotate([0, 90, 0]){
+                motorholder();
+            }
         }
     }
 }
 
+// one side's fanmounts
+module fanmounts(){
+    translate([-40 + 11.5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 11 / 2 + 10]){
+        rot(0){
+            fanmount();
+        }
+        translate([0, 5, 68]){
+            rot(0){
+                mirror([0, 0, 1]){
+                    fanmount();
+                }
+            }
+            mirror([1, 0, 0]){
+                rot(270){
+                    fansupportleft();
+                }
+            }
+        }
+    }
+}
+
+module shieldscrews(){
+    // screw holes for central shield
+    translate([0, 0, flr - mh / 2]){
+        shieldscrew();
+        mirror([1, 0, 0]){
+            shieldscrew();
+        }
+        mirror([0, 1, 0]){
+            shieldscrew();
+        }
+        mirror([0, 1, 0]){
+            mirror([1, 0, 0]){
+                shieldscrew();
+            }
+        }
+    }
+}
+                    
 // inverted frustrum
 module controlroom(){
     difference(){
@@ -151,21 +190,7 @@ module controlroom(){
                     mirror([1, 1, 0]){
                         cornercut();
                     }
-                    // screw holes for central shield
-                    translate([0, 0, flr - mh / 2]){
-                        shieldscrew();
-                        mirror([1, 0, 0]){
-                            shieldscrew();
-                        }
-                        mirror([0, 1, 0]){
-                            shieldscrew();
-                        }
-                        mirror([0, 1, 0]){
-                            mirror([1, 0, 0]){
-                                shieldscrew();
-                            }
-                        }
-                    }
+                    shieldscrews();
                 }
            }
            // 12->5V mounts
@@ -175,34 +200,9 @@ module controlroom(){
            translate([5, -totalxy / 2 + 20 + 16.4, flr + mh / 2]){
                lmsmount();
            }
-            // fan mounts
-            translate([-40 + 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 5/2 + 10]){
-                rot(0){
-                    fanmount();
-                }
-                translate([0, 5, 75]){
-                    rot(0){
-                        fanmount();
-                    }
-                    mirror([1, 0, 0]){
-                        rot(270){
-                            fansupportleft();
-                        }
-                    }
-                }
-            }
-            translate([40 - 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 5/2 + 10]){
-                rot(0){
-                    fanmount();
-                }
-                translate([0, 5, 75]){
-                    rot(0){
-                        fanmount();
-                    }
-                    rot(270){
-                        fansupportleft();
-                    }
-                }
+           fanmounts();
+           mirror([1, 0, 0]){
+               fanmounts();
            }
            // load cell mounting base
            translate([-76 / 2 + 21.05 / 2, 0, flr + mh / 2]){
@@ -310,4 +310,7 @@ module loadcell(){
     }
 }
 
-include <gears.scad>
+/*include <worm.scad> 
+translate([30, 0, 0]){
+    gear();
+}*/
