@@ -91,7 +91,7 @@ module motormount(){
                 }
             }
         }
-        translate([-30.5, 1, 37]){
+        translate([-32, 1, 37]){
             rotate([0, 90, 0]){
                 motorholder();
             }
@@ -101,11 +101,11 @@ module motormount(){
 
 // one side's fanmounts
 module fanmounts(){
-    translate([-40 + 11.5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 11 / 2 + 10]){
+    translate([-40.5 + 11.5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 11 / 2 + 9.5]){
         rot(0){
             fanmount();
         }
-        translate([0, 5, 68]){
+        translate([0, 5, 70]){
             rot(0){
                 mirror([0, 0, 1]){
                     fanmount();
@@ -176,7 +176,7 @@ module controlroom(){
                     // fan hole
                     translate([0, -totalxy / 2, flr + 50]){
                         rotate([asin(-14/hyp), 0, 0]){
-                            cube([80, 25, 80], true);
+                            cube([81, 25, 81], true);
                         }
                     }
                     // holes in corners for mounting hotbox
