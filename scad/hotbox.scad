@@ -58,9 +58,8 @@ module corner(){
 ceramheat230w = 77;
 ceramheat230l = 62;
 module ceramheat230(height, bh){
-	r = 3.5 / 2;
 	holegapw = 32;
-	holegapl = 44;
+	holegapl = 52;
 	fourstubs(holegapw, holegapl, "M3", height, bh);
 }
 
@@ -80,9 +79,9 @@ module floorcuts(){
 }
 
 module fanmounts(){
-    translate([-41 + 11.5 / 2, -(0.95 * totalxy + 16) / 2 + wallxy * 2, 10.5]){
+    translate([-40 + 11.5 / 2, -(0.95 * totalxy + 16) / 2 + wallxy * 2, 11.5]){
         fanmount();
-        translate([0, 0, 70]){
+        translate([0, 0, 69]){
             mirror([0, 0, 1]){
                 fanmount();
             }
@@ -144,7 +143,7 @@ module hotbox(){
             // exhaust fan hole
             difference(){
                 translate([0, -totalxy / 2, 80 / 2 + 5]){
-                    cube([81, 25, 81], true);
+                    cube([80, 25, 80], true);
                 }
                 fanmounts();
                 mirror([1, 0, 0]){
