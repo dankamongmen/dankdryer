@@ -6,8 +6,8 @@ module wormy(){
             worm_gear(modul=1, tooth_number=60, thread_starts=2, width=8, length=30, worm_bore=5.5, gear_bore=4, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=0, show_worm=1);
     
             // fill in the central worm gear hole, save for our rotor cutout
-            translate([6, 0, 0]){
-                cube([6, 16, 6], true);
+            translate([6, -10.6, 0]){
+                cube([6, 10, 6], true);
             }
         }
         translate([6, 12, 0]){
@@ -29,6 +29,8 @@ module gear(){
 }
 
 translate([5, 0, 0]){
-    wormy();
+    rotate([90, 0, 0]){
+        wormy();
+    }
 }
 //gear();
