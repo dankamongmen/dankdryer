@@ -11,35 +11,6 @@ spoold = 205;
 spoolh = 75;
 spoolholed = 55;
 
-opoints = [
-            [-totalxy / 2 + chordxy, -totalxy / 2],
-            [totalxy / 2 - chordxy, -totalxy / 2], 
-            [totalxy / 2, -totalxy / 2 + chordxy],
-            [totalxy / 2, totalxy / 2 - chordxy],
-            [totalxy / 2 - chordxy, totalxy / 2],
-            [-totalxy / 2 + chordxy, totalxy / 2],
-            [-totalxy / 2, totalxy / 2 - chordxy],
-            [-totalxy / 2, -totalxy / 2 + chordxy]
-        ];
-
-ipoints = [[-totalxy / 2 + (chordxy + wallxy), -totalxy / 2 + wallxy],
-                [totalxy / 2 - (chordxy + wallxy), -totalxy / 2 + wallxy], 
-                [totalxy / 2 - wallxy, -totalxy / 2 + (chordxy + wallxy)],
-                [totalxy / 2 - wallxy, totalxy / 2 - (chordxy + wallxy)],
-                [totalxy / 2 - (chordxy + wallxy), totalxy / 2 - wallxy],
-                [-totalxy / 2 + (chordxy + wallxy), totalxy / 2 - wallxy],
-                [-totalxy / 2 + wallxy, totalxy / 2 - (chordxy + wallxy)],
-                [-totalxy / 2 + wallxy, -totalxy / 2 + (chordxy + wallxy)]];
-iipoints = concat(opoints, ipoints);
-
-module topbottom(height){
-    linear_extrude(wallz){
-        polygon(opoints);
-    }
-}
-
-outerxy = (totalxy + 14) * sqrt(2);
-
 module croomcore(){
     rotate([0, 0, 45]){
         mirror([0, 0, 1]){
@@ -137,23 +108,6 @@ module spool(){
                 circle(spoolholed / 2);
             }
         }
-    }
-}
-
-module top(){
-    hull(){
-        topbottom(1);
-        translate([0, 0, topz]){
-            linear_extrude(1){
-                polygon(ipoints);
-            }
-        }
-    }
-}
-
-multicolor("white"){
-    translate([totalxy + 10, 0, 0]){
-        top();
     }
 }
 
