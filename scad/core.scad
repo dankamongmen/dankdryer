@@ -88,17 +88,6 @@ module topbottom(height){
     }
 }
 
-module top(){
-    hull(){
-        topbottom(1);
-        translate([0, 0, topz]){
-            linear_extrude(1){
-                polygon(ipoints);
-            }
-        }
-    }
-}
-
 module fanmount(){
     difference(){
         cube([11.5, 2, 11.5], true);
@@ -120,5 +109,39 @@ module fansupportleft(){
                 [5.5, 17]
             ]);
         }
+    }
+}
+
+// screw hole for the top hold
+module holdhole(h){
+    translate([-10, -10, h / 2]){
+        cylinder(h, 4 / 2, 4 / 2, true);
+    }
+}
+
+module holdholes(h){
+    holdhole(h);
+    mirror([0, 1, 0]){
+        holdhole(h);
+    }
+    mirror([1, 0, 0]){
+        holdhole(h);
+    }
+    mirror([1, 1, 0]){
+        holdhole(h);
+    }
+}
+
+module top(){
+    difference(){
+        hull(){
+            topbottom(1);
+            translate([0, 0, topz]){
+                linear_extrude(1){
+                    polygon(ipoints);
+                }
+            }
+        }
+        holdholes(6);
     }
 }
