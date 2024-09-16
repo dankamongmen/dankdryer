@@ -1,4 +1,4 @@
-$fn=20;
+$fn = 64;
 
 current_color = "ALL";
 
@@ -95,5 +95,25 @@ module top(){
                 polygon(ipoints);
             }
         }
+    }
+}
+
+module fanmount(){
+    difference(){
+        cube([5, 2, 5], true);
+        rotate([90, 0, 0]){
+            cylinder(2, 2, 2, true);
+        }
+    }
+}
+
+// support underneath the upper left fan mount, so it's not hanging
+module fansupportleft(){
+    linear_extrude(2){
+        polygon([
+            [-2.5, 2.5],
+            [2.5, 2.5],
+            [2.5, 7.5]
+        ]);
     }
 }

@@ -3,8 +3,6 @@
 // holds the MCU, motor, AC adapter, etc.
 include <core.scad>
 
-$fn = 64;
-
 module croomcore(){
     rotate([0, 0, 45]){
         mirror([0, 0, 1]){
@@ -16,38 +14,13 @@ module croomcore(){
 }
 
 flr = -0.95 * croomz; // floor z offset
-adj = 0.95 * croomz;
-hyp = sqrt(14 * 14 + adj * adj);
-module fanmount(){
-    rotate([asin(-14/hyp), 0, 0]){
-        difference(){
-            cube([5, 2, 5], true);
-            rotate([90, 0, 0]){
-                cylinder(2, 2, 2, true);
-            }
-        }
-    }
-}
-
-// support underneath the upper left fan mount, so it's not hanging
-module fansupportleft(){
-    rotate([asin(-14/hyp) + 270, 0, 0]){
-        linear_extrude(2){
-            polygon([
-                [-2.5, 2.5],
-                [2.5, 2.5],
-                [2.5, 7.5]
-            ]);
-        }
-    }
-}
 
 module corner(){
     translate([-totalxy / 2, -totalxy / 2, -10]){
-        cube([60, 60, 20], true);
+        cube([44, 44, 20], true);
         translate([0, 0, -35]){
             rotate([0, 0, 45]){
-                cylinder(50, 0, sqrt(2) * 30, true, $fn = 4);
+                cylinder(50, 0, sqrt(2) * 22, true, $fn = 4);
             }
         }
     }
@@ -63,6 +36,15 @@ module lmsmount(){
     difference(){
         cube([5, 5, mh], true);
         cylinder(mh, 3.25 / 2, 3.25 / 2, true);
+    }
+}
+
+adj = 0.95 * croomz;
+hyp = sqrt(14 * 14 + adj * adj);
+
+module rot(deg){
+    rotate([asin(-14/hyp) + deg, 0, 0]){
+        children();
     }
 }
 
@@ -94,6 +76,29 @@ module motorholder(){
     }
 }
 
+// mount for motor. runs horizontal approximately a gear
+// radius away from the center.
+module motormount(){
+    translate([55.5, -46, flr + 37 / 2]){
+            cube([66, 37, 37], true);
+            translate([0, 0, 37]){
+                difference(){
+                    translate([0, 0, -37 / 2]){
+                        cube([66, 37, 37], true);
+                    }
+                    rotate([0, 90, 0]){
+                        cylinder(66, 37 / 2, 37 / 2, true);
+                    }
+                }
+            }
+    }
+    translate([25, -58 / 2 - 16, flr + 37 + 37 / 2]){
+        rotate([0, 90, 0]){
+            motorholder();
+        }
+    }
+}
+
 // inverted frustrum
 module controlroom(){
     difference(){
@@ -122,9 +127,11 @@ module controlroom(){
                         acadapterscrews(6);
                     }
                     // hole for AC wire
-                    translate([-totalxy / 2 - 10, 60, flr + mh]){
-                        rotate([0, 90, 0]){
-                            cylinder(10, 5, 5);
+                    translate([-totalxy / 2 - 10, 60, flr + mh * 2]){
+                        rotate([0, asin(-14/hyp), 0]){
+                            rotate([0, 90, 0]){
+                                cylinder(10, 5, 5);
+                            }
                         }
                     }
                     // fan hole
@@ -162,28 +169,40 @@ module controlroom(){
                 }
            }
            // 12->5V mounts
-           translate([5, -totalxy / 2 + 20, flr + mh / 2]){
+           translate([35.35, -totalxy / 2 + 20, flr + mh / 2]){
                lmsmount();
-               translate([30.35, 16.4, 0]){
-                   lmsmount();
-               }
            }
-           // fan mounts
-           translate([-40 + 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 5/2 + 10]){
-            fanmount();
-            translate([0, 5, 75]){
-                fanmount();
-                mirror([1, 0, 0]){
-                    fansupportleft();
+           translate([5, -totalxy / 2 + 20 + 16.4, flr + mh / 2]){
+               lmsmount();
+           }
+            // fan mounts
+            translate([-40 + 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 5/2 + 10]){
+                rot(0){
+                    fanmount();
+                }
+                translate([0, 5, 75]){
+                    rot(0){
+                        fanmount();
+                    }
+                    mirror([1, 0, 0]){
+                        rot(270){
+                            fansupportleft();
+                        }
+                    }
                 }
             }
-           }
-           translate([40 - 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 5/2 + 10]){
-            fanmount();
-            translate([0, 5, 75]){
-                fanmount();
-                fansupportleft();
-            }
+            translate([40 - 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 5/2 + 10]){
+                rot(0){
+                    fanmount();
+                }
+                translate([0, 5, 75]){
+                    rot(0){
+                        fanmount();
+                    }
+                    rot(270){
+                        fansupportleft();
+                    }
+                }
            }
            // load cell mounting base
            translate([-76 / 2 + 21.05 / 2, 0, flr + mh / 2]){
@@ -224,27 +243,7 @@ module controlroom(){
            }
        }
     }
-    // mount for motor
-    translate([55.5, -55.5, flr + 37 / 2]){
-        rotate([0, 0, 135]){
-            cube([66, 37, 37], true);
-            translate([0, 0, 37]){
-                difference(){
-                    translate([0, 0, -37 / 2]){
-                        cube([66, 37, 37], true);
-                    }
-                    rotate([0, 90, 0]){
-                        cylinder(66, 37 / 2, 37 / 2, true);
-                    }
-                }
-            }
-        }
-    }
-    translate([58 / 2 + 4, -58 / 2 - 4, flr + 37 + 37 / 2]){
-        rotate([90, 0, 45]){
-            motorholder();
-        }
-    }
+    motormount();
 }
 
 module perfmount(){
@@ -310,3 +309,5 @@ module loadcell(){
         cube([76, 13.5, 13,5], true);
     }
 }
+
+include <gears.scad>

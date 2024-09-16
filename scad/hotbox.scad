@@ -11,16 +11,6 @@ spoold = 205;
 spoolh = 75;
 spoolholed = 55;
 
-module croomcore(){
-    rotate([0, 0, 45]){
-        mirror([0, 0, 1]){
-            cylinder(croomz,
-                     totalxy * sqrt(2) / 2,
-                     outerxy / 2, $fn = 4);
-        }
-    }
-}
-
 // for each component, measure its total geometry, and the geometry
 // of all standoff holes. by convention, use w/l for width and
 // length of the part, and holegapw/holegapl for spacing of the
@@ -44,6 +34,26 @@ module fourstubs(holegapw, holegapl, r, height, bh){
 			stub(r, height, bh);
 		}
 	}
+}
+
+// corners, for mating to the croom
+module corner(){
+    side = 20;
+    t = totalxy / 2;
+    difference(){
+        translate([t - side - 6, t - 6, 0]){
+            linear_extrude(side){
+                polygon([
+                    [0, 0],
+                    [side, 0],
+                    [side, -side]
+                ]);
+            }
+        }
+        translate([totalxy / 2 - 12, totalxy / 2 - 12, side / 2]){
+            cylinder(side, 5 / 2, 5 / 2, true);
+        }
+    }
 }
 
 // ceramic heater 230C
@@ -72,6 +82,17 @@ module hotbox(){
                     ]);
                 }
             }
+            // four corners for mating to croom
+            corner();
+            mirror([0, 1, 0]){
+                corner();
+            }
+            mirror([1, 0, 0]){
+                corner();
+            }
+            mirror([1, 1, 0]){
+                corner();
+            }
         }
         // now remove all other interacting pieces
         union(){
@@ -88,6 +109,8 @@ module hotbox(){
             translate([0, -totalxy / 2, 80 / 2 + 5]){
                 cube([80, 25, 80], true);
             }
+            // central column
+            cylinder(10, 30 / 2, 30 / 2, true);
         }
     }
     // pegs for the ceramic heating element. we want it entirely
@@ -95,6 +118,27 @@ module hotbox(){
     // than the center
     translate([0, totalxy / 4 + 10, wallz / 2]){
         ceramheat230(10, wallz);
+    }
+    // fan mounts
+    translate([-40 + 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, 7.5]){
+        fanmount();
+        translate([0, 5, 75]){
+            fanmount();
+            mirror([1, 0, 0]){
+                rotate([270, 0,0]){
+                    fansupportleft();
+                }
+            }
+        }
+    }
+    translate([40 - 5 / 2, -(0.95 * totalxy + 16) / 2 + 1, 7.5]){
+        fanmount();
+        translate([0, 5, 75]){
+            fanmount();
+            rotate([270, 0,0]){
+                fansupportleft();
+            }
+        }
     }
 }
 
