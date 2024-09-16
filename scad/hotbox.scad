@@ -84,6 +84,10 @@ module hotbox(){
             translate([ceramheat230w / 2 + 10, totalxy / 4 + 10, 0]){
                 cylinder(wallz, 4, 4);
             }
+            // exhaust fan hole
+            translate([0, -totalxy / 2, 80 / 2 + 5]){
+                cube([80, 25, 80], true);
+            }
         }
     }
     // pegs for the ceramic heating element. we want it entirely

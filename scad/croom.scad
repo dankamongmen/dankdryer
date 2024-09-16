@@ -54,7 +54,7 @@ module corner(){
 }
 
 module cornercut(){
-    translate([-totalxy / 2 + 15, -totalxy / 2 + 15, -10]){
+    translate([-totalxy / 2 + 12, -totalxy / 2 + 12, -10]){
         cylinder(20, 5 / 2, 5 / 2, true);
     }
 }
@@ -66,29 +66,31 @@ module lmsmount(){
     }
 }
 
+// circular mount screwed into the front of the motor through six holes
 module motorholder(){
     d = (28.75 + 3) / 2;
+    ch = 2;
     difference(){
-        cylinder(1, 37 / 2, 37 / 2, true);
+        cylinder(ch, 37 / 2, 37 / 2, true);
         translate([d, 0, 0]){
-            cylinder(1, 1.5, 1.5, true);
+            cylinder(ch, 1.5, 1.5, true);
         }
         translate([-d, 0, 0]){
-            cylinder(1, 1.5, 1.5, true);
+            cylinder(ch, 1.5, 1.5, true);
         }
         translate([cos(60) * -d, sin(60) * d, 0]){
-            cylinder(1, 1.5, 1.5, true);
+            cylinder(ch, 1.5, 1.5, true);
         }
         translate([cos(60) * d, sin(60) * d, 0]){
-            cylinder(1, 1.5, 1.5, true);
+            cylinder(ch, 1.5, 1.5, true);
         }
         translate([cos(60) * d, sin(60) * -d, 0]){
-            cylinder(1, 1.5, 1.5, true);
+            cylinder(ch, 1.5, 1.5, true);
         }
         translate([cos(60) * -d, sin(60) * -d, 0]){
-            cylinder(1, 1.5, 1.5, true);
+            cylinder(ch, 1.5, 1.5, true);
         }
-        cylinder(1, 12 / 2, 12 / 2, true);
+        cylinder(ch, 12 / 2, 12 / 2, true);
     }
 }
 
@@ -120,7 +122,7 @@ module controlroom(){
                         acadapterscrews(6);
                     }
                     // hole for AC wire
-                    translate([-totalxy / 2 - 10, 60, flr + 5]){
+                    translate([-totalxy / 2 - 10, 60, flr + mh]){
                         rotate([0, 90, 0]){
                             cylinder(10, 5, 5);
                         }
@@ -131,6 +133,7 @@ module controlroom(){
                             cube([80, 25, 80], true);
                         }
                     }
+                    // holes in corners for mounting hotbox
                     cornercut();
                     mirror([1, 0, 0]){
                         cornercut();
@@ -222,22 +225,22 @@ module controlroom(){
        }
     }
     // mount for motor
-    translate([55, -55, flr + 37 / 2]){
+    translate([55.5, -55.5, flr + 37 / 2]){
         rotate([0, 0, 135]){
-            cube([65, 37, 37], true);
+            cube([66, 37, 37], true);
             translate([0, 0, 37]){
                 difference(){
                     translate([0, 0, -37 / 2]){
-                        cube([65, 37, 37], true);
+                        cube([66, 37, 37], true);
                     }
                     rotate([0, 90, 0]){
-                        cylinder(65, 37 / 2, 37 / 2, true);
+                        cylinder(66, 37 / 2, 37 / 2, true);
                     }
                 }
             }
         }
     }
-    translate([57 / 2 + 4, -57 / 2 - 4, flr + 37 + 37 / 2]){
+    translate([58 / 2 + 4, -58 / 2 - 4, flr + 37 + 37 / 2]){
         rotate([90, 0, 45]){
             motorholder();
         }
