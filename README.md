@@ -19,10 +19,10 @@ There are eight pieces to print:
 Use heat-resistant filaments. My lower chamber is polycarbonate, and my upper
 chamber is Bambu PAHT-CF.
 
-Additionally, you'll need a motor, a buck converter, an AC adapter, an ESP32-S3
-devkit, a motor, a TB6612FNG motor controller, a 5kg load cell and its HX711
-controller, two NF-A8 80mm fans, two Molex 4-pin fan connectors, and hookup
-wire.
+Additionally, you'll need a ceramic heating element, a buck converter, an AC
+adapter, an ESP32-S3 devkit, a motor, a TB6612FNG motor controller, a 5kg load
+cell and its HX711 controller, two NF-A8 80mm fans, two Molex 4-pin fan
+connectors, and hookup wire.
 
 ## Assembling the lower chamber
 
