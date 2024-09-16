@@ -5,8 +5,9 @@ ESP32HEX:=$(addprefix esp32-s3/, $(addsuffix .ino.elf, dankdryer/dankdryer))
 HEX:=$(addprefix $(OUT)/, $(ESP32HEX))
 CFLAGS:=--warnings all
 ACLI:=arduino-cli
+STL:=$(addsuffix .stl, $(addprefix $(OUT)/scad/, croom hotbox top))
 
-all: $(HEX)
+all: $(HEX) $(STL)
 
 deps:
 	arduino-cli lib download HX711
@@ -15,6 +16,10 @@ deps:
 $(OUT)/esp32-s3/dankdryer/dankdryer.ino.elf: $(addprefix esp32-s3/dankdryer/, dankdryer.ino) $(ESPCOMMON)
 	@mkdir -p $(@D)
 	$(ACLI) compile $(CFLAGS) -b esp32:esp32:esp32s3 -v --output-dir $(@D) $<
+
+$(OUT)/scad/%.stl: scad/%.scad scad/core.scad
+	@mkdir -p $(@D)
+	openscad -o $@ $<
 
 clean:
 	rm -rf $(OUT)
