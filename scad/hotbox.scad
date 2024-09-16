@@ -38,16 +38,12 @@ module fourstubs(holegapw, holegapl, r, height, bh){
 
 // corners, for mating to the croom
 module corner(){
-    side = 20;
+    side = 40;
     t = totalxy / 2;
     difference(){
-        translate([t - side - 6, t - 6, 0]){
-            linear_extrude(side){
-                polygon([
-                    [0, 0],
-                    [side, 0],
-                    [side, -side]
-                ]);
+        translate([t - side / 2 + 4, t - side / 2 + 4, side / 2]){
+            rotate([0, 0, 45]){
+                cylinder(side, side / 2, 1, true, $fn = 4);
             }
         }
         translate([totalxy / 2 - 12, totalxy / 2 - 12, side / 2]){
@@ -123,8 +119,10 @@ module hotbox(){
             mirror([1, 0, 0]){
                 corner();
             }
-            mirror([1, 1, 0]){
-                corner();
+            mirror([0, 1, 0]){
+                mirror([1, 0, 0]){
+                    corner();
+                }
             }
         }
         // now remove all other interacting pieces
