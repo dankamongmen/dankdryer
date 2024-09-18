@@ -288,17 +288,17 @@ module acadapter(){
     }
 }
 
-multicolor("pink"){
+module loadcell(){
+    // https://amazon.com/gp/product/B07BGXXHSW
+    cube([76, 13.5, 13.5], true);
+}
+
+/*multicolor("pink"){
     translate([79, -77, -20]){
         rotate([0, 270, motortheta]){
             motor();
         }
     }
-}
-
-module loadcell(){
-    // https://amazon.com/gp/product/B07BGXXHSW
-    cube([76, 13.5, 13.5], true);
 }
 
 multicolor("silver"){
@@ -312,4 +312,4 @@ multicolor("silver"){
 
 translate([teeth / 2, 0, flr + motorboxd]){
     gear();
-}
+}*/
