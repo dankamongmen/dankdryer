@@ -1,6 +1,6 @@
 // dankdryer firmware
 // intended for use on an ESP32-S3-WROOM-1
-
+#define VERSION "0.0.1"
 #include <nvs.h>
 #include <HX711.h>
 #include <nvs_flash.h>
@@ -24,9 +24,9 @@ static bool UsePersistentStore; // set true upon successful initialization
 static temperature_sensor_handle_t temp;
 
 // defaults, some of which can be configured.
-static unsigned LowerPWM = 128;
-static unsigned UpperPWM = 128;
-static unsigned TargetTemp = 80;
+static uint32_t LowerPWM = 128;
+static uint32_t UpperPWM = 128;
+static uint32_t TargetTemp = 80;
 
 float getAmbient(void){
   float t;
@@ -72,6 +72,21 @@ int init_pstore(void){
   return 0;
 }
 
+// check for an optional record in the nvs handle. if not defined, return 0.
+// if defined, load val and return 0. on other errors, return -1.
+int nvs_get_opt_u32(nvs_handle_t nh, const char* recname, uint32_t* val){
+  esp_err_t err = nvs_get_u32(nh, recname, val);
+  if(err == ESP_ERR_NVS_NOT_FOUND){
+    printf("no record '%s' in nvs\n", recname);
+    return 0;
+  }else if(err){
+    printf("failure (%d) reading %s\n", err, recname);
+    return -1;
+  }
+  printf("read configured default %lu from nvs:%s\n", *val, recname);
+  return 0;
+}
+
 // read and update boot count, read configurable defaults from pstore if they
 // are present (we do not write defaults to pstore, so we can differentiate
 // between defaults and a configured value).
@@ -105,6 +120,10 @@ int read_pstore(void){
     nvs_close(nvsh);
     return -1;
   }
+  nvs_get_opt_u32(nvsh, "targtemp", &TargetTemp);
+  nvs_get_opt_u32(nvsh, "upperfanpwm", &UpperPWM);
+  nvs_get_opt_u32(nvsh, "lowerfanpwm", &LowerPWM);
+  // FIXME check any defaults we read and ensure they're sane
   // FIXME need we check for error here?
   nvs_close(nvsh);
   return 0;
@@ -112,6 +131,7 @@ int read_pstore(void){
 
 void setup(void){
   Serial.begin(115200);
+  printf("dankdryer v" VERSION "\n");
   if(!init_pstore()){
     if(!read_pstore()){
       UsePersistentStore = true;
@@ -121,6 +141,7 @@ void setup(void){
   if(setup_esp32temp()){
     // FIXME LED feedback
   }
+  printf("initialization complete v" VERSION "\n");
 }
 
 void loop(void){
