@@ -8,6 +8,16 @@ Intended for use with an ESP32-S3-WROOM-1.
 
 More info at [dankwiki](https://nick-black.com/dankwiki/index.php/Dankdryer).
 
+# Dependencies
+
+## Firmware
+* `arduino-cli` with `esp32:esp32:esp32s3` board support
+* HX711 0.5.0+
+
+## 3D models
+* OpenSCAD 2021.01+
+* Jörg Janssen's `gears.scad` 2.2+
+
 # Printing and BOM
 
 There are eight pieces to print:

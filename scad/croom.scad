@@ -139,6 +139,22 @@ module shieldscrews(){
     }
 }
 
+// 60mm wide total
+// screw holes are 6mm in from sides, so they start at
+// 6mm (through 10mm) and 50mm (through 54mm)
+module acadapterscrews(l){
+    translate([165.1 / 2 - 2, -22, 0]){
+        cylinder(l, 2, 2);
+    }
+    mirror([0, 1, 0]){
+        mirror([1, 0, 0]){
+            translate([165.1 / 2 - 2, -22, 0]){
+                cylinder(l, 2, 2);
+            }
+        }
+    }
+}
+
 // mounts for the hotbox
 module corners(){
     // cut top corners out of removal, leaving supports for top
@@ -262,14 +278,6 @@ module motor(){
 }
 
 controlroom();
-/*multicolor("silver"){
-    translate([0, 60, flr + 30 / 2]){
-        acadapter();
-    }
-    translate([0, 0, flr + 13.5 / 2]){
-        loadcell();                
-    }
-}*/
 
 module acadapter(){
     difference(){
@@ -280,37 +288,28 @@ module acadapter(){
     }
 }
 
-// 60mm wide total
-// screw holes are 6mm in from sides, so they start at
-// 6mm (through 10mm) and 50mm (through 54mm)
-module acadapterscrews(l){
-    translate([165.1 / 2 - 2, -22, 0]){
-        cylinder(l, 2, 2);
-    }
-    mirror([0, 1, 0]){
-        mirror([1, 0, 0]){
-            translate([165.1 / 2 - 2, -22, 0]){
-                cylinder(l, 2, 2);
-            }
-        }
-    }
-}
-
-/*multicolor("pink"){
+multicolor("pink"){
     translate([79, -77, -20]){
         rotate([0, 270, motortheta]){
             motor();
         }
     }
-}*/
+}
 
 module loadcell(){
     // https://amazon.com/gp/product/B07BGXXHSW
-    difference(){
-        cube([76, 13.5, 13,5], true);
+    cube([76, 13.5, 13.5], true);
+}
+
+multicolor("silver"){
+    translate([0, 60, flr + 30 / 2]){
+        acadapter();
+    }
+    translate([0, 0, flr + 13.5 / 2]){
+        loadcell();
     }
 }
 
-/*translate([teeth / 2, 0, 0]){
+translate([teeth / 2, 0, flr + motorboxd]){
     gear();
-}*/
+}
