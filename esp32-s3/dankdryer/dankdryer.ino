@@ -4,7 +4,12 @@
 #include <nvs.h>
 #include <HX711.h>
 #include <nvs_flash.h>
+#include <driver/ledc.h>
+#include <hal/ledc_types.h>
 #include <driver/temperature_sensor.h>
+
+#define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
+#define RPMMAX (1u << 14u)
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
@@ -28,6 +33,9 @@
 HX711 Load;
 static bool UsePersistentStore; // set true upon successful initialization
 static temperature_sensor_handle_t temp;
+static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
+static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
+static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 // defaults, some of which can be configured.
 static uint32_t LowerPWM = 128;
@@ -40,10 +48,54 @@ void tach_isr(void* pulsecount){
   ++*pc;
 }
 
+static inline bool valid_pwm_p(int pwm){
+  return pwm >= 0 && pwm <= 255;
+}
+
+// precondition: isxdigit(c) is true
+byte get_hex(char c){
+  if(isdigit(c)){
+    return c - '0';
+  }
+  c = tolower(c);
+  return c - 'a' + 10;
+}
+
+// FIXME handle base 10 numbers as well (can we use strtoul?)
+int extract_pwm(const String& payload){
+  if(payload.length() != 2){
+    printf("pwm wasn't 2 characters\n");
+    return -1;
+  }
+  char h = payload.charAt(0);
+  char l = payload.charAt(1);
+  if(!isxdigit(h) || !isxdigit(l)){
+    printf("invalid hex character\n");
+    return -1;
+  }
+  byte hb = get_hex(h);
+  byte lb = get_hex(l);
+  // everything was valid
+  return hb * 16 + lb;
+}
+
+// set the desired PWM value
+int set_pwm(const ledc_channel_t channel, unsigned pwm){
+  if(ledc_set_duty(LEDCMODE, channel, pwm) != ESP_OK){
+    fprintf(stderr, "error setting pwm!\n");
+    return -1;
+  }else if(ledc_update_duty(LEDCMODE, channel) != ESP_OK){
+    fprintf(stderr, "error committing pwm!\n");
+    return -1;
+  }
+  printf("set pwm to %u on channel %d\n", pwm, channel);
+  return 0;
+}
+
 float getAmbient(void){
   float t;
   if(temperature_sensor_get_celsius(temp, &t)){
-    printf("failed acquiring temperature\n");
+    fprintf(stderr, "failed acquiring temperature\n");
     return NAN;
   }
   return t;
@@ -53,11 +105,11 @@ float getAmbient(void){
 int setup_esp32temp(void){
   temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
   if(temperature_sensor_install(&conf, &temp) != ESP_OK){
-    printf("failed to set up thermostat\n");
+    fprintf(stderr, "failed to set up thermostat\n");
     return -1;
   }
   if(temperature_sensor_enable(temp) != ESP_OK){
-    printf("failed to enable thermostat\n");
+    fprintf(stderr, "failed to enable thermostat\n");
     return -1;
   }
   return 0;
@@ -77,7 +129,7 @@ int init_pstore(void){
   }
   if(err){
     // FIXME LED feedback
-    printf("failure (%d) initializing nvs!\n", err);
+    fprintf(stderr, "failure (%d) initializing nvs!\n", err);
     return -1;
   }
   return 0;
@@ -91,7 +143,7 @@ int nvs_get_opt_u32(nvs_handle_t nh, const char* recname, uint32_t* val){
     printf("no record '%s' in nvs\n", recname);
     return 0;
   }else if(err){
-    printf("failure (%d) reading %s\n", err, recname);
+    fprintf(stderr, "failure (%d) reading %s\n", err, recname);
     return -1;
   }
   printf("read configured default %lu from nvs:%s\n", *val, recname);
@@ -105,14 +157,14 @@ int read_pstore(void){
   nvs_handle_t nvsh;
   esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
   if(err){
-    printf("failure (%d) opening nvs:" NVS_HANDLE_NAME "\n", err);
+    fprintf(stderr, "failure (%d) opening nvs:" NVS_HANDLE_NAME "\n", err);
     return -1;
   }
   uint32_t bootcount;
 #define BOOTCOUNT_RECNAME "bootcount"
   err = nvs_get_u32(nvsh, BOOTCOUNT_RECNAME, &bootcount);
   if(err && err != ESP_ERR_NVS_NOT_FOUND){
-    printf("failure (%d) reading " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME "\n", err);
+    fprintf(stderr, "failure (%d) reading " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME "\n", err);
     nvs_close(nvsh);
     return -1;
   }
@@ -120,14 +172,14 @@ int read_pstore(void){
   printf("this is boot #%lu\n", bootcount);
   err = nvs_set_u32(nvsh, BOOTCOUNT_RECNAME, bootcount);
   if(err){
-    printf("failure (%d) writing " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME "\n", err);
+    fprintf(stderr, "failure (%d) writing " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME "\n", err);
     nvs_close(nvsh);
     return -1;
   }
 #undef BOOTCOUNT_RECNAME
   err = nvs_commit(nvsh);
   if(err){
-    printf("failure (%d) committing nvs:" NVS_HANDLE_NAME "\n", err);
+    fprintf(stderr, "failure (%d) committing nvs:" NVS_HANDLE_NAME "\n", err);
     nvs_close(nvsh);
     return -1;
   }
@@ -138,6 +190,39 @@ int read_pstore(void){
   // FIXME need we check for error here?
   nvs_close(nvsh);
   return 0;
+}
+
+int initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_t timer){
+  pinMode(pin, OUTPUT);
+  ledc_channel_config_t conf;
+  memset(&conf, 0, sizeof(conf));
+  conf.gpio_num = pin;
+  conf.speed_mode = LEDCMODE;
+  conf.intr_type = LEDC_INTR_DISABLE;
+  conf.timer_sel = timer;
+  conf.duty = FANPWM_BIT_NUM;
+  conf.channel = channel;
+  printf("setting up pin %d for %dHz PWM\n", pin, freq);
+  if(ledc_channel_config(&conf) != ESP_OK){
+    fprintf(stderr, "error (channel config)!\n");
+    return -1;
+  }
+  ledc_timer_config_t ledc_timer;
+  memset(&ledc_timer, 0, sizeof(ledc_timer));
+  ledc_timer.speed_mode = LEDCMODE;
+  ledc_timer.duty_resolution = FANPWM_BIT_NUM;
+  ledc_timer.timer_num = timer;
+  ledc_timer.freq_hz = freq;
+  if(ledc_timer_config(&ledc_timer) != ESP_OK){
+    fprintf(stderr, "error (timer config)!\n");
+    return -1;
+  }
+  printf("success!\n");
+  return 0;
+}
+
+int initialize_25k_pwm(ledc_channel_t channel, gpio_num_t pin, ledc_timer_t timer){
+  return initialize_pwm(channel, pin, 25000, timer);
 }
 
 int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
@@ -157,7 +242,11 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
     fprintf(stderr, "failure (%d) installing tach isr to %d\n", err, uppertpin);
     ret = -1; // don't exit with error
   }
-  // FIXME set pins to INPUT
+  // FIXME set tach pins to INPUT
+  initialize_25k_pwm(LOWER_FANCHAN, lowerppin, LEDC_TIMER_1);
+  initialize_25k_pwm(UPPER_FANCHAN, upperppin, LEDC_TIMER_2);
+  set_pwm(LOWER_FANCHAN, LowerPWM);
+  set_pwm(UPPER_FANCHAN, UpperPWM);
   return ret;
 }
 
