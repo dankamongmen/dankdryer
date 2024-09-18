@@ -6,8 +6,10 @@
 #include <nvs_flash.h>
 #include <driver/temperature_sensor.h>
 
+// GPIO numbers
 #define LOWER_PWMPIN 4
 #define UPPER_PWMPIN 5
+#define THERM_DATAPIN 8
 #define MOTOR_PWMPIN 35
 #define UPPER_TACHPIN 36
 #define LOWER_TACHPIN 37
