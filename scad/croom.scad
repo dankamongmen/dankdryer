@@ -237,7 +237,7 @@ module perfmount(){
 
 // channel for ac wires running from adapter to heater
 module wirechannel(){
-    translate([-totalxy / 2, -20, flr + 5 / 2]){
+    translate([-botalt - 5, -20, flr + 5 / 2]){
         rotate([90, 0, 0]){
             difference(){
                 cylinder(totalxy / 2, 5, 5, true);
