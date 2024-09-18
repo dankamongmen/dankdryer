@@ -227,6 +227,18 @@ module perfmount(){
     cylinder(mh + 6, 2, 2, true);
 }
 
+// channel for ac wires running from adapter to heater
+module wirechannel(){
+    translate([-totalxy / 2, -20, flr + 5 / 2]){
+        rotate([90, 0, 0]){
+            difference(){
+                cylinder(totalxy / 2, 5, 5, true);
+                cylinder(totalxy / 2, 4, 4, true);
+            }
+        }
+    }
+}
+
 // inverted frustrum
 module controlroom(){
     difference(){
@@ -250,6 +262,7 @@ module controlroom(){
         shieldscrews();
         achole();
     }
+    wirechannel();
     lmsmounts();
     // load cell mounting base
     translate([-76 / 2 + 21.05 / 2, 0, flr + mh / 2]){
