@@ -41,7 +41,8 @@ There are eleven pieces to print:
  * the upper spacer
 
 Use heat-resistant filaments. My lower chamber is polycarbonate, and my upper
-chamber is Bambu PAHT-CF.
+chamber is Bambu PAHT-CF. You obviously don't want to use a target temperature
+within 10% of your material's heat deformation temperature.
 
 Additionally, you'll need a ceramic heating element, a buck converter, an AC
 adapter, an ESP32-S3 devkit, a [Geartisan 12V motor](https://www.amazon.com/dp/B071XCX778),
@@ -82,7 +83,7 @@ and hookup wire.
 * Push the gear down atop the lower spacer.
 * Push the upper spacer down atop the gear.
   * There will be space left on the shaft.
-* Place the bearing into the recess at the top of the lower coupling.
+* **Gently** place the bearing into the recess at the top of the lower coupling.
 * Secure the air shield with three screws.
 
 ## Assembling the top chamber
@@ -92,6 +93,7 @@ and hookup wire.
 * Terminate both wires of the heating element with male quick disconnect terminals.
 * Connect the heater wires and the prepared wires, using the circular hole in the top chamber's floor.
 * Secure the top chamber with four screws.
+* **Gently** place the platform onto the top of the shaft.
 
 # Renderings
 
