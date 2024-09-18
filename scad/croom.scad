@@ -168,9 +168,10 @@ module cornercuts(){
     }
 }
 
+// 32.14 on the diagonal
 module lmsmounts(){
     // 12->5V mounts
-    translate([38.35, -totalxy / 2 + 20, flr + mh / 2]){
+    translate([40, -totalxy / 2 + 20, flr + mh / 2]){
        lmsmount();
     }
     translate([8, -totalxy / 2 + 20 + 16.4, flr + mh / 2]){

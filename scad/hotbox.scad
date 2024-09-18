@@ -138,11 +138,11 @@ multicolor("purple"){
     hotbox();
 }
 
-multicolor("green"){
+/*multicolor("green"){
     spool();
 }
 
 include <croom.scad>
 
-/*translate([-97.5, -97.5])
+translate([-97.5, -97.5])
 cylinder(300, 5/2, 5/2, true);*/
