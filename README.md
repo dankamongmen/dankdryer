@@ -36,3 +36,9 @@ into the cool chamber using screws.
 
 The center column is mounted onto the load cell. The
 shield is then mounted into the cool chamber, followed by the hot chamber.
+
+# Renderings
+
+View from the top with spool present, top not present.
+
+![Top view, cutaway](topview-cutaway.png)

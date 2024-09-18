@@ -21,7 +21,7 @@ spoolholed = 55;
 // we'll want some room around the spool, but the larger our
 // chamber, the more heat we lose.
 wallz = 3; // bottom thickness; don't want much
-gapxy = 2; // gap between spool and walls; spool/walls might expand!
+gapxy = 1; // gap between spool and walls; spool/walls might expand!
 wallxy = 5;
 topz = 5; // height of top piece
 gapz = 2; // spool distance from bottom of top
