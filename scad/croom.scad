@@ -66,9 +66,10 @@ module lmsmount(){
 
 adj = 0.95 * croomz;
 hyp = sqrt(14 * 14 + adj * adj);
+theta = asin(-14 / hyp);
 
 module rot(deg){
-    rotate([asin(-14/hyp) + deg, 0, 0]){
+    rotate([theta + deg, 0, 0]){
         children();
     }
 }
@@ -194,12 +195,13 @@ module perfmounts(){
     }
 }
 
+// hole for AC wire
 module achole(){
-    // hole for AC wire
-    rotate([0, -asin(-14/hyp), 0]){
-        translate([-(totalxy - croomwall) / 2, 60, flr + mh * 2]){
+    rotate([0, -theta, 0]){ // FIXME
+        translate([-totalxy / 2 + 10, 60, flr + mh * 2]){
             rotate([0, 90, 0]){
-                cylinder(croomwall, 7, 7, true);
+                // FIXME should only need be croomwall thick
+                cylinder(20, 7, 7, true);
             }
         }
     }
@@ -209,36 +211,20 @@ module achole(){
 module controlroom(){
     difference(){
         croomcore();
-        union(){
-            difference(){
-                scale(0.95){
-                    croomcore();
-                }
-                corners();
+        difference(){
+            scale(0.95){
+                croomcore();
             }
-            // holes for AC adapter mounting screws
-            translate([0, 60, -croomz + 2]){
-                acadapterscrews(6);
-            }
-            achole();
-            // hole for AC wire
-            rotate([0, -asin(-14/hyp), 0]){
-                translate([-totalxy / 2, 60, flr + mh * 2]){
-                    rotate([0, 90, 0]){
-                        cylinder(croomwall, 7, 7, true);
-                    }
-                }
-            }
-            rotate([asin(-14/hyp), 0, 0]){
-                translate([0, -totalxy / 2 + 12, flr + 30]){
-                    fanhole(20);
-                }
-            }
-            cornercuts();
-            shieldscrews();
+            corners();
         }
+        // holes for AC adapter mounting screws
+        translate([0, 60, -croomz + 2]){
+            acadapterscrews(6);
+        }
+        cornercuts();
+        shieldscrews();
+        achole();
     }
-    achole();
     lmsmounts();
     // load cell mounting base
     translate([-76 / 2 + 21.05 / 2, 0, flr + mh / 2]){

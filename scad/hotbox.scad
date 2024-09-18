@@ -6,11 +6,6 @@ include <core.scad>
 include <BOSL2/std.scad>
 include <BOSL2/screws.scad>
 
-// we need to hold a spool up to 205mm in diameter and 75mm wide
-spoold = 205;
-spoolh = 75;
-spoolholed = 55;
-
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5
 ceramheat230w = 77;
@@ -49,7 +44,7 @@ module floorcuts(){
     }
 }
 
-module corner(){
+module hbcorner(){
     side = 40;
     t = totalxy / 2;
     difference(){
@@ -64,18 +59,18 @@ module corner(){
     }
 }
 
-module corners(){
+module hbcorners(){
     // four corners for mating to croom
-    corner();
+    hbcorner();
     mirror([0, 1, 0]){
-        corner();
+        hbcorner();
     }
     mirror([1, 0, 0]){
-        corner();
+        hbcorner();
     }
     mirror([0, 1, 0]){
         mirror([1, 0, 0]){
-            corner();
+            hbcorner();
         }
     }
 }
@@ -94,7 +89,7 @@ module hotbox(){
                     ]);
                 }
             }
-            corners();
+            hbcorners();
         }
         // now remove all other interacting pieces
         // 80x80mm worth of air passage cut into the floor
@@ -139,10 +134,16 @@ module spool(){
     }
 }
 
-/* multicolor("green"){
-    spool();
-} */
-
 multicolor("purple"){
     hotbox();
 }
+
+/*multicolor("green"){
+    spool();
+}
+
+include <croom.scad>
+
+translate([-97.5, -97.5])
+cylinder(300, 5/2, 5/2, true);
+*/
