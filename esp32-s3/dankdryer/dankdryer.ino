@@ -6,18 +6,22 @@
 #include <nvs_flash.h>
 #include <driver/temperature_sensor.h>
 
-// GPIO numbers
-#define LOWER_PWMPIN 4
-#define UPPER_PWMPIN 5
-#define THERM_DATAPIN 8
-#define MOTOR_PWMPIN 35
-#define UPPER_TACHPIN 36
-#define LOWER_TACHPIN 37
+// GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
+// 0 and 3 are strapping pins
+#define LOWER_PWMPIN GPIO_NUM_4
+#define UPPER_PWMPIN GPIO_NUM_5
+#define THERM_DATAPIN GPIO_NUM_8
+// 19--20 are used for JTAG (not strictly needed)
+// 26--32 are used for pstore qspi flash
+#define MOTOR_PWMPIN GPIO_NUM_35
+#define UPPER_TACHPIN GPIO_NUM_36
+#define LOWER_TACHPIN GPIO_NUM_37
 // 38 is used for RGB LED
-#define LOAD_CLOCKPIN 41
-#define LOAD_DATAPIN 42
-#define MOTOR_1PIN 47
-#define MOTOR_2PIN 48
+#define LOAD_CLOCKPIN GPIO_NUM_41
+#define LOAD_DATAPIN GPIO_NUM_42
+// 45 and 46 are strapping pins
+#define MOTOR_1PIN GPIO_NUM_47
+#define MOTOR_2PIN GPIO_NUM_48
 
 #define NVS_HANDLE_NAME "pstore"
 
@@ -29,6 +33,12 @@ static temperature_sensor_handle_t temp;
 static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 128;
 static uint32_t TargetTemp = 80;
+static uint32_t LowerPulses, UpperPulses; // tach signals recorded
+
+void tach_isr(void* pulsecount){
+  auto pc = static_cast<uint32_t*>(pulsecount);
+  ++*pc;
+}
 
 float getAmbient(void){
   float t;
@@ -130,6 +140,27 @@ int read_pstore(void){
   return 0;
 }
 
+int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
+               gpio_num_t lowertpin, gpio_num_t uppertpin){
+  int ret = 0;
+  esp_err_t err;
+  // FIXME set up 25K PWM / OUTPUT
+  if( (err = gpio_install_isr_service(0))){ // FIXME check flags
+    fprintf(stderr, "failure (%d) installing ISR service\n", err);
+    return -1;
+  }
+  if( (err = gpio_isr_handler_add(lowertpin, tach_isr, &LowerPulses)) ){
+    fprintf(stderr, "failure (%d) installing tach isr to %d\n", err, lowertpin);
+    ret = -1; // don't exit with error
+  }
+  if( (err = gpio_isr_handler_add(uppertpin, tach_isr, &UpperPulses)) ){
+    fprintf(stderr, "failure (%d) installing tach isr to %d\n", err, uppertpin);
+    ret = -1; // don't exit with error
+  }
+  // FIXME set pins to INPUT
+  return ret;
+}
+
 void setup(void){
   Serial.begin(115200);
   printf("dankdryer v" VERSION "\n");
@@ -142,6 +173,10 @@ void setup(void){
   if(setup_esp32temp()){
     // FIXME LED feedback
   }
+  if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
+    // FIXME LED feedback
+  }
+  //gpio_dump_all_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
   printf("initialization complete v" VERSION "\n");
 }
 
