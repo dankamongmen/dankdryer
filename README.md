@@ -46,14 +46,16 @@ chamber is Bambu PAHT-CF.
 Additionally, you'll need a ceramic heating element, a buck converter, an AC
 adapter, an ESP32-S3 devkit, a [Geartisan 12V motor](https://www.amazon.com/dp/B071XCX778),
 a TB6612FNG motor controller, a 5kg load cell and its HX711 controller, two
-NF-A8 80mm fans, two Molex 4-pin fan connectors, a 608 bearing, and hookup wire.
+NF-A8 80mm fans, two Molex 4-pin fan connectors, a 608 bearing, a ~3A inline fuse,
+and hookup wire.
 
-## Preparing an AC cord
+## Preparing the AC cords
 
 * Cut the female end off of a 16 AWG grounded NEMA 5-15 cable.
 * Strip ~5cm down to the three insulated wires.
 * Strip each wire down to ~1cm.
-* Terminate each wire with a ring or spade terminal + heatwrap.
+* Insert the live wire into the inline fuse and secure with heat shrink.
+* Terminate each wire (fused live, neutral, and ground) with a ring or spade terminal + heatwrap.
 * Prepare two wires of length ~20cm and AWG between 22 and 18.
   * Terminate one end of each wire with a ring or spade terminal + heatwrap.
   * Terminate the other end of each wire with a female quick disconnect terminal + heatwrap.
