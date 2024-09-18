@@ -3,8 +3,6 @@
 // the top is lifted up and out to insert a spool
 // the spool sits on corner walls
 include <core.scad>
-include <BOSL2/std.scad>
-include <BOSL2/screws.scad>
 
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5
