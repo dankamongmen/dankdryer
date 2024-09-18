@@ -17,6 +17,8 @@
 #define MOTOR_1PIN 47
 #define MOTOR_2PIN 48
 
+#define NVS_HANDLE_NAME "pstore"
+
 HX711 Load;
 static bool UsePersistentStore; // set true upon successful initialization
 static temperature_sensor_handle_t temp;
@@ -74,6 +76,37 @@ int init_pstore(void){
 // are present (we do not write defaults to pstore, so we can differentiate
 // between defaults and a configured value).
 int read_pstore(void){
+  nvs_handle_t nvsh;
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  if(err){
+    printf("failure (%d) opening nvs:" NVS_HANDLE_NAME "\n", err);
+    return -1;
+  }
+  uint32_t bootcount;
+#define BOOTCOUNT_RECNAME "bootcount"
+  err = nvs_get_u32(nvsh, BOOTCOUNT_RECNAME, &bootcount);
+  if(err && err != ESP_ERR_NVS_NOT_FOUND){
+    printf("failure (%d) reading " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME "\n", err);
+    nvs_close(nvsh);
+    return -1;
+  }
+  ++bootcount;
+  printf("this is boot #%lu\n", bootcount);
+  err = nvs_set_u32(nvsh, BOOTCOUNT_RECNAME, bootcount);
+  if(err){
+    printf("failure (%d) writing " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME "\n", err);
+    nvs_close(nvsh);
+    return -1;
+  }
+#undef BOOTCOUNT_RECNAME
+  err = nvs_commit(nvsh);
+  if(err){
+    printf("failure (%d) committing nvs:" NVS_HANDLE_NAME "\n", err);
+    nvs_close(nvsh);
+    return -1;
+  }
+  // FIXME need we check for error here?
+  nvs_close(nvsh);
   return 0;
 }
 
