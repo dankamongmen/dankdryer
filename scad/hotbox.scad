@@ -106,8 +106,8 @@ module hotbox(){
             cylinder(wallz, 4, 4);
         }
         // exhaust fan hole
-        translate([0, -(totalxy - wallxy) / 2, 80 / 2 + 5]){
-            fanhole(wallxy);
+        translate([0, -totalxy / 2 + wallxy, 80 / 2 + 5]){
+            fanhole(wallxy * 2);
         }
         // central column
         cylinder(10, 30 / 2, 30 / 2, true);
