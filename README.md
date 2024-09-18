@@ -108,3 +108,8 @@ View from the top of the lower chamber by itself, with nothing mounted.
 <p align="center">
 <img alt="Top view, lower chamber" src="topview-croom.png"/>
 </p>
+
+# Questions
+
+* How does air flow? Let's get some visible air and test it.
+* The ESP32-S3 has a MCPWM, a motor controller. Can we eliminate the TB6612FNG?
