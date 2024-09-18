@@ -122,30 +122,6 @@ module motormount(){
     }
 }
 
-// one side's fanmounts
-module fanmounts(){
-    w = 7;
-    translate([-40.5 + 11.5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 11 / 2 + 9.5]){
-        rot(0){
-            fanmount(w);
-        }
-        translate([0, 5, 70]){
-            rot(0){
-                mirror([0, 0, 1]){
-                    fanmount(w);
-                }
-            }
-            translate([0, -3.5, 1]){
-                mirror([1, 0, 0]){
-                    rot(270){
-                        fansupportleft(w);
-                    }
-                }
-            }
-        }
-    }
-}
-
 module shieldscrews(){
     // screw holes for central shield
     translate([0, 0, flr - mh / 2]){
@@ -253,10 +229,9 @@ module controlroom(){
                     }
                 }
             }
-            // fan hole
-            translate([0, -totalxy / 2, flr + 50]){
-                rotate([asin(-14/hyp), 0, 0]){
-                    cube([81, 25, 81], true);
+            rotate([asin(-14/hyp), 0, 0]){
+                translate([0, -totalxy / 2 + 12, flr + 30]){
+                    fanhole(20);
                 }
             }
             cornercuts();
@@ -265,10 +240,6 @@ module controlroom(){
     }
     achole();
     lmsmounts();
-    fanmounts();
-    mirror([1, 0, 0]){
-        fanmounts();
-    }
     // load cell mounting base
     translate([-76 / 2 + 21.05 / 2, 0, flr + mh / 2]){
         cube([21.05, 13.5, mh], true);
