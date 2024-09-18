@@ -81,7 +81,7 @@ NF-A8 80mm fans, two Molex 4-pin fan connectors, a 608 bearing, and hookup wire.
 * Push the upper spacer down atop the gear.
   * There will be space left on the shaft.
 * Place the bearing into the recess at the top of the lower coupling.
-* Secure the air shield with four screws.
+* Secure the air shield with three screws.
 
 ## Assembling the top chamber
 
