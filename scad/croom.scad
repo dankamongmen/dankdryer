@@ -3,15 +3,15 @@
 // holds the MCU, motor, AC adapter, etc.
 include <core.scad>
 
-// thickness of croom walls
-croomwall = (0.05 * totalxy) / 2;
-
-diffe = totalxy * sqrt(2) / 2;
-echo("diffe: " , diffe, " 2*diffe: ", 2 * diffe);
+// thickness of croom xy walls (bottom is wallz)
+croomwall = 2;
 
 // the outer radii on our top and bottom
 toprad = (totalxy + 14) * sqrt(2) / 2;
 botrad = totalxy * sqrt(2) / 2;
+// the inner radii on its top and bottom
+botinrad = botrad - 2 * sqrt(croomwall);
+topinrad = toprad - 2 * sqrt(croomwall);
 // distances from center to mid-outer wall
 topalt = toprad / sqrt(2);
 botalt = botrad / sqrt(2);
@@ -36,7 +36,15 @@ module croomcore(){
     }
 }
 
-flr = -0.95 * croomz; // floor z offset
+flr = -croomz + wallz; // floor z offset
+module croominnercore(){
+    coreh = croomz - wallz;
+    translate([0, 0, flr]){
+        rotate([0, 0, 45]){
+            cylinder(coreh, topinrad, botinrad, $fn = 4);
+        }
+    }
+}
 
 module corner(){
     translate([-totalxy / 2, -totalxy / 2, -10]){
@@ -244,9 +252,7 @@ module controlroom(){
     difference(){
         croomcore();
         difference(){
-            scale(0.95){
-                croomcore();
-            }
+            croominnercore();
             corners();
         }
         // holes for AC adapter mounting screws

@@ -33,7 +33,7 @@ totalz = spoolh + wallz + topz + gapz + elevation;
 totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 
 ctopz = wallz;
-croomz = wallz + 8 + ctopz + 90; // 80mm fan; ought just need sin(theta)80
+croomz = wallz + ctopz + 90; // 80mm fan; ought just need sin(theta)80
 
 mh = 8; // mount height
 
