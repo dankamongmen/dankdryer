@@ -11,32 +11,44 @@ spoold = 205;
 spoolh = 75;
 spoolholed = 55;
 
-// for each component, measure its total geometry, and the geometry
-// of all standoff holes. by convention, use w/l for width and
-// length of the part, and holegapw/holegapl for spacing of the
-// holes (of radius r). r ought be (outergap - innergap) / 4.
-module stub(stype, height, bh){
-	translate([0, 0, bh / 2])
-		screw(stype, length=height, head="flat", anchor=TOP, orient=DOWN);
+// ceramic heater 230C  77x62
+// holes: 28.3/48.6 3.5
+ceramheat230w = 77;
+module ceramheat230(height){
+	r = 3.5;
+    holegapw = 32;
+	holegapl = 52;
+    translate([-holegapw / 2, -holegapl / 2, 0]){
+        cylinder(height, r / 2, r / 2, true);
+        translate([holegapw, 0, 0]){
+            cylinder(height, r / 2, r / 2, true);
+            translate([0, holegapl, 0]){
+                cylinder(height, r / 2, r / 2, true);
+            }
+        }
+        translate([0, holegapl, 0]){
+            cylinder(height, r / 2, r / 2, true);
+        }
+    }
 }
 
-// for the common pattern of four stubs forming a quadrilateral
-module fourstubs(holegapw, holegapl, r, height, bh){
-	translate([-holegapw / 2, -holegapl / 2, 0]){
-		stub(r, height, bh);
-		translate([holegapw, 0, 0]){
-			stub(r, height, bh);
-			translate([0, holegapl, 0]){
-				stub(r, height, bh);
-			}
-		}
-		translate([0, holegapl, 0]){
-			stub(r, height, bh);
-		}
-	}
+// 40x80mm worth of air passage through one quadrant of floor
+module floorcuts(){
+    d = wallz;
+    for(i=[0:1:7]){
+        translate([-80, 15 + i * 7, d / 2]){
+            rotate([0, 0, 45]){
+                cube([40, 4, d], true);
+            }
+        }
+    }
+    for(i=[0:1:11]){
+        translate([-42, 28 + i * 6, d / 2]){
+            cube([40, 4, d], true);
+        }
+    }
 }
 
-// corners, for mating to the croom
 module corner(){
     side = 40;
     t = totalxy / 2;
@@ -52,46 +64,18 @@ module corner(){
     }
 }
 
-// ceramic heater 230C
-//  77x62
-// holes: 28.3/48.6 3.5
-ceramheat230w = 77;
-ceramheat230l = 62;
-module ceramheat230(height, bh){
-	holegapw = 32;
-	holegapl = 52;
-	fourstubs(holegapw, holegapl, "M3", height, bh);
-}
-
-// 40x80mm worth of air passage through one quadrant of floor
-module floorcuts(){
-    d = wallz;
-    for(i=[0:1:10]){
-        translate([-80, 15 + i * 7, d / 2]){
-            rotate([0, 0, 45]){
-                cube([40, 4, d], true);
-            }
-        }
-        translate([-42, 40 + i * 6, d / 2]){
-            cube([40, 4, d], true);
-        }
+module corners(){
+    // four corners for mating to croom
+    corner();
+    mirror([0, 1, 0]){
+        corner();
     }
-}
-
-module fanmounts(){
-    translate([-40 + 11.5 / 2, -(0.95 * totalxy + 16) / 2 + wallxy * 2, 11.5]){
-        fanmount();
-        translate([0, 0, 69]){
-            mirror([0, 0, 1]){
-                fanmount();
-            }
-            translate([0, -1, 0]){
-                mirror([1, 0, 0]){
-                    rotate([270, 0, 0]){
-                        fansupportleft();
-                    }
-                }
-            }
+    mirror([1, 0, 0]){
+        corner();
+    }
+    mirror([0, 1, 0]){
+        mirror([1, 0, 0]){
+            corner();
         }
     }
 }
@@ -110,64 +94,40 @@ module hotbox(){
                     ]);
                 }
             }
-            // four corners for mating to croom
-            corner();
-            mirror([0, 1, 0]){
-                corner();
-            }
-            mirror([1, 0, 0]){
-                corner();
-            }
-            mirror([0, 1, 0]){
-                mirror([1, 0, 0]){
-                    corner();
-                }
-            }
+            corners();
         }
         // now remove all other interacting pieces
-        union(){
-            // 80x80mm worth of air passage cut into the floor
+        // 80x80mm worth of air passage cut into the floor
+        floorcuts();
+        mirror([1, 0, 0]){
             floorcuts();
-            mirror([1, 0, 0]){
-                floorcuts();
-            }
-            translate([0, 0, totalz - wallz]){
-                mirror([0, 0, 1]){
-                    top();
-                }
-            }
-            // hole for heating element wires
-            translate([ceramheat230w / 2 + 10, totalxy / 4 + 10, 0]){
-                cylinder(wallz, 4, 4);
-            }
-            // exhaust fan hole
-            difference(){
-                translate([0, -totalxy / 2, 80 / 2 + 5]){
-                    cube([80, 25, 80], true);
-                }
-                fanmounts();
-                mirror([1, 0, 0]){
-                    fanmounts();
-                }
-            }
-            // central column
-            cylinder(10, 30 / 2, 30 / 2, true);
         }
-    }
-    // pegs for the ceramic heating element. we want it entirely
-    // underneath the spool, but further towards the perimeter
-    // than the center
-    translate([0, totalxy / 4 + 10, wallz / 2]){
-        ceramheat230(10, wallz);
+        // recess for the top
+        translate([0, 0, totalz - wallz]){
+            mirror([0, 0, 1]){
+                top();
+            }
+        }
+        // hole for heating element wires
+        translate([ceramheat230w / 2 + 10, totalxy / 4 + 10, 0]){
+            cylinder(wallz, 4, 4);
+        }
+        // exhaust fan hole
+        translate([0, -(totalxy - wallxy) / 2, 80 / 2 + 5]){
+            fanhole(wallxy);
+        }
+        // central column
+        cylinder(10, 30 / 2, 30 / 2, true);
+        // screw holes for the ceramic heating element. we want it entirely
+        // underneath the spool, but further towards the perimeter
+        // than the center.
+        translate([0, totalxy / 4 + 10, wallz / 2]){
+            ceramheat230(wallz);
+        }
     }
 }
 
-// walls to support the spool
-
-ga37rgh = 53.3;
-ga37rgr = 37 / 2;
-//ga37rgshaftr
-
+// testing
 module spool(){
     translate([0, 0, wallz + elevation]){
         linear_extrude(spoolh){
@@ -179,10 +139,9 @@ module spool(){
     }
 }
 
-/*
-multicolor("green"){
+/* multicolor("green"){
     spool();
-}*/
+} */
 
 multicolor("purple"){
     hotbox();

@@ -6,12 +6,32 @@ include <core.scad>
 // thickness of croom walls
 croomwall = (0.05 * totalxy) / 2;
 
+diffe = totalxy * sqrt(2) / 2;
+echo("diffe: " , diffe, " 2*diffe: ", 2 * diffe);
+echo("outerxy: ", outerxy, " outerxy/2: ", outerxy / 2);
+echo("croomwall: ", croomwall, " wdiff: ", (outerxy / 2 - diffe) / 2);
+
+// the outer radii on our top and bottom
+toprad = outerxy / 2;
+botrad = totalxy * sqrt(2) / 2;
+// distances from center to mid-outer wall
+topalt = toprad / sqrt(2);
+botalt = botrad / sqrt(2);
+topinner = (0.95 * topalt * 2) / 2;
+botinner = (0.95 * botalt * 2) / 2;
+echo("topwall: ", topalt - topinner);
+echo("botwall: ", botalt - botinner);
+
+// motor is 37x33mm diameter gearbox and 6x14mm shaft
+motorboxh = 33;
+motorboxd = 37;
+motorshafth = 14;
+motorshaftd = 6;
+
 module croomcore(){
     rotate([0, 0, 45]){
         mirror([0, 0, 1]){
-            cylinder(croomz,
-                     totalxy * sqrt(2) / 2,
-                     outerxy / 2, $fn = 4);
+            cylinder(croomz, botrad, toprad, $fn = 4);
         }
     }
 }
@@ -198,6 +218,17 @@ module perfmounts(){
     }
 }
 
+module achole(){
+    // hole for AC wire
+    rotate([0, -asin(-14/hyp), 0]){
+        translate([-(totalxy - croomwall) / 2, 60, flr + mh * 2]){
+            rotate([0, 90, 0]){
+                cylinder(croomwall, 7, 7, true);
+            }
+        }
+    }
+}
+
 // inverted frustrum
 module controlroom(){
     difference(){
@@ -213,13 +244,14 @@ module controlroom(){
             translate([0, 60, -croomz + 2]){
                 acadapterscrews(6);
             }
+            achole();
             // hole for AC wire
-            translate([-totalxy / 2 - 10, 60, flr + mh * 2]){
-                //rotate([0, asin(-14/hyp), 0]){
+            rotate([0, -asin(-14/hyp), 0]){
+                translate([-totalxy / 2, 60, flr + mh * 2]){
                     rotate([0, 90, 0]){
-                        cylinder(100, 7, 7);
+                        cylinder(croomwall, 7, 7, true);
                     }
-                //}
+                }
             }
             // fan hole
             translate([0, -totalxy / 2, flr + 50]){
@@ -231,6 +263,7 @@ module controlroom(){
             shieldscrews();
         }
     }
+    achole();
     lmsmounts();
     fanmounts();
     mirror([1, 0, 0]){
