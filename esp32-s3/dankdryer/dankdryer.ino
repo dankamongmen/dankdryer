@@ -34,7 +34,6 @@ float getAmbient(void){
     printf("failed acquiring temperature\n");
     return NAN;
   }
-  printf("esp32 temp: %f\n", t);
   return t;
 }
 
@@ -146,5 +145,8 @@ void setup(void){
 
 void loop(void){
   float ambient = getAmbient();
+  if(!isnan(ambient)){
+    printf("esp32 temp: %f\n", ambient);
+  }
   delay(1000);
 }
