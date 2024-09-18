@@ -8,11 +8,9 @@ croomwall = (0.05 * totalxy) / 2;
 
 diffe = totalxy * sqrt(2) / 2;
 echo("diffe: " , diffe, " 2*diffe: ", 2 * diffe);
-echo("outerxy: ", outerxy, " outerxy/2: ", outerxy / 2);
-echo("croomwall: ", croomwall, " wdiff: ", (outerxy / 2 - diffe) / 2);
 
 // the outer radii on our top and bottom
-toprad = outerxy / 2;
+toprad = (totalxy + 14) * sqrt(2) / 2;
 botrad = totalxy * sqrt(2) / 2;
 // distances from center to mid-outer wall
 topalt = toprad / sqrt(2);
@@ -207,6 +205,11 @@ module achole(){
     }
 }
 
+module perfmount(){
+    cube([mh, mh, mh], true);
+    cylinder(mh + 6, 2, 2, true);
+}
+
 // inverted frustrum
 module controlroom(){
     difference(){
@@ -220,6 +223,11 @@ module controlroom(){
         // holes for AC adapter mounting screws
         translate([0, 60, -croomz + 2]){
             acadapterscrews(6);
+        }
+        rotate([asin(-14/hyp), 0, 0]){
+            translate([0, -totalxy / 2 + 12, flr + 30]){
+                fanhole(20);
+            }
         }
         cornercuts();
         shieldscrews();
@@ -243,11 +251,6 @@ module controlroom(){
             motormount();
         }
     }
-}
-
-module perfmount(){
-    cube([mh, mh, mh], true);
-    cylinder(mh + 6, 2, 2, true);
 }
 
 module motor(){
@@ -280,12 +283,12 @@ module acadapter(){
 // screw holes are 6mm in from sides, so they start at
 // 6mm (through 10mm) and 50mm (through 54mm)
 module acadapterscrews(l){
-    translate([165.1 / 2 - 3, -22, 0]){
+    translate([165.1 / 2 - 2, -22, 0]){
         cylinder(l, 2, 2);
     }
     mirror([0, 1, 0]){
         mirror([1, 0, 0]){
-            translate([165.1 / 2 - 3, -22, 0]){
+            translate([165.1 / 2 - 2, -22, 0]){
                 cylinder(l, 2, 2);
             }
         }

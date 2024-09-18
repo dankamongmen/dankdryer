@@ -34,7 +34,6 @@ totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 
 ctopz = wallz;
 croomz = wallz + 8 + ctopz + 90; // 80mm fan; ought just need sin(theta)80
-outerxy = (totalxy + 14) * sqrt(2);
 
 mh = 8; // mount height
 
