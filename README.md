@@ -97,5 +97,10 @@ View from the top with spool present, top not present.
 
 <p align="center">
 <img alt="Top view, cutaway" src="topview-cutaway.png"/>
+</p>
+
+View from the top of the lower chamber by itself, with nothing mounted.
+
+<p align="center">
 <img alt="Top view, lower chamber" src="topview-croom.png"/>
 </p>
