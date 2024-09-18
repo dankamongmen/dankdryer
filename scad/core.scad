@@ -1,3 +1,5 @@
+include <gears.scad>
+
 $fn = 64;
 
 current_color = "ALL";
@@ -162,4 +164,10 @@ module top(){
         }
         holdholes(6);
     }
+}
+
+teeth = 40;
+wormlen = 50;
+module gear(){
+    worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=5.5, gear_bore=4, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=1, show_worm=0);
 }

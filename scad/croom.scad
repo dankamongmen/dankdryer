@@ -22,11 +22,13 @@ botinner = (0.95 * botalt * 2) / 2;
 echo("topwall: ", topalt - topinner);
 echo("botwall: ", botalt - botinner);
 
-// motor is 37x33mm diameter gearbox and 6x14mm shaft
-motorboxh = 33;
+// motor is 37x75mm diameter gearbox and 6x14mm shaft
+// (with arbitrarily large worm gear on the shaft)
+motorboxh = 75;
 motorboxd = 37;
-motorshafth = 14;
-motorshaftd = 6;
+motorshafth = wormlen; // sans worm: 14
+motorshaftd = 13; // sans worm: 6
+motortheta = -60;
 
 module croomcore(){
     rotate([0, 0, 45]){
@@ -57,7 +59,7 @@ module cornercut(){
 
 module lmsmount(){
     difference(){
-        cube([5, 5, mh], true);
+        cube([7, 7, mh], true);
         cylinder(mh, 3.25 / 2, 3.25 / 2, true);
     }
 }
@@ -74,7 +76,7 @@ module rot(deg){
 // circular mount screwed into the front of the motor through six holes
 module motorholder(){
     d = (28.75 + 3) / 2;
-    ch = 2;
+    ch = 3;
     difference(){
         cylinder(ch, 37 / 2, 37 / 2, true);
         translate([d, 0, 0]){
@@ -102,22 +104,20 @@ module motorholder(){
 // mount for motor. runs horizontal approximately a gear
 // radius away from the center.
 module motormount(){
-    translate([55.5, -46, flr + 37 / 2]){
-        cube([66, 37, 37], true);
-        translate([0, 0, 37]){
-            difference(){
-                translate([0, 0, -37 / 2]){
-                    cube([66, 37, 37], true);
-                }
-                rotate([0, 90, 0]){
-                    cylinder(66, 37 / 2, 37 / 2, true);
-                }
+    cube([66, 37, 37], true);
+    translate([0, 0, 37]){
+        difference(){
+            translate([0, 0, -37 / 2]){
+                cube([66, 37, 37], true);
+            }
+            rotate([0, 90, 0]){
+                cylinder(66, 37 / 2, 37 / 2, true);
             }
         }
-        translate([-32, 1, 37]){
-            rotate([0, 90, 0]){
-                motorholder();
-            }
+    }
+    translate([-31.5, 0, 37]){
+        rotate([0, 90, 0]){
+            motorholder();
         }
     }
 }
@@ -171,10 +171,10 @@ module cornercuts(){
 
 module lmsmounts(){
     // 12->5V mounts
-    translate([35.35, -totalxy / 2 + 20, flr + mh / 2]){
+    translate([38.35, -totalxy / 2 + 20, flr + mh / 2]){
        lmsmount();
     }
-    translate([5, -totalxy / 2 + 20 + 16.4, flr + mh / 2]){
+    translate([8, -totalxy / 2 + 20 + 16.4, flr + mh / 2]){
        lmsmount();
     }
 }
@@ -252,7 +252,11 @@ module controlroom(){
     translate([-76 / 2 + 15.625, 0, flr - 2 + 8 / 2 + 2]){
         cylinder(6 + 8, 2, 2, true);
     }
-    motormount();
+    translate([55, -36, flr + 37 / 2]){
+        rotate([0, 0, motortheta]){
+            motormount();
+        }
+    }
 }
 
 module perfmount(){
@@ -294,18 +298,19 @@ module acadapterscrews(l){
         cylinder(l, 2, 2);
     }
     mirror([0, 1, 0]){
-    mirror([1, 0, 0]){
-        translate([165.1 / 2 - 3, -22, 0]){
-            cylinder(l, 2, 2);
+        mirror([1, 0, 0]){
+            translate([165.1 / 2 - 3, -22, 0]){
+                cylinder(l, 2, 2);
+            }
         }
     }
 }
-}
 
-/*
-multicolor("pink"){
-    translate([0, 0, -motorboxh]){
-        motor();
+/*multicolor("pink"){
+    translate([79, -77, -20]){
+        rotate([0, 270, motortheta]){
+            motor();
+        }
     }
 }*/
 
@@ -316,7 +321,6 @@ module loadcell(){
     }
 }
 
-/*include <worm.scad> 
-translate([30, 0, 0]){
+/*translate([teeth / 2, 0, 0]){
     gear();
 }*/
