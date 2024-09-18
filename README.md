@@ -48,8 +48,8 @@ NF-A8 80mm fans, two Molex 4-pin fan connectors, a 608 bearing, and hookup wire.
 * Strip each wire down to ~1cm.
 * Terminate each wire with a ring or spade terminal + heatwrap.
 * Prepare two wires of length ~20cm and AWG between 22 and 18.
- * Terminate one end of each wire with a ring or spade terminal + heatwrap.
- * Terminate the other end of each wire with a female quick disconnect terminal + heatwrap.
+  * Terminate one end of each wire with a ring or spade terminal + heatwrap.
+  * Terminate the other end of each wire with a female quick disconnect terminal + heatwrap.
 
 ## Assembling the lower chamber
 
@@ -57,9 +57,9 @@ NF-A8 80mm fans, two Molex 4-pin fan connectors, a 608 bearing, and hookup wire.
 * Attach the worm gear to the rotor.
 * Secure the AC adapter with two screws.
 * Run the AC cable through the circular hole, and the two prepared wires through the wire channel along the floor.
- * Connect the AC cable's live wire and one of the other wires at the AC adapter's 'L'(ive) screw terminal.
- * Connect the AC cable's neutral wire and one of the other wires at the AC adapter's 'N'(eutral) screw termninal.
- * Connect the AC cable's ground wire to the AC adapter's ground screw terminal.
+  * Connect the AC cable's live wire and one of the other wires at the AC adapter's 'L'(ive) screw terminal.
+  * Connect the AC cable's neutral wire and one of the other wires at the AC adapter's 'N'(eutral) screw termninal.
+  * Connect the AC cable's ground wire to the AC adapter's ground screw terminal.
 * Secure the buck converter with two screws.
 * Secure the load cell with two screws.
 * Secure the perfboard with two screws.
@@ -72,7 +72,7 @@ NF-A8 80mm fans, two Molex 4-pin fan connectors, a 608 bearing, and hookup wire.
 * Push the lower spacer down atop the bearing.
 * Push the gear down atop the lower spacer.
 * Push the upper spacer down atop the gear.
- * There will be space left on the shaft.
+  * There will be space left on the shaft.
 * Place the bearing into the recess at the top of the lower coupling.
 * Secure the air shield with four screws.
 
