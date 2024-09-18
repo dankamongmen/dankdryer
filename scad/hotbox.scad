@@ -87,7 +87,7 @@ module fanmounts(){
             }
             translate([0, -1, 0]){
                 mirror([1, 0, 0]){
-                    rotate([270, 0,0]){
+                    rotate([270, 0, 0]){
                         fansupportleft();
                     }
                 }

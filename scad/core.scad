@@ -88,21 +88,21 @@ module topbottom(height){
     }
 }
 
-module fanmount(){
+module fanmount(h){
     difference(){
-        cube([11.5, 2, 11.5], true);
+        cube([11.5, h, 11.5], true);
         translate([-2, 0, -2]){
             rotate([90, 0, 0]){
-                cylinder(2, 2, 2, true);
+                cylinder(h, 2, 2, true);
             }
         }
     }
 }
 
 // support underneath the upper left fan mount, so it's not hanging
-module fansupportleft(){
+module fansupportleft(h){
     translate([0.25, 0.25, 0]){
-        linear_extrude(2){
+        linear_extrude(h){
             polygon([
                 [-6, 5.5],
                 [5.5, 5.5],

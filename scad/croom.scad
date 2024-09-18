@@ -3,6 +3,9 @@
 // holds the MCU, motor, AC adapter, etc.
 include <core.scad>
 
+// thickness of croom walls
+croomwall = (0.05 * totalxy) / 2;
+
 module croomcore(){
     rotate([0, 0, 45]){
         mirror([0, 0, 1]){
@@ -101,19 +104,22 @@ module motormount(){
 
 // one side's fanmounts
 module fanmounts(){
+    w = 7;
     translate([-40.5 + 11.5 / 2, -(0.95 * totalxy + 16) / 2 + 1, flr + 11 / 2 + 9.5]){
         rot(0){
-            fanmount();
+            fanmount(w);
         }
         translate([0, 5, 70]){
             rot(0){
                 mirror([0, 0, 1]){
-                    fanmount();
+                    fanmount(w);
                 }
             }
-            mirror([1, 0, 0]){
-                rot(270){
-                    fansupportleft();
+            translate([0, -3.5, 1]){
+                mirror([1, 0, 0]){
+                    rot(270){
+                        fansupportleft(w);
+                    }
                 }
             }
         }
@@ -137,120 +143,116 @@ module shieldscrews(){
         }
     }
 }
-                    
+
+// mounts for the hotbox
+module corners(){
+    // cut top corners out of removal, leaving supports for top
+    corner();
+    mirror([1, 0, 0]){
+        corner();
+    }
+    mirror([0, 1, 0]){
+        corner();
+    }
+    mirror([1, 1, 0]){
+        corner();
+    }
+}
+
+module cornercuts(){
+    // holes in corners for mounting hotbox
+    cornercut();
+    mirror([1, 0, 0]){
+        cornercut();
+    }
+    mirror([0, 1, 0]){
+        cornercut();
+    }
+    mirror([1, 1, 0]){
+        cornercut();
+    }
+}
+
+module lmsmounts(){
+    // 12->5V mounts
+    translate([35.35, -totalxy / 2 + 20, flr + mh / 2]){
+       lmsmount();
+    }
+    translate([5, -totalxy / 2 + 20 + 16.4, flr + mh / 2]){
+       lmsmount();
+    }
+}
+
+module perfmounts(){
+    translate([-mh, -0.95 * totalxy / 2 + mh, flr + mh / 2]){
+        perfmount();
+        translate([-80 - 3.3, 0, 0]){
+            perfmount();
+        }
+        translate([0, 61.75 + 3.3, 0]){
+            perfmount();
+            translate([-80 - 3.3, 0, 0]){
+                perfmount();
+            }
+        }
+    }
+}
+
 // inverted frustrum
 module controlroom(){
     difference(){
+        croomcore();
         union(){
             difference(){
-                croomcore();
-                union(){
-                    difference(){
-                        scale(0.95){
-                            croomcore();
-                        }
-                        // cut top corners out of removal, leaving supports for top
-                        corner();
-                        mirror([1, 0, 0]){
-                            corner();
-                        }
-                        mirror([0, 1, 0]){
-                            corner();
-                        }
-                        mirror([1, 1, 0]){
-                            corner();
-                        }
-                    }
-                    // holes for AC adapter mounting screws
-                    translate([0, 60, -croomz + 2]){
-                        acadapterscrews(6);
-                    }
-                    // hole for AC wire
-                    translate([-totalxy / 2 - 10, 60, flr + mh * 2]){
-                        rotate([0, asin(-14/hyp), 0]){
-                            rotate([0, 90, 0]){
-                                cylinder(10, 5, 5);
-                            }
-                        }
-                    }
-                    // fan hole
-                    translate([0, -totalxy / 2, flr + 50]){
-                        rotate([asin(-14/hyp), 0, 0]){
-                            cube([81, 25, 81], true);
-                        }
-                    }
-                    // holes in corners for mounting hotbox
-                    cornercut();
-                    mirror([1, 0, 0]){
-                        cornercut();
-                    }
-                    mirror([0, 1, 0]){
-                        cornercut();
-                    }
-                    mirror([1, 1, 0]){
-                        cornercut();
-                    }
-                    shieldscrews();
+                scale(0.95){
+                    croomcore();
                 }
-           }
-           // 12->5V mounts
-           translate([35.35, -totalxy / 2 + 20, flr + mh / 2]){
-               lmsmount();
-           }
-           translate([5, -totalxy / 2 + 20 + 16.4, flr + mh / 2]){
-               lmsmount();
-           }
-           fanmounts();
-           mirror([1, 0, 0]){
-               fanmounts();
-           }
-           // load cell mounting base
-           translate([-76 / 2 + 21.05 / 2, 0, flr + mh / 2]){
-               cube([21.05, 13.5, mh], true);
-           }
-           // mount for perfboard
-           translate([-mh, -0.95 * totalxy / 2 + mh, flr + mh / 2]){
-               perfmount();
-               translate([-80 - 3.3, 0, 0]){
-                   perfmount();
-               }
-               translate([0, 61.75 + 3.3, 0]){
-                   perfmount();
-                   translate([-80 - 3.3, 0, 0]){
-                       perfmount();
-                   }
-               }
-           }
-       }
-       // holes for loadcell screws
-       translate([-76 / 2 + 5.425, 0, flr - 2 + 8 / 2 + 2]){
-           cylinder(6 + 8, 2, 2, true);
-       }
-       translate([-76 / 2 + 15.625, 0, flr - 2 + 8 / 2 + 2]){
-           cylinder(6 + 8, 2, 2, true);
-       }
-       // perfboard holes
-       translate([-mh, -0.95 * totalxy / 2 + mh, flr + 2 + mh - 2 / 2]){
-           perfmounthole();
-           translate([-80 - 3.3, 0, 0]){
-               perfmounthole();
-           }
-           translate([0, 61.75 + 3.3, 0]){
-               perfmounthole();
-               translate([-80 - 3.3, 0, 0]){
-                   perfmounthole();
-               }
-           }
-       }
+                corners();
+            }
+            // holes for AC adapter mounting screws
+            translate([0, 60, -croomz + 2]){
+                acadapterscrews(6);
+            }
+            // hole for AC wire
+            translate([-totalxy / 2 - 10, 60, flr + mh * 2]){
+                //rotate([0, asin(-14/hyp), 0]){
+                    rotate([0, 90, 0]){
+                        cylinder(100, 7, 7);
+                    }
+                //}
+            }
+            // fan hole
+            translate([0, -totalxy / 2, flr + 50]){
+                rotate([asin(-14/hyp), 0, 0]){
+                    cube([81, 25, 81], true);
+                }
+            }
+            cornercuts();
+            shieldscrews();
+        }
+    }
+    lmsmounts();
+    fanmounts();
+    mirror([1, 0, 0]){
+        fanmounts();
+    }
+    // load cell mounting base
+    translate([-76 / 2 + 21.05 / 2, 0, flr + mh / 2]){
+        cube([21.05, 13.5, mh], true);
+    }
+    perfmounts();
+    // holes for loadcell screws
+    translate([-76 / 2 + 5.425, 0, flr - 2 + 8 / 2 + 2]){
+        cylinder(6 + 8, 2, 2, true);
+    }
+    translate([-76 / 2 + 15.625, 0, flr - 2 + 8 / 2 + 2]){
+        cylinder(6 + 8, 2, 2, true);
     }
     motormount();
 }
 
 module perfmount(){
     cube([mh, mh, mh], true);
-}
-
-module perfmounthole(){
     cylinder(mh + 6, 2, 2, true);
 }
 
