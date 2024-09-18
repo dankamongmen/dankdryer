@@ -2,7 +2,7 @@ Firmware for the Dankdryer, the world's best filament dryer.
 
 Intended for use with an ESP32-S3-WROOM-1.
 
-<p style="text-align: center;">
+<p align="center">
 <img alt="ESP32-S3-DevKitC-1 pinout" src="ESP32-S3_DevKitC-1_pinlayout_v1.1.jpg"/>
 </p>
 
@@ -43,6 +43,6 @@ shield is then mounted into the cool chamber, followed by the hot chamber.
 
 View from the top with spool present, top not present.
 
-<p style="text-align: center;">
+<p align="center">
 <img alt="Top view, cutaway" src="topview-cutaway.png"/>
 </p>
