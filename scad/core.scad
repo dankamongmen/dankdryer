@@ -35,7 +35,7 @@ totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 ctopz = wallz;
 croomz = wallz + ctopz + 90; // 80mm fan; ought just need sin(theta)80
 
-mh = 8; // mount height
+mh = wallz; // mount height
 
 shieldw = 88;
 module shieldscrew(){

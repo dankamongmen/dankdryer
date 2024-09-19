@@ -15,10 +15,8 @@ topinrad = toprad - 2 * sqrt(croomwall);
 // distances from center to mid-outer wall
 topalt = toprad / sqrt(2);
 botalt = botrad / sqrt(2);
-topinner = (0.95 * topalt * 2) / 2;
-botinner = (0.95 * botalt * 2) / 2;
-echo("topwall: ", topalt - topinner);
-echo("botwall: ", botalt - botinner);
+topinalt = topinrad / sqrt(2);
+botinalt = botinrad / sqrt(2);
 
 // motor is 37x75mm diameter gearbox and 6x14mm shaft
 // (with arbitrarily large worm gear on the shaft)
@@ -70,10 +68,9 @@ module lmsmount(){
     }
 }
 
-adj = 0.95 * croomz;
-hyp = sqrt(14 * 14 + adj * adj);
-theta = asin(-14 / hyp);
-
+adj = (botrad - toprad) / sqrt(2);
+theta = -(90 - atan(-croomz / adj));
+echo("adj: ", adj, " theta: ", theta, " croomz: " , croomz);
 module rot(deg){
     rotate([theta + deg, 0, 0]){
         children();
@@ -220,12 +217,10 @@ module perfmounts(){
 
 // hole for AC wire
 module achole(){
-    rotate([0, -theta, 0]){ // FIXME
-        translate([-totalxy / 2 + 10, 60, flr + mh * 2]){
-            rotate([0, 90, 0]){
-                // FIXME should only need be croomwall thick
-                cylinder(20, 7, 7, true);
-            }
+    translate([-totalxy / 2, 60, flr + 20]){
+        rotate([0, 90 - theta, 0]){
+            // FIXME should only need be one croomwall thick
+            cylinder(20, 7, 7, true);
         }
     }
 }
@@ -233,6 +228,26 @@ module achole(){
 module perfmount(){
     cube([mh, mh, mh], true);
     cylinder(mh + 6, 2, 2, true);
+}
+
+loadcellmountx = -76 / 2 + 21.05 / 2;
+loadcellmountw = 13.5;
+loadcellmountl = 21.05;
+loadcellmounth = 27;
+module loadcellmount(baseh, hlen){
+    difference(){
+        // load cell mounting base
+        translate([loadcellmountx, 0, baseh / 2]){
+            cube([loadcellmountl, loadcellmountw, baseh], true);
+        }
+        // holes for loadcell screws
+        translate([-76 / 2 + 5.425, 0, baseh - hlen / 2]){
+            cylinder(hlen, 2, 2, true);
+        }
+        translate([-76 / 2 + 15.625, 0, baseh - hlen / 2]){
+            cylinder(hlen, 2, 2, true);
+        }
+    }
 }
 
 // channel for ac wires running from adapter to heater
@@ -264,8 +279,8 @@ module controlroom(){
         translate([0, 60, -croomz + 2]){
             acadapterscrews(6);
         }
-        rotate([asin(-14/hyp), 0, 0]){
-            translate([0, -totalxy / 2 + 12, flr + 30]){
+        rotate([theta, 0, 0]){
+            translate([0, -botalt + 10, flr + 40]){
                 fanhole(20);
             }
         }
@@ -275,17 +290,9 @@ module controlroom(){
     }
     wirechannel();
     lmsmounts();
-    // load cell mounting base
-    translate([-76 / 2 + 21.05 / 2, 0, flr + mh / 2]){
-        cube([21.05, 13.5, mh], true);
-    }
     perfmounts();
-    // holes for loadcell screws
-    translate([-76 / 2 + 5.425, 0, flr - 2 + 8 / 2 + 2]){
-        cylinder(6 + 8, 2, 2, true);
-    }
-    translate([-76 / 2 + 15.625, 0, flr - 2 + 8 / 2 + 2]){
-        cylinder(6 + 8, 2, 2, true);
+    translate([0, 0, flr]){
+        loadcellmount(loadcellmounth, 14);
     }
     translate([55, -36, flr + 37 / 2]){
         rotate([0, 0, motortheta]){
@@ -329,7 +336,7 @@ multicolor("silver"){
     translate([0, 60, flr + 30 / 2]){
         acadapter();
     }
-    translate([0, 0, flr + 13.5 / 2]){
+    translate([0, 0, flr + loadcellmounth]){
         loadcell();
     }
 }
@@ -337,3 +344,21 @@ multicolor("silver"){
 translate([teeth / 2, 0, flr + motorboxd]){
     gear();
 }*/
+
+module lowercoupling(){
+    loadcellmount(10, 5);
+    translate([0, 0, 15]){
+        cube([-loadcellmountx * 2 + loadcellmountl, loadcellmountw, 10], true);
+    }
+    // recessed area for 608 bearing
+    translate([0, 0, 2 / 2 + 40 / 2]){
+        cylinder(2, 24 / 2, 24 / 2, true);
+        translate([0, 0, 2 + 7 / 2]){
+            difference(){
+                cylinder(9, 24 / 2, 24 / 2, true);
+                cylinder(9, 22 / 2, 22 / 2, true);
+            }
+        }
+
+    }
+}
