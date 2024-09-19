@@ -230,10 +230,6 @@ module perfmount(){
     cylinder(mh + 6, 2, 2, true);
 }
 
-loadcellmountx = -76 / 2 + 21.05 / 2;
-loadcellmountw = 13.5;
-loadcellmountl = 21.05;
-loadcellmounth = 27;
 module loadcellmount(baseh, hlen){
     difference(){
         // load cell mounting base
@@ -319,31 +315,11 @@ module acadapter(){
     }
 }
 
+loadcellh = 13.5;
 module loadcell(){
     // https://amazon.com/gp/product/B07BGXXHSW
-    cube([76, 13.5, 13.5], true);
+    cube([76, loadcellh, loadcellh], true);
 }
-
-/*multicolor("pink"){
-    translate([79, -77, -20]){
-        rotate([0, 270, motortheta]){
-            motor();
-        }
-    }
-}
-
-multicolor("silver"){
-    translate([0, 60, flr + 30 / 2]){
-        acadapter();
-    }
-    translate([0, 0, flr + loadcellmounth]){
-        loadcell();
-    }
-}
-
-translate([teeth / 2, 0, flr + motorboxd]){
-    gear();
-}*/
 
 module lowercoupling(){
     loadcellmount(10, 5);
@@ -353,7 +329,7 @@ module lowercoupling(){
     // recessed area for 608 bearing
     translate([0, 0, 2 / 2 + 40 / 2]){
         cylinder(2, 24 / 2, 24 / 2, true);
-        translate([0, 0, 2 + 7 / 2]){
+        translate([0, 0, 2 + bearingh / 2]){
             difference(){
                 cylinder(9, 24 / 2, 24 / 2, true);
                 cylinder(9, 22 / 2, 22 / 2, true);

@@ -1,7 +1,45 @@
+include <core.scad>
+//include <croom.scad>
 use <croom.scad>
 
+// bottom is the bearing
+// lower spacer
+// geat
+// upper spacer
+// platform at the top
+shafth = bearingh + croomz - loadcellmounth - 30;
+module shaft(){
+    cylinder(shafth, bearingh / 2, bearingh / 2, true);
+}
+
 multicolor("blue"){
-    mirror([1, 0, 0]){
-        lowercoupling();
+    translate([0, 0, -60]){
+        mirror([1, 0, 0]){
+            lowercoupling();
+        }
+    }
+    translate([0, 0, -60 + 19 + shafth / 2]){
+        shaft();
     }
 }
+
+/*multicolor("pink"){
+    translate([79, -77, -20]){
+        rotate([0, 270, motortheta]){
+            motor();
+        }
+    }
+}
+
+multicolor("silver"){
+    translate([0, 60, flr + 30 / 2]){
+        acadapter();
+    }
+    translate([0, 0, flr + loadcellmounth]){
+        loadcell();
+    }
+}
+
+translate([teeth / 2, 0, flr + loadcellmounth + loadcellh + 32]){
+    gear();
+}*/
