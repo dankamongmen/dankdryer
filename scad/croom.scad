@@ -119,7 +119,7 @@ module motormount(){
             }
         }
     }
-    translate([-31.5, 0, 37]){
+    translate([-31.5, 0, 38]){
         rotate([0, 90, 0]){
             motorholder();
         }

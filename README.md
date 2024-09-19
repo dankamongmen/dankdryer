@@ -8,6 +8,8 @@ ESP32-S3 firmware and SCAD sources for the Dankdryer, the world's best filament 
 * Slow rotation like delicious savory meat.
 * Equal heating of all the spool's filament.
 * Control and reporting over MQTT via WiFi.
+* Isolated hot and cool chambers, with most active equipment in the cool chamber.
+* Humidity sensing and temperature sensing in both chambers.
 
 <p align="center">
 <img alt="ESP32-S3-DevKitC-1 pinout" src="ESP32-S3_DevKitC-1_pinlayout_v1.1.jpg"/>
@@ -17,13 +19,16 @@ More info at [dankwiki](https://nick-black.com/dankwiki/index.php/Dankdryer).
 
 # Dependencies
 
+The project is built with GNU Make.
+Running `make` in the toplevel will attempt to build firmware and STLs.
+
 ## Firmware
 * `arduino-cli` with `esp32:esp32:esp32s3` board support
-* HX711 0.5.0+
+* Rob Tillaart's [HX711](https://github.com/RobTillaart/HX711) 0.5.0+
 
 ## 3D models
 * OpenSCAD 2021.01+
-* Jörg Janssen's `gears.scad` 2.2+
+* Jörg Janssen's [gears.scad](https://github.com/chrisspen/gears) 2.2+
 
 # Printing and BOM
 
