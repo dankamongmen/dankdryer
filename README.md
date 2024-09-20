@@ -124,6 +124,9 @@ View from the top of the lower chamber by itself, with nothing mounted.
 * The ESP32-S3 has a MCPWM, a motor controller. Can we eliminate the TB6612FNG?
 * Would we benefit from thermal insulation material in the hotbox?
 * Can we replace the lower 80x80mm fan with e.g. 4x 40x40mm fans, and reduce height?
+* Ought we change our circuits to add protection or eliminate noise?
+* Ought we replace the perfboard and its various breakouts with a custom PCB?
+* Can we use a smaller (cheaper) motor / AC adapter?
 
 <p align="center">
  <img alt="Side view" src="images/gaussed.png"/>
