@@ -5,6 +5,7 @@
 #include <lwip/netif.h>
 #include <nvs.h>
 #include <HX711.h>
+#include <esp_wifi.h>
 #include <esp_netif.h>
 #include <nvs_flash.h>
 #include <mqtt_client.h>
@@ -67,7 +68,8 @@ static enum {
   WIFI_INVALID,
   WIFI_CONNECTING,
   MQTT_CONNECTING,
-  MQTT_ESTABLISHED
+  MQTT_ESTABLISHED,
+  NETWORK_STATE_COUNT
 } NetworkState;
 
 // ---------------------------------------------------------
@@ -292,15 +294,37 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
 }
 
 int setup_network(void){
-  if(esp_netif_init()){
-    fprintf(stderr, "couldn't initialize tcp/ip\n");
-    return -1;
-  }
+  const wifi_init_config_t wificfg = {
+  };
+  wifi_config_t stacfg = {
+    .sta = {
+      .ssid = WIFIESSID,
+      .password = WIFIPASS,
+    },
+  };
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
     fprintf(stderr, "couldn't create mqtt client\n");
     return -1;
   }
+  esp_err_t err;
+  if((err = esp_netif_init()) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) initializing tcp/ip\n", err, esp_err_to_name(err));
+    goto bail;
+  }
+  if((err = esp_wifi_init(&wificfg)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) initializing wifi\n", err, esp_err_to_name(err));
+    goto bail;
+  }
+  esp_wifi_set_mode(WIFI_MODE_STA);
+  if((err = esp_wifi_set_config(WIFI_IF_STA, &stacfg)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) configuring wifi\n", err, esp_err_to_name(err));
+    goto bail;
+  }
   return 0;
+
+bail:
+  esp_mqtt_client_destroy(MQTTHandle);
+  return -1;
 }
 
 typedef struct failure_indication {
@@ -313,10 +337,21 @@ static const failure_indication SystemError = { RGB_BRIGHTNESS, 0, 0 };
 static const failure_indication NetworkError = { RGB_BRIGHTNESS, 0, RGB_BRIGHTNESS };
 static const failure_indication PostFailure = { 0, 0, 0 };
 
+void set_led(const struct failure_indication *nin){
+  neopixelWrite(RGB_BUILTIN, nin->r, nin->g, nin->b);
+}
+
 void set_failure(const struct failure_indication *fin){
   StartupFailure = true;
-  neopixelWrite(RGB_BUILTIN, fin->r, fin->g, fin->b);
+  set_led(fin);
 }
+
+static const failure_indication NetworkIndications[NETWORK_STATE_COUNT] = {
+  { 0, 0, 0 },
+  { 0, 64, 0 },
+  { 0, 128, 0 },
+  { 0, 255, 0 }
+};
 
 void setup(void){
   neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
@@ -354,9 +389,18 @@ void setup(void){
 }
 
 void handle_network(void){
-  printf("received a network event\n");
+  esp_err_t err;
+  if(NetworkState != WIFI_INVALID){
+    set_led(&NetworkIndications[NetworkState]);
+  }
+  printf("netstate: %d\n", NetworkState);
   switch(NetworkState){
     case WIFI_INVALID:
+      if((err = esp_wifi_start()) != ESP_OK){
+        fprintf(stderr, "failure (%d %s) starting wifi\n", err, esp_err_to_name(err));
+      }else{
+        NetworkState = WIFI_CONNECTING;
+      }
       break;
     case WIFI_CONNECTING:
       break;
@@ -364,10 +408,18 @@ void handle_network(void){
       break;
     case MQTT_ESTABLISHED:
       break;
+    case NETWORK_STATE_COUNT:
+    default:
+      // FIXME?
+      break;
+  }
+  if(NetworkState != WIFI_INVALID){
+    set_led(&NetworkIndications[NetworkState]);
   }
 }
 
 void loop(void){
+  handle_network();
   float ambient = getAmbient();
   if(!isnan(ambient)){
     printf("esp32 temp: %f\n", ambient);
