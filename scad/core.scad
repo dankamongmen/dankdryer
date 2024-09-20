@@ -89,13 +89,15 @@ module topbottom(height){
 // bases 2 * 8.5 == 17
 module fanmountur(h){
     difference(){
-        rotate([90, 0, 0]){
-            linear_extrude(h){
-                polygon([
-                    [-12.75, 4.25],
-                    [4.25, 4.25],
-                    [4.25, -12.75]
-                ]);
+        translate([0, h / 2, 0]){
+            rotate([90, 0, 0]){
+                linear_extrude(h){
+                    polygon([
+                        [-12.75, 4.25],
+                        [4.25, 4.25],
+                        [4.25, -12.75]
+                    ]);
+                }
             }
         }
         rotate([90, 0, 0]){
