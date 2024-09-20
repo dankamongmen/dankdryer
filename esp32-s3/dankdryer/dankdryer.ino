@@ -381,6 +381,9 @@ int setup_network(void){
     .sta = {
       .ssid = WIFIESSID,
       .password = WIFIPASS,
+      .threshold = {
+        .authmode = WIFI_AUTH_WPA2_PSK,
+      },
       .sae_h2e_identifier = CLIENTID,
     },
   };
@@ -432,7 +435,9 @@ void set_led(const struct failure_indication *nin){
 }
 
 void set_failure(const struct failure_indication *fin){
-  StartupFailure = true;
+  if(fin != &PostFailure){
+    StartupFailure = true;
+  }
   set_led(fin);
 }
 
