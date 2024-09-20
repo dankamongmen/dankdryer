@@ -87,15 +87,15 @@ module core(){
             }
 }
 
-include <tween_example6.scad>
+use <tween_example6.scad>
 
 module hotbox(){
     difference(){
         union(){
             topbottom(wallz);
-            core();
-            rotate([0, 0, 23]){
-                core2();
+            //core();
+            translate([0, 0, wallz]){
+             core2();
             }
             hbcorners();
         }
@@ -117,7 +117,7 @@ module hotbox(){
         }
         // exhaust fan hole
         translate([0, -totalxy / 2 + wallxy, 80 / 2 + 5]){
-            fanhole(wallxy * 2);
+            fanhole(40);
         }
         // central column
         cylinder(10, 30 / 2, 30 / 2, true);
@@ -129,6 +129,8 @@ module hotbox(){
         }
     }
 }
+
+echo("TZ: ", totalz);
 
 // testing
 module spool(){
@@ -143,23 +145,23 @@ module spool(){
 }
 
 //multicolor("purple"){
-    //rotate([0, 0, 90])
+//    rotate([0, 0, 180])
     hotbox();
 //}
 
-
+/*
 multicolor("green"){
-    spool();
+  spool();
 }
 
 include <croom.scad>
-/*
 include <lowercoupling.scad>
 include <holder.scad>
 
 translate([0, 0, totalz - 10]){
     holder();
 }
+
 
 multicolor("pink"){
     translate([79, -77, -34]){
