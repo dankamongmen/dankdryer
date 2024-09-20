@@ -15,6 +15,8 @@ module multicolor(color) {
 	}        
 }
 
+wormlen = 50;
+
 // we need to hold a spool up to 205mm in diameter and 75mm wide
 spoold = 205;
 spoolh = 75;
@@ -168,10 +170,20 @@ module top(){
     }
 }
 
+// motor is 37x75mm diameter gearbox and 6x14mm shaft
+// (with arbitrarily large worm gear on the shaft)
+motorboxh = 75;
+motorboxd = 37;
+motorshafth = wormlen; // sans worm: 14
+motorshaftd = 13; // sans worm: 6
+motortheta = -60;
+motormounth = 37;
+// the worm gear on the motor's rotor needs to be tangent to, and at the same
+// elevation as, some point on the central gear.
 module motor(){
-    cylinder(motorboxh, motorboxd / 2, motorboxd / 2);
+    cylinder(motorboxh, motorboxd / 2, motorboxd / 2, true);
     translate([0, 0, motorboxh]){
-        cylinder(motorshafth, motorshaftd / 2, motorshaftd / 2);
+        cylinder(motorshafth, motorshaftd / 2, motorshaftd / 2, true);
     }
 }
 
@@ -243,7 +255,6 @@ module lowercoupling(){
 }
 
 teeth = 40;
-wormlen = 50;
 module gear(){
     worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=5.5, gear_bore=4, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=1, show_worm=0);
 }

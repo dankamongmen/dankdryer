@@ -18,14 +18,6 @@ botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
 
-// motor is 37x75mm diameter gearbox and 6x14mm shaft
-// (with arbitrarily large worm gear on the shaft)
-motorboxh = 75;
-motorboxd = 37;
-motorshafth = wormlen; // sans worm: 14
-motorshaftd = 13; // sans worm: 6
-motortheta = -60;
-
 module croomcore(){
     rotate([0, 0, 45]){
         mirror([0, 0, 1]){
@@ -100,11 +92,11 @@ module motorholder(){
 // mount for motor. runs horizontal approximately a gear
 // radius away from the center.
 module motormount(){
-    cube([66, 37, 37], true);
-    translate([0, 0, 37]){
+    cube([66, 37, motormounth], true);
+    translate([0, 0, motormounth]){
         difference(){
-            translate([0, 0, -37 / 2]){
-                cube([66, 37, 37], true);
+            translate([0, 0, -motormounth / 2]){
+                cube([66, 37, motormounth], true);
             }
             rotate([0, 90, 0]){
                 cylinder(66, 37 / 2, 37 / 2, true);
