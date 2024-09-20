@@ -22,7 +22,7 @@ wallThickness= 5;
 isHollow = 1;
 
 extrusionHeight= 95;
-extrusionSlices = 10;
+extrusionSlices = 30;
 sliceAdjustment= 0;
 
 sliceHeight = extrusionHeight * 1.0 / extrusionSlices;
