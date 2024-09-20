@@ -190,8 +190,24 @@ module loadcell(){
     cube([76, loadcellh, loadcellh], true);
 }
 
+module loadcellmount(baseh){
+    difference(){
+        // load cell mounting base
+        translate([loadcellmountx, 0, baseh / 2]){
+            cube([loadcellmountl, loadcellmountw, baseh], true);
+        }
+        // holes for loadcell screws
+        translate([-76 / 2 + 5.425, 0, baseh / 2]){
+            screw("M4", length = baseh);
+        }
+        translate([-76 / 2 + 15.625, 0, baseh / 2]){
+            screw("M4", length = baseh);
+        }
+    }
+}
+
 module lowercoupling(){
-    loadcellmount(10, 5);
+    loadcellmount(10);
     translate([0, 0, 15]){
         cube([-loadcellmountx * 2 + loadcellmountl, loadcellmountw, 10], true);
     }

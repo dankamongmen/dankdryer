@@ -118,20 +118,14 @@ module motormount(){
     }
 }
 
-module shieldscrews(){
-    // screw holes for central shield
-    translate([0, 0, flr - mh / 2]){
-        shieldscrew();
-        mirror([1, 0, 0]){
-            shieldscrew();
-        }
-        mirror([0, 1, 0]){
-            shieldscrew();
-        }
-        mirror([0, 1, 0]){
-            mirror([1, 0, 0]){
-                shieldscrew();
-            }
+module lowershield(){
+    // the lower shield must not support the lower coupling,
+    // but it should come right up under it to block air
+    //(-shieldw + 6) / 2, (19.5 + 6) / 2
+    translate([0, 0, flr + loadcellmounth / 2]){
+        difference(){
+            cube([shieldw + 6, 25.5 / 2, loadcellmounth], true);
+            cube([shieldw + 2, 20 / 2, loadcellmounth], true);
         }
     }
 }
@@ -231,22 +225,6 @@ module achole(){
     }
 }
 
-module loadcellmount(baseh, hlen){
-    difference(){
-        // load cell mounting base
-        translate([loadcellmountx, 0, baseh / 2]){
-            cube([loadcellmountl, loadcellmountw, baseh], true);
-        }
-        // holes for loadcell screws
-        translate([-76 / 2 + 5.425, 0, baseh - hlen / 2]){
-            screw("M4", length = hlen);
-        }
-        translate([-76 / 2 + 15.625, 0, baseh - hlen / 2]){
-            screw("M4", length = hlen);
-        }
-    }
-}
-
 // channel for ac wires running from adapter to heater
 module wirechannel(){
     translate([-botalt - 5, -20, flr + 5 / 2]){
@@ -289,14 +267,14 @@ module controlroom(){
             }
         }
         cornercuts();
-        shieldscrews();
         achole();
     }
+    lowershield();
     wirechannels();
     lmsmounts();
     perfmounts();
     translate([0, 0, flr]){
-        loadcellmount(loadcellmounth, 14);
+        loadcellmount(loadcellmounth);
     }
     translate([55, -36, flr + 37 / 2]){
         rotate([0, 0, motortheta]){
