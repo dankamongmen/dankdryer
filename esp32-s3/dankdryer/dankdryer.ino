@@ -270,11 +270,28 @@ int initialize_25k_pwm(ledc_channel_t channel, gpio_num_t pin, ledc_timer_t time
   return initialize_pwm(channel, pin, 25000, timer);
 }
 
+int gpio_set_input(gpio_num_t pin){
+  esp_err_t err;
+  if((err = gpio_set_direction(pin, GPIO_MODE_INPUT)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) setting %d to input\n", err, esp_err_to_name(err), pin);
+    return -1;
+  }
+  return 0;
+}
+
+int gpio_set_output(gpio_num_t pin){
+  esp_err_t err;
+  if((err = gpio_set_direction(pin, GPIO_MODE_OUTPUT)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) setting %d to output\n", err, esp_err_to_name(err), pin);
+    return -1;
+  }
+  return 0;
+}
+
 int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
                gpio_num_t lowertpin, gpio_num_t uppertpin){
   int ret = 0;
   esp_err_t err;
-  // FIXME set up 25K PWM / OUTPUT
   if( (err = gpio_install_isr_service(0))){ // FIXME check flags
     fprintf(stderr, "failure (%d) installing ISR service\n", err);
     return -1;
@@ -287,7 +304,13 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
     fprintf(stderr, "failure (%d) installing tach isr to %d\n", err, uppertpin);
     ret = -1; // don't exit with error
   }
-  // FIXME set tach pins to INPUT
+  // intentional '|'s to avoid short circuiting
+  if(gpio_set_input(lowertpin) | gpio_set_input(uppertpin)){
+    ret = -1;
+  }
+  if(gpio_set_output(lowerppin) | gpio_set_output(upperppin)){
+    ret = -1;
+  }
   initialize_25k_pwm(LOWER_FANCHAN, lowerppin, LEDC_TIMER_1);
   initialize_25k_pwm(UPPER_FANCHAN, upperppin, LEDC_TIMER_2);
   set_pwm(LOWER_FANCHAN, LowerPWM);
@@ -403,12 +426,17 @@ void handle_network(void){
     case WIFI_INVALID:
       if((err = esp_wifi_start()) != ESP_OK){
         fprintf(stderr, "failure (%d %s) starting wifi\n", err, esp_err_to_name(err));
-      }else{
-        NetworkState = WIFI_CONNECTING;
+        break;
       }
-      break;
+      NetworkState = WIFI_CONNECTING;
+      // intentional fallthrough
     case WIFI_CONNECTING:
-      break;
+      if((err = esp_wifi_connect()) != ESP_OK){
+        fprintf(stderr, "failure (%d %s) connecting to wifi\n", err, esp_err_to_name(err));
+        break;
+      }
+      NetworkState = MQTT_CONNECTING;
+      // intentional fallthrough
     case MQTT_CONNECTING:
       break;
     case MQTT_ESTABLISHED:
