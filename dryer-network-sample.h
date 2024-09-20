@@ -1,0 +1,5 @@
+#define MQTTURI "mqtt://mqtt.example.com"
+#define MQTTUSER "an mqtt username"
+#define MQTTPASS "an mqtt password"
+#define WIFIESSID "a wifi essid"
+#define WIFIPASS "a valid wpa2+ psk"
