@@ -8,8 +8,10 @@ ESP32-S3 firmware and SCAD sources for the Dankdryer, the world's best filament 
 * Slow rotation like delicious savory meat.
 * Equal heating of all the spool's filament.
 * Control and reporting over MQTT via WiFi.
+* OTA firmware upgrades.
 * Isolated hot and cool chambers, with most active equipment in the cool chamber.
 * Humidity sensing and temperature sensing in both chambers.
+* Entirely open source.
 
 <p align="center">
 <img alt="ESP32-S3-DevKitC-1 pinout" src="ESP32-S3_DevKitC-1_pinlayout_v1.1.jpg"/>

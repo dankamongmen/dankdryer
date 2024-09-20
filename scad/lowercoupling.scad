@@ -1,6 +1,6 @@
 include <core.scad>
-//use <croom.scad>
-include <croom.scad>
+use <croom.scad>
+//include <croom.scad>
 // bottom is the bearing
 // lower spacer
 // geat
@@ -17,14 +17,16 @@ multicolor("blue"){
             lowercoupling();
         }
     }
+    /*
     translate([0, 0, -60 + 19 + shafth / 2]){
         shaft();
     }
+    */
 }
 
-
+/*
 multicolor("pink"){
-    translate([79, -77, -34]){
+    translate([45, 45, flr + motormounth + motorboxh / 2]){
         rotate([0, 270, motortheta]){
             motor();
         }
@@ -43,6 +45,7 @@ multicolor("black"){
     }
 }
 
-translate([teeth / 2, 0, flr + motorboxh]){
+translate([teeth / 2, 0, -34]){
     gear();
 }
+*/

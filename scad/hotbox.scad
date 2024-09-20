@@ -73,10 +73,8 @@ module hbcorners(){
     }
 }
 
-module hotbox(){
-    difference(){
-        union(){
-            topbottom(wallz);
+module core(){
+                
             translate([0, 0, wallz]){
                 linear_extrude(totalz - wallz - topz){
                     polygon(
@@ -86,6 +84,18 @@ module hotbox(){
                         [8, 9, 10, 11, 12, 13, 14, 15]
                     ]);
                 }
+            }
+}
+
+include <tween_example6.scad>
+
+module hotbox(){
+    difference(){
+        union(){
+            topbottom(wallz);
+            core();
+            rotate([0, 0, 23]){
+                core2();
             }
             hbcorners();
         }
@@ -137,11 +147,11 @@ module spool(){
     hotbox();
 //}
 
-/*
+
 multicolor("green"){
     spool();
 }
-*/
+
 include <croom.scad>
 /*
 include <lowercoupling.scad>
