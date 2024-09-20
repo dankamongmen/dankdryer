@@ -19,6 +19,8 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=$HOME/bin sh
 
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
 
       - name: make
         run: |
