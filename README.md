@@ -131,6 +131,7 @@ View from the top of the lower chamber by itself, with nothing mounted.
 * Ought we change our circuits to add protection or eliminate noise?
 * Ought we replace the perfboard and its various breakouts with a custom PCB?
 * Can we use a smaller (cheaper) motor / AC adapter?
+* How useful would it be to read Bambu RFID tags? How feasible?
 
 <p align="center">
  <img alt="Side view" src="images/gaussed.png"/>
