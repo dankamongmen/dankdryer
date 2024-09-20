@@ -5,6 +5,7 @@
 #include "dryer-network.h"
 #include <lwip/netif.h>
 #include <nvs.h>
+#include <mdns.h>
 #include <HX711.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>
@@ -375,6 +376,22 @@ void wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
   }
 }
 
+int setup_mdns(void){
+  esp_err_t err;
+  if((err = mdns_init()) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) initializing mDNS\n", err, esp_err_to_name(err));
+    return -1;
+  }
+  if((err = mdns_hostname_set(CLIENTID)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) initializing mDNS\n", err, esp_err_to_name(err));
+    return -1;
+  }
+  mdns_instance_name_set("Higher Dryer");
+  mdns_service_add(NULL, "_http", "_tcp", 80, NULL, 0);
+  mdns_service_instance_name_set("_http", "_tcp", "Higher Dryer webserver");
+  return 0;
+}
+
 int setup_network(void){
   const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
   wifi_config_t stacfg = {
@@ -423,6 +440,7 @@ int setup_network(void){
     fprintf(stderr, "failure %d (%s) starting wifi\n", err, esp_err_to_name(err));
     goto bail;
   }
+  setup_mdns(); // allow a failure
   return 0;
 
 bail:
