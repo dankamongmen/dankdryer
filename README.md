@@ -3,6 +3,8 @@ ESP32-S3 firmware and SCAD sources for the Dankdryer, the world's best filament 
 # Features
 
 * Temperatures up to at least 125C when printed with proper materials.
+  * Such temperatures are appropriate (necessary) for certain engineering filaments.
+  * A high-temperature spool is required at these temperatures.
 * Accurate weight sensing throughout to determine how much water has been exorcised.
   * Post contextless deltas to reddit in the heat of dumbass arguments! DATA, bitch!
 * Slow rotation like delicious savory meat.
