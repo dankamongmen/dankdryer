@@ -52,6 +52,13 @@ static const esp_mqtt_client_config_t MQTTConfig = {
       .uri = MQTTURI,
     },
   },
+  .credentials = {
+    .username = MQTTUSER,
+    // FIXME set client id, but stir in some per-device data
+    .authentication = {
+      .password = MQTTPASS,
+    },
+  },
 };
 
 static enum {
