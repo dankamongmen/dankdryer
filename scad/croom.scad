@@ -57,20 +57,12 @@ module corner(){
 
 module cornercut(){
     translate([-totalxy / 2 + 12, -totalxy / 2 + 12, -10]){
-        cylinder(20, 5 / 2, 5 / 2, true);
-    }
-}
-
-module lmsmount(){
-    difference(){
-        cube([7, 7, mh], true);
-        cylinder(mh, 3.25 / 2, 3.25 / 2, true);
+        screw("M5", length = 20);
     }
 }
 
 adj = (botrad - toprad) / sqrt(2);
 theta = -(90 - atan(-croomz / adj));
-echo("adj: ", adj, " theta: ", theta, " croomz: " , croomz);
 module rot(deg){
     rotate([theta + deg, 0, 0]){
         children();
@@ -149,12 +141,12 @@ module shieldscrews(){
 // 6mm (through 10mm) and 50mm (through 54mm)
 module acadapterscrews(l){
     translate([165.1 / 2 - 2, -22, 0]){
-        cylinder(l, 2, 2);
+        screw("M4", length = l);
     }
     mirror([0, 1, 0]){
         mirror([1, 0, 0]){
             translate([165.1 / 2 - 2, -22, 0]){
-                cylinder(l, 2, 2);
+                screw("M4", length = l);
             }
         }
     }
@@ -189,6 +181,13 @@ module cornercuts(){
     }
 }
 
+module lmsmount(){
+    difference(){
+        cube([7, 7, mh], true);
+        screw("M3", length = mh);
+    }
+}
+
 // 32.14 on the diagonal
 module lmsmounts(){
     // 12->5V mounts
@@ -197,6 +196,13 @@ module lmsmounts(){
     }
     translate([8, -totalxy / 2 + 20 + 16.4, flr + mh / 2]){
        lmsmount();
+    }
+}
+
+module perfmount(){
+    difference(){
+        cube([7, 7, mh + 6], true);
+        screw("M4", length = mh + 6);
     }
 }
 
@@ -225,11 +231,6 @@ module achole(){
     }
 }
 
-module perfmount(){
-    cube([mh, mh, mh], true);
-    cylinder(mh + 6, 2, 2, true);
-}
-
 module loadcellmount(baseh, hlen){
     difference(){
         // load cell mounting base
@@ -238,10 +239,10 @@ module loadcellmount(baseh, hlen){
         }
         // holes for loadcell screws
         translate([-76 / 2 + 5.425, 0, baseh - hlen / 2]){
-            cylinder(hlen, 2, 2, true);
+            screw("M4", length = hlen);
         }
         translate([-76 / 2 + 15.625, 0, baseh - hlen / 2]){
-            cylinder(hlen, 2, 2, true);
+            screw("M4", length = hlen);
         }
     }
 }
@@ -260,6 +261,13 @@ module wirechannel(){
                 cube([10, totalxy / 2, 10]);
             }
         }
+    }
+}
+
+module wirechannels(){
+    wirechannel();
+    mirror([1, 0, 0]){
+        wirechannel();
     }
 }
 
@@ -284,7 +292,7 @@ module controlroom(){
         shieldscrews();
         achole();
     }
-    wirechannel();
+    wirechannels();
     lmsmounts();
     perfmounts();
     translate([0, 0, flr]){
@@ -297,44 +305,4 @@ module controlroom(){
     }
 }
 
-module motor(){
-    cylinder(motorboxh, motorboxd / 2, motorboxd / 2);
-    translate([0, 0, motorboxh]){
-        cylinder(motorshafth, motorshaftd / 2, motorshaftd / 2);
-    }
-}
-
 controlroom();
-
-module acadapter(){
-    difference(){
-        cube([165.1, 60, 30], true);
-        translate([0, 0, -15]){
-            acadapterscrews(30);
-        }
-    }
-}
-
-loadcellh = 13.5;
-module loadcell(){
-    // https://amazon.com/gp/product/B07BGXXHSW
-    cube([76, loadcellh, loadcellh], true);
-}
-
-module lowercoupling(){
-    loadcellmount(10, 5);
-    translate([0, 0, 15]){
-        cube([-loadcellmountx * 2 + loadcellmountl, loadcellmountw, 10], true);
-    }
-    // recessed area for 608 bearing
-    translate([0, 0, 2 / 2 + 40 / 2]){
-        cylinder(2, 24 / 2, 24 / 2, true);
-        translate([0, 0, 2 + bearingh / 2]){
-            difference(){
-                cylinder(9, 24 / 2, 24 / 2, true);
-                cylinder(9, 22 / 2, 22 / 2, true);
-            }
-        }
-
-    }
-}

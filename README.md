@@ -32,6 +32,7 @@ A network configuration file must be created and populated at
 ## 3D models
 * OpenSCAD 2021.01+
 * Jörg Janssen's [gears.scad](https://github.com/chrisspen/gears) 2.2+
+* [BOSL2](https://github.com/BelfrySCAD/BOSL2)
 
 # Printing and BOM
 
@@ -122,3 +123,4 @@ View from the top of the lower chamber by itself, with nothing mounted.
 * How does air flow? Let's get some visible air and test it.
 * The ESP32-S3 has a MCPWM, a motor controller. Can we eliminate the TB6612FNG?
 * Would we benefit from thermal insulation material in the hotbox?
+* Can we replace the lower 80x80mm fan with e.g. 4x 40x40mm fans, and reduce height?

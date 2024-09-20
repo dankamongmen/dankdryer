@@ -12,15 +12,15 @@ module ceramheat230(height){
     holegapw = 32;
 	holegapl = 52;
     translate([-holegapw / 2, -holegapl / 2, 0]){
-        cylinder(height, r / 2, r / 2, true);
+        screw("M2", length = height);
         translate([holegapw, 0, 0]){
-            cylinder(height, r / 2, r / 2, true);
+            screw("M2", length = height);
             translate([0, holegapl, 0]){
-                cylinder(height, r / 2, r / 2, true);
+                screw("M2", length = height);
             }
         }
         translate([0, holegapl, 0]){
-            cylinder(height, r / 2, r / 2, true);
+            screw("M2", length = height);
         }
     }
 }
@@ -43,16 +43,16 @@ module floorcuts(){
 }
 
 module hbcorner(){
-    side = 40;
+    side = 50;
     t = totalxy / 2;
     difference(){
-        translate([t - side / 2 + 4, t - side / 2 + 4, side / 2]){
+        translate([t - 19, t - 19, side / 2]){
             rotate([0, 0, 45]){
                 cylinder(side, side / 2, 1, true, $fn = 4);
             }
         }
         translate([totalxy / 2 - 12, totalxy / 2 - 12, side / 2]){
-            cylinder(side, 5 / 2, 5 / 2, true);
+            screw("M5", length = side);
         }
     }
 }
@@ -141,8 +141,9 @@ module spool(){
 multicolor("green"){
     spool();
 }
-
+*/
 include <croom.scad>
+/*
 include <lowercoupling.scad>
 include <holder.scad>
 

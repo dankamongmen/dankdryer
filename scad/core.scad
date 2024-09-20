@@ -1,4 +1,6 @@
 include <gears.scad>
+include <BOSL2/std.scad>
+include <BOSL2/screws.scad>
 
 $fn = 64;
 
@@ -40,7 +42,7 @@ mh = wallz; // mount height
 shieldw = 88;
 module shieldscrew(){
     translate([(-shieldw + 6) / 2, (19.5 + 6) / 2, mh / 2]){
-        cylinder(mh, 4 / 2, 4 / 2, true);
+        screw("M4", length = mh);
     }
 }
 
@@ -95,7 +97,8 @@ module fanmountur(h){
             }
         }
         rotate([90, 0, 0]){
-            cylinder(h, 4.3 / 2, 4.3 / 2, true);
+            // really want 4.3 hrmmm
+            screw("M4", length = h);
         }
     }
 }
@@ -162,6 +165,46 @@ module top(){
             }
         }
         holdholes(6);
+    }
+}
+
+module motor(){
+    cylinder(motorboxh, motorboxd / 2, motorboxd / 2);
+    translate([0, 0, motorboxh]){
+        cylinder(motorshafth, motorshaftd / 2, motorshaftd / 2);
+    }
+}
+
+module acadapter(){
+    difference(){
+        cube([165.1, 60, 30], true);
+        translate([0, 0, -15]){
+            acadapterscrews(30);
+        }
+    }
+}
+
+loadcellh = 13.5;
+module loadcell(){
+    // https://amazon.com/gp/product/B07BGXXHSW
+    cube([76, loadcellh, loadcellh], true);
+}
+
+module lowercoupling(){
+    loadcellmount(10, 5);
+    translate([0, 0, 15]){
+        cube([-loadcellmountx * 2 + loadcellmountl, loadcellmountw, 10], true);
+    }
+    // recessed area for 608 bearing
+    translate([0, 0, 2 / 2 + 40 / 2]){
+        cylinder(2, 24 / 2, 24 / 2, true);
+        translate([0, 0, 2 + bearingh / 2]){
+            difference(){
+                cylinder(9, 24 / 2, 24 / 2, true);
+                cylinder(9, 22 / 2, 22 / 2, true);
+            }
+        }
+
     }
 }
 

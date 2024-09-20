@@ -39,6 +39,7 @@
 
 HX711 Load;
 static bool UsePersistentStore; // set true upon successful initialization
+static EventGroupHandle_t egroup;
 static temperature_sensor_handle_t temp;
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
 static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
@@ -318,6 +319,10 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
   return ret;
 }
 
+void wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
+  printf("WIFI HANDLER arg: %p id: %ld data: %p\n", arg, id, data);
+}
+
 int setup_network(void){
   const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
   wifi_config_t stacfg = {
@@ -331,6 +336,7 @@ int setup_network(void){
     fprintf(stderr, "couldn't create mqtt client\n");
     return -1;
   }
+  egroup = xEventGroupCreate();
   esp_err_t err;
   if((err = esp_netif_init()) != ESP_OK){
     fprintf(stderr, "failure %d (%s) initializing tcp/ip\n", err, esp_err_to_name(err));
@@ -343,6 +349,11 @@ int setup_network(void){
   esp_wifi_set_mode(WIFI_MODE_STA);
   if((err = esp_wifi_set_config(WIFI_IF_STA, &stacfg)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) configuring wifi\n", err, esp_err_to_name(err));
+    goto bail;
+  }
+  esp_event_handler_instance_t iid;
+  if((err = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &iid)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) registering wifi events\n", err, esp_err_to_name(err));
     goto bail;
   }
   return 0;
@@ -387,13 +398,7 @@ void setup(void){
       UsePersistentStore = true;
     }
   }
-  esp_event_loop_args_t elargs = {
-    .queue_size = 8,
-    .task_name = NULL,
-  };
-  esp_event_loop_handle_t elhandle = {
-  };
-  if(esp_event_loop_create(&elargs, &elhandle)){
+  if(esp_event_loop_create_default()){
     set_failure(&SystemError);
   }
   Load.begin(LOAD_DATAPIN, LOAD_CLOCKPIN);
@@ -406,11 +411,11 @@ void setup(void){
   if(setup_network()){
     set_failure(&NetworkError);
   }
+  //gpio_dump_all_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
   if(!StartupFailure){
     set_failure(&PostFailure);
   }
-  //gpio_dump_all_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
-  printf("initialization complete v" VERSION "\n");
+  printf("initialization %ssuccessful v" VERSION "\n", StartupFailure ? "un" : "");
 }
 
 void set_network_led(int nstate){
