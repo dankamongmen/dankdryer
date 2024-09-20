@@ -19,7 +19,7 @@ $(OUT)/esp32-s3/dankdryer/dankdryer.ino.elf: $(addprefix esp32-s3/dankdryer/, da
 
 $(OUT)/scad/%.stl: scad/%.scad scad/core.scad scad/tween_example6.scad
 	@mkdir -p $(@D)
-	openscad -o $@ $<
+	time openscad -o $@ $<
 
 clean:
 	rm -rf $(OUT)

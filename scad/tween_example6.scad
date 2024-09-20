@@ -15,7 +15,7 @@ module core2(){
 // The lower shape
 
 shape1				= tween_octagon;
-shape1Size 		= totalxy / 2 - 4;				// Size of the lower shape
+shape1Size 		= totalxy / 1.9;				// Size of the lower shape
 shape1Rotation 	= 0;				// Rotation of the lower shape
 shape1Extension 	= 0;				// Extend the profile (space for tube clamp, etc.)
 shape1Centroid  	= [0,0];			// Location of center point
