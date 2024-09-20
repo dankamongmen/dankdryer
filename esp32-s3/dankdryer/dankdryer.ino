@@ -39,7 +39,6 @@
 
 HX711 Load;
 static bool UsePersistentStore; // set true upon successful initialization
-static EventGroupHandle_t egroup;
 static temperature_sensor_handle_t temp;
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
 static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
@@ -51,6 +50,32 @@ static uint32_t UpperPWM = 128;
 static uint32_t TargetTemp = 80;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 static esp_mqtt_client_handle_t MQTTHandle;
+
+typedef struct failure_indication {
+  int r, g, b;
+} failure_indication;
+
+static enum network_state_e {
+  WIFI_INVALID,
+  WIFI_CONNECTING,
+  NET_CONNECTING,
+  MQTT_CONNECTING,
+  MQTT_ESTABLISHED,
+  NETWORK_STATE_COUNT
+} NetworkState;
+
+static bool StartupFailure;
+static const failure_indication PreFailure = { RGB_BRIGHTNESS, RGB_BRIGHTNESS, RGB_BRIGHTNESS };
+static const failure_indication SystemError = { RGB_BRIGHTNESS, 0, 0 };
+static const failure_indication NetworkError = { RGB_BRIGHTNESS, 0, RGB_BRIGHTNESS };
+static const failure_indication PostFailure = { 0, 0, 0 };
+static const failure_indication NetworkIndications[NETWORK_STATE_COUNT] = {
+  { 0, 0, 0 },
+  { 0, 64, 0 },
+  { 0, 128, 0 },
+  { 0, 192, 0 },
+  { 0, 255, 0 }
+};
 
 static const esp_mqtt_client_config_t MQTTConfig = {
   .broker = {
@@ -66,14 +91,6 @@ static const esp_mqtt_client_config_t MQTTConfig = {
     },
   },
 };
-
-static enum {
-  WIFI_INVALID,
-  WIFI_CONNECTING,
-  MQTT_CONNECTING,
-  MQTT_ESTABLISHED,
-  NETWORK_STATE_COUNT
-} NetworkState;
 
 // ---------------------------------------------------------
 // needed with 3.0.3, see https://github.com/espressif/arduino-esp32/issues/10084 
@@ -263,7 +280,6 @@ int initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_
     fprintf(stderr, "error (timer config)!\n");
     return -1;
   }
-  printf("success!\n");
   return 0;
 }
 
@@ -319,8 +335,44 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
   return ret;
 }
 
+void set_network_state(network_state_e state){
+  // FIXME lock
+  NetworkState = state;
+  if(state != WIFI_INVALID){ // if invalid, leave any initial failure status up
+    if(state < NETWORK_STATE_COUNT){
+      set_led(&NetworkIndications[state]);
+    }
+  }
+}
+
 void wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
-  printf("WIFI HANDLER arg: %p id: %ld data: %p\n", arg, id, data);
+  esp_err_t err;
+  if(base == WIFI_EVENT){
+    if(id == WIFI_EVENT_STA_START || id == WIFI_EVENT_STA_DISCONNECTED){
+      set_network_state(WIFI_CONNECTING);
+      if((err = esp_wifi_connect()) != ESP_OK){
+        fprintf(stderr, "failure (%d %s) connecting to wifi\n", err, esp_err_to_name(err));
+      }
+    }else if(id == WIFI_EVENT_STA_CONNECTED){
+      set_network_state(NET_CONNECTING);
+      printf("connected to wifi, looking for ip\n");
+    }else{
+      fprintf(stderr, "unknown wifi event %ld\n", id);
+    }
+  }else if(base == IP_EVENT){
+    if(id == IP_EVENT_STA_GOT_IP || id == IP_EVENT_GOT_IP6){
+      const auto event = static_cast<ip_event_got_ip_t*>(data);
+      printf("got ip: " IPSTR, IP2STR(&event->ip_info.ip));
+      set_network_state(MQTT_CONNECTING);
+      if((err = esp_mqtt_client_start(MQTTHandle)) != ESP_OK){
+        fprintf(stderr, "failure (%d %s) connecting to mqtt\n", err, esp_err_to_name(err));
+      }
+    }else{
+      fprintf(stderr, "unknown ip event %ld\n", id);
+    }
+  }else{
+    fprintf(stderr, "unknown event base %s\n", base);
+  }
 }
 
 int setup_network(void){
@@ -336,8 +388,11 @@ int setup_network(void){
     fprintf(stderr, "couldn't create mqtt client\n");
     return -1;
   }
-  egroup = xEventGroupCreate();
   esp_err_t err;
+  if((err = esp_event_loop_create_default()) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) creating default loop\n", err, esp_err_to_name(err));
+    goto bail;
+  }
   if((err = esp_netif_init()) != ESP_OK){
     fprintf(stderr, "failure %d (%s) initializing tcp/ip\n", err, esp_err_to_name(err));
     goto bail;
@@ -351,9 +406,18 @@ int setup_network(void){
     fprintf(stderr, "failure %d (%s) configuring wifi\n", err, esp_err_to_name(err));
     goto bail;
   }
-  esp_event_handler_instance_t iid;
-  if((err = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &iid)) != ESP_OK){
+  esp_event_handler_instance_t wid;
+  if((err = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &wid)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) registering wifi events\n", err, esp_err_to_name(err));
+    goto bail;
+  }
+  esp_event_handler_instance_t ipd;
+  if((err = esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &ipd)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) registering wifi events\n", err, esp_err_to_name(err));
+    goto bail;
+  }
+  if((err = esp_wifi_start()) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) starting wifi\n", err, esp_err_to_name(err));
     goto bail;
   }
   return 0;
@@ -362,16 +426,6 @@ bail:
   esp_mqtt_client_destroy(MQTTHandle);
   return -1;
 }
-
-typedef struct failure_indication {
-  int r, g, b;
-} failure_indication;
-
-static bool StartupFailure;
-static const failure_indication PreFailure = { RGB_BRIGHTNESS, RGB_BRIGHTNESS, RGB_BRIGHTNESS };
-static const failure_indication SystemError = { RGB_BRIGHTNESS, 0, 0 };
-static const failure_indication NetworkError = { RGB_BRIGHTNESS, 0, RGB_BRIGHTNESS };
-static const failure_indication PostFailure = { 0, 0, 0 };
 
 void set_led(const struct failure_indication *nin){
   neopixelWrite(RGB_BUILTIN, nin->r, nin->g, nin->b);
@@ -382,13 +436,6 @@ void set_failure(const struct failure_indication *fin){
   set_led(fin);
 }
 
-static const failure_indication NetworkIndications[NETWORK_STATE_COUNT] = {
-  { 0, 0, 0 },
-  { 0, 64, 0 },
-  { 0, 128, 0 },
-  { 0, 255, 0 }
-};
-
 void setup(void){
   neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
   Serial.begin(115200);
@@ -397,9 +444,6 @@ void setup(void){
     if(!read_pstore()){
       UsePersistentStore = true;
     }
-  }
-  if(esp_event_loop_create_default()){
-    set_failure(&SystemError);
   }
   Load.begin(LOAD_DATAPIN, LOAD_CLOCKPIN);
   if(setup_esp32temp()){
@@ -418,49 +462,7 @@ void setup(void){
   printf("initialization %ssuccessful v" VERSION "\n", StartupFailure ? "un" : "");
 }
 
-void set_network_led(int nstate){
-  if(nstate != WIFI_INVALID){ // if invalid, leave any initial failure status up
-    set_led(&NetworkIndications[nstate]);
-  }
-}
-
-void handle_network(void){
-  esp_err_t err;
-  set_network_led(NetworkState);
-  switch(NetworkState){
-    case WIFI_INVALID:
-      if((err = esp_wifi_start()) != ESP_OK){
-        fprintf(stderr, "failure (%d %s) starting wifi\n", err, esp_err_to_name(err));
-        break;
-      }
-      NetworkState = WIFI_CONNECTING;
-      // intentional fallthrough
-    case WIFI_CONNECTING:
-      if((err = esp_wifi_connect()) != ESP_OK){
-        fprintf(stderr, "failure (%d %s) connecting to wifi\n", err, esp_err_to_name(err));
-        break;
-      }
-      NetworkState = MQTT_CONNECTING;
-      // intentional fallthrough
-    case MQTT_CONNECTING:
-      if((err = esp_mqtt_client_start(MQTTHandle)) != ESP_OK){
-        fprintf(stderr, "failure (%d %s) connecting to mqtt\n", err, esp_err_to_name(err));
-        break;
-      }
-      NetworkState = MQTT_ESTABLISHED;
-      // intentional fallthrough
-    case MQTT_ESTABLISHED:
-      break;
-    case NETWORK_STATE_COUNT:
-    default:
-      // FIXME?
-      break;
-  }
-  set_network_led(NetworkState);
-}
-
 void loop(void){
-  handle_network();
   float ambient = getAmbient();
   if(!isnan(ambient)){
     printf("esp32 temp: %f\n", ambient);
