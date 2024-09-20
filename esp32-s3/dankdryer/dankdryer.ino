@@ -438,7 +438,12 @@ void handle_network(void){
       NetworkState = MQTT_CONNECTING;
       // intentional fallthrough
     case MQTT_CONNECTING:
-      break;
+      if((err = esp_mqtt_client_start(MQTTHandle)) != ESP_OK){
+        fprintf(stderr, "failure (%d %s) connecting to mqtt\n", err, esp_err_to_name(err));
+        break;
+      }
+      NetworkState = MQTT_ESTABLISHED;
+      // intentional fallthrough
     case MQTT_ESTABLISHED:
       break;
     case NETWORK_STATE_COUNT:
