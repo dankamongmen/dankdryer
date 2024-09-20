@@ -1,0 +1,24 @@
+---
+name: Ubuntu
+
+on: [pull_request, push]
+
+jobs:
+  tests:
+    env:
+    name: 🐧 build, test, & install
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Install tools and libraries via APT
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            openscad
+
+      - uses: actions/checkout@v2
+
+      - name: make
+        run: |
+          make
