@@ -3,6 +3,7 @@
 #define VERSION "0.0.1"
 #define CLIENTID "dankdryer" VERSION
 #include "dryer-network.h"
+#include <WiFi.h>
 #include <lwip/netif.h>
 #include <nvs.h>
 #include <mdns.h>
@@ -357,6 +358,9 @@ void wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
     }else if(id == WIFI_EVENT_STA_CONNECTED){
       set_network_state(NET_CONNECTING);
       printf("connected to wifi, looking for ip\n");
+      uint16_t aid = 65535u;
+      esp_wifi_sta_get_aid(&aid);
+      printf("association id: %u\n", aid);
     }else{
       fprintf(stderr, "unknown wifi event %ld\n", id);
     }
@@ -393,6 +397,7 @@ int setup_mdns(void){
 }
 
 int setup_network(void){
+  /*
   const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
   wifi_config_t stacfg = {
     .sta = {
@@ -401,7 +406,7 @@ int setup_network(void){
       .threshold = {
         .authmode = WIFI_AUTH_WPA2_PSK,
       },
-      .sae_h2e_identifier = CLIENTID,
+      //.sae_h2e_identifier = CLIENTID,
     },
   };
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
@@ -440,6 +445,8 @@ int setup_network(void){
     fprintf(stderr, "failure %d (%s) starting wifi\n", err, esp_err_to_name(err));
     goto bail;
   }
+                // */
+  WiFi.begin(WIFIESSID, WIFIPASS);
   setup_mdns(); // allow a failure
   return 0;
 

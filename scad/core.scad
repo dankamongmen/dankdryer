@@ -206,10 +206,27 @@ module loadcellmount(baseh){
     }
 }
 
+// the upper part of the air shield, which is on the lower coupling
+module uppershieldside(){
+    rotate([0, 0, 0]){
+        //cube([]);
+    }
+}
+
+module uppershield(){
+    uppershieldside();
+    mirror([0, 1, 0]){
+        uppershieldside();
+    }
+}
+
 module lowercoupling(){
     loadcellmount(10);
-    translate([0, 0, 15]){
-        cube([-loadcellmountx * 2 + loadcellmountl, loadcellmountw, 10], true);
+    translate([loadcellmountx / 2, 0, 15]){
+        cube([-loadcellmountx + loadcellmountl, loadcellmountw, 10], true);
+    }
+    translate([0, 0, 0]){
+        uppershield();
     }
     // recessed area for 608 bearing
     translate([0, 0, 2 / 2 + 28 / 2]){
