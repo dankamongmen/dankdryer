@@ -1,6 +1,7 @@
 // dankdryer firmware
 // intended for use on an ESP32-S3-WROOM-1
 #define VERSION "0.0.1"
+#include "dryer-network.h"
 #include <nvs.h>
 #include <HX711.h>
 #include <nvs_flash.h>
@@ -42,6 +43,17 @@ static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 128;
 static uint32_t TargetTemp = 80;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
+
+static const esp_mqtt_client_config_t MQTTConfig = {
+  .broker.address_uri = MQTTURI,
+};
+
+static enum {
+  WIFI_CONNECTING,
+  WIFI_ESTABLISHED,
+  MQTT_CONNECTING,
+  MQTT_ESTABLISHED
+} NetworkState;
 
 void tach_isr(void* pulsecount){
   auto pc = static_cast<uint32_t*>(pulsecount);
@@ -269,7 +281,14 @@ void setup(void){
   printf("initialization complete v" VERSION "\n");
 }
 
+void handle_network(void){
+  switch(NetworkState){
+
+  }
+}
+
 void loop(void){
+  handle_network();
   float ambient = getAmbient();
   if(!isnan(ambient)){
     printf("esp32 temp: %f\n", ambient);
