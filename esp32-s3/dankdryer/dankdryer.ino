@@ -2,8 +2,10 @@
 // intended for use on an ESP32-S3-WROOM-1
 #define VERSION "0.0.1"
 #include "dryer-network.h"
+#include <lwip/netif.h>
 #include <nvs.h>
 #include <HX711.h>
+#include <esp_netif.h>
 #include <nvs_flash.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
@@ -67,6 +69,20 @@ static enum {
   MQTT_CONNECTING,
   MQTT_ESTABLISHED
 } NetworkState;
+
+// ---------------------------------------------------------
+// needed with 3.0.3, see https://github.com/espressif/arduino-esp32/issues/10084 
+// FIXME remove this garbage
+extern "C" int lwip_hook_ip6_input(struct pbuf *p, struct netif *inp) __attribute__((weak));
+extern "C" int lwip_hook_ip6_input(struct pbuf *p, struct netif *inp) {
+  if (ip6_addr_isany_val(inp->ip6_addr[0].u_addr.ip6)) {
+    // We don't have an LL address -> eat this packet here, so it won't get accepted on input netif
+    pbuf_free(p);
+    return 1;
+  }
+  return 0;
+}
+// ---------------------------------------------------------
 
 void tach_isr(void* pulsecount){
   auto pc = static_cast<uint32_t*>(pulsecount);
@@ -276,6 +292,10 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
 }
 
 int setup_network(void){
+  if(esp_netif_init()){
+    fprintf(stderr, "couldn't initialize tcp/ip\n");
+    return -1;
+  }
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
     fprintf(stderr, "couldn't create mqtt client\n");
     return -1;
@@ -283,7 +303,23 @@ int setup_network(void){
   return 0;
 }
 
+typedef struct failure_indication {
+  int r, g, b;
+} failure_indication;
+
+static bool StartupFailure;
+static const failure_indication PreFailure = { RGB_BRIGHTNESS, RGB_BRIGHTNESS, RGB_BRIGHTNESS };
+static const failure_indication SystemError = { RGB_BRIGHTNESS, 0, 0 };
+static const failure_indication NetworkError = { RGB_BRIGHTNESS, 0, RGB_BRIGHTNESS };
+static const failure_indication PostFailure = { 0, 0, 0 };
+
+void set_failure(const struct failure_indication *fin){
+  StartupFailure = true;
+  neopixelWrite(RGB_BUILTIN, fin->r, fin->g, fin->b);
+}
+
 void setup(void){
+  neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
   Serial.begin(115200);
   printf("dankdryer v" VERSION "\n");
   if(!init_pstore()){
@@ -291,17 +327,29 @@ void setup(void){
       UsePersistentStore = true;
     }
   }
+  esp_event_loop_args_t elargs = {
+    .queue_size = 8,
+    .task_name = NULL,
+  };
+  esp_event_loop_handle_t elhandle = {
+  };
+  if(esp_event_loop_create(&elargs, &elhandle)){
+    set_failure(&SystemError);
+  }
   Load.begin(LOAD_DATAPIN, LOAD_CLOCKPIN);
   if(setup_esp32temp()){
-    // FIXME LED feedback
+    set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
-    // FIXME LED feedback
+    set_failure(&SystemError);
+  }
+  if(setup_network()){
+    set_failure(&NetworkError);
+  }
+  if(!StartupFailure){
+    set_failure(&PostFailure);
   }
   //gpio_dump_all_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
-  if(setup_network()){
-    // FIXME LED feedback
-  }
   printf("initialization complete v" VERSION "\n");
 }
 
@@ -320,7 +368,6 @@ void handle_network(void){
 }
 
 void loop(void){
-  handle_network();
   float ambient = getAmbient();
   if(!isnan(ambient)){
     printf("esp32 temp: %f\n", ambient);
