@@ -196,9 +196,10 @@ module lowercoupling(){
         cube([-loadcellmountx * 2 + loadcellmountl, loadcellmountw, 10], true);
     }
     // recessed area for 608 bearing
-    translate([0, 0, 2 / 2 + 40 / 2]){
-        cylinder(2, 24 / 2, 24 / 2, true);
-        translate([0, 0, 2 + bearingh / 2]){
+    translate([0, 0, 2 / 2 + 28 / 2]){
+        // floor and support for bearing
+        cylinder(10, 4, 24 / 2, true);
+        translate([0, 0, 2 + bearingh / 2 + 4]){
             difference(){
                 cylinder(9, 24 / 2, 24 / 2, true);
                 cylinder(9, 22 / 2, 22 / 2, true);
