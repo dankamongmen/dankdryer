@@ -9,6 +9,7 @@ ESP32-S3 firmware and SCAD sources for the Dankdryer, the world's best filament 
   * Post contextless deltas to reddit in the heat of dumbass arguments! DATA, bitch!
 * Slow rotation like delicious savory meat.
 * Equal heating of all the spool's filament.
+* Reads RFID tags and applies correct config.
 * Control and reporting over MQTT via WiFi.
 * OTA firmware upgrades.
 * Isolated hot and cool chambers, with most active equipment in the cool chamber.
@@ -61,7 +62,7 @@ Additionally, you'll need a ceramic heating element, a buck converter, an AC
 adapter, an ESP32-S3 devkit, a [Geartisan 12V motor](https://www.amazon.com/dp/B071XCX778),
 a TB6612FNG motor controller, a 5kg load cell and its HX711 controller, two
 NF-A8 80mm fans, two Molex 4-pin fan connectors, a 608 bearing, a ~3A inline fuse,
-and hookup wire.
+a RC522 13.56 MHz RFID reader, and hookup wire. Soldering will be required.
 
 ## Preparing the AC cords
 
