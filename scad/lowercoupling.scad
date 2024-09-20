@@ -1,5 +1,4 @@
 include <core.scad>
-//include <croom.scad>
 use <croom.scad>
 
 // bottom is the bearing
@@ -23,8 +22,9 @@ multicolor("blue"){
     }
 }
 
-/*multicolor("pink"){
-    translate([79, -77, -20]){
+/*
+multicolor("pink"){
+    translate([79, -77, -34]){
         rotate([0, 270, motortheta]){
             motor();
         }
@@ -35,6 +35,9 @@ multicolor("silver"){
     translate([0, 60, flr + 30 / 2]){
         acadapter();
     }
+}
+
+multicolor("black"){
     translate([0, 0, flr + loadcellmounth]){
         loadcell();
     }
@@ -42,4 +45,5 @@ multicolor("silver"){
 
 translate([teeth / 2, 0, flr + loadcellmounth + loadcellh + 32]){
     gear();
-}*/
+}
+*/

@@ -118,3 +118,4 @@ View from the top of the lower chamber by itself, with nothing mounted.
 
 * How does air flow? Let's get some visible air and test it.
 * The ESP32-S3 has a MCPWM, a motor controller. Can we eliminate the TB6612FNG?
+* Would we benefit from thermal insulation material in the hotbox?

@@ -132,15 +132,42 @@ module spool(){
     }
 }
 
-multicolor("purple"){
+//multicolor("purple"){
+    //rotate([0, 0, 90])
     hotbox();
-}
+//}
 
-/*multicolor("green"){
+/*
+multicolor("green"){
     spool();
 }
 
 include <croom.scad>
+include <lowercoupling.scad>
+include <holder.scad>
+
+translate([0, 0, totalz - 10]){
+    holder();
+}
+
+multicolor("pink"){
+    translate([79, -77, -34]){
+        rotate([0, 270, motortheta]){
+            motor();
+        }
+    }
+}
+
+multicolor("silver"){
+    translate([0, 60, flr + 30 / 2]){
+        acadapter();
+    }
+}
+multicolor("black"){
+    translate([0, 0, flr + loadcellmounth]){
+        loadcell();
+    }
+}
 
 translate([-97.5, -97.5])
 cylinder(300, 5/2, 5/2, true);*/
