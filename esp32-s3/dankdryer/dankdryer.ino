@@ -5,6 +5,7 @@
 #include <nvs.h>
 #include <HX711.h>
 #include <nvs_flash.h>
+#include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <hal/ledc_types.h>
 #include <driver/temperature_sensor.h>
@@ -43,14 +44,19 @@ static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 128;
 static uint32_t TargetTemp = 80;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
+static esp_mqtt_client_handle_t MQTTHandle;
 
 static const esp_mqtt_client_config_t MQTTConfig = {
-  .broker.address_uri = MQTTURI,
+  .broker = {
+    .address = {
+      .uri = MQTTURI,
+    },
+  },
 };
 
 static enum {
+  WIFI_INVALID,
   WIFI_CONNECTING,
-  WIFI_ESTABLISHED,
   MQTT_CONNECTING,
   MQTT_ESTABLISHED
 } NetworkState;
@@ -262,6 +268,14 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
   return ret;
 }
 
+int setup_network(void){
+  if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
+    fprintf(stderr, "couldn't create mqtt client\n");
+    return -1;
+  }
+  return 0;
+}
+
 void setup(void){
   Serial.begin(115200);
   printf("dankdryer v" VERSION "\n");
@@ -278,12 +292,23 @@ void setup(void){
     // FIXME LED feedback
   }
   //gpio_dump_all_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
+  if(setup_network()){
+    // FIXME LED feedback
+  }
   printf("initialization complete v" VERSION "\n");
 }
 
 void handle_network(void){
+  printf("received a network event\n");
   switch(NetworkState){
-
+    case WIFI_INVALID:
+      break;
+    case WIFI_CONNECTING:
+      break;
+    case MQTT_CONNECTING:
+      break;
+    case MQTT_ESTABLISHED:
+      break;
   }
 }
 

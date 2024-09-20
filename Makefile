@@ -13,7 +13,7 @@ deps:
 	arduino-cli lib download HX711
 	arduino-cli lib install HX711
 
-$(OUT)/esp32-s3/dankdryer/dankdryer.ino.elf: $(addprefix esp32-s3/dankdryer/, dankdryer.ino) $(ESPCOMMON)
+$(OUT)/esp32-s3/dankdryer/dankdryer.ino.elf: $(addprefix esp32-s3/dankdryer/, dankdryer.ino dryer-network.h) $(ESPCOMMON)
 	@mkdir -p $(@D)
 	$(ACLI) compile $(CFLAGS) -b esp32:esp32:esp32s3 -v --output-dir $(@D) $<
 
