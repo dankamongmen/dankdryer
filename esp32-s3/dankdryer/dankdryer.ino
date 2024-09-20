@@ -1,6 +1,7 @@
 // dankdryer firmware
 // intended for use on an ESP32-S3-WROOM-1
 #define VERSION "0.0.1"
+#define CLIENTID "dankdryer" VERSION
 #include "dryer-network.h"
 #include <lwip/netif.h>
 #include <nvs.h>
@@ -8,6 +9,7 @@
 #include <esp_wifi.h>
 #include <esp_netif.h>
 #include <nvs_flash.h>
+#include <esp_system.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <hal/ledc_types.h>
@@ -294,12 +296,12 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
 }
 
 int setup_network(void){
-  const wifi_init_config_t wificfg = {
-  };
+  const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
   wifi_config_t stacfg = {
     .sta = {
       .ssid = WIFIESSID,
       .password = WIFIPASS,
+      .sae_h2e_identifier = CLIENTID,
     },
   };
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
@@ -388,12 +390,15 @@ void setup(void){
   printf("initialization complete v" VERSION "\n");
 }
 
+void set_network_led(int nstate){
+  if(nstate != WIFI_INVALID){ // if invalid, leave any initial failure status up
+    set_led(&NetworkIndications[nstate]);
+  }
+}
+
 void handle_network(void){
   esp_err_t err;
-  if(NetworkState != WIFI_INVALID){
-    set_led(&NetworkIndications[NetworkState]);
-  }
-  printf("netstate: %d\n", NetworkState);
+  set_network_led(NetworkState);
   switch(NetworkState){
     case WIFI_INVALID:
       if((err = esp_wifi_start()) != ESP_OK){
@@ -413,9 +418,7 @@ void handle_network(void){
       // FIXME?
       break;
   }
-  if(NetworkState != WIFI_INVALID){
-    set_led(&NetworkIndications[NetworkState]);
-  }
+  set_network_led(NetworkState);
 }
 
 void loop(void){
