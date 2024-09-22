@@ -21,12 +21,6 @@ multicolor("orange"){
     }
 }
 
-multicolor("red"){
-    translate([0, 0, totalz]){
-        holder();
-    }
-}
-
 multicolor("grey"){
     drop(){
         croom();

@@ -6,7 +6,7 @@ HEX:=$(addprefix $(OUT)/, $(ESP32HEX))
 CFLAGS:=--warnings all
 ACLI:=arduino-cli
 STL:=$(addsuffix .stl, \
- $(addprefix $(OUT)/scad/, croom hotbox top lowercoupling holder worm))
+ $(addprefix $(OUT)/scad/, croom hotbox top lowercoupling worm))
 
 all: $(HEX) $(STL)
 
