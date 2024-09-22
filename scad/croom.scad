@@ -187,7 +187,7 @@ module achole(){
         rotate([0, 180 - theta, 0]){
             translate([0, 0, wallz + 20]){
                 rotate([0, 90, 0]){
-                    cylinder(croomwall, 7, 7, true);
+                    cylinder(croomwall * 2, 7, 7, true);
                 }
             }
         }
@@ -196,7 +196,7 @@ module achole(){
 
 // channel for ac wires running from adapter to heater
 module wirechannel(){
-    channelh = 8;
+    channelh = 10;
     translate([-botalt + croomwall, -20, wallz]){
         rotate([90, 0, 0]){
             intersection(){
