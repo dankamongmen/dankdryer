@@ -269,16 +269,17 @@ module motor(){
 
 // the motor object, rotated and placed as it exists in the croom
 module dropmotor(){
-    translate([58, -41, -36]){
+    translate([59, -40, wallz + motormounth * 2]){
         rotate([0, 270, motortheta]){
             motor();
         }
     }
 }
 // circular mount screwed into the front of the motor through six holes
+motorholderh = 3;
 module motorholder(){
     d = (28.75 + 3) / 2;
-    ch = 3;
+    ch = motorholderh;
     difference(){
         cylinder(ch, 37 / 2, 37 / 2, true);
         translate([d, 0, 0]){
@@ -306,17 +307,18 @@ module motorholder(){
 // mount for motor. runs horizontal approximately a gear
 // radius away from the center.
 module motormount(){
+    mlength = motorboxh + motorholderh;
     difference(){
-        cube([motorboxh, 37, motormounth * 2], true);
+        cube([mlength, motorboxd, motormounth * 2], true);
         // now cut a cylinder out of its top
         translate([0, 0, motormounth]){
             rotate([0, 90, 0]){
-                cylinder(motorboxh, 37 / 2, 37 / 2, true);
+                cylinder(mlength, 37 / 2, 37 / 2, true);
             }
         }
     }
     // circular front mount
-    translate([-36, 0, motormounth]){
+    translate([-37, 0, motormounth]){
         rotate([0, 90, 0]){
             motorholder();
         }
@@ -324,7 +326,7 @@ module motormount(){
 }
 
 module dropmotormount(){
-    translate([59, -40, wallz + motormounth]){
+    translate([58, -39, wallz + motormounth]){
         rotate([0, 0, motortheta]){
             motormount();
         }

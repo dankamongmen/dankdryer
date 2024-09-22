@@ -212,3 +212,8 @@ module controlroom(){
 }
 
 controlroom();
+
+// testing + full assemblage
+multicolor("pink"){
+    dropmotor();
+}

@@ -1,5 +1,5 @@
 include <core.scad>
 
-//dropmotor();
+dropmotor();
 
 dropmotormount();
