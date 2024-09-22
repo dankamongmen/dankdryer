@@ -146,21 +146,14 @@ module top(){
                 intersection(){
                     linear_extrude(3){
                         difference(){
+                            circle(totalxy / 2 - 6);
                             circle(totalxy / 2 - 8);
-                            circle(totalxy / 2 - 10);
                         }
                     }
                     translate([0, 0, 0.75]){
                         cube([totalxy, 30, 1.5], true);
                     }
                 }
-                /*
-                // lips to lock top into place
-                translate([0, 0, 1.5]){
-                    linear_extrude(1.5){
-                        circle(totalxy / 2 - 8);
-                    }
-                }*/
             }
         }
     }

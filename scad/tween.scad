@@ -14,7 +14,7 @@ module core2(){
     shape2= tween_circle;
     shape2Size = totalxy / 2 - 5;
     shape2Rotation = -20;
-    shape2Extension = 0;
+    shape2Extension = 3;
     shape2Centroid= [0,0];
     shape2ExtensionAdjustment= 0;
 
@@ -42,25 +42,32 @@ core2();
 
 multicolor("red"){
     // latching mechanism for the top
-    translate([0, 0, topz]){
-        intersection(){
+    translate([0, 0, 4]){
+        difference(){
             linear_extrude(3){
                 difference(){
-                    circle(totalxy / 2 - 5);
-                    circle(totalxy / 2 - 8);
+                    circle(totalxy / 2 - 4);
+                    circle(totalxy / 2 - 10);
                 }
             }
-            // now two sections
-            cube([totalxy, 30, 2], true);
+            translate([0, 0, 1.5]){
+                linear_extrude(1.5){
+                    difference(){
+                        circle(totalxy / 2 - 5.5);
+                        circle(totalxy / 2 - 8.5);
+                    }
+                }
+            }
         }
     }
 }
 
-
+/*
 multicolor("purple"){
-    translate([0, 0, topz + 4]){
+    translate([0, 0, topz + 14]){
         mirror([0, 0, 1]){
             top();
         }
     }
 }
+*/
