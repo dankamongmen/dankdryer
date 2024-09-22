@@ -4,14 +4,13 @@
 include <core.scad>
 
 // thickness of croom xy walls (bottom is wallz)
-croomwall = 2;
-cwallxy = 2;
+croomwall = 3;
 // the outer radii on our top and bottom
 botrad = (totalxy + 14) * sqrt(2) / 2;
 toprad = totalxy * sqrt(2) / 2;
 // the inner radii on its top and bottom
-botinrad = botrad - cwallxy * sqrt(croomwall);
-topinrad = toprad - cwallxy * sqrt(croomwall);
+botinrad = botrad - croomwall * sqrt(2);
+topinrad = toprad - croomwall * sqrt(2);
 // distances from center to mid-outer wall
 topalt = toprad / sqrt(2);
 botalt = botrad / sqrt(2);
@@ -148,10 +147,13 @@ module perfmounts(){
 
 // hole for AC wire
 module achole(){
-    translate([-totalxy / 2, 60, wallz + 20]){
-        rotate([0, 90 - theta, 0]){
-            // FIXME should only need be one croomwall thick
-            cylinder(20, 7, 7, true);
+    translate([-botalt + croomwall / 2, 60, 0]){
+        rotate([0, 180 - theta, 0]){
+            translate([0, 0, wallz + 20]){
+                rotate([0, 90, 0]){
+                    cylinder(croomwall, 7, 7, true);
+                }
+            }
         }
     }
 }
@@ -159,7 +161,7 @@ module achole(){
 // channel for ac wires running from adapter to heater
 module wirechannel(){
     channelh = 8;
-    translate([-botalt + cwallxy, -20, wallz]){
+    translate([-botalt + croomwall, -20, wallz]){
         rotate([90, 0, 0]){
             intersection(){
                 difference(){
@@ -186,10 +188,10 @@ module wirechannels(){
 module controlroom(){
     difference(){
         croomcore();
-        //difference(){
+        difference(){
             croominnercore();
-          //  corners();
-        //}
+            corners();
+        }
         // holes for AC adapter mounting screws
         translate([0, 60, 6 / 2]){
             acadapterscrews(6);
@@ -214,6 +216,8 @@ module controlroom(){
 controlroom();
 
 // testing + full assemblage
+/*
 multicolor("pink"){
     dropmotor();
 }
+*/

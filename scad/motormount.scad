@@ -1,5 +1,7 @@
 include <core.scad>
 
-dropmotor();
+multicolor("pink"){
+    dropmotor();
+}
 
 dropmotormount();
