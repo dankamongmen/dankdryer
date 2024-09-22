@@ -96,6 +96,22 @@ module core(){
     }
 }
 
+// hole and mounts for 150C thermocouple and heating element wires
+module thermohole(){
+    r = 8;
+    l = 32;
+    w = 6;
+    cylinder(wallz, r, r, true);
+    cube([w, l, wallz], true);
+    // mounting holes are orthogonal to where we drop in terminals
+    translate([-12.5, 0, wallz / 2]){
+        screw("M4", l = wallz);
+    }
+    translate([12.5, 0, wallz / 2]){
+        screw("M4", l = wallz);
+    }
+}
+
 module hotbox(){
     difference(){
         union(){
@@ -112,10 +128,6 @@ module hotbox(){
         mirror([1, 0, 0]){
             floorcuts();
         }
-        // hole for heating element wires
-        translate([ceramheat230w / 2 + 14, totalxy / 4 + 9.75, 0]){
-            cylinder(wallz, 4, 4);
-        }
         // exhaust fan hole
         translate([0, -(totalxy - wallxy) / 2, 80 / 2 + wallz]){
             fanhole(wallxy);
@@ -128,7 +140,17 @@ module hotbox(){
         translate([0, totalxy / 4 + 10, wallz / 2]){
             ceramheat230(wallz);
         }
+        // hole and mounts for 150C thermocouple and heating element wires
+        translate([40, -10, wallz / 2]){
+            thermohole();
+        }
     }
+    /*
+      // hole for heating element wires
+        translate([ceramheat230w / 2 + 14, totalxy / 4 + 9.75, 0]){
+            cylinder(wallz, 4, 4);
+        }
+      
     // binding wall around wirehole
     translate([ceramheat230w / 2 + 14, totalxy / 4 + 9.75, wallz / 2]){
         difference(){
@@ -136,6 +158,7 @@ module hotbox(){
             cylinder(wallz, 3.5, 3.5, true);
         }
     }
+    */
 }
 
 // testing
