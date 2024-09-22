@@ -122,6 +122,12 @@ View from the top of the lower chamber by itself, with nothing mounted.
 <img alt="Top view, lower chamber" src="images/topview-croom.png"/>
 </p>
 
+Combined OpenSCAD render for mating testing.
+
+<p align="center">
+ <img alt="Combined render" src="images/stl.png"/>
+</p>
+
 # Current BOM
 
 * ESP32-S3:          $7
