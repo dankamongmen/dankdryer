@@ -39,20 +39,19 @@ A network configuration file must be created and populated at
 * Jörg Janssen's [gears.scad](https://github.com/chrisspen/gears) 2.2+
 * [BOSL2](https://github.com/BelfrySCAD/BOSL2)
 
-# Printing and BOM
+# Construction
 
-There are eleven pieces to print:
- * the lower (cool) chamber
- * the upper (hot) chamber
- * the top
- * the air shield
- * the worm gear
- * the lower coupling (load cell to bearing)
- * the shaft (runs through bearing, gear, spacers, and platform)
- * the platform
- * the gear
- * the lower spacer
- * the upper spacer
+The following pieces are printed:
+ * lower (cool) chamber
+ * upper (hot) chamber
+ * top
+ * worm gear
+ * lower coupling (load cell to bearing)
+ * shaft (runs through bearing, gear, spacers, and platform)
+ * platform
+ * gear
+ * lower spacer
+ * upper spacer
 
 Use heat-resistant filaments. My lower chamber is polycarbonate, and my upper
 chamber is Bambu PAHT-CF. You obviously don't want to use a target temperature
@@ -122,6 +121,27 @@ View from the top of the lower chamber by itself, with nothing mounted.
 <p align="center">
 <img alt="Top view, lower chamber" src="images/topview-croom.png"/>
 </p>
+
+# Current BOM
+
+* ESP32-S3:          $7
+* 150C thermostat:   $3.10
+* TB6612FNG:         $3.33
+* Geartisan:         $15
+* RC522:             $1.34
+* AC adapter:        $13
+* Load cell + HX711: $7.5
+* Perfboard:         $1
+* Buck converter:    $1.30
+* BME680:            $14
+* 5A fuse:           $0.60
+* AC cable:          $6
+* Polycarbonate:     $17.78 (assumes 25% failures)
+* PAHT-CF:           $32.89 (assumes 25% failures)
+
+$123.84. With 9.5% sales tax: $135.60.
+
+This does not consider hookup wire, ring/spade terminals, nor electricity.
 
 # Questions
 
