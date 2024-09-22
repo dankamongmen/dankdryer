@@ -324,7 +324,7 @@ module motormount(){
 }
 
 module dropmotormount(){
-    translate([59, -40, flr + motormounth]){
+    translate([59, -40, wallz + motormounth]){
         rotate([0, 0, motortheta]){
             motormount();
         }

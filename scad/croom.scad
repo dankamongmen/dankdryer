@@ -5,13 +5,13 @@ include <core.scad>
 
 // thickness of croom xy walls (bottom is wallz)
 croomwall = 2;
-
+cwallxy = 2;
 // the outer radii on our top and bottom
-toprad = (totalxy + 14) * sqrt(2) / 2;
-botrad = totalxy * sqrt(2) / 2;
+botrad = (totalxy + 14) * sqrt(2) / 2;
+toprad = totalxy * sqrt(2) / 2;
 // the inner radii on its top and bottom
-botinrad = botrad - 2 * sqrt(croomwall);
-topinrad = toprad - 2 * sqrt(croomwall);
+botinrad = botrad - cwallxy * sqrt(croomwall);
+topinrad = toprad - cwallxy * sqrt(croomwall);
 // distances from center to mid-outer wall
 topalt = toprad / sqrt(2);
 botalt = botrad / sqrt(2);
@@ -21,25 +21,23 @@ botinalt = botinrad / sqrt(2);
 // the fundamental structure
 module croomcore(){
     rotate([0, 0, 45]){
-        mirror([0, 0, 1]){
-            cylinder(croomz, botrad, toprad, $fn = 4);
-        }
+        cylinder(croomz, botrad, toprad, $fn = 4);
     }
 }
 
 // the vast majority of the interior, removed
 module croominnercore(){
     coreh = croomz - wallz;
-    translate([0, 0, flr]){
+    translate([0, 0, wallz]){
         rotate([0, 0, 45]){
-            cylinder(coreh, topinrad, botinrad, $fn = 4);
+            cylinder(coreh, botinrad, topinrad, $fn = 4);
         }
     }
 }
 
 // a corner at the top, to which the hotbox is mounted
 module corner(){
-    translate([-totalxy / 2, -totalxy / 2, -10]){
+    translate([-totalxy / 2, -totalxy / 2, croomz - 10]){
         difference(){
             union(){
                 cube([44, 44, 20], true);
@@ -57,7 +55,7 @@ module corner(){
 }
 
 adj = (botrad - toprad) / sqrt(2);
-theta = -(90 - atan(-croomz / adj));
+theta = (90 - atan(-croomz / adj));
 module rot(deg){
     rotate([theta + deg, 0, 0]){
         children();
@@ -68,7 +66,7 @@ module lowershield(){
     // the lower shield must not support the lower coupling,
     // but it should come right up under it to block air
     //(-shieldw + 6) / 2, (19.5 + 6) / 2
-    translate([0, 0, flr + loadcellmounth / 2]){
+    translate([0, 0, wallz + loadcellmounth / 2]){
         difference(){
             cube([shieldw + 6, 25.5 / 2, loadcellmounth], true);
             cube([shieldw + 2, 20 / 2, loadcellmounth], true);
@@ -110,38 +108,39 @@ module corners(){
 module lmsmount(){
     difference(){
         cube([7, 7, mh], true);
-        screw("M3", length = mh);
+        screw("M4", length = mh);
     }
 }
 
 // 32.14 on the diagonal
 module lmsmounts(){
     // 12->5V mounts
-    translate([40, -totalxy / 2 + 20, flr + mh / 2]){
+    translate([40, -totalxy / 2 + 20, wallz + mh / 2]){
        lmsmount();
     }
-    translate([8, -totalxy / 2 + 20 + 16.4, flr + mh / 2]){
+    translate([8, -totalxy / 2 + 20 + 16.4, wallz + mh / 2]){
        lmsmount();
     }
 }
 
-module perfmount(){
+module perfmount(h){
     difference(){
-        cube([7, 7, mh + 6], true);
-        screw("M4", length = mh + 6);
+        cube([7, 7, h], true);
+        screw("M4", length = h);
     }
 }
 
 module perfmounts(){
-    translate([-mh, -0.95 * totalxy / 2 + mh, flr + mh / 2]){
-        perfmount();
+    h = mh + 6;
+    translate([-mh, -0.95 * totalxy / 2 + mh, wallz + h / 2]){
+        perfmount(h);
         translate([-80 - 3.3, 0, 0]){
-            perfmount();
+            perfmount(h);
         }
         translate([0, 61.75 + 3.3, 0]){
-            perfmount();
+            perfmount(h);
             translate([-80 - 3.3, 0, 0]){
-                perfmount();
+                perfmount(h);
             }
         }
     }
@@ -149,7 +148,7 @@ module perfmounts(){
 
 // hole for AC wire
 module achole(){
-    translate([-totalxy / 2, 60, flr + 20]){
+    translate([-totalxy / 2, 60, wallz + 20]){
         rotate([0, 90 - theta, 0]){
             // FIXME should only need be one croomwall thick
             cylinder(20, 7, 7, true);
@@ -159,16 +158,18 @@ module achole(){
 
 // channel for ac wires running from adapter to heater
 module wirechannel(){
-    translate([-botalt - 5, -20, flr + 5 / 2]){
-        intersection(){
-            rotate([90, 0, 0]){
+    channelh = 8;
+    translate([-botalt + cwallxy, -20, wallz]){
+        rotate([90, 0, 0]){
+            intersection(){
                 difference(){
-                    cylinder(totalxy / 2, 5, 5, true);
-                    cylinder(totalxy / 2, 4, 4, true);
+                    cylinder(totalxy / 2, channelh / 2, channelh / 2, true);
+                    cylinder(totalxy / 2, (channelh - 1) / 2, (channelh - 1) / 2, true);
                 }
-            }
-            translate([0, -totalxy / 4, -5 / 2]){
-                cube([10, totalxy / 2, 10]);
+                translate([channelh / 2, channelh / 2, 0]){
+                    cube([channelh, channelh, totalxy / 2], true);
+                }
+
             }
         }
     }
@@ -185,16 +186,16 @@ module wirechannels(){
 module controlroom(){
     difference(){
         croomcore();
-        difference(){
+        //difference(){
             croominnercore();
-            corners();
-        }
+          //  corners();
+        //}
         // holes for AC adapter mounting screws
-        translate([0, 60, -croomz + 2]){
+        translate([0, 60, 6 / 2]){
             acadapterscrews(6);
         }
-        rotate([theta, 0, 0]){
-            translate([0, -botalt + 10, flr + 40]){
+        translate([0, -botalt + 10, croomz / 2]){
+            rot(0){
                 fanhole(20);
             }
         }
@@ -204,7 +205,7 @@ module controlroom(){
     wirechannels();
     lmsmounts();
     perfmounts();
-    translate([0, 0, flr]){
+    translate([0, 0, wallz]){
         loadcellmount(loadcellmounth);
     }
     dropmotormount();
