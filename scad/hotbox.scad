@@ -145,20 +145,6 @@ module hotbox(){
             thermohole();
         }
     }
-    /*
-      // hole for heating element wires
-        translate([ceramheat230w / 2 + 14, totalxy / 4 + 9.75, 0]){
-            cylinder(wallz, 4, 4);
-        }
-      
-    // binding wall around wirehole
-    translate([ceramheat230w / 2 + 14, totalxy / 4 + 9.75, wallz / 2]){
-        difference(){
-            cylinder(wallz, 4.5, 4.5, true);
-            cylinder(wallz, 3.5, 3.5, true);
-        }
-    }
-    */
 }
 
 // testing
