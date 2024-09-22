@@ -8,12 +8,14 @@ use <croom.scad>
 // platform at the top
 
 multicolor("blue"){
-    translate([0, 0, -60]){
-        mirror([1, 0, 0]){
-            lowercoupling();
-        }
+    mirror([1, 0, 0]){
+        lowercoupling();
     }
-    translate([0, 0, -60 + 19 + shafth / 2]){
+}
+
+/*
+multicolor("white"){
+    translate([0, 0, uloadcellmounth + shafth / 2]){
         shaft();
     }
 }
@@ -34,4 +36,5 @@ multicolor("black"){
     }
 }
 
-dogear();
+dropgear();
+*/

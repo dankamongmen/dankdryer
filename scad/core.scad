@@ -211,16 +211,17 @@ module uppershield(){
     }
 }
 
+uloadcellmounth = 5;
 module lowercoupling(){
-    loadcellmount(10);
-    translate([loadcellmountx / 2, 0, 15]){
-        cube([-loadcellmountx + loadcellmountl, loadcellmountw, 10], true);
+    loadcellmount(uloadcellmounth);
+    translate([loadcellmountx / 2, 0, uloadcellmounth]){
+        cube([-loadcellmountx + loadcellmountl, loadcellmountw, uloadcellmounth], true);
     }
     translate([0, 0, 0]){
         uppershield();
     }
     // recessed area for 608 bearing
-    translate([0, 0, 2 / 2 + 28 / 2]){
+    translate([0, 0, uloadcellmounth * 2]){
         // floor and support for bearing
         cylinder(10, 4, 24 / 2, true);
         translate([0, 0, 2 + bearingh / 2 + 4]){
@@ -366,7 +367,7 @@ module dropmotormount(){
     }
 }
 
-shafth = bearingh + croomz - loadcellmounth - 30;
+shafth = bearingh + croomz - loadcellmounth;
 
 module shaft(){
     cylinder(shafth, bearingh / 2, bearingh / 2, true);

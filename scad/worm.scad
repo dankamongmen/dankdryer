@@ -5,4 +5,5 @@ translate([5, 0, 0]){
         wormy();
     }
 }
-gear();
+
+//gear();
