@@ -13,10 +13,12 @@ multicolor("green"){
   spool();
 }
 
-module drop(){
-    translate([0, 0, -croomz]){
-        children();
-    }
+multicolor("orange"){
+    top();
+}
+
+translate([0, 0, totalz - 10]){
+    holder();
 }
 
 multicolor("grey"){
@@ -24,10 +26,6 @@ multicolor("grey"){
         croom();
     }
 }
-
-/*translate([0, 0, totalz - 10]){
-    holder();
-}*/
 
 multicolor("pink"){
     drop(){
@@ -40,8 +38,9 @@ multicolor("silver"){
         acadapter();
     }
 }
+
 multicolor("black"){
-    translate([0, 0, loadcellmounth]){
+    translate([0, 0, loadcellmounth + wallz + loadcellh / 2]){
         drop(){
             loadcell();
         }
@@ -49,8 +48,8 @@ multicolor("black"){
 }
 
 multicolor("blue"){
-    translate([0, 0, -60]){
-        drop(){
+    drop(){
+        translate([0, 0, loadcellmounth + wallz + loadcellh]){
             mirror([1, 0, 0]){
                 lowercoupling();
             }
@@ -61,4 +60,6 @@ multicolor("blue"){
     }
 }
 
-dogear();
+multicolor("white"){
+    dropgear();
+}

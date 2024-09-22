@@ -3,6 +3,7 @@
 // the top is lifted up and out to insert a spool
 // the spool sits on corner walls
 include <core.scad>
+use <tween.scad>
 
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5
@@ -87,14 +88,12 @@ module core(){
             }
 }
 
-use <tween.scad>
-
 module hotbox(){
     difference(){
         union(){
             topbottom(wallz);
             core();
-            translate([0, 0, totalz]){
+            translate([0, 0, totalz - topz]){
                 core2();
             }
             hbcorners();
@@ -110,7 +109,7 @@ module hotbox(){
             cylinder(wallz, 4, 4);
         }
         // exhaust fan hole
-        translate([0, -totalxy / 2 + wallxy, 80 / 2 + 5]){
+        translate([0, -totalxy / 2 + wallxy, (totalz - topz) / 2]){
             fanhole(40);
         }
         // central column
@@ -125,20 +124,8 @@ module hotbox(){
 }
 
 // testing
-module spool(){
-    translate([0, 0, wallz + elevation]){
-        linear_extrude(spoolh){
-            difference(){
-                circle(spoold / 2);
-                circle(spoolholed / 2);
-            }
-        }
-    }
-}
-
 hotbox();
 
-/*
 multicolor("green"){
   spool();
-}*/
+}

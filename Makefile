@@ -5,7 +5,7 @@ ESP32HEX:=$(addprefix esp32-s3/, $(addsuffix .ino.elf, dankdryer/dankdryer))
 HEX:=$(addprefix $(OUT)/, $(ESP32HEX))
 CFLAGS:=--warnings all
 ACLI:=arduino-cli
-STL:=$(addsuffix .stl, $(addprefix $(OUT)/scad/, croom hotbox top))
+STL:=$(addsuffix .stl, $(addprefix $(OUT)/scad/, croom hotbox top lowermount holder worm))
 
 all: $(HEX) $(STL)
 

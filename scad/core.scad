@@ -28,11 +28,12 @@ wallz = 3; // bottom thickness; don't want much
 gapxy = 1; // gap between spool and walls; spool/walls might expand!
 wallxy = 5;
 topz = 5; // height of top piece
-elevation = 5; // spool distance from bottom
+// spool distance from floor and ceiling. ought add up to 80.
+elevation = (80 - spoolh) / 2;
 chordxy = 33;
 
 totalxy = spoold + wallxy * 2 + gapxy * 2;
-totalz = spoolh + wallz + topz + elevation;
+totalz = spoolh + wallz + topz + elevation * 2;
 totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 
 ctopz = wallz;
@@ -41,20 +42,6 @@ croomz = wallz + ctopz + 90; // 80mm fan; ought just need sin(theta)80
 flr = -croomz + wallz; // floor z offset
 mh = wallz; // mount height
 shieldw = 88;
-module shieldscrew(){
-    translate([(-shieldw + 6) / 2, (19.5 + 6) / 2, mh / 2]){
-        screw("M4", length = mh);
-    }
-}
-
-module shieldbinder(){
-    difference(){
-        translate([(-shieldw + 6) / 2, (19.5 + 6) / 2, mh / 2]){
-            cube([6, 6, mh], true);
-        }
-        shieldscrew();
-    }
-}
 
 opoints = [
             [-totalxy / 2 + chordxy, -totalxy / 2],
@@ -160,10 +147,12 @@ module holdholes(h){
 module top(){
     difference(){
         hull(){
-            topbottom(1);
-            translate([0, 0, topz]){
-                linear_extrude(1){
-                    polygon(ipoints);
+            linear_extrude(1){
+                polygon(ipoints);
+            }
+            translate([0, 0, 1]){
+                linear_extrude(3){
+                    circle(totalxy / 2 - 8);
                 }
             }
         }
@@ -238,7 +227,13 @@ module lowercoupling(){
     }
 }
 
-teeth = 40;
+module drop(){
+    translate([0, 0, -croomz]){
+        children();
+    }
+}
+
+teeth = 44;
 module gear(){
     worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=5.5, gear_bore=4, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=1, show_worm=0);
 }
@@ -334,9 +329,21 @@ module dropmotormount(){
 
 shafth = bearingh + croomz - loadcellmounth - 30;
 
+module shaft(){
+    cylinder(shafth, bearingh / 2, bearingh / 2, true);
+}
+
 module dogear(){
-    translate([teeth / 2, 0, -34]){
+    translate([teeth / 2, 0, 0]){
         gear();
+    }
+}
+
+module dropgear(){
+    translate([0, 0, wallz + motormounth * 2]){
+        drop(){
+            dogear();
+        }
     }
 }
 

@@ -7,10 +7,6 @@ use <croom.scad>
 // upper spacer
 // platform at the top
 
-module shaft(){
-    cylinder(shafth, bearingh / 2, bearingh / 2, true);
-}
-
 multicolor("blue"){
     translate([0, 0, -60]){
         mirror([1, 0, 0]){

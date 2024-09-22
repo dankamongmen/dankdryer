@@ -22,24 +22,40 @@ module core2(){
 
     isHollow = 1;
 
-    extrusionHeight= 10;
-    extrusionSlices = 33; // assume 0.3 layer height
+    extrusionSlices = topz / 0.3; // assume 0.3 layer height
     sliceAdjustment= 0;
 
-    sliceHeight = extrusionHeight * 1.0 / extrusionSlices;
+    sliceHeight = topz * 1.0 / extrusionSlices;
 
     tweenLoft(shape1, shape1Size, shape1Rotation, shape1Centroid, shape1Extension,
               shape2, shape2Size, shape2Rotation, shape2Centroid, shape2Extension,
               shape2ExtensionAdjustment, extrusionSlices, sliceHeight,
               sliceAdjustment, wallThickness/2, isHollow);
-    translate([0, 0, extrusionHeight]){
-        difference(){
-            cylinder(3, totalxy / 2 - 5, totalxy / 2 - 5, true);
-            translate([0, 0, 0]){
-                cylinder(3, (totalxy - 3) / 2, (totalxy - 3) / 2, true);
+    // latches for the top. we want to drop it in and rotate it slightly,
+    // locking it into place. if the apparatus is knocked over, the top
+    // should remain where it is.
+    
+}
+      
+core2();
+
+/*
+multicolor("red"){
+    translate([0, 0, topz]){
+        linear_extrude(3){
+            difference(){
+                circle(totalxy / 2 - 5);
+                circle(totalxy / 2 - 8);
             }
         }
     }
 }
-      
-core2();
+
+multicolor("purple"){
+    translate([0, 0, topz + 4]){
+        mirror([0, 0, 1]){
+            top();
+        }
+    }
+}
+*/
