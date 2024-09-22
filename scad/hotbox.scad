@@ -92,11 +92,9 @@ use <tween_example6.scad>
 module hotbox(){
     difference(){
         union(){
-            topbottom(wallz);
+            //topbottom(wallz);
             //core();
-            translate([0, 0, wallz]){
-             core2();
-            }
+            core2();
             hbcorners();
         }
         // now remove all other interacting pieces
@@ -104,12 +102,6 @@ module hotbox(){
         floorcuts();
         mirror([1, 0, 0]){
             floorcuts();
-        }
-        // recess for the top
-        translate([0, 0, totalz - wallz]){
-            mirror([0, 0, 1]){
-                top();
-            }
         }
         // hole for heating element wires
         translate([ceramheat230w / 2 + 10, totalxy / 4 + 10, 0]){
@@ -130,8 +122,6 @@ module hotbox(){
     }
 }
 
-echo("TZ: ", totalz);
-
 // testing
 module spool(){
     translate([0, 0, wallz + elevation]){
@@ -145,30 +135,25 @@ module spool(){
 }
 
 //multicolor("purple"){
-//    rotate([0, 0, 180])
+//rotate([0, 0, 180])
     hotbox();
 //}
 
 /*
 multicolor("green"){
   spool();
-}
+}*/
 
 include <croom.scad>
-include <lowercoupling.scad>
+use <lowercoupling.scad>
 include <holder.scad>
 
-translate([0, 0, totalz - 10]){
+/*translate([0, 0, totalz - 10]){
     holder();
-}
-
+}*/
 
 multicolor("pink"){
-    translate([79, -77, -34]){
-        rotate([0, 270, motortheta]){
-            motor();
-        }
-    }
+    dropmotor();
 }
 
 multicolor("silver"){
@@ -182,5 +167,19 @@ multicolor("black"){
     }
 }
 
+multicolor("blue"){
+    translate([0, 0, -60]){
+        mirror([1, 0, 0]){
+            lowercoupling();
+        }
+    }
+    translate([0, 0, -60 + 19 + shafth / 2]){
+        shaft();
+    }
+}
+
+dogear();
+
+/*
 translate([-97.5, -97.5])
 cylinder(300, 5/2, 5/2, true);*/

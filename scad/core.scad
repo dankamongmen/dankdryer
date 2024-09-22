@@ -39,8 +39,8 @@ totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 ctopz = wallz;
 croomz = wallz + ctopz + 90; // 80mm fan; ought just need sin(theta)80
 
+flr = -croomz + wallz; // floor z offset
 mh = wallz; // mount height
-
 shieldw = 88;
 module shieldscrew(){
     translate([(-shieldw + 6) / 2, (19.5 + 6) / 2, mh / 2]){
@@ -172,23 +172,6 @@ module top(){
     }
 }
 
-// motor is 37x75mm diameter gearbox and 6x14mm shaft
-// (with arbitrarily large worm gear on the shaft)
-motorboxh = 75;
-motorboxd = 37;
-motorshafth = wormlen; // sans worm: 14
-motorshaftd = 13; // sans worm: 6
-motortheta = -60;
-motormounth = 37;
-// the worm gear on the motor's rotor needs to be tangent to, and at the same
-// elevation as, some point on the central gear.
-module motor(){
-    cylinder(motorboxh, motorboxd / 2, motorboxd / 2, true);
-    translate([0, 0, motorboxh]){
-        cylinder(motorshafth, motorshaftd / 2, motorshaftd / 2, true);
-    }
-}
-
 module acadapter(){
     difference(){
         cube([165.1, 60, 30], true);
@@ -266,3 +249,92 @@ loadcellmountw = 13.5;
 loadcellmountl = 21.05;
 loadcellmounth = 27;
 bearingh = 7;
+
+// motor is 37x75mm diameter gearbox and 6x14mm shaft
+// (with arbitrarily large worm gear on the shaft)
+motorboxh = 75;
+motorboxd = 37;
+motorshafth = wormlen; // sans worm: 14
+motorshaftd = 13; // sans worm: 6
+motortheta = -60;
+motormounth = 37;
+// the worm gear on the motor's rotor needs to be tangent to, and at the same
+// elevation as, some point on the central gear.
+module motor(){
+    cylinder(motorboxh, motorboxd / 2, motorboxd / 2, true);
+    translate([0, 0, motorboxd]){
+        cylinder(motorshafth, motorshaftd / 2, motorshaftd / 2, true);
+    }
+}
+
+// the motor object, rotated and placed as it exists in the croom
+module dropmotor(){
+    translate([58, -41, -36]){
+        rotate([0, 270, motortheta]){
+            motor();
+        }
+    }
+}
+// circular mount screwed into the front of the motor through six holes
+module motorholder(){
+    d = (28.75 + 3) / 2;
+    ch = 3;
+    difference(){
+        cylinder(ch, 37 / 2, 37 / 2, true);
+        translate([d, 0, 0]){
+            cylinder(ch, 1.5, 1.5, true);
+        }
+        translate([-d, 0, 0]){
+            cylinder(ch, 1.5, 1.5, true);
+        }
+        translate([cos(60) * -d, sin(60) * d, 0]){
+            cylinder(ch, 1.5, 1.5, true);
+        }
+        translate([cos(60) * d, sin(60) * d, 0]){
+            cylinder(ch, 1.5, 1.5, true);
+        }
+        translate([cos(60) * d, sin(60) * -d, 0]){
+            cylinder(ch, 1.5, 1.5, true);
+        }
+        translate([cos(60) * -d, sin(60) * -d, 0]){
+            cylinder(ch, 1.5, 1.5, true);
+        }
+        cylinder(ch, 7, 7, true);
+    }
+}
+
+// mount for motor. runs horizontal approximately a gear
+// radius away from the center.
+module motormount(){
+    difference(){
+        cube([motorboxh, 37, motormounth * 2], true);
+        // now cut a cylinder out of its top
+        translate([0, 0, motormounth]){
+            rotate([0, 90, 0]){
+                cylinder(motorboxh, 37 / 2, 37 / 2, true);
+            }
+        }
+    }
+    // circular front mount
+    translate([-36, 0, motormounth]){
+        rotate([0, 90, 0]){
+            motorholder();
+        }
+    }
+}
+
+module dropmotormount(){
+    translate([59, -40, flr + motormounth]){
+        rotate([0, 0, motortheta]){
+            motormount();
+        }
+    }
+}
+
+shafth = bearingh + croomz - loadcellmounth - 30;
+
+module dogear(){
+    translate([teeth / 2, 0, -34]){
+        gear();
+    }
+}

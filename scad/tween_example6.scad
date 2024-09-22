@@ -11,7 +11,7 @@ shape1Extension = 0;
 shape1Centroid  = [0,0];
 
 shape2= tween_circle;
-shape2Size = totalxy / 2 - 5;
+shape2Size = totalxy / 2;
 shape2Rotation = 0;
 shape2Extension = 0;
 shape2Centroid= [0,0];
@@ -21,8 +21,8 @@ wallThickness= 5;
 
 isHollow = 1;
 
-extrusionHeight= 95;
-extrusionSlices = 30;
+extrusionHeight= 10;
+extrusionSlices = 20;
 sliceAdjustment= 0;
 
 sliceHeight = extrusionHeight * 1.0 / extrusionSlices;

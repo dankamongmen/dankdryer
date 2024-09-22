@@ -18,6 +18,7 @@ botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
 
+// the fundamental structure
 module croomcore(){
     rotate([0, 0, 45]){
         mirror([0, 0, 1]){
@@ -26,7 +27,7 @@ module croomcore(){
     }
 }
 
-flr = -croomz + wallz; // floor z offset
+// the vast majority of the interior, removed
 module croominnercore(){
     coreh = croomz - wallz;
     translate([0, 0, flr]){
@@ -36,20 +37,22 @@ module croominnercore(){
     }
 }
 
+// a corner at the top, to which the hotbox is mounted
 module corner(){
     translate([-totalxy / 2, -totalxy / 2, -10]){
-        cube([44, 44, 20], true);
-        translate([0, 0, -35]){
-            rotate([0, 0, 45]){
-                cylinder(50, 0, sqrt(2) * 22, true, $fn = 4);
+        difference(){
+            union(){
+                cube([44, 44, 20], true);
+                translate([0, 0, -35]){
+                    rotate([0, 0, 45]){
+                        cylinder(50, 0, sqrt(2) * 22, true, $fn = 4);
+                    }
+                }
+            }
+            translate([12, 12, 0]){
+                screw("M5", length = 20);
             }
         }
-    }
-}
-
-module cornercut(){
-    translate([-totalxy / 2 + 12, -totalxy / 2 + 12, -10]){
-        screw("M5", length = 20);
     }
 }
 
@@ -58,55 +61,6 @@ theta = -(90 - atan(-croomz / adj));
 module rot(deg){
     rotate([theta + deg, 0, 0]){
         children();
-    }
-}
-
-// circular mount screwed into the front of the motor through six holes
-module motorholder(){
-    d = (28.75 + 3) / 2;
-    ch = 3;
-    difference(){
-        cylinder(ch, 37 / 2, 37 / 2, true);
-        translate([d, 0, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([-d, 0, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([cos(60) * -d, sin(60) * d, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([cos(60) * d, sin(60) * d, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([cos(60) * d, sin(60) * -d, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([cos(60) * -d, sin(60) * -d, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        cylinder(ch, 12 / 2, 12 / 2, true);
-    }
-}
-
-// mount for motor. runs horizontal approximately a gear
-// radius away from the center.
-module motormount(){
-    cube([66, 37, motormounth], true);
-    translate([0, 0, motormounth]){
-        difference(){
-            translate([0, 0, -motormounth / 2]){
-                cube([66, 37, motormounth], true);
-            }
-            rotate([0, 90, 0]){
-                cylinder(66, 37 / 2, 37 / 2, true);
-            }
-        }
-    }
-    translate([-31.5, 0, 38]){
-        rotate([0, 90, 0]){
-            motorholder();
-        }
     }
 }
 
@@ -150,20 +104,6 @@ module corners(){
     }
     mirror([1, 1, 0]){
         corner();
-    }
-}
-
-module cornercuts(){
-    // holes in corners for mounting hotbox
-    cornercut();
-    mirror([1, 0, 0]){
-        cornercut();
-    }
-    mirror([0, 1, 0]){
-        cornercut();
-    }
-    mirror([1, 1, 0]){
-        cornercut();
     }
 }
 
@@ -258,7 +198,6 @@ module controlroom(){
                 fanhole(20);
             }
         }
-        cornercuts();
         achole();
     }
     lowershield();
@@ -268,11 +207,7 @@ module controlroom(){
     translate([0, 0, flr]){
         loadcellmount(loadcellmounth);
     }
-    translate([55, -36, flr + 37 / 2]){
-        rotate([0, 0, motortheta]){
-            motormount();
-        }
-    }
+    dropmotormount();
 }
 
 controlroom();

@@ -6,7 +6,7 @@ use <croom.scad>
 // geat
 // upper spacer
 // platform at the top
-shafth = bearingh + croomz - loadcellmounth - 30;
+
 module shaft(){
     cylinder(shafth, bearingh / 2, bearingh / 2, true);
 }
@@ -17,20 +17,13 @@ multicolor("blue"){
             lowercoupling();
         }
     }
-    /*
     translate([0, 0, -60 + 19 + shafth / 2]){
         shaft();
     }
-    */
 }
 
-/*
 multicolor("pink"){
-    translate([45, 45, flr + motormounth + motorboxh / 2]){
-        rotate([0, 270, motortheta]){
-            motor();
-        }
-    }
+    dropmotor();
 }
 
 multicolor("silver"){
@@ -45,7 +38,4 @@ multicolor("black"){
     }
 }
 
-translate([teeth / 2, 0, -34]){
-    gear();
-}
-*/
+dogear();
