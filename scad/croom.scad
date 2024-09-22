@@ -185,7 +185,7 @@ module wirechannels(){
 }
 
 // inverted frustrum
-module controlroom(){
+module croom(){
     difference(){
         croomcore();
         difference(){
@@ -213,7 +213,7 @@ module controlroom(){
     dropmotormount();
 }
 
-controlroom();
+croom();
 
 // testing + full assemblage
 /*

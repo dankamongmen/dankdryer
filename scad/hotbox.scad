@@ -87,7 +87,7 @@ module core(){
             }
 }
 
-use <tween_example6.scad>
+use <tween.scad>
 
 module hotbox(){
     difference(){
