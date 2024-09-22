@@ -92,9 +92,11 @@ use <tween.scad>
 module hotbox(){
     difference(){
         union(){
-            //topbottom(wallz);
-            //core();
-            core2();
+            topbottom(wallz);
+            core();
+            translate([0, 0, totalz]){
+                core2();
+            }
             hbcorners();
         }
         // now remove all other interacting pieces
@@ -134,52 +136,9 @@ module spool(){
     }
 }
 
-//multicolor("purple"){
-//rotate([0, 0, 180])
-    hotbox();
-//}
+hotbox();
 
 /*
 multicolor("green"){
   spool();
 }*/
-
-include <croom.scad>
-use <lowercoupling.scad>
-include <holder.scad>
-
-/*translate([0, 0, totalz - 10]){
-    holder();
-}*/
-
-multicolor("pink"){
-    dropmotor();
-}
-
-multicolor("silver"){
-    translate([0, 60, flr + 30 / 2]){
-        acadapter();
-    }
-}
-multicolor("black"){
-    translate([0, 0, flr + loadcellmounth]){
-        loadcell();
-    }
-}
-
-multicolor("blue"){
-    translate([0, 0, -60]){
-        mirror([1, 0, 0]){
-            lowercoupling();
-        }
-    }
-    translate([0, 0, -60 + 19 + shafth / 2]){
-        shaft();
-    }
-}
-
-dogear();
-
-/*
-translate([-97.5, -97.5])
-cylinder(300, 5/2, 5/2, true);*/

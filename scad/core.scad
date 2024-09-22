@@ -28,12 +28,11 @@ wallz = 3; // bottom thickness; don't want much
 gapxy = 1; // gap between spool and walls; spool/walls might expand!
 wallxy = 5;
 topz = 5; // height of top piece
-gapz = 2; // spool distance from bottom of top
-elevation = 10; // spool distance from bottom
+elevation = 5; // spool distance from bottom
 chordxy = 33;
 
 totalxy = spoold + wallxy * 2 + gapxy * 2;
-totalz = spoolh + wallz + topz + gapz + elevation;
+totalz = spoolh + wallz + topz + elevation;
 totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 
 ctopz = wallz;
@@ -338,5 +337,16 @@ shafth = bearingh + croomz - loadcellmounth - 30;
 module dogear(){
     translate([teeth / 2, 0, -34]){
         gear();
+    }
+}
+
+module spool(){
+    translate([0, 0, wallz + elevation]){
+        linear_extrude(spoolh){
+            difference(){
+                circle(spoold / 2);
+                circle(spoolholed / 2);
+            }
+        }
     }
 }
