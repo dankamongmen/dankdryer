@@ -28,8 +28,9 @@ wallz = 3; // bottom thickness; don't want much
 gapxy = 1; // gap between spool and walls; spool/walls might expand!
 wallxy = 5;
 topz = 5; // height of top piece
-// spool distance from floor and ceiling. ought add up to 80.
-elevation = (80 - spoolh) / 2;
+// spool distance from floor and ceiling. ought add up to 85
+// (so that there's space on either side of the fan).
+elevation = (85 - spoolh) / 2;
 chordxy = 33;
 
 totalxy = spoold + wallxy * 2 + gapxy * 2;
@@ -124,39 +125,44 @@ module fanhole(h){
     }
 }
 
-// screw hole for the top hold
-module holdhole(h){
-    translate([-10, -10, h / 2]){
-        cylinder(h, 4 / 2, 4 / 2, true);
-    }
-}
-
-module holdholes(h){
-    holdhole(h);
-    mirror([0, 1, 0]){
-        holdhole(h);
-    }
-    mirror([1, 0, 0]){
-        holdhole(h);
-    }
-    mirror([1, 1, 0]){
-        holdhole(h);
-    }
-}
-
+// octagon         -- 1mm
+// morph to circle -- 3mm
+// lips            -- 1.5mm
+// 
 module top(){
     difference(){
-        hull(){
-            linear_extrude(1){
-                polygon(ipoints);
-            }
-            translate([0, 0, 1]){
-                linear_extrude(3){
-                    circle(totalxy / 2 - 8);
+        union(){
+            hull(){
+                linear_extrude(1){
+                    polygon(ipoints);
+                }
+                translate([0, 0, 1]){
+                    linear_extrude(3){
+                        circle(totalxy / 2 - 8);
+                    }
                 }
             }
+            translate([0, 0, 4]){
+                intersection(){
+                    linear_extrude(3){
+                        difference(){
+                            circle(totalxy / 2 - 8);
+                            circle(totalxy / 2 - 10);
+                        }
+                    }
+                    translate([0, 0, 0.75]){
+                        cube([totalxy, 30, 1.5], true);
+                    }
+                }
+                /*
+                // lips to lock top into place
+                translate([0, 0, 1.5]){
+                    linear_extrude(1.5){
+                        circle(totalxy / 2 - 8);
+                    }
+                }*/
+            }
         }
-        holdholes(6);
     }
 }
 
@@ -233,9 +239,33 @@ module drop(){
     }
 }
 
-teeth = 44;
+teeth = 48;
 module gear(){
     worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=5.5, gear_bore=4, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=1, show_worm=0);
+}
+
+module wormy(){
+    difference(){
+        union(){
+            worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=5.5, gear_bore=4, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=0, show_worm=1);
+    
+            // fill in the central worm gear hole, save for our rotor cutout
+            translate([6, -10.6, 0]){
+                cube([6, 10, 6], true);
+            }
+        }
+        translate([6, 12, 0]){
+            rotate([90, 0, 0]){
+                difference(){
+                    cylinder(20, 7 / 2, 7 / 2, true);
+                    // effect the D-shape of the rotor (6.5 vs 7)
+                    translate([3.25, -3, 0]){
+                        cube([0.5, 10, 20], true);
+                    }
+                }
+            }
+        }
+    }
 }
 
 loadcellmountx = -76 / 2 + 21.05 / 2;
@@ -257,7 +287,7 @@ motormounth = 37;
 module motor(){
     cylinder(motorboxh, motorboxd / 2, motorboxd / 2, true);
     translate([0, 0, motorboxd]){
-        cylinder(motorshafth, motorshaftd / 2, motorshaftd / 2, true);
+        cylinder(motorshafth, 6 / 2, 6 / 2, true);
     }
 }
 
@@ -269,6 +299,15 @@ module dropmotor(){
         }
     }
 }
+
+module dropworm(){
+    translate([motorboxd - 13, 12, motorboxh + 2]){
+        rotate([0, 0, 90 + motortheta]){
+            wormy();
+        }
+    }
+}
+
 // circular mount screwed into the front of the motor through six holes
 motorholderh = 3;
 module motorholder(){
@@ -341,9 +380,7 @@ module dogear(){
 
 module dropgear(){
     translate([0, 0, wallz + motormounth * 2]){
-        drop(){
-            dogear();
-        }
+        dogear();
     }
 }
 

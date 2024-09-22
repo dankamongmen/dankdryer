@@ -13,15 +13,15 @@ module ceramheat230(height){
     holegapw = 32;
 	holegapl = 52;
     translate([-holegapw / 2, -holegapl / 2, 0]){
-        screw("M2", length = height);
+        screw("M3", length = height);
         translate([holegapw, 0, 0]){
-            screw("M2", length = height);
+            screw("M3", length = height);
             translate([0, holegapl, 0]){
-                screw("M2", length = height);
+                screw("M3", length = height);
             }
         }
         translate([0, holegapl, 0]){
-            screw("M2", length = height);
+            screw("M3", length = height);
         }
     }
 }
@@ -29,16 +29,25 @@ module ceramheat230(height){
 // 40x80mm worth of air passage through one quadrant of floor
 module floorcuts(){
     d = wallz;
-    for(i=[0:1:7]){
-        translate([-80, 15 + i * 7, d / 2]){
+    // 11 x 40 x 4
+    for(i=[0:1:10]){
+        translate([-80, -10 + i * 7, d / 2]){
             rotate([0, 0, 45]){
                 cube([40, 4, d], true);
             }
         }
     }
+    // 2 x 60 x 4
+    translate([-30, 100, d / 2]){
+        cube([60, 4, d], true);
+    }
+    translate([-30, 22, d / 2]){
+        cube([60, 4, d], true);
+    }
+    // 12 x 20 x 4
     for(i=[0:1:11]){
-        translate([-42, 28 + i * 6, d / 2]){
-            cube([40, 4, d], true);
+        translate([-52, 28 + i * 6, d / 2]){
+            cube([20, 4, d], true);
         }
     }
 }
@@ -47,7 +56,7 @@ module hbcorner(){
     side = 50;
     t = totalxy / 2;
     difference(){
-        translate([t - 19, t - 19, side / 2]){
+        translate([t - 18, t - 18, side / 2]){
             rotate([0, 0, 45]){
                 cylinder(side, side / 2, 1, true, $fn = 4);
             }
@@ -75,17 +84,16 @@ module hbcorners(){
 }
 
 module core(){
-                
-            translate([0, 0, wallz]){
-                linear_extrude(totalz - wallz - topz){
-                    polygon(
-                        iipoints,
-                    paths=[
-                        [0, 1, 2, 3, 4, 5, 6, 7],
-                        [8, 9, 10, 11, 12, 13, 14, 15]
-                    ]);
-                }
-            }
+    translate([0, 0, wallz]){
+        linear_extrude(totalz - wallz - topz){
+            polygon(
+                iipoints,
+            paths=[
+                [0, 1, 2, 3, 4, 5, 6, 7],
+                [8, 9, 10, 11, 12, 13, 14, 15]
+            ]);
+        }
+    }
 }
 
 module hotbox(){
@@ -105,12 +113,12 @@ module hotbox(){
             floorcuts();
         }
         // hole for heating element wires
-        translate([ceramheat230w / 2 + 10, totalxy / 4 + 10, 0]){
+        translate([ceramheat230w / 2 + 14, totalxy / 4 + 9.75, 0]){
             cylinder(wallz, 4, 4);
         }
         // exhaust fan hole
-        translate([0, -totalxy / 2 + wallxy, (totalz - topz) / 2]){
-            fanhole(40);
+        translate([0, -(totalxy - wallxy) / 2, 80 / 2 + wallz]){
+            fanhole(wallxy);
         }
         // central column
         cylinder(10, 30 / 2, 30 / 2, true);
@@ -121,11 +129,24 @@ module hotbox(){
             ceramheat230(wallz);
         }
     }
+    // binding wall around wirehole
+    translate([ceramheat230w / 2 + 14, totalxy / 4 + 9.75, wallz / 2]){
+        difference(){
+            cylinder(wallz, 4.5, 4.5, true);
+            cylinder(wallz, 3.5, 3.5, true);
+        }
+    }
 }
 
 // testing
 hotbox();
 
+/*
 multicolor("green"){
   spool();
 }
+
+multicolor("orange"){
+    top();
+}
+*/

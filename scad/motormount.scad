@@ -5,3 +5,5 @@ multicolor("pink"){
 }
 
 dropmotormount();
+
+dropworm();

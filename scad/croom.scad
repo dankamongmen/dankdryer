@@ -67,8 +67,8 @@ module lowershield(){
     //(-shieldw + 6) / 2, (19.5 + 6) / 2
     translate([0, 0, wallz + loadcellmounth / 2]){
         difference(){
-            cube([shieldw + 6, 25.5 / 2, loadcellmounth], true);
-            cube([shieldw + 2, 20 / 2, loadcellmounth], true);
+            cube([shieldw + 6, 38 / 2, loadcellmounth], true);
+            cube([shieldw + 2, 34 / 2, loadcellmounth], true);
         }
     }
 }
@@ -216,8 +216,29 @@ module croom(){
 croom();
 
 // testing + full assemblage
+multicolor("black"){
+    translate([0, 0, loadcellmounth + wallz + loadcellh / 2]){
+        loadcell();
+    }
+}
 /*
+
 multicolor("pink"){
     dropmotor();
+}
+
+multicolor("blue"){
+    translate([0, 0, loadcellmounth + wallz + loadcellh]){
+        mirror([1, 0, 0]){
+            lowercoupling();
+        }
+    }
+    translate([0, 0, loadcellmounth + wallz + loadcellh + 55]){
+        shaft();
+    }
+}
+
+multicolor("white"){
+    dropgear();
 }
 */

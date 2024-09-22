@@ -8,7 +8,7 @@ module core2(){
     shape1= tween_dank;
     shape1Size = totalxy / 2 - 5;
     shape1Rotation = 0;
-    shape1Extension = 0;
+    shape1Extension = wallz;
     shape1Centroid  = [0,0];
 
     shape2= tween_circle;
@@ -39,17 +39,23 @@ module core2(){
       
 core2();
 
-/*
+
 multicolor("red"){
+    // latching mechanism for the top
     translate([0, 0, topz]){
-        linear_extrude(3){
-            difference(){
-                circle(totalxy / 2 - 5);
-                circle(totalxy / 2 - 8);
+        intersection(){
+            linear_extrude(3){
+                difference(){
+                    circle(totalxy / 2 - 5);
+                    circle(totalxy / 2 - 8);
+                }
             }
+            // now two sections
+            cube([totalxy, 30, 2], true);
         }
     }
 }
+
 
 multicolor("purple"){
     translate([0, 0, topz + 4]){
@@ -58,4 +64,3 @@ multicolor("purple"){
         }
     }
 }
-*/

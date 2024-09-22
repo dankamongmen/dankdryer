@@ -14,11 +14,17 @@ multicolor("green"){
 }
 
 multicolor("orange"){
-    top();
+    translate([0, 0, totalz]){
+        mirror([0, 0, 1]){
+            top();
+        }
+    }
 }
 
-translate([0, 0, totalz - 10]){
-    holder();
+multicolor("red"){
+    translate([0, 0, totalz]){
+        holder();
+    }
 }
 
 multicolor("grey"){
@@ -61,5 +67,11 @@ multicolor("blue"){
 }
 
 multicolor("white"){
-    dropgear();
+    drop(){
+        dropgear();
+    }
+}
+
+multicolor("green"){
+    dropworm();
 }
