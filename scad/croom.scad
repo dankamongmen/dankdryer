@@ -17,11 +17,47 @@ botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
 
+module croombottomside(){
+    translate([0, -botalt + croomwall, wallz]){
+        rotate([0, 90, 0]){
+            intersection(){
+                cylinder((botalt - croomwall) * 2, croomwall, croomwall, true);
+                translate([croomwall, -croomwall, 0]){
+                    cube([croomwall * 2, croomwall * 2, botalt * 2], true);
+                }
+            }
+        }
+    }
+    translate([botalt - croomwall, botalt - croomwall, croomwall]){
+        sphere(croomwall);
+    }
+}
+
+// bottom with rounded corners for better printing
+module croombottom(){
+    croombottomside();
+    rotate([0, 0, 90]){
+        croombottomside();
+    }
+    rotate([0, 0, 180]){
+        croombottomside();
+    }
+    rotate([0, 0, 270]){
+        croombottomside();
+    }
+    translate([0, 0, wallz / 2]){
+        cube([(botalt - croomwall) * 2, (botalt - croomwall) * 2, wallz], true);
+    }
+}
+
 // the fundamental structure
 module croomcore(){
-    rotate([0, 0, 45]){
-        cylinder(croomz, botrad, toprad, $fn = 4);
+    translate([0, 0, wallz]){
+        rotate([0, 0, 45]){
+            cylinder(croomz - wallz, botrad, toprad, $fn = 4);
+        }
     }
+    croombottom();
 }
 
 // the vast majority of the interior, removed
@@ -216,12 +252,12 @@ module croom(){
 croom();
 
 // testing + full assemblage
+/*
 multicolor("black"){
     translate([0, 0, loadcellmounth + wallz + loadcellh / 2]){
         loadcell();
     }
 }
-/*
 
 multicolor("pink"){
     dropmotor();

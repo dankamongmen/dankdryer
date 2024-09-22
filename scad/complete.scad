@@ -1,7 +1,7 @@
+include <core.scad>
 use <hotbox.scad>
 use <croom.scad>
 use <lowercoupling.scad>
-include <holder.scad>
 
 multicolor("purple"){
     rotate([0, 0, 180]){
