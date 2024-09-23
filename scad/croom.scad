@@ -240,12 +240,12 @@ module croom(){
         achole();
     }
     lowershield();
+    translate([loadcellmountx, 0, (loadcellmounth + wallz) / 2]){
+        loadcellmount(loadcellmounth);
+    }
     wirechannels();
     lmsmounts();
     perfmounts();
-    translate([0, 0, wallz]){
-        loadcellmount(loadcellmounth);
-    }
     dropmotormount();
 }
 

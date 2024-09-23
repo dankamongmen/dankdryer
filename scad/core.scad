@@ -182,14 +182,14 @@ bearingh = 7;
 module loadcellmount(baseh){
     difference(){
         // load cell mounting base
-        translate([loadcellmountx, 0, baseh / 2]){
+        translate([0, 0, baseh / 2]){
             cube([loadcellmountl, loadcellmountw, baseh], true);
         }
         // holes for loadcell screws
-        translate([-76 / 2 + 5.425, 0, baseh / 2]){
+        translate([-5.1, 0, baseh / 2]){
             screw("M4", length = baseh);
         }
-        translate([-76 / 2 + 15.625, 0, baseh / 2]){
+        translate([5.1, 0, baseh / 2]){
             screw("M4", length = baseh);
         }
     }
