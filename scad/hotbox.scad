@@ -99,7 +99,7 @@ module core(){
 // hole and mounts for 150C thermocouple and heating element wires
 module thermohole(){
     r = 8;
-    l = 32;
+    l = 34;
     w = 6;
     cylinder(wallz, r, r, true);
     cube([w, l, wallz], true);
