@@ -215,20 +215,22 @@ module lowercoupling(){
         cube([-loadcellmountx, loadcellmountw, uloadcellmounth], true);
         // holes for loadcell screws
     }
-    translate([loadcellmountl, 0, -uloadcellmounth / 2]){
+    translate([-loadcellmountl / 2 + loadcellmountx / 2, 0, 0]){
         loadcellmount(uloadcellmounth);
     }
     translate([0, 0, 0]){
         uppershield();
     }
-    // recessed area for 608 bearing
+    // recessed area for 22m 608 bearing
     translate([0, 0, uloadcellmounth * 2]){
         // floor and support for bearing
-        cylinder(10, 4, 24 / 2, true);
+        bearingr = 23 / 2;
+        bearwallr = 1;
+        cylinder(10, loadcellmountw / 2, bearingr + bearwallr, true);
         translate([0, 0, 2 + bearingh / 2 + 4]){
             difference(){
-                cylinder(9, 25 / 2, 25 / 2, true);
-                cylinder(9, 23 / 2, 23 / 2, true);
+                cylinder(9, 25 / 2, bearingr + bearwallr, true);
+                cylinder(9, 23 / 2, bearingr, true);
             }
         }
 
