@@ -174,6 +174,11 @@ module loadcell(){
     cube([76, loadcellh, loadcellh], true);
 }
 
+loadcellmountx = -76 / 2 + 21.05 / 2;
+loadcellmountw = 13.5;
+loadcellmountl = 21.05;
+loadcellmounth = 27;
+bearingh = 7;
 module loadcellmount(baseh){
     difference(){
         // load cell mounting base
@@ -206,9 +211,12 @@ module uppershield(){
 
 uloadcellmounth = 5;
 module lowercoupling(){
-    loadcellmount(uloadcellmounth);
-    translate([loadcellmountx / 2, 0, uloadcellmounth]){
-        cube([-loadcellmountx + loadcellmountl, loadcellmountw, uloadcellmounth], true);
+    translate([loadcellmountx / 2 - loadcellmountx / 2, 0, uloadcellmounth / 2]){
+        cube([-loadcellmountx, loadcellmountw, uloadcellmounth], true);
+        // holes for loadcell screws
+    }
+    translate([loadcellmountl, 0, -uloadcellmounth / 2]){
+        loadcellmount(uloadcellmounth);
     }
     translate([0, 0, 0]){
         uppershield();
@@ -219,8 +227,8 @@ module lowercoupling(){
         cylinder(10, 4, 24 / 2, true);
         translate([0, 0, 2 + bearingh / 2 + 4]){
             difference(){
-                cylinder(9, 24 / 2, 24 / 2, true);
-                cylinder(9, 22 / 2, 22 / 2, true);
+                cylinder(9, 25 / 2, 25 / 2, true);
+                cylinder(9, 23 / 2, 23 / 2, true);
             }
         }
 
@@ -261,12 +269,6 @@ module wormy(){
         }
     }
 }
-
-loadcellmountx = -76 / 2 + 21.05 / 2;
-loadcellmountw = 13.5;
-loadcellmountl = 21.05;
-loadcellmounth = 27;
-bearingh = 7;
 
 // motor is 37x75mm diameter gearbox and 6x14mm shaft
 // (with arbitrarily large worm gear on the shaft)
