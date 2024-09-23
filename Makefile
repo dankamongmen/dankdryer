@@ -3,10 +3,12 @@
 OUT:=out
 ESP32HEX:=$(addprefix esp32-s3/, $(addsuffix .ino.elf, dankdryer/dankdryer))
 HEX:=$(addprefix $(OUT)/, $(ESP32HEX))
-CFLAGS:=--warnings all
-ACLI:=arduino-cli
 STL:=$(addsuffix .stl, \
  $(addprefix $(OUT)/scad/, croom hotbox top lowercoupling worm))
+
+CFLAGS:=--warnings all
+ACLI:=arduino-cli
+SCADFLAGS=--hardwarnings
 
 all: $(HEX) $(STL)
 
@@ -20,11 +22,11 @@ $(OUT)/esp32-s3/dankdryer/dankdryer.ino.elf: $(addprefix esp32-s3/dankdryer/, da
 
 $(OUT)/scad/hotbox.stl: scad/hotbox.scad scad/core.scad scad/tween.scad
 	@mkdir -p $(@D)
-	time openscad -o $@ $<
+	time openscad $(SCADFLAGS) -o $@ $<
 
 $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
 	@mkdir -p $(@D)
-	time openscad -o $@ $<
+	time openscad $(SCADFLAGS) -o $@ $<
 
 clean:
 	rm -rf $(OUT)
