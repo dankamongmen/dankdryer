@@ -7,6 +7,8 @@ use <croom.scad>
 // upper spacer
 // platform at the top
 
+loadcellmount(4);
+
 multicolor("blue"){
     mirror([1, 0, 0]){
         lowercoupling();
