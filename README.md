@@ -142,10 +142,11 @@ Combined OpenSCAD render for mating testing.
 * BME680:            $14
 * 5A fuse:           $0.60
 * AC cable:          $6
+* 2x 80mm fans:      $8.80
 * Polycarbonate:     $17.78 (assumes 25% failures)
 * PAHT-CF:           $32.89 (assumes 25% failures)
 
-$123.84. With 9.5% sales tax: $135.60.
+$132.64. With 9.5% sales tax: $145.24.
 
 This does not consider hookup wire, ring/spade terminals, nor electricity.
 
