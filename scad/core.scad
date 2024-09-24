@@ -312,7 +312,7 @@ module motorholder(){
     d = (28.75 + 3) / 2;
     ch = motorholderh;
     difference(){
-        cylinder(ch, 37 / 2, 37 / 2, true);
+        cylinder(ch, motorboxd / 2, motorboxd / 2, true);
         translate([d, 0, 0]){
             cylinder(ch, 1.5, 1.5, true);
         }
@@ -344,12 +344,14 @@ module motormount(){
         // now cut a cylinder out of its top
         translate([0, 0, motormounth]){
             rotate([0, 90, 0]){
-                cylinder(mlength, 37 / 2, 37 / 2, true);
+                cylinder(mlength, motorboxd / 2, motorboxd / 2, true);
             }
         }
     }
-    // circular front mount
-    translate([-37, 0, motormounth]){
+    // circular front mount. without the fudge factor, openscad
+    // considers the manifold broken, which i don't understand
+    // FIXME until then leave it in
+    translate([-37.5, 0, motormounth - 0.001]){
         rotate([0, 90, 0]){
             motorholder();
         }
