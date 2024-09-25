@@ -97,12 +97,7 @@ module hbcorners(){
 module core(){
     translate([0, 0, wallz]){
         linear_extrude(totalz - wallz - topz){
-            polygon(
-                iipoints,
-            paths=[
-                [0, 1, 2, 3, 4, 5, 6, 7],
-                [8, 9, 10, 11, 12, 13, 14, 15]
-            ]);
+            polygon(opoints);
         }
     }
 }
@@ -127,15 +122,14 @@ module hotbox(){
     difference(){
         union(){
             topbottom(wallz);
-            core();
             translate([0, 0, totalz - topz]){
                 core2(totalxy / 2 - 5, 1);
             }
             hbcorners();
             cheight = totalz - wallz + 3;
-            translate([0, 0, cheight / 2 + wallz]){
-                difference(){
-                    cylinder(cheight, totalxy / 2, totalxy / 2, true);
+            difference(){
+                core();
+                translate([0, 0, cheight / 2 + wallz]){
                     cylinder(cheight, totalxy / 2 - 5, totalxy / 2 - 5, true);
                 }
             }
@@ -165,9 +159,9 @@ module hotbox(){
     }
 }
 
-// testing
 hotbox();
 
+// testing
 /*
 multicolor("green"){
   spool();
