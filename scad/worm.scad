@@ -9,3 +9,7 @@ translate([5, 0, wormlen / 2]){
 translate([0, 0, 4]){
     gear();
 }
+
+translate([10, 20, shafth / 2]){
+    shaft();
+}
