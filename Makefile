@@ -4,7 +4,7 @@ OUT:=out
 ESP32HEX:=$(addprefix esp32-s3/, $(addsuffix .ino.elf, dankdryer/dankdryer))
 HEX:=$(addprefix $(OUT)/, $(ESP32HEX))
 STL:=$(addsuffix .stl, \
- $(addprefix $(OUT)/scad/, croom hotbox top lowercoupling worm))
+ $(addprefix $(OUT)/scad/, croom hotbox lowercoupling worm top))
 
 CFLAGS:=--warnings all
 ACLI:=arduino-cli
