@@ -393,9 +393,9 @@ int setup_mdns(void){
     fprintf(stderr, "failure %d (%s) initializing mDNS\n", err, esp_err_to_name(err));
     return -1;
   }
-  mdns_instance_name_set("Higher Dryer");
+  mdns_instance_name_set("Dire Dryer");
   mdns_service_add(NULL, "_http", "_tcp", 80, NULL, 0);
-  mdns_service_instance_name_set("_http", "_tcp", "Higher Dryer webserver");
+  mdns_service_instance_name_set("_http", "_tcp", "Dire Dryer webserver");
   return 0;
 }
 
