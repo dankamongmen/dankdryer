@@ -10,6 +10,8 @@ translate([0, 0, 4]){
     gear();
 }
 
-translate([10, 20, shafth / 2]){
-    shaft();
+translate([10, 20, bearingh / 2]){
+    rotate([90, 0, 45]){
+        shaft();
+    }
 }

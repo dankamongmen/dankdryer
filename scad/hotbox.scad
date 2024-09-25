@@ -26,28 +26,40 @@ module ceramheat230(height){
     }
 }
 
-// 40x80mm worth of air passage through one quadrant of floor
+// 2500mm² worth of air passage through one side of floor.
+// the fan is 80mm x 80mm, suggesting 6400 (and thus 3200 per
+// side), but it's actually only π40² or ~5027.
 module floorcuts(){
     d = wallz;
-    // 11 x 40 x 4
-    for(i=[0:1:10]){
-        translate([-80, -10 + i * 7, d / 2]){
-            rotate([0, 0, 45]){
-                cube([40, 4, d], true);
-            }
+    // all floor holes ought be in the actual hotbox, not under
+    // the infill (which would cause support problems anyway).
+    intersection(){
+        translate([0, 0, d / 2]){
+            cylinder(d, totalxy / 2, totalxy / 2, true);
         }
-    }
-    // 2 x 60 x 4
-    translate([-30, 100, d / 2]){
-        cube([60, 4, d], true);
-    }
-    translate([-30, 22, d / 2]){
-        cube([60, 4, d], true);
-    }
-    // 12 x 20 x 4
-    for(i=[0:1:11]){
-        translate([-52, 28 + i * 6, d / 2]){
-            cube([20, 4, d], true);
+        union(){
+            // 7 x 40 x 4
+            for(i=[0:1:6]){
+                translate([-80, 6 + i * 8, d / 2]){
+                    rotate([0, 0, 45]){
+                        cube([40, 4, d], true);
+                    }
+                }
+            }
+            // 16 x 4
+            translate([-10, 100, d / 2]){
+                cube([20, 4, d], true);
+            }
+            // 64 x 4
+            translate([-32, 22, d / 2]){
+                cube([64, 4, d], true);
+            }
+            // 12 x 20 x 4
+            for(i=[0:1:11]){
+                translate([-52, 28 + i * 6, d / 2]){
+                    cube([20, 4, d], true);
+                }
+            }
         }
     }
 }
@@ -121,6 +133,13 @@ module hotbox(){
                 core2();
             }
             hbcorners();
+            cheight = totalz - wallz + 3;
+            translate([0, 0, cheight / 2 + wallz]){
+                difference(){
+                    cylinder(cheight, totalxy / 2, totalxy / 2, true);
+                    cylinder(cheight, totalxy / 2 - 5, totalxy / 2 - 5, true);
+                }
+            }
         }
         // now remove all other interacting pieces
         // 80x80mm worth of air passage cut into the floor
@@ -130,7 +149,7 @@ module hotbox(){
         }
         // exhaust fan hole
         translate([0, -(totalxy - wallxy) / 2, 80 / 2 + wallz]){
-            fanhole(wallxy);
+            fanhole(wallxy + 16);
         }
         // central column
         cylinder(10, 30 / 2, 30 / 2, true);

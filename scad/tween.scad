@@ -22,7 +22,7 @@ module core2(){
 
     isHollow = 1;
 
-    extrusionSlices = topz / 0.3; // assume 0.3 layer height
+    extrusionSlices = topz / 0.2; // assume 0.2 layer height
     sliceAdjustment= 0;
 
     sliceHeight = topz * 1.0 / extrusionSlices;
