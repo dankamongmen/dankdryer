@@ -35,24 +35,23 @@ module floorcuts(){
     // the infill (which would cause support problems anyway).
     intersection(){
         translate([0, 0, d / 2]){
-            cylinder(d, totalxy / 2, totalxy / 2, true);
+            cylinder(d, totalxy / 2 - 5, totalxy / 2 - 5, true);
         }
         union(){
-            // 7 x 40 x 4
-            for(i=[0:1:6]){
+            // 8 x 40 x 4
+            for(i=[0:1:8]){
                 translate([-80, 6 + i * 8, d / 2]){
                     rotate([0, 0, 45]){
                         cube([40, 4, d], true);
                     }
                 }
             }
-            // 16 x 4
-            translate([-10, 100, d / 2]){
-                cube([20, 4, d], true);
+            // 2x 62 x 4
+            translate([-31, 100, d / 2]){
+                cube([62, 4, d], true);
             }
-            // 64 x 4
-            translate([-32, 22, d / 2]){
-                cube([64, 4, d], true);
+            translate([-31, 22, d / 2]){
+                cube([62, 4, d], true);
             }
             // 12 x 20 x 4
             for(i=[0:1:11]){
@@ -68,9 +67,9 @@ module hbcorner(){
     side = 50;
     t = totalxy / 2;
     difference(){
-        translate([t - 18, t - 18, side / 2]){
+        translate([t - 18, t - 18, 2 * side / 6]){
             rotate([0, 0, 45]){
-                cylinder(side, side / 2, 1, true, $fn = 4);
+                cylinder(2 * side / 3, side / 2, 1, true, $fn = 4);
             }
         }
         translate([totalxy / 2 - 12, totalxy / 2 - 12, side / 2]){
