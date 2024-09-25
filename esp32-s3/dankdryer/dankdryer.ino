@@ -3,7 +3,6 @@
 #define VERSION "0.0.1"
 #define CLIENTID "dankdryer" VERSION
 #include "dryer-network.h"
-#include <WiFi.h>
 #include <lwip/netif.h>
 #include <nvs.h>
 #include <mdns.h>
