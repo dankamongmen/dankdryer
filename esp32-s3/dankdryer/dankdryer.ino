@@ -346,34 +346,40 @@ void set_network_state(network_state_e state){
 
 void wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   esp_err_t err;
-  if(base == WIFI_EVENT){
-    if(id == WIFI_EVENT_STA_START || id == WIFI_EVENT_STA_DISCONNECTED){
-      set_network_state(WIFI_CONNECTING);
-      if((err = esp_wifi_connect()) != ESP_OK){
-        fprintf(stderr, "failure (%d %s) connecting to wifi\n", err, esp_err_to_name(err));
-      }
-    }else if(id == WIFI_EVENT_STA_CONNECTED){
-      set_network_state(NET_CONNECTING);
-      printf("connected to wifi, looking for ip\n");
-      uint16_t aid = 65535u;
-      esp_wifi_sta_get_aid(&aid);
-      printf("association id: %u\n", aid);
-    }else{
-      fprintf(stderr, "unknown wifi event %ld\n", id);
+  if(strcmp(base, WIFI_EVENT)){
+    fprintf(stderr, "non-wifi event %s in wifi handler\n", base);
+    return;
+  }
+  if(id == WIFI_EVENT_STA_START || id == WIFI_EVENT_STA_DISCONNECTED){
+    set_network_state(WIFI_CONNECTING);
+    if((err = esp_wifi_connect()) != ESP_OK){
+      fprintf(stderr, "failure (%d %s) connecting to wifi\n", err, esp_err_to_name(err));
     }
-  }else if(base == IP_EVENT){
-    if(id == IP_EVENT_STA_GOT_IP || id == IP_EVENT_GOT_IP6){
-      const auto event = static_cast<ip_event_got_ip_t*>(data);
-      printf("got ip: " IPSTR, IP2STR(&event->ip_info.ip));
-      set_network_state(MQTT_CONNECTING);
-      if((err = esp_mqtt_client_start(MQTTHandle)) != ESP_OK){
-        fprintf(stderr, "failure (%d %s) connecting to mqtt\n", err, esp_err_to_name(err));
-      }
-    }else{
-      fprintf(stderr, "unknown ip event %ld\n", id);
+  }else if(id == WIFI_EVENT_STA_CONNECTED){
+    set_network_state(NET_CONNECTING);
+    printf("connected to wifi, looking for ip\n");
+    uint16_t aid = 65535u;
+    esp_wifi_sta_get_aid(&aid);
+    printf("association id: %u\n", aid);
+  }else{
+    fprintf(stderr, "unknown wifi event %ld\n", id);
+  }
+}
+
+void ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
+  esp_err_t err;
+  if(strcmp(base, IP_EVENT)){
+    fprintf(stderr, "non-wifi event %s in wifi handler\n", base);
+    return;
+  }
+  if(id == IP_EVENT_STA_GOT_IP || id == IP_EVENT_GOT_IP6){
+    printf("got network address, connecting to mqtt\n");
+    set_network_state(MQTT_CONNECTING);
+    if((err = esp_mqtt_client_start(MQTTHandle)) != ESP_OK){
+      fprintf(stderr, "failure (%d %s) connecting to mqtt\n", err, esp_err_to_name(err));
     }
   }else{
-    fprintf(stderr, "unknown event base %s\n", base);
+    fprintf(stderr, "unknown ip event %ld\n", id);
   }
 }
 
@@ -433,7 +439,7 @@ int setup_network(void){
     goto bail;
   }
   esp_event_handler_instance_t ipd;
-  if((err = esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &ipd)) != ESP_OK){
+  if((err = esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, &ip_event_handler, NULL, &ipd)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) registering wifi events\n", err, esp_err_to_name(err));
     goto bail;
   }
