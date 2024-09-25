@@ -72,8 +72,8 @@ module hbcorner(){
                 cylinder(2 * side / 3, side / 2, 1, true, $fn = 4);
             }
         }
-        translate([totalxy / 2 - 12, totalxy / 2 - 12, side / 2]){
-            screw("M5", length = side);
+        translate([totalxy / 2 - 12, totalxy / 2 - 12, 2 * side / 6]){
+            screw("M5", length = 2 * side / 3);
         }
     }
 }
