@@ -126,13 +126,13 @@ module hotbox(){
                 core2(totalxy / 2 - 5, 1);
             }
             hbcorners();
-            cheight = totalz - wallz + 3;
-            difference(){
-                core();
-                translate([0, 0, cheight / 2 + wallz]){
-                    cylinder(cheight, totalxy / 2 - 5, totalxy / 2 - 5, true);
-                }
-            }
+            core();
+        }
+        // we want to clear everything in the central
+        // cylinder from the floor up.
+        cheight = totalz - wallz;
+        translate([0, 0, cheight / 2 + wallz]){
+            cylinder(cheight, innerr, innerr, true);
         }
         // now remove all other interacting pieces
         // 80x80mm worth of air passage cut into the floor
@@ -155,6 +155,14 @@ module hotbox(){
         // hole and mounts for 150C thermocouple and heating element wires
         translate([40, -10, wallz / 2]){
             thermohole();
+        }
+    }
+    translate([0, 0, totalz - topz]){
+        linear_extrude(topz){
+            difference(){
+                circle(totalxy / 2);
+                circle(innerr);
+            }
         }
     }
 }

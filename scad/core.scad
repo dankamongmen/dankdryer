@@ -32,7 +32,7 @@ topz = 5; // height of top piece
 // (so that there's space on either side of the fan).
 elevation = (85 - spoolh) / 2;
 chordxy = 33;
-
+innerr = spoold / 2 + gapxy;
 totalxy = spoold + wallxy * 2 + gapxy * 2;
 totalz = spoolh + wallz + topz + elevation * 2;
 totald = sqrt(totalxy * totalxy + totalxy * totalxy);

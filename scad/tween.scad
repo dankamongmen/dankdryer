@@ -5,6 +5,7 @@ use <tweening/tween_loft.scad>
 include <tweening/tween_shapes.scad>
 include <core.scad>
 module core2(circler, hollow){
+    z = topz;
     shape1= tween_dank;
     shape1Size = totalxy / 2 - 5;
     shape1Rotation = 0;
@@ -13,7 +14,7 @@ module core2(circler, hollow){
 
     shape2= tween_circle;
     shape2Size = circler;
-    shape2Rotation = -20;
+    shape2Rotation = 0;
     shape2Extension = 3;
     shape2Centroid= [0,0];
     shape2ExtensionAdjustment= 0;
@@ -22,10 +23,10 @@ module core2(circler, hollow){
 
     isHollow = hollow;
 
-    extrusionSlices = topz / 0.2; // assume 0.2 layer height
+    extrusionSlices = z / 0.3; // assume 0.3 layer height
     sliceAdjustment= 0;
 
-    sliceHeight = topz * 1.0 / extrusionSlices;
+    sliceHeight = z * 1.0 / extrusionSlices;
 
     tweenLoft(shape1, shape1Size, shape1Rotation, shape1Centroid, shape1Extension,
               shape2, shape2Size, shape2Rotation, shape2Centroid, shape2Extension,
@@ -37,7 +38,7 @@ module core2(circler, hollow){
     
 }
       
-core2(totalxy / 2 - 5);
+core2(innerr, 0);
 
 /*
 multicolor("purple"){
