@@ -4,7 +4,7 @@
 use <tweening/tween_loft.scad>
 include <tweening/tween_shapes.scad>
 include <core.scad>
-module core2(){
+module core2(circler){
     shape1= tween_dank;
     shape1Size = totalxy / 2 - 5;
     shape1Rotation = 0;
@@ -12,7 +12,7 @@ module core2(){
     shape1Centroid  = [0,0];
 
     shape2= tween_circle;
-    shape2Size = totalxy / 2 - 5;
+    shape2Size = circler;
     shape2Rotation = -20;
     shape2Extension = 3;
     shape2Centroid= [0,0];
@@ -37,30 +37,7 @@ module core2(){
     
 }
       
-core2();
-
-
-multicolor("red"){
-    // latching mechanism for the top
-    translate([0, 0, 4]){
-        difference(){
-            linear_extrude(3){
-                difference(){
-                    circle(totalxy / 2 - 4);
-                    circle(totalxy / 2 - 10);
-                }
-            }
-            translate([0, 0, 1.5]){
-                linear_extrude(1.5){
-                    difference(){
-                        circle(totalxy / 2 - 5.5);
-                        circle(totalxy / 2 - 8.5);
-                    }
-                }
-            }
-        }
-    }
-}
+core2(totalxy / 2 - 5);
 
 /*
 multicolor("purple"){
