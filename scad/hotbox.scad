@@ -129,7 +129,7 @@ module hotbox(){
             topbottom(wallz);
             core();
             translate([0, 0, totalz - topz]){
-                core2(totalxy / 2 - 5);
+                core2(totalxy / 2 - 5, 1);
             }
             hbcorners();
             cheight = totalz - wallz + 3;

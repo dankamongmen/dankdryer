@@ -4,7 +4,7 @@
 use <tweening/tween_loft.scad>
 include <tweening/tween_shapes.scad>
 include <core.scad>
-module core2(circler){
+module core2(circler, hollow){
     shape1= tween_dank;
     shape1Size = totalxy / 2 - 5;
     shape1Rotation = 0;
@@ -20,7 +20,7 @@ module core2(circler){
 
     wallThickness= 5;
 
-    isHollow = 1;
+    isHollow = hollow;
 
     extrusionSlices = topz / 0.2; // assume 0.2 layer height
     sliceAdjustment= 0;
