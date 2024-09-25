@@ -196,7 +196,7 @@ module achole(){
 
 // channel for ac wires running from adapter to heater
 module wirechannel(){
-    channelh = 10;
+    channelh = 12;
     translate([-botalt + croomwall, -20, wallz]){
         rotate([90, 0, 0]){
             intersection(){
