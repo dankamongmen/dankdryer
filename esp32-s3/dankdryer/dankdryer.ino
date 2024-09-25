@@ -409,28 +409,23 @@ int setup_network(void){
     .sta = {
       .ssid = WIFIESSID,
       .password = WIFIPASS,
+      .sort_method = WIFI_CONNECT_AP_BY_SECURITY,
       .threshold = {
         .authmode = WIFI_AUTH_WPA2_PSK,
       },
-      //.sae_h2e_identifier = CLIENTID,
     },
   };
   esp_err_t err;
-  if((err = esp_event_loop_create_default()) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) creating default loop\n", err, esp_err_to_name(err));
-    goto bail;
-  }
   if((err = esp_netif_init()) != ESP_OK){
     fprintf(stderr, "failure %d (%s) initializing tcp/ip\n", err, esp_err_to_name(err));
     goto bail;
   }
-  if((err = esp_wifi_init(&wificfg)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) initializing wifi\n", err, esp_err_to_name(err));
+  if((err = esp_event_loop_create_default()) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) creating loop\n", err, esp_err_to_name(err));
     goto bail;
   }
-  esp_wifi_set_mode(WIFI_MODE_STA);
-  if((err = esp_wifi_set_config(WIFI_IF_STA, &stacfg)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) configuring wifi\n", err, esp_err_to_name(err));
+  if((err = esp_wifi_init(&wificfg)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) initializing wifi\n", err, esp_err_to_name(err));
     goto bail;
   }
   esp_event_handler_instance_t wid;
@@ -441,6 +436,14 @@ int setup_network(void){
   esp_event_handler_instance_t ipd;
   if((err = esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, &ip_event_handler, NULL, &ipd)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) registering wifi events\n", err, esp_err_to_name(err));
+    goto bail;
+  }
+  if((err = esp_wifi_set_mode(WIFI_MODE_STA)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) setting STA mode\n", err, esp_err_to_name(err));
+    goto bail;
+  }
+  if((err = esp_wifi_set_config(WIFI_IF_STA, &stacfg)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) configuring wifi\n", err, esp_err_to_name(err));
     goto bail;
   }
   if((err = esp_wifi_start()) != ESP_OK){

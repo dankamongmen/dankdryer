@@ -37,26 +37,25 @@ module floorcuts(){
             cylinder(d, totalxy / 2 - 5, totalxy / 2 - 5, true);
         }
         union(){
-            // 8 x 40 x 4
-            for(i=[0:1:8]){
-                translate([-80, 6 + i * 8, d / 2]){
-                    rotate([0, 0, 45]){
-                        cube([40, 4, d], true);
+            // a series of arcs
+            intersection(){
+                translate([-totalxy / 2 - 42, 0, 0]){
+                    cube([totalxy / 2, totalxy / 2, wallz]);
+                }
+                for(i = [0:1:9]){
+                    linear_extrude(wallz){
+                        difference(){
+                            circle(50 + i * 6);
+                            circle(50 + i * 6 - 4);
+                        }
                     }
                 }
             }
-            // 2x 62 x 4
             translate([-31, 100, d / 2]){
                 cube([62, 4, d], true);
             }
-            translate([-31, 22, d / 2]){
-                cube([62, 4, d], true);
-            }
-            // 12 x 20 x 4
-            for(i=[0:1:11]){
-                translate([-52, 28 + i * 6, d / 2]){
-                    cube([20, 4, d], true);
-                }
+            translate([-21, 24, d / 2]){
+                cube([42, 6, d], true);
             }
         }
     }
