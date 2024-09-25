@@ -185,12 +185,12 @@ module loadcellmount(baseh){
         translate([0, 0, baseh / 2]){
             cube([loadcellmountl, loadcellmountw, baseh], true);
         }
-        // holes for loadcell screws
+        // holes for loadcell screws; need match M5 of load cell
         translate([-5.1, 0, baseh / 2]){
-            screw("M4", length = baseh);
+            screw("M5", length = baseh);
         }
         translate([5.1, 0, baseh / 2]){
-            screw("M4", length = baseh);
+            screw("M5", length = baseh);
         }
     }
 }
@@ -211,11 +211,10 @@ module uppershield(){
 
 uloadcellmounth = 5;
 module lowercoupling(){
-    translate([loadcellmountx / 2 - loadcellmountx / 2, 0, uloadcellmounth / 2]){
+    translate([loadcellmountx / 2 - loadcellmountx / 2 - 2, 0, uloadcellmounth / 2]){
         cube([-loadcellmountx, loadcellmountw, uloadcellmounth], true);
-        // holes for loadcell screws
     }
-    translate([-loadcellmountl / 2 + loadcellmountx / 2, 0, 0]){
+    translate([-loadcellmountl / 2 + loadcellmountx / 2 - 2, 0, 0]){
         loadcellmount(uloadcellmounth);
     }
     translate([0, 0, 0]){
