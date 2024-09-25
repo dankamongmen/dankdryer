@@ -3,7 +3,6 @@
 // the top is lifted up and out to insert a spool
 // the spool sits on corner walls
 include <core.scad>
-use <tween.scad>
 
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5
@@ -122,9 +121,6 @@ module hotbox(){
     difference(){
         union(){
             topbottom(wallz);
-            translate([0, 0, totalz - topz]){
-                core2(totalxy / 2 - 5, 1);
-            }
             hbcorners();
             core();
         }
@@ -160,7 +156,7 @@ module hotbox(){
     translate([0, 0, totalz - topz]){
         linear_extrude(topz){
             difference(){
-                circle(totalxy / 2);
+                circle(totalxy / 2 - 3);
                 circle(innerr);
             }
         }
