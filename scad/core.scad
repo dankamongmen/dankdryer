@@ -75,22 +75,9 @@ module topbottom(height){
 // 8.5 / 2 == 4.25 from hole center to side. triangle with
 // bases 2 * 8.5 == 17
 module fanmountur(h){
-    difference(){
-        translate([0, h / 2, 0]){
-            rotate([90, 0, 0]){
-                linear_extrude(h){
-                    polygon([
-                        [-12.75, 4.25],
-                        [4.25, 4.25],
-                        [4.25, -12.75]
-                    ]);
-                }
-            }
-        }
-        rotate([90, 0, 0]){
-            // really want 4.3 hrmmm
-            screw("M4", length = h);
-        }
+    rotate([90, 0, 0]){
+        // really want 4.3 hrmmm
+        screw("M4", length = h);
     }
 }
 
@@ -119,10 +106,10 @@ module fanmounts(h){
 }
 
 module fanhole(h){
-    difference(){
-        cube([80, h, 80], true);
-        fanmounts(h);
+    rotate([90, 0, 0]){
+        cylinder(h, 80 / 2, 80 / 2, true);
     }
+    fanmounts(h);
 }
 
 // octagon         -- 1mm
@@ -244,13 +231,13 @@ module drop(){
 
 teeth = 48;
 module gear(){
-    worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=5.5, gear_bore=bearingh, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=1, show_worm=0);
+    worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=5.5, gear_bore=bearingh + 0.2, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=1, show_worm=0);
 }
 
 module wormy(){
     difference(){
         union(){
-            worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=5.5, gear_bore=bearingh, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=0, show_worm=1);
+            worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=5.5, gear_bore=bearingh + 0.2, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=0, show_worm=1);
     
             // fill in the central worm gear hole, save for our rotor cutout
             translate([6, -10.6, 0]){
