@@ -405,23 +405,29 @@ int setup_network(void){
     return -1;
   }
   const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
+  esp_err_t err;
   wifi_config_t stacfg = {
     .sta = {
-      .ssid = WIFIESSID,
-      .password = WIFIPASS,
-      .sort_method = WIFI_CONNECT_AP_BY_SECURITY,
-      .threshold = {
-        .authmode = WIFI_AUTH_WPA2_PSK,
-      },
+        .ssid = WIFIESSID,
+        .password = WIFIPASS,
+        .sort_method = WIFI_CONNECT_AP_BY_SECURITY,
+        .threshold = {
+            .authmode = WIFI_AUTH_WPA2_PSK,
+        },
+        .sae_pwe_h2e = WPA3_SAE_PWE_HUNT_AND_PECK,
+        .sae_h2e_identifier = "",
     },
   };
-  esp_err_t err;
   if((err = esp_netif_init()) != ESP_OK){
     fprintf(stderr, "failure %d (%s) initializing tcp/ip\n", err, esp_err_to_name(err));
     goto bail;
   }
   if((err = esp_event_loop_create_default()) != ESP_OK){
     fprintf(stderr, "failure %d (%s) creating loop\n", err, esp_err_to_name(err));
+    goto bail;
+  }
+  if(!esp_netif_create_default_wifi_sta()){
+    fprintf(stderr, "failure creating default STA\n");
     goto bail;
   }
   if((err = esp_wifi_init(&wificfg)) != ESP_OK){
