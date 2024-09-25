@@ -220,6 +220,17 @@ module wirechannels(){
     }
 }
 
+// hole for hotbox fan wires
+module fancablehole(){
+    rotate([180 - theta, 0, 0]){
+        translate([-40, botinalt + 2, croomz - 8]){
+            rotate([90, 0, 0]){
+                cylinder(croomwall + 2, 3, 3, true);
+            }
+        }
+    }
+}
+
 // inverted frustrum
 module croom(){
     difference(){
@@ -238,6 +249,7 @@ module croom(){
             }
         }
         achole();
+        fancablehole();
     }
     lowershield();
     translate([loadcellmountx, 0, (loadcellmounth + wallz) / 2]){
