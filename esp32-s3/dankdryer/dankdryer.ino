@@ -28,8 +28,8 @@
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 #define MOTOR_PWMPIN GPIO_NUM_35
-#define UPPER_TACHPIN GPIO_NUM_36
-#define LOWER_TACHPIN GPIO_NUM_37
+#define UPPER_TACHPIN GPIO_NUM_6
+#define LOWER_TACHPIN GPIO_NUM_7
 // 38 is used for RGB LED
 #define LOAD_CLOCKPIN GPIO_NUM_41
 #define LOAD_DATAPIN GPIO_NUM_42
@@ -47,7 +47,7 @@ static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 // defaults, some of which can be configured.
-static uint32_t LowerPWM = 128;
+static uint32_t LowerPWM = 64;
 static uint32_t UpperPWM = 128;
 static uint32_t TargetTemp = 80;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
@@ -307,26 +307,24 @@ int gpio_set_output(gpio_num_t pin){
   return 0;
 }
 
+int initialize_tach(gpio_num_t pin, uint32_t* arg){
+  if(gpio_set_input(pin)){
+    return -1;
+  }
+  attachInterruptArg(pin, tach_isr, arg, FALLING);
+  return 0;
+}
+
 int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
                gpio_num_t lowertpin, gpio_num_t uppertpin){
   int ret = 0;
-  esp_err_t err;
-  if( (err = gpio_install_isr_service(0))){ // FIXME check flags
-    fprintf(stderr, "failure (%d) installing ISR service\n", err);
-    return -1;
-  }
-  if( (err = gpio_isr_handler_add(lowertpin, tach_isr, &LowerPulses)) ){
-    fprintf(stderr, "failure (%d) installing tach isr to %d\n", err, lowertpin);
-    ret = -1; // don't exit with error
-  }
-  if( (err = gpio_isr_handler_add(uppertpin, tach_isr, &UpperPulses)) ){
-    fprintf(stderr, "failure (%d) installing tach isr to %d\n", err, uppertpin);
-    ret = -1; // don't exit with error
-  }
-  // intentional '|'s to avoid short circuiting
-  if(gpio_set_input(lowertpin) | gpio_set_input(uppertpin)){
+  if(initialize_tach(lowertpin, &LowerPulses)){
     ret = -1;
   }
+  if(initialize_tach(uppertpin, &UpperPulses)){
+    ret = -1;
+  }
+  // intentional '|'s to avoid short circuiting
   if(gpio_set_output(lowerppin) | gpio_set_output(upperppin)){
     ret = -1;
   }
@@ -397,7 +395,10 @@ int setup_mdns(void){
 }
 
 int setup_network(void){
-  /*
+  if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
+    fprintf(stderr, "couldn't create mqtt client\n");
+    return -1;
+  }
   const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
   wifi_config_t stacfg = {
     .sta = {
@@ -409,10 +410,6 @@ int setup_network(void){
       //.sae_h2e_identifier = CLIENTID,
     },
   };
-  if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
-    fprintf(stderr, "couldn't create mqtt client\n");
-    return -1;
-  }
   esp_err_t err;
   if((err = esp_event_loop_create_default()) != ESP_OK){
     fprintf(stderr, "failure %d (%s) creating default loop\n", err, esp_err_to_name(err));
@@ -445,8 +442,6 @@ int setup_network(void){
     fprintf(stderr, "failure %d (%s) starting wifi\n", err, esp_err_to_name(err));
     goto bail;
   }
-                // */
-  WiFi.begin(WIFIESSID, WIFIPASS);
   setup_mdns(); // allow a failure
   return 0;
 
@@ -497,5 +492,7 @@ void loop(void){
   if(!isnan(ambient)){
     printf("esp32 temp: %f\n", ambient);
   }
+  printf("tach-l: %lu\n", LowerPulses);
+  printf("tach-u: %lu\n", UpperPulses);
   delay(1000);
 }

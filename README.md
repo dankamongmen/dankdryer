@@ -33,6 +33,7 @@ A network configuration file must be created and populated at
 ## Firmware
 * `arduino-cli` with `esp32:esp32:esp32s3` board support
 * Rob Tillaart's [HX711](https://github.com/RobTillaart/HX711) 0.5.0+
+* WiFi 3.0.4+
 
 ## 3D models
 * OpenSCAD 2021.01+
