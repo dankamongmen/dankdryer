@@ -112,40 +112,6 @@ module fanhole(h){
     fanmounts(h);
 }
 
-// octagon         -- 1mm
-// morph to circle -- 3mm
-// lips            -- 1.5mm
-// 
-module top(){
-    difference(){
-        union(){
-            hull(){
-                linear_extrude(1){
-                    polygon(ipoints);
-                }
-                translate([0, 0, 1]){
-                    linear_extrude(3){
-                        circle(totalxy / 2 - 8);
-                    }
-                }
-            }
-            translate([0, 0, 4]){
-                intersection(){
-                    linear_extrude(3){
-                        difference(){
-                            circle(totalxy / 2 - 6);
-                            circle(totalxy / 2 - 8);
-                        }
-                    }
-                    translate([0, 0, 0.75]){
-                        cube([totalxy, 30, 1.5], true);
-                    }
-                }
-            }
-        }
-    }
-}
-
 module acadapter(){
     difference(){
         cube([165.1, 60, 30], true);
