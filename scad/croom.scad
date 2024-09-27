@@ -97,19 +97,6 @@ module rot(deg){
     }
 }
 
-module lowershield(){
-    // the lower shield must not support the lower coupling,
-    // but it should come right up under it to block air
-    //(-shieldw + 6) / 2, (19.5 + 6) / 2
-    translate([0, 0, wallz + loadcellmounth / 2]){
-        difference(){
-            cube([shieldw + 6, 38 / 2, loadcellmounth], true);
-            cube([shieldw + 2, 34 / 2, loadcellmounth], true);
-        }
-    }
-}
-
-
 module acadaptermount(l){
     translate([165.1 / 2 - 2, -22, wallz + l / 2]){
         difference(){
@@ -251,7 +238,19 @@ module fancablehole(){
     }
 }
 
-// inverted frustrum
+module lowershield(){
+    // the lower shield must not support the lower coupling,
+    // but it should come right up under it to block air
+    //(-shieldw + 6) / 2, (19.5 + 6) / 2
+    translate([0, 0, wallz + loadcellmounth / 2]){
+        difference(){
+            cube([shieldw + 6, 38 / 2, loadcellmounth], true);
+            cube([shieldw + 2, 34 / 2, loadcellmounth], true);
+        }
+    }
+}
+
+// hollow frustrum
 module croom(){
     difference(){
         croomcore();
@@ -267,9 +266,9 @@ module croom(){
         achole();
         fancablehole();
     }
-    acadapterscrews(6);
     lowershield();
-    translate([loadcellmountx, 0, (loadcellmounth + wallz) / 2]){
+    acadapterscrews(6);
+    translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
     }
     wirechannels();
@@ -283,27 +282,10 @@ croom();
 // testing + full assemblage
 /*
 multicolor("black"){
-    translate([0, 0, loadcellmounth + wallz + loadcellh / 2]){
-        loadcell();
-    }
+    assembly();
 }
 
 multicolor("pink"){
     dropmotor();
-}
-
-multicolor("blue"){
-    translate([0, 0, loadcellmounth + wallz + loadcellh]){
-        mirror([1, 0, 0]){
-            lowercoupling();
-        }
-    }
-    translate([0, 0, loadcellmounth + wallz + loadcellh + 55]){
-        shaft();
-    }
-}
-
-multicolor("white"){
-    dropgear();
 }
 */

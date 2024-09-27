@@ -41,24 +41,7 @@ multicolor("silver"){
 }
 
 multicolor("black"){
-    translate([0, 0, loadcellmounth + wallz + loadcellh / 2]){
-        drop(){
-            loadcell();
-        }
-    }
-}
-
-multicolor("blue"){
-    drop(){
-        translate([0, 0, loadcellmounth + wallz + loadcellh]){
-            mirror([1, 0, 0]){
-                lowercoupling();
-            }
-        }
-    }
-    translate([0, 0, -60 + 19 + shafth / 2]){
-        shaft();
-    }
+    assembly();
 }
 
 multicolor("white"){

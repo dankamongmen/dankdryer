@@ -122,15 +122,17 @@ module acadapter(){
 }
 
 loadcellh = 13.5;
+loadcelll = 76;
 module loadcell(){
     // https://amazon.com/gp/product/B07BGXXHSW
-    cube([76, loadcellh, loadcellh], true);
+    cube([loadcelll, loadcellh, loadcellh], true);
 }
 
 loadcellmountx = -76 / 2 + 21.05 / 2;
 loadcellmountw = 13.5;
 loadcellmountl = 21.05;
 loadcellmounth = 27;
+loadcellsupph = 4;
 bearingh = 8;
 module loadcellmount(baseh){
     difference(){
@@ -162,27 +164,37 @@ module uppershield(){
     }
 }
 
-uloadcellmounth = 5;
-module lowercoupling(){
-    translate([loadcellmountx / 2 - loadcellmountx / 2 - 2, 0, uloadcellmounth / 2]){
-        cube([-loadcellmountx, loadcellmountw, uloadcellmounth], true);
-    }
-    translate([-loadcellmountl / 2 + loadcellmountx / 2 - 2, 0, 0]){
-        loadcellmount(uloadcellmounth);
-    }
+// fastens the load cell to the croom, and provides air shield
+module lowersupport(){
+    loadcellmount(loadcellsupph);
     translate([0, 0, 0]){
         uppershield();
     }
+}
+
+// height of inverse cone supporting bearing holder
+couplingh = 10;
+module lowercoupling(){
+    // the brace comes out to the center of the load cell.
+    // the bearing holder rises from the center--the shaft
+    // must be in the dead center of the structure.
+    bracel = loadcelll / 2 - loadcellmountl;
+    translate([-bracel / 2, 0, loadcellsupph / 2]){
+        cube([bracel, loadcellmountw, loadcellsupph], true);
+    }
+    translate([-bracel - loadcellmountl / 2, 0, 0]){
+        loadcellmount(loadcellsupph);
+    }
     // recessed area for 22m 608 bearing
-    translate([0, 0, uloadcellmounth * 2]){
+    translate([0, 0, couplingh / 2]){
         // floor and support for bearing
         bearingr = 23 / 2;
         bearwallr = 1;
-        cylinder(10, loadcellmountw / 2, bearingr + bearwallr, true);
-        translate([0, 0, 2 + bearingh / 2 + 4]){
+        cylinder(couplingh, loadcellmountw / 2, bearingr + bearwallr, true);
+        translate([0, 0, couplingh / 2 + bearingh / 2]){
             difference(){
-                cylinder(9, 25 / 2, bearingr + bearwallr, true);
-                cylinder(9, 23 / 2, bearingr, true);
+                cylinder(bearingh, 25 / 2, bearingr + bearwallr, true);
+                cylinder(bearingh, 23 / 2, bearingr, true);
             }
         }
 
@@ -196,8 +208,13 @@ module drop(){
 }
 
 teeth = 48;
+gearh = 8;
 module gear(){
-    worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=5.5, gear_bore=bearingh + 0.2, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=1, show_worm=0);
+    worm_gear(modul=1, tooth_number=teeth, thread_starts=2,
+                width=gearh, length=wormlen, worm_bore=5.5,
+                gear_bore=bearingh + 0.2, pressure_angle=20,
+                lead_angle=10, optimized=1, together_built=1,
+                show_spur=1, show_worm=0);
 }
 
 module wormy(){
@@ -231,22 +248,13 @@ motorboxd = 37;
 motorshafth = wormlen; // sans worm: 14
 motorshaftd = 13; // sans worm: 6
 motortheta = -60;
-motormounth = 37;
+motormounth = 74;
 // the worm gear on the motor's rotor needs to be tangent to, and at the same
 // elevation as, some point on the central gear.
 module motor(){
     cylinder(motorboxh, motorboxd / 2, motorboxd / 2, true);
     translate([0, 0, motorboxd]){
         cylinder(motorshafth, 6 / 2, 6 / 2, true);
-    }
-}
-
-// the motor object, rotated and placed as it exists in the croom
-module dropmotor(){
-    translate([59, -40, wallz + motormounth * 2]){
-        rotate([0, 270, motortheta]){
-            motor();
-        }
     }
 }
 
@@ -291,37 +299,37 @@ module motorholder(){
 // radius away from the center.
 module motormount(){
     mlength = motorboxh + motorholderh;
-    difference(){
-        cube([mlength, motorboxd, motormounth * 2], true);
-        // now cut a cylinder out of its top
-        translate([0, 0, motormounth]){
+    // the bottom is in a 'v' shape to save material
+    translate([-mlength / 2, 0, 0]){
+        rotate([90, 0, 90]){
+            linear_extrude(mlength){
+                polygon([[-motorboxd / 4, 0],
+                         [motorboxd / 4, 0],
+                         [motorboxd / 2, motormounth - motorboxd / 2],
+                         [-motorboxd / 2, motormounth - motorboxd / 2]]);
+            }
+        }
+    }
+    translate([0, 0, motormounth]){
+        difference(){
+            translate([0, 0, -motorboxd / 4]){
+                cube([mlength, motorboxd, motorboxd / 2], true);
+            }
+            // now cut a cylinder out of its top
             rotate([0, 90, 0]){
                 cylinder(mlength, motorboxd / 2, motorboxd / 2, true);
             }
         }
-    }
-    // circular front mount. without the fudge factor, openscad
-    // considers the manifold broken, which i don't understand
-    // FIXME until then leave it in
-    translate([-37.5, 0, motormounth - 0.001]){
-        rotate([0, 90, 0]){
-            motorholder();
+        // circular front mount. without the fudge factor, openscad
+        // considers the manifold broken, which i don't understand
+        // FIXME until then leave it in
+        translate([-37.5, 0, 0]){
+            rotate([0, 90, 0]){
+                motorholder();
+            }
         }
+
     }
-}
-
-module dropmotormount(){
-    translate([58, -39, wallz + motormounth]){
-        rotate([0, 0, motortheta]){
-            motormount();
-        }
-    }
-}
-
-shafth = bearingh + croomz - loadcellmounth;
-
-module shaft(){
-    cylinder(shafth, bearingh / 2, bearingh / 2, true);
 }
 
 module dogear(){
@@ -330,8 +338,75 @@ module dogear(){
     }
 }
 
+module dropmotormount(){
+    translate([60, -41, wallz]){
+        rotate([0, 0, motortheta]){
+            motormount();
+        }
+    }
+}
+
+shafth = croomz - couplingh - loadcellsupph * 2
+            - loadcellh - loadcellmounth;
+shaftr = bearingh / 2;
+module shaft(){
+    cylinder(shafth, shaftr, shaftr, true);
+}
+
+// a hollow cylinder to vertically space shaft stuff
+module shaftsupport(l){
+    difference(){
+        cylinder(l, shaftr + 2, shaftr + 2, true);
+        cylinder(l, shaftr, shaftr, true);
+    }
+}
+
+// put together for testing / visualization, never printed
+module assembly(){
+    translate([0, 0, wallz + loadcellmounth]){
+        translate([loadcellmountx, 0, 0]){
+            loadcellmount(loadcellsupph);
+        }
+        translate([0, 0, loadcellsupph]){
+            translate([0, 0, loadcellh / 2]){
+                loadcell();
+            }
+            translate([0, 0, loadcellh]){
+                translate([(loadcelll - loadcellmountl) / 2, 0, 0]){
+                    loadcellmount(loadcellsupph);
+                }
+                translate([0, 0, loadcellsupph]){
+                    mirror([1, 0, 0]){
+                        lowercoupling();
+                    }
+                    translate([0, 0, shafth / 2]){
+                        shaft();
+                    }
+                    translate([0, 0, couplingh + bearingh]){
+                        translate([0, 0, 4 / 2]){
+                            shaftsupport(4);
+                        }
+                        translate([0, 0, 4 + gearh / 2]){
+                            dogear();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// the motor object, rotated and placed as it exists in the croom
+module dropmotor(){
+    translate([59, -40, wallz + motormounth]){
+        rotate([0, 270, motortheta]){
+            motor();
+        }
+    }
+}
+
 module dropgear(){
-    translate([0, 0, wallz + motormounth * 2]){
+    translate([0, 0, wallz + motormounth]){
         dogear();
     }
 }
