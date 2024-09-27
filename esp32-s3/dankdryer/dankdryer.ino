@@ -166,6 +166,11 @@ float getAmbient(void){
   return t;
 }
 
+float getWeight(void){
+  Load.wait_ready();
+  return Load.read_average(5);
+}
+
 // the esp32-s3 has a built in temperature sensor
 int setup_esp32temp(void){
   temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
@@ -535,9 +540,8 @@ void setup(void){
 
 void loop(void){
   float ambient = getAmbient();
-  if(!isnan(ambient)){
-    printf("esp32 temp: %f\n", ambient);
-  }
+  float weight = getWeight();
+  printf("esp32 temp: %f weight: %f\n", ambient, weight);
   printf("tach-l: %lu\n", LowerPulses);
   printf("tach-u: %lu\n", UpperPulses);
   delay(1000);
