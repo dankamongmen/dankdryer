@@ -219,7 +219,7 @@ module wirechannel(){
             intersection(){
                 difference(){
                     cylinder(totalxy / 2, channelh / 2, channelh / 2, true);
-                    cylinder(totalxy / 2, (channelh - 1) / 2, (channelh - 1) / 2, true);
+                    cylinder(totalxy / 2, (channelh - 2) / 2, (channelh - 2) / 2, true);
                 }
                 translate([channelh / 2, channelh / 2, 0]){
                     cube([channelh, channelh, totalxy / 2], true);
