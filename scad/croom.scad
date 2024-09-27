@@ -109,6 +109,7 @@ module lowershield(){
     }
 }
 
+
 module acadaptermount(l){
     translate([165.1 / 2 - 2, -22, wallz + l / 2]){
         difference(){
@@ -122,15 +123,17 @@ module acadaptermount(l){
 // screw holes are 6mm in from sides, so they start at
 // 6mm (through 10mm) and 50mm (through 54mm)
 module acadapterscrews(l){
-    acadaptermount(l);
-    mirror([0, 1, 0]){
+    translate([0, 60, 0]){
         acadaptermount(l);
+        mirror([0, 1, 0]){
+            acadaptermount(l);
+            mirror([1, 0, 0]){
+                acadaptermount(l);
+            }
+        }
         mirror([1, 0, 0]){
             acadaptermount(l);
         }
-    }
-    mirror([1, 0, 0]){
-        acadaptermount(l);
     }
 }
 
@@ -264,10 +267,7 @@ module croom(){
         achole();
         fancablehole();
     }
-    // holes for AC adapter mounting screws
-    translate([0, 60, 0]){
-        acadapterscrews(6);
-    }
+    acadapterscrews(6);
     lowershield();
     translate([loadcellmountx, 0, (loadcellmounth + wallz) / 2]){
         loadcellmount(loadcellmounth);
