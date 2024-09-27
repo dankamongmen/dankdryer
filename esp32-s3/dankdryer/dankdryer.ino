@@ -23,15 +23,15 @@
 // 0 and 3 are strapping pins
 #define LOWER_PWMPIN GPIO_NUM_4
 #define UPPER_PWMPIN GPIO_NUM_5
+#define UPPER_TACHPIN GPIO_NUM_6
+#define LOWER_TACHPIN GPIO_NUM_7
 #define THERM_DATAPIN GPIO_NUM_8
+#define HX711_SCK GPIO_NUM_17
+#define HX711_DT GPIO_NUM_18
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 #define MOTOR_PWMPIN GPIO_NUM_35
-#define UPPER_TACHPIN GPIO_NUM_6
-#define LOWER_TACHPIN GPIO_NUM_7
 // 38 is used for RGB LED
-#define LOAD_CLOCKPIN GPIO_NUM_41
-#define LOAD_DATAPIN GPIO_NUM_42
 // 45 and 46 are strapping pins
 #define MOTOR_1PIN GPIO_NUM_47
 #define MOTOR_2PIN GPIO_NUM_48
@@ -49,6 +49,7 @@ static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 static uint32_t LowerPWM = 64;
 static uint32_t UpperPWM = 128;
 static uint32_t TargetTemp = 80;
+static float LoadcellScale = 1.0;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 static esp_mqtt_client_handle_t MQTTHandle;
 
@@ -214,6 +215,28 @@ int nvs_get_opt_u32(nvs_handle_t nh, const char* recname, uint32_t* val){
   return 0;
 }
 
+// NVS can't use floats directly. we instead write/read them as strings.
+int nvs_get_opt_float(nvs_handle_t nh, const char* recname, float* val){
+  char buf[32];
+  unsigned blen = sizeof(buf);
+  esp_err_t err = nvs_get_str(nh, recname, buf, &blen);
+  if(err == ESP_ERR_NVS_NOT_FOUND){
+    printf("no record '%s' in nvs\n", recname);
+    return 0;
+  }else if(err){
+    fprintf(stderr, "failure (%s) reading %s\n", esp_err_to_name(err), recname);
+    return -1;
+  }
+  char* bend;
+  *val = strtof(buf, &bend);
+  if(bend || !*val || isnan(*val)){
+    fprintf(stderr, "couldn't convert [%s] to float for nvs:%s\n", buf, recname);
+    return -1;
+  }
+  printf("read configured default %f from nvs:%s\n", *val, recname);
+  return 0;
+}
+
 // read and update boot count, read configurable defaults from pstore if they
 // are present (we do not write defaults to pstore, so we can differentiate
 // between defaults and a configured value).
@@ -250,6 +273,7 @@ int read_pstore(void){
   nvs_get_opt_u32(nvsh, "targtemp", &TargetTemp);
   nvs_get_opt_u32(nvsh, "upperfanpwm", &UpperPWM);
   nvs_get_opt_u32(nvsh, "lowerfanpwm", &LowerPWM);
+  nvs_get_opt_float(nvsh, "loadcellscale", &LoadcellScale);
   // FIXME check any defaults we read and ensure they're sane
   // FIXME need we check for error here?
   nvs_close(nvsh);
@@ -464,6 +488,12 @@ bail:
   return -1;
 }
 
+int setup_hx711(void){
+  Load.begin(HX711_DT, HX711_SCK);
+  Load.set_scale(LoadcellScale);
+  return 0;
+}
+
 void set_led(const struct failure_indication *nin){
   neopixelWrite(RGB_BUILTIN, nin->r, nin->g, nin->b);
 }
@@ -484,11 +514,13 @@ void setup(void){
       UsePersistentStore = true;
     }
   }
-  Load.begin(LOAD_DATAPIN, LOAD_CLOCKPIN);
   if(setup_esp32temp()){
     set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
+    set_failure(&SystemError);
+  }
+  if(setup_hx711()){
     set_failure(&SystemError);
   }
   if(setup_network()){
