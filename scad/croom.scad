@@ -110,7 +110,7 @@ module lowershield(){
 }
 
 module acadaptermount(l){
-    translate([0, 0, wallz + l / 2]){
+    translate([165.1 / 2 - 2, -22, wallz + l / 2]){
         difference(){
             cube([7, 7, l], true);
             screw("M4", length = l);
@@ -122,15 +122,15 @@ module acadaptermount(l){
 // screw holes are 6mm in from sides, so they start at
 // 6mm (through 10mm) and 50mm (through 54mm)
 module acadapterscrews(l){
-    translate([165.1 / 2 - 2, -22, 0]){
-        acadaptermount(l);
-    }
+    acadaptermount(l);
     mirror([0, 1, 0]){
+        acadaptermount(l);
         mirror([1, 0, 0]){
-            translate([165.1 / 2 - 2, -22, 0]){
-                acadaptermount(l);
-            }
+            acadaptermount(l);
         }
+    }
+    mirror([1, 0, 0]){
+        acadaptermount(l);
     }
 }
 
@@ -149,11 +149,11 @@ module corners(){
     }
 }
 
-module lmsmount(){
-    translate([0, 0, mh / 2]){
+module lmsmount(l){
+    translate([0, 0, wallz + l / 2]){
         difference(){
-            cube([7, 7, mh], true);
-            screw("M4", length = mh);
+            cube([7, 7, l], true);
+            screw("M4", length = l);
         }
     }
 }
@@ -161,11 +161,11 @@ module lmsmount(){
 // 32.14 on the diagonal
 module lmsmounts(){
     // 12->5V mounts
-    translate([40, -totalxy / 2 + 20, wallz + mh / 2]){
-       lmsmount();
+    translate([39.8, -totalxy / 2 + 20, 0]){
+       lmsmount(mh + 6);
     }
-    translate([8, -totalxy / 2 + 20 + 16.4, wallz + mh / 2]){
-       lmsmount();
+    translate([8, -totalxy / 2 + 20 + 16.4, 0]){
+       lmsmount(mh + 6);
     }
 }
 
@@ -250,10 +250,6 @@ module croom(){
             croominnercore();
             corners();
         }
-        // holes for AC adapter mounting screws
-        translate([0, 60, 6 / 2]){
-            acadapterscrews(6);
-        }
         translate([0, -botalt + 10, croomz / 2]){
             rot(0){
                 fanhole(20);
@@ -261,6 +257,10 @@ module croom(){
         }
         achole();
         fancablehole();
+    }
+    // holes for AC adapter mounting screws
+    translate([0, 60, 6 / 2]){
+        acadapterscrews(6);
     }
     lowershield();
     translate([loadcellmountx, 0, (loadcellmounth + wallz) / 2]){
