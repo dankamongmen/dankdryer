@@ -109,17 +109,26 @@ module lowershield(){
     }
 }
 
+module acadaptermount(l){
+    translate([0, 0, wallz + l / 2]){
+        difference(){
+            cube([7, 7, l], true);
+            screw("M4", length = l);
+        }
+    }
+}
+
 // 60mm wide total
 // screw holes are 6mm in from sides, so they start at
 // 6mm (through 10mm) and 50mm (through 54mm)
 module acadapterscrews(l){
     translate([165.1 / 2 - 2, -22, 0]){
-        screw("M4", length = l);
+        acadaptermount(l);
     }
     mirror([0, 1, 0]){
         mirror([1, 0, 0]){
             translate([165.1 / 2 - 2, -22, 0]){
-                screw("M4", length = l);
+                acadaptermount(l);
             }
         }
     }
@@ -141,9 +150,11 @@ module corners(){
 }
 
 module lmsmount(){
-    difference(){
-        cube([7, 7, mh], true);
-        screw("M4", length = mh);
+    translate([0, 0, mh / 2]){
+        difference(){
+            cube([7, 7, mh], true);
+            screw("M4", length = mh);
+        }
     }
 }
 
@@ -196,7 +207,7 @@ module achole(){
 
 // channel for ac wires running from adapter to heater
 module wirechannel(){
-    channelh = 12;
+    channelh = 20;
     translate([-botalt + croomwall, -20, wallz]){
         rotate([90, 0, 0]){
             intersection(){
