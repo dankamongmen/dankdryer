@@ -164,7 +164,13 @@ module lmsmounts(){
     translate([39.8, -totalxy / 2 + 20, 0]){
        lmsmount(mh + 6);
     }
-    translate([8, -totalxy / 2 + 20 + 16.4, 0]){
+    translate([39.8, -totalxy / 2 + 36.4, 0]){
+       lmsmount(mh + 6);
+    }
+    translate([8, -totalxy / 2 + 36.4, 0]){
+       lmsmount(mh + 6);
+    }
+    translate([8, -totalxy / 2 + 20, 0]){
        lmsmount(mh + 6);
     }
 }
