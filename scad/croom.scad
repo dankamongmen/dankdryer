@@ -265,7 +265,7 @@ module croom(){
         fancablehole();
     }
     // holes for AC adapter mounting screws
-    translate([0, 60, 6 / 2]){
+    translate([0, 60, 0]){
         acadapterscrews(6);
     }
     lowershield();
