@@ -25,6 +25,20 @@ module ceramheat230(height){
     }
 }
 
+// a 3v3 relay is fastened to the underside, upside-down
+module relayholes(l){
+    screw("M4", length = l);
+    translate([11.3, 0, 0]){
+        screw("M4", length = l);
+    }
+    translate([0, 64.3, 0]){
+        screw("M4", length = l);
+    }
+    translate([11.3, 64.3, 0]){
+        screw("M4", length = l);
+    }
+}
+
 // 2500mm² worth of air passage through one side of floor.
 // the fan is 80mm x 80mm, suggesting 6400 (and thus 3200 per
 // side), but it's actually only π40² or ~5027.
@@ -42,20 +56,17 @@ module floorcuts(){
                 translate([-totalxy / 2 - 42, 0, 0]){
                     cube([totalxy / 2, totalxy / 2, wallz]);
                 }
-                for(i = [0:1:9]){
+                for(i = [0:1:8]){
                     linear_extrude(wallz){
                         difference(){
-                            circle(50 + i * 6);
-                            circle(50 + i * 6 - 4);
+                            circle(56 + i * 6);
+                            circle(56 + i * 6 - 4);
                         }
                     }
                 }
             }
             translate([-31, 100, d / 2]){
-                cube([62, 4, d], true);
-            }
-            translate([-21, 24, d / 2]){
-                cube([42, 6, d], true);
+                cube([62, 14, d], true);
             }
         }
     }
@@ -150,6 +161,11 @@ module hotbox(){
         // hole and mounts for 150C thermocouple and heating element wires
         translate([40, -10, wallz / 2]){
             thermohole();
+        }
+        translate([-20, -40, 0]){
+            rotate([0, 0, 90]){
+                relayholes(wallz);
+            }
         }
     }
     translate([0, 0, totalz - topz]){
