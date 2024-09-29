@@ -3,6 +3,7 @@
 // the top is lifted up and out to insert a spool
 // the spool sits on corner walls
 include <core.scad>
+use <top.scad>
 
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5
@@ -22,20 +23,6 @@ module ceramheat230(height){
         translate([0, holegapl, 0]){
             screw("M3", length = height);
         }
-    }
-}
-
-// a 3v3 relay is fastened to the underside, upside-down
-module relayholes(l){
-    screw("M4", length = l);
-    translate([11.3, 0, 0]){
-        screw("M4", length = l);
-    }
-    translate([0, 64.3, 0]){
-        screw("M4", length = l);
-    }
-    translate([11.3, 64.3, 0]){
-        screw("M4", length = l);
     }
 }
 
@@ -161,11 +148,6 @@ module hotbox(){
         // hole and mounts for 150C thermocouple and heating element wires
         translate([40, -10, wallz / 2]){
             thermohole();
-        }
-        translate([-20, -40, 0]){
-            rotate([0, 0, 90]){
-                relayholes(wallz);
-            }
         }
     }
     translate([0, 0, totalz - topz]){
