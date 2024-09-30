@@ -90,6 +90,32 @@ module hbcorners(){
     }
 }
 
+module upcorner(){
+    side = 40;
+    t = totalxy / 2;
+    translate([t - 15, t - 15, totalz - side / 2]){
+        rotate([0, 0, 45]){
+            cylinder(side, 1, side / 2, true, $fn = 4);
+        }
+    }
+}
+
+module upcorners(){
+    // four corners for mating to croom
+    upcorner();
+    mirror([0, 1, 0]){
+        upcorner();
+    }
+    mirror([1, 0, 0]){
+        upcorner();
+    }
+    mirror([0, 1, 0]){
+        mirror([1, 0, 0]){
+            upcorner();
+        }
+    }
+}
+
 module core(){
     translate([0, 0, wallz]){
         linear_extrude(totalz - wallz - topz){
@@ -122,11 +148,7 @@ module hotbox(){
             difference(){
                 core();
                 // cut away top corners to reduce material costs
-                translate([0, 0, totalz - topz]){
-                    mirror([0, 0, 1]){
-                        hbcorners();
-                    }
-                }
+                upcorners();
             }
         }
         // we want to clear everything in the central
