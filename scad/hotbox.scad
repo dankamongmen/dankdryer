@@ -63,9 +63,9 @@ module hbcorner(){
     side = 50;
     t = totalxy / 2;
     difference(){
-        translate([t - 18, t - 18, 2 * side / 6]){
+        translate([t - 18, t - 18, side / 2]){
             rotate([0, 0, 45]){
-                cylinder(2 * side / 3, side / 2, 1, true, $fn = 4);
+                cylinder(side, side / 2, 1, true, $fn = 4);
             }
         }
         translate([totalxy / 2 - 12, totalxy / 2 - 12, 2 * side / 6]){
@@ -119,7 +119,15 @@ module hotbox(){
         union(){
             topbottom(wallz);
             hbcorners();
-            core();
+            difference(){
+                core();
+                // cut away top corners to reduce material costs
+                translate([0, 0, totalz - topz]){
+                    mirror([0, 0, 1]){
+                        hbcorners();
+                    }
+                }
+            }
         }
         // we want to clear everything in the central
         // cylinder from the floor up.
@@ -138,7 +146,7 @@ module hotbox(){
             fanhole(wallxy + 16);
         }
         // central column
-        cylinder(10, 30 / 2, 30 / 2, true);
+        cylinder(10, 50 / 2, 50 / 2, true);
         // screw holes for the ceramic heating element. we want it entirely
         // underneath the spool, but further towards the perimeter
         // than the center.
@@ -146,8 +154,10 @@ module hotbox(){
             ceramheat230(wallz);
         }
         // hole and mounts for 150C thermocouple and heating element wires
-        translate([40, -10, wallz / 2]){
-            thermohole();
+        translate([50, -15, wallz / 2]){
+            rotate([0, 0, 45]){
+                thermohole();
+            }
         }
     }
     translate([0, 0, totalz - topz]){
