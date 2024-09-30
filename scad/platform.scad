@@ -8,11 +8,11 @@ include <core.scad>
 
 platformh = elevation;
 columnr = 15;
-platformr = 40;
+platformd = 40;
 
 module platform(){
     difference(){
-        cylinder(platformh, platformr, columnr, true);
+        cylinder(platformh, platformd / 2, columnr, true);
         cylinder(platformh, gearbore / 2, gearbore / 2, true);
     }
 }
