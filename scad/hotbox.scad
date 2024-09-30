@@ -146,11 +146,13 @@ module hotbox(){
             fanhole(wallxy + 16);
         }
         // central column
-        cylinder(10, 50 / 2, 50 / 2, true);
-        // screw holes for the ceramic heating element. we want it entirely
-        // underneath the spool, but further towards the perimeter
-        // than the center.
-        translate([0, totalxy / 4 + 10, wallz / 2]){
+        translate([0, 0, wallz / 2]){
+            cylinder(wallz, columnr, columnr, true);
+        }
+        // screw holes for the ceramic heating element.
+        // we want it entirely underneath the spool, but
+        // further towards the perimeter than the center.
+        translate([0, totalxy / 4 + 8, wallz / 2]){
             ceramheat230(wallz);
         }
         // hole and mounts for 150C thermocouple and heating element wires

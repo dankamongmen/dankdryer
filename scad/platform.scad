@@ -12,16 +12,14 @@ platformr = 40;
 
 module platform(){
     difference(){
-        cylinder(platformh, columnr, platformr, true);
-        cylinder(platformh, bearingh / 2, bearingh / 2, true);
+        cylinder(platformh, platformr, columnr, true);
+        cylinder(platformh, gearbore / 2, gearbore / 2, true);
     }
 }
 
 module dropplatform(){
     translate([0, 0, platformh / 2]){
-        mirror([0, 0, 1]){
-            platform();
-        }
+        platform();
     }
 }
 
