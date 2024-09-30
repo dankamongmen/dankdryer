@@ -1,8 +1,10 @@
 include <core.scad>
 
 translate([5, 0, wormlen / 2]){
-    rotate([90, 0, 0]){
-        wormy();
+    translate([20, 0, 0]){
+        rotate([90, 0, 0]){
+            wormy();
+        }
     }
 }
 
