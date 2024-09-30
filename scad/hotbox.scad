@@ -140,6 +140,23 @@ module thermohole(){
     }
 }
 
+module rc522side(l){
+    holer = 3.1 / 2;
+    translate([-33.5 / 2 - holer, -22.25 / 2 - holer, l / 2]){
+        screw("M4", length = l);
+    }
+    translate([33.5 / 2 + holer, -22.25 / 2 - holer, l / 2]){
+        screw("M4", length = l);
+    }
+}
+
+module rc522holes(l){
+    rc522side(l);
+    mirror([0, 1, 0]){
+        rc522side(l);
+    }
+}
+
 module hotbox(){
     difference(){
         union(){
@@ -149,7 +166,11 @@ module hotbox(){
                 core();
                 // cut away top corners to reduce material costs
                 upcorners();
+
             }
+        }
+        translate([-40, -40, 0]){
+            rc522holes(wallz);
         }
         // we want to clear everything in the central
         // cylinder from the floor up.
