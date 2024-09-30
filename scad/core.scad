@@ -7,12 +7,12 @@ $fn = 64;
 current_color = "ALL";
 
 module multicolor(color) {
-	if (current_color != "ALL" && current_color != color) { 
+	if (current_color != "ALL" && current_color != color) {
 		// ignore our children.
 	} else {
 		color(color)
 		children();
-	}        
+	}
 }
 
 wormlen = 50;
@@ -46,7 +46,7 @@ shieldw = 88;
 
 opoints = [
             [-totalxy / 2 + chordxy, -totalxy / 2],
-            [totalxy / 2 - chordxy, -totalxy / 2], 
+            [totalxy / 2 - chordxy, -totalxy / 2],
             [totalxy / 2, -totalxy / 2 + chordxy],
             [totalxy / 2, totalxy / 2 - chordxy],
             [totalxy / 2 - chordxy, totalxy / 2],
@@ -56,7 +56,7 @@ opoints = [
         ];
 
 ipoints = [[-totalxy / 2 + (chordxy + wallxy), -totalxy / 2 + wallxy],
-                [totalxy / 2 - (chordxy + wallxy), -totalxy / 2 + wallxy], 
+                [totalxy / 2 - (chordxy + wallxy), -totalxy / 2 + wallxy],
                 [totalxy / 2 - wallxy, -totalxy / 2 + (chordxy + wallxy)],
                 [totalxy / 2 - wallxy, totalxy / 2 - (chordxy + wallxy)],
                 [totalxy / 2 - (chordxy + wallxy), totalxy / 2 - wallxy],
@@ -219,14 +219,7 @@ module gear(){
 
 module wormy(){
     difference(){
-        union(){
-            worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=6, gear_bore=bearingh + 0.2, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=0, show_worm=1);
-    
-            // fill in the central worm gear hole, save for our rotor cutout
-            translate([6, -10.6, 0]){
-                cube([6, 10, 6], true);
-            }
-        }
+        worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=6, gear_bore=bearingh + 0.2, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=0, show_worm=1);
         translate([6, 12, 0]){
             rotate([90, 0, 0]){
                 difference(){

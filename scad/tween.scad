@@ -19,7 +19,7 @@ module core2(circler, hollow){
     shape2Centroid= [0,0];
     shape2ExtensionAdjustment= 0;
 
-    wallThickness= 5;
+    wallThickness= 0;
 
     isHollow = hollow;
 
