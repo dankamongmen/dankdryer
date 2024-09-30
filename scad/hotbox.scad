@@ -13,15 +13,15 @@ module ceramheat230(height){
     holegapw = 32;
 	holegapl = 52;
     translate([-holegapw / 2, -holegapl / 2, 0]){
-        screw("M3", length = height);
+        screw("M4", length = height);
         translate([holegapw, 0, 0]){
-            screw("M3", length = height);
+            screw("M4", length = height);
             translate([0, holegapl, 0]){
-                screw("M3", length = height);
+                screw("M4", length = height);
             }
         }
         translate([0, holegapl, 0]){
-            screw("M3", length = height);
+            screw("M4", length = height);
         }
     }
 }
