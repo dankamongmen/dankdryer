@@ -1,7 +1,7 @@
 include <core.scad>
 use <hotbox.scad>
 use <croom.scad>
-use <lowercoupling.scad>
+use <coupling.scad>
 use <top.scad>
 
 multicolor("purple"){

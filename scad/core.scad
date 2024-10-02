@@ -208,15 +208,25 @@ module drop(){
 }
 
 teeth = 48;
-gearh = 8;
+gearboth = 8;
+// fat cylinder on top so the bearing can be pushed up all the way
+gearh = gearboth + 10;
 gearbore = bearingh + 0.4;
 wormbore = 7;
 module gear(){
+    translate([teeth, 0, -gearh / 2]){
     worm_gear(modul=1, tooth_number=teeth, thread_starts=2,
-                width=gearh, length=wormlen, worm_bore=wormbore,
+                width=gearboth, length=wormlen, worm_bore=wormbore,
                 gear_bore=gearbore, pressure_angle=20,
-                lead_angle=10, optimized=1, together_built=1,
+                lead_angle=10, optimized=1, together_built=0,
                 show_spur=1, show_worm=0);
+    }
+    translate([0, 0, gearh / 2 - (gearh - gearboth) / 2]){
+        difference(){
+            cylinder(gearh, gearbore / 2 + 2, gearbore / 2 + 2, true);
+            cylinder(gearh, gearbore / 2, gearbore / 2, true);
+        }
+    }
 }
 
 module wormy(){
@@ -320,12 +330,6 @@ module motormount(){
     }
 }
 
-module dogear(){
-    translate([teeth / 2, 0, 0]){
-        gear();
-    }
-}
-
 module dropmotormount(){
     translate([60, -41, wallz]){
         rotate([0, 0, motortheta]){
@@ -340,21 +344,23 @@ module dropmotormount(){
 // central column radius is columnr
 // to calculate the shaft height, we add the amount in the hotbox
 // to the amount in the croom.
-platformh = elevation * 2;
-shafth = platformh + 40;
+platformh = elevation + wallz;
+shafth = platformh + 45;
 shaftr = bearingh / 2;
 module shaft(){
     platforminnerr = columnr - 0.5;
     platformouterd = spoold / 2;
     cylinder(shafth, shaftr, shaftr, true);
-    translate([0, 0, (shafth - platformh) / 2]){
-        difference(){
-            cylinder(elevation, platforminnerr, platforminnerr, true);
-            cylinder(elevation, gearbore / 2, gearbore / 2, true);
-        }
-        translate([0, 0, elevation]){
-            cylinder(elevation, platformouterd / 2, platformouterd / 2, true);
-        }
+    // fatten the shaft so that gear can be pushed up to this point
+    fath = 20;
+    translate([0, 0, shafth / 2 - platformh - fath / 2]){
+        cylinder(fath, shaftr + 2, shaftr + 2, true);
+    }
+    translate([0, 0, shafth / 2 - elevation - wallz / 2]){
+        cylinder(wallz, platforminnerr, platforminnerr, true);
+    }
+    translate([0, 0, shafth / 2 - elevation / 2]){
+        cylinder(elevation, platformouterd / 2, platformouterd / 2, true);
     }
 }
 
@@ -393,7 +399,7 @@ module assembly(){
                             shaftsupport(bottomspacerh);
                         }
                         translate([0, 0, 4 + gearh / 2]){
-                            dogear();
+                            gear();
                             translate([0, 0, gearh + platformh]){
                                 platform();
                             }
