@@ -10,19 +10,9 @@ use <croom.scad>
 
 // these are joined by the shaft, and placed into the coupling:
 //  bearing
-//  lower spacer
 //  gear
-//  upper spacer
 //  platform
 
-// the lower mount has the shield attached to it
-translate([-50, 0, 0]){
-    lowersupport();
-}
-
-// the upper mount is printed separately from the coupling
-// to simplify printing; we already need a screw there (to
-// fasten to the load cell), so no loss.
 translate([-25, 0, 0]){
     loadcellmount(loadcellsupph);
 }
@@ -33,8 +23,22 @@ multicolor("blue"){
     }
 }
 
-translate([50, 0, 4 / 2]){
-    shaftsupport(4);
+translate([5, 0, wormlen / 2]){
+    translate([20, 0, 0]){
+        rotate([90, 0, 0]){
+            wormy();
+        }
+    }
+}
+
+translate([0, 0, 4]){
+    gear();
+}
+
+translate([10, 0, shafth / 2]){
+    mirror([0, 0, 1]){
+        shaft();
+    }
 }
 
 //dropmotormount();

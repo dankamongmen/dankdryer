@@ -10,6 +10,7 @@ multicolor("purple"){
     }
 }
 
+/*
 multicolor("green"){
   spool();
 }
@@ -27,7 +28,7 @@ multicolor("grey"){
         croom();
     }
 }
-
+*/
 multicolor("pink"){
     drop(){
         dropmotor();
@@ -35,21 +36,21 @@ multicolor("pink"){
 }
 
 multicolor("silver"){
-    translate([0, 60, flr + 30 / 2]){
-        acadapter();
+    drop(){
+        translate([0, 60, wallz + acadapterh / 2]){
+            acadapter();
+        }
     }
 }
 
 multicolor("black"){
-    assembly();
-}
-
-multicolor("white"){
     drop(){
-        dropgear();
+        assembly();
     }
 }
 
 multicolor("green"){
-    dropworm();
+    drop(){
+        dropworm();
+    }
 }

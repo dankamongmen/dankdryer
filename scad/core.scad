@@ -334,35 +334,39 @@ module dropmotormount(){
     }
 }
 
-shafth = croomz - couplingh - loadcellsupph * 2
-            - loadcellh - loadcellmounth;
+// platform for the top of the shaft. it expands into the
+// hotbox and supports the spool. locks down onto top of shaft.
+// shaft radius is bearingh / 2
+// central column radius is columnr
+// to calculate the shaft height, we add the amount in the hotbox
+// to the amount in the croom.
+platformh = elevation * 2;
+shafth = platformh + 40;
 shaftr = bearingh / 2;
 module shaft(){
+    platforminnerr = columnr - 0.5;
+    platformouterd = spoold / 2;
     cylinder(shafth, shaftr, shaftr, true);
+    translate([0, 0, (shafth - platformh) / 2]){
+        difference(){
+            cylinder(elevation, platforminnerr, platforminnerr, true);
+            cylinder(elevation, gearbore / 2, gearbore / 2, true);
+        }
+        translate([0, 0, elevation]){
+            cylinder(elevation, platformouterd / 2, platformouterd / 2, true);
+        }
+    }
 }
 
 // a hollow cylinder to vertically space shaft stuff
 module shaftsupport(l){
     difference(){
         cylinder(l, shaftr + 2, shaftr + 2, true);
-        cylinder(l, shaftr, shaftr, true);
+        cylinder(l, shaftr + 0.5, shaftr + 0.5, true);
     }
 }
 
-// platform for the top of the shaft. it expands into the
-// hotbox and supports the spool.
-// shaft radius is bearingh / 2
-// central column radius is 15
-
-platformh = elevation;
-platformd = 40;
-module platform(){
-    difference(){
-        cylinder(platformh, platformd / 2, columnr, true);
-        cylinder(platformh, gearbore / 2, gearbore / 2, true);
-    }
-}
-
+bottomspacerh = 14;
 // put together for testing / visualization, never printed
 module assembly(){
     translate([0, 0, wallz + loadcellmounth]){
@@ -385,12 +389,12 @@ module assembly(){
                         shaft();
                     }
                     translate([0, 0, couplingh + bearingh]){
-                        translate([0, 0, 4 / 2]){
-                            shaftsupport(4);
+                        translate([0, 0, bottomspacerh / 2]){
+                            shaftsupport(bottomspacerh);
                         }
                         translate([0, 0, 4 + gearh / 2]){
                             dogear();
-                            translate([0, 0, gearh + platformh / 2]){
+                            translate([0, 0, gearh + platformh]){
                                 platform();
                             }
                         }
