@@ -112,9 +112,10 @@ module fanhole(h){
     fanmounts(h);
 }
 
+acadapterh = 30;
 module acadapter(){
     difference(){
-        cube([165.1, 60, 30], true);
+        cube([165.1, 60, acadapterh], true);
         translate([0, 0, -15]){
             acadapterscrews(30);
         }
@@ -348,6 +349,20 @@ module shaftsupport(l){
     }
 }
 
+// platform for the top of the shaft. it expands into the
+// hotbox and supports the spool.
+// shaft radius is bearingh / 2
+// central column radius is 15
+
+platformh = elevation;
+platformd = 40;
+module platform(){
+    difference(){
+        cylinder(platformh, platformd / 2, columnr, true);
+        cylinder(platformh, gearbore / 2, gearbore / 2, true);
+    }
+}
+
 // put together for testing / visualization, never printed
 module assembly(){
     translate([0, 0, wallz + loadcellmounth]){
@@ -375,6 +390,9 @@ module assembly(){
                         }
                         translate([0, 0, 4 + gearh / 2]){
                             dogear();
+                            translate([0, 0, gearh + platformh / 2]){
+                                platform();
+                            }
                         }
                     }
                 }
