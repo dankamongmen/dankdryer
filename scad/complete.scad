@@ -10,7 +10,6 @@ multicolor("purple"){
     }
 }
 
-/*
 multicolor("green"){
   spool();
 }
@@ -28,7 +27,7 @@ multicolor("grey"){
         croom();
     }
 }
-*/
+
 multicolor("pink"){
     drop(){
         dropmotor();

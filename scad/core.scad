@@ -345,14 +345,14 @@ module dropmotormount(){
 // to calculate the shaft height, we add the amount in the hotbox
 // to the amount in the croom.
 platformh = elevation + wallz;
-shafth = platformh + 45;
+shafth = platformh + 47;
 shaftr = bearingh / 2;
 module shaft(){
     platforminnerr = columnr - 0.5;
     platformouterd = spoold / 2;
     cylinder(shafth, shaftr, shaftr, true);
     // fatten the shaft so that gear can be pushed up to this point
-    fath = 20;
+    fath = 22;
     translate([0, 0, shafth / 2 - platformh - fath / 2]){
         cylinder(fath, shaftr + 2, shaftr + 2, true);
     }
@@ -400,9 +400,6 @@ module assembly(){
                         }
                         translate([0, 0, 4 + gearh / 2]){
                             gear();
-                            translate([0, 0, gearh + platformh]){
-                                platform();
-                            }
                         }
                     }
                 }
