@@ -342,6 +342,48 @@ module dropmotormount(){
 // cuts both allow heat to flow, and reduce weight.
     
 module platform(inr, outr){
+    difference(){
+        union(){
+            translate([0, 0, -elevation - wallz / 2]){
+                cylinder(wallz, inr, inr, true);
+            }
+            translate([0, 0, -elevation / 2]){
+                cylinder(elevation, inr, outr, true);
+            }
+        }
+        translate([0, 0, -(elevation + wallz) / 2]){
+            step = outr / 5;
+            istep = inr / 2;
+            for(i = [0 : istep : inr]){
+                echo(i, inr, outr, step);
+                difference(){
+                    cylinder(elevation + wallz, i + step - 2, i + step - 2, true);
+                    cylinder(elevation + wallz, i, i, true);
+                }
+            }
+            ostep = (outr - inr) / 3;
+            for(i = [inr : ostep : outr]){
+                echo(i, inr, outr, step);
+                difference(){
+                    cylinder(elevation, i + step - 2, i + step - 2, true);
+                    cylinder(elevation, i, i, true);
+                }
+            }
+        }
+    }
+    intersection(){
+        for(i = [0 : 60 : 360]){
+            rotate([0, 0, i]){
+                cube([5, outr * 2, elevation], true);
+            }
+        }
+        translate([0, 0, -elevation / 2]){
+            cylinder(elevation, inr, outr, true);
+        }
+    }
+}
+
+/*module platform(inr, outr){
     translate([0, 0, -elevation - wallz / 2]){
         cylinder(wallz, inr, inr, true);
     }
@@ -366,7 +408,7 @@ module platform(inr, outr){
             cylinder(elevation, inr, outr, true);
         }
     }
-}
+}*/
 
 // platform for the top of the shaft. it expands into the
 // hotbox and supports the spool. locks down onto top of shaft.
