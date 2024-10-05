@@ -543,6 +543,8 @@ void loop(void){
   float weight = getWeight();
   printf("esp32 temp: %f weight: %f\n", ambient, weight);
   printf("tach-l: %lu\n", LowerPulses);
+  LowerPulses = 0;
   printf("tach-u: %lu\n", UpperPulses);
+  UpperPulses = 0;
   delay(1000);
 }
