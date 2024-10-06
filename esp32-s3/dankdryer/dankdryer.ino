@@ -578,6 +578,7 @@ void loop(void){
   float ambient = getAmbient();
   float weight = getWeight();
   printf("esp32 temp: %f weight: %f\n", ambient, weight);
+  printf("pwm-l: %u pwm-u: %u\n", LowerPWM, UpperPWM);
   unsigned lrpm, urpm;
   if(!getFanTachs(&lrpm, &urpm)){
     printf("tach-l: %lu\n", lrpm);
