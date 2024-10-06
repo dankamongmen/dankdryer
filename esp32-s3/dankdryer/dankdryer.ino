@@ -23,18 +23,19 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define LOWER_PWMPIN GPIO_NUM_4
-#define UPPER_PWMPIN GPIO_NUM_5
-#define LOWER_TACHPIN GPIO_NUM_6
-#define UPPER_TACHPIN GPIO_NUM_7
-#define THERM_DATAPIN GPIO_NUM_8
-#define HX711_SCK GPIO_NUM_17
-#define HX711_DT GPIO_NUM_18
-#define I2C_SCL GPIO_NUM_10
-#define I2C_SDA GPIO_NUM_11
+#define LOWER_PWMPIN GPIO_NUM_4  // lower chamber fan speed
+#define UPPER_PWMPIN GPIO_NUM_5  // upper chamber fan speed
+#define LOWER_TACHPIN GPIO_NUM_6 // lower chamber fan rotations
+#define UPPER_TACHPIN GPIO_NUM_7 // upper chamber fan rotations
+#define THERM_DATAPIN GPIO_NUM_8 // thermometer
+#define MOTOR_SBYPIN GPIO_NUM_9  // standby must be taken high to drive motor
+#define I2C_SCL GPIO_NUM_10      // BME680 clock (i2c)
+#define I2C_SDA GPIO_NUM_11      // BME680 data (i2c)
+#define MOTOR_PWMPIN GPIO_NUM_12 // motor speed
+#define HX711_SCK GPIO_NUM_17    // DAC clock (i2c)
+#define HX711_DT GPIO_NUM_18     // DAC data (i2c)
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
-#define MOTOR_PWMPIN GPIO_NUM_35
 // 38 is used for RGB LED
 // 45 and 46 are strapping pins
 #define MOTOR_1PIN GPIO_NUM_47
