@@ -6,6 +6,7 @@
 #include <lwip/netif.h>
 #include <nvs.h>
 #include <mdns.h>
+#include <Wire.h>
 #include <HX711.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>
@@ -14,6 +15,7 @@
 #include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <hal/ledc_types.h>
+#include <Adafruit_BME680.h>
 #include <driver/temperature_sensor.h>
 
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
@@ -23,11 +25,13 @@
 // 0 and 3 are strapping pins
 #define LOWER_PWMPIN GPIO_NUM_4
 #define UPPER_PWMPIN GPIO_NUM_5
-#define UPPER_TACHPIN GPIO_NUM_6
-#define LOWER_TACHPIN GPIO_NUM_7
+#define LOWER_TACHPIN GPIO_NUM_6
+#define UPPER_TACHPIN GPIO_NUM_7
 #define THERM_DATAPIN GPIO_NUM_8
 #define HX711_SCK GPIO_NUM_17
 #define HX711_DT GPIO_NUM_18
+#define I2C_SCL GPIO_NUM_10
+#define I2C_SDA GPIO_NUM_11
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 #define MOTOR_PWMPIN GPIO_NUM_35
@@ -39,6 +43,7 @@
 #define NVS_HANDLE_NAME "pstore"
 
 HX711 Load;
+Adafruit_BME680 BME;
 static bool UsePersistentStore; // set true upon successful initialization
 static temperature_sensor_handle_t temp;
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
@@ -46,7 +51,7 @@ static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 // defaults, some of which can be configured.
-static uint32_t LowerPWM = 64;
+static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 128;
 static uint32_t TargetTemp = 80;
 static float LoadcellScale = 1.0;
@@ -493,9 +498,15 @@ bail:
   return -1;
 }
 
-int setup_hx711(void){
+// HX711 and BME680
+int setup_sensors(void){
+  Wire.begin(I2C_SDA, I2C_SCL);
   Load.begin(HX711_DT, HX711_SCK);
   Load.set_scale(LoadcellScale);
+  if(!BME.begin(0x76, &Wire)){
+    fprintf(stderr, "couldn't find bme680 sensor\n");
+    return -1;
+  }
   return 0;
 }
 
@@ -525,7 +536,7 @@ void setup(void){
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
     set_failure(&SystemError);
   }
-  if(setup_hx711()){
+  if(setup_sensors()){
     set_failure(&SystemError);
   }
   if(setup_network()){
@@ -538,13 +549,39 @@ void setup(void){
   printf("initialization %ssuccessful v" VERSION "\n", StartupFailure ? "un" : "");
 }
 
+// we don't try to measure the first iteration, as we don't yet have a
+// timestamp (and the fans are spinning up, anyway).
+int getFanTachs(unsigned *lrpm, unsigned *urpm){
+  static uint32_t m;
+  uint32_t curm = micros();
+  if(m == 0){
+    m = curm;
+    return -1;
+  }
+  const uint32_t diffu = curm - m; // FIXME handle wrap
+  *lrpm = LowerPulses;
+  LowerPulses = 0;
+  *urpm = UpperPulses;
+  UpperPulses = 0;
+  m = curm;
+  printf("raw: %lu %lu\n", *lrpm, *urpm);
+  *lrpm /= 2; // two pulses for each rotation
+  *urpm /= 2;
+  const float scale = 60.0 * 1000000u / diffu;
+  printf("scale: %f diffu: %lu\n", scale, diffu);
+  *lrpm *= scale;
+  *urpm *= scale;
+  return 0;
+}
+
 void loop(void){
   float ambient = getAmbient();
   float weight = getWeight();
   printf("esp32 temp: %f weight: %f\n", ambient, weight);
-  printf("tach-l: %lu\n", LowerPulses);
-  LowerPulses = 0;
-  printf("tach-u: %lu\n", UpperPulses);
-  UpperPulses = 0;
-  delay(1000);
+  unsigned lrpm, urpm;
+  if(!getFanTachs(&lrpm, &urpm)){
+    printf("tach-l: %lu\n", lrpm);
+    printf("tach-u: %lu\n", urpm);
+  }
+  delay(5000);
 }
