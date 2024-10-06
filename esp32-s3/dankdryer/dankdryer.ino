@@ -51,8 +51,8 @@ static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 // defaults, some of which can be configured.
-static uint32_t LowerPWM = 128;
-static uint32_t UpperPWM = 128;
+static uint32_t LowerPWM = 64;
+static uint32_t UpperPWM = 64;
 static uint32_t TargetTemp = 80;
 static float LoadcellScale = 1.0;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
@@ -553,25 +553,24 @@ void setup(void){
 // timestamp (and the fans are spinning up, anyway).
 int getFanTachs(unsigned *lrpm, unsigned *urpm){
   static uint32_t m;
-  uint32_t curm = micros();
-  if(m == 0){
-    m = curm;
-    return -1;
+  int ret = -1;
+  if(m){
+    const uint32_t diffu = micros() - m; // FIXME handle wrap
+    *lrpm = LowerPulses;
+    *urpm = UpperPulses;
+    printf("raw: %lu %lu\n", *lrpm, *urpm);
+    *lrpm /= 2; // two pulses for each rotation
+    *urpm /= 2;
+    const float scale = 60.0 * 1000000u / diffu;
+    printf("scale: %f diffu: %lu\n", scale, diffu);
+    *lrpm *= scale;
+    *urpm *= scale;
+    ret = 0;
   }
-  const uint32_t diffu = curm - m; // FIXME handle wrap
-  *lrpm = LowerPulses;
+  m = micros();
   LowerPulses = 0;
-  *urpm = UpperPulses;
   UpperPulses = 0;
-  m = curm;
-  printf("raw: %lu %lu\n", *lrpm, *urpm);
-  *lrpm /= 2; // two pulses for each rotation
-  *urpm /= 2;
-  const float scale = 60.0 * 1000000u / diffu;
-  printf("scale: %f diffu: %lu\n", scale, diffu);
-  *lrpm *= scale;
-  *urpm *= scale;
-  return 0;
+  return ret;
 }
 
 void loop(void){
