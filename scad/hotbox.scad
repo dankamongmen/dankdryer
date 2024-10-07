@@ -63,9 +63,9 @@ module hbcorner(){
     side = 50;
     t = totalxy / 2;
     difference(){
-        translate([t - 18, t - 18, side / 2]){
+        translate([t - 18, t - 18, side / 4]){
             rotate([0, 0, 45]){
-                cylinder(side, side / 2, 1, true, $fn = 4);
+                cylinder(side / 2, side / 2, side / 4, true, $fn = 4);
             }
         }
         translate([totalxy / 2 - 12, totalxy / 2 - 12, 2 * side / 6]){
@@ -95,7 +95,7 @@ module upcorner(){
     t = totalxy / 2;
     translate([t - 15, t - 15, totalz - side / 2]){
         rotate([0, 0, 45]){
-            cylinder(side, 1, side / 2, true, $fn = 4);
+            cylinder(3 * side / 2, side / 4, side / 2, true, $fn = 4);
         }
     }
 }
