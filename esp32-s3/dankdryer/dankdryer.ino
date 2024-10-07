@@ -517,6 +517,16 @@ void set_failure(const struct failure_indication *fin){
   set_led(fin);
 }
 
+void set_motor_pwm(void){
+  set_pwm(MOTOR_CHAN, MotorPWM);
+  // bring standby pin low if we're not sending any pwm, high otherwise
+  if(MotorPWM == 0){
+    digitalWrite(MOTOR_SBYPIN, LOW);
+  }else{
+    digitalWrite(MOTOR_SBYPIN, HIGH);
+  }
+}
+
 // TB6612FNG
 int setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pin2){
   pinMode(sbypin, OUTPUT);
@@ -524,7 +534,7 @@ int setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_
   pinMode(pin2, OUTPUT);
   pinMode(pwmpin, OUTPUT);
   initialize_pwm(MOTOR_CHAN, pwmpin, 490, LEDC_TIMER_3);
-  set_pwm(MOTOR_CHAN, MotorPWM);
+  set_motor_pwm();
   return 0;
 }
 
