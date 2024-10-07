@@ -567,13 +567,16 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
   return ret;
 }
 
-void send_mqtt(void){
+void send_mqtt(int64_t curtime, float dtemp){
   JsonDocument doc;
   char out[256];
+  doc["uptimesec"] = curtime / 1000000l;
+  doc["dtemp"] = dtemp;
   auto len = serializeJson(doc, out, sizeof(out));
   if(len >= sizeof(out)){
     fprintf(stderr, "serialization exceeded buffer len (%zu > %zu)\n", len, sizeof(out));
   }else{
+    printf("MQTT: %s\n", out);
     if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, out, len, 0, 0)){
       fprintf(stderr, "couldn't publish %zuB mqtt message\n", len);
     }
@@ -589,6 +592,7 @@ void loop(void){
   if(!getFanTachs(&lrpm, &urpm)){
     printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
   }
-  send_mqtt();
+  auto curtime = esp_timer_get_time();
+  send_mqtt(curtime, ambient);
   delay(15000);
 }
