@@ -585,7 +585,9 @@ send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
   }
   doc["lpwm"] = LowerPWM;
   doc["upwm"] = UpperPWM;
-  doc["load"] = weight;
+  if(weight >= 0 && weight < 5000){
+    doc["load"] = weight;
+  }
   auto len = serializeJson(doc, out, sizeof(out));
   if(len >= sizeof(out)){
     fprintf(stderr, "serialization exceeded buffer len (%zu > %zu)\n", len, sizeof(out));
