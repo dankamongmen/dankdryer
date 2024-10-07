@@ -404,7 +404,7 @@ void wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
 void ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   esp_err_t err;
   if(strcmp(base, IP_EVENT)){
-    fprintf(stderr, "non-wifi event %s in wifi handler\n", base);
+    fprintf(stderr, "non-ip event %s in ip handler\n", base);
     return;
   }
   if(id == IP_EVENT_STA_GOT_IP || id == IP_EVENT_GOT_IP6){
@@ -415,6 +415,15 @@ void ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
     }
   }else{
     fprintf(stderr, "unknown ip event %ld\n", id);
+  }
+}
+
+void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
+  if(id == MQTT_EVENT_CONNECTED){
+    printf("connected to mqtt\n");
+    set_network_state(MQTT_ESTABLISHED);
+  }else{
+    printf("unhandled mqtt event %ld\n", id);
   }
 }
 
@@ -470,13 +479,17 @@ int setup_network(void){
     goto bail;
   }
   esp_event_handler_instance_t wid;
-  if((err = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &wid)) != ESP_OK){
+  if((err = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, wifi_event_handler, NULL, &wid)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) registering wifi events\n", err, esp_err_to_name(err));
     goto bail;
   }
   esp_event_handler_instance_t ipd;
-  if((err = esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, &ip_event_handler, NULL, &ipd)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) registering wifi events\n", err, esp_err_to_name(err));
+  if((err = esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, ip_event_handler, NULL, &ipd)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) registering ip events\n", err, esp_err_to_name(err));
+    goto bail;
+  }
+  if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_CONNECTED, mqtt_event_handler, NULL)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) registering mqtt events\n", err, esp_err_to_name(err));
     goto bail;
   }
   if((err = esp_wifi_set_mode(WIFI_MODE_STA)) != ESP_OK){
