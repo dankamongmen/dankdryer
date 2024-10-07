@@ -24,12 +24,12 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define LOWER_PWMPIN GPIO_NUM_4  // lower chamber fan speed
-#define UPPER_PWMPIN GPIO_NUM_5  // upper chamber fan speed
-#define LOWER_TACHPIN GPIO_NUM_6 // lower chamber fan rotations
-#define UPPER_TACHPIN GPIO_NUM_7 // upper chamber fan rotations
-#define THERM_DATAPIN GPIO_NUM_8 // thermometer
-#define MOTOR_SBYPIN GPIO_NUM_9  // standby must be taken high to drive motor
+#define LOWER_PWMPIN GPIO_NUM_4  // lower chamber fan speed (output)
+#define UPPER_PWMPIN GPIO_NUM_5  // upper chamber fan speed (output)
+#define LOWER_TACHPIN GPIO_NUM_6 // lower chamber fan tachometer (input)
+#define UPPER_TACHPIN GPIO_NUM_7 // upper chamber fan tachometer (input)
+#define THERM_DATAPIN GPIO_NUM_8 // analog thermometer (input)
+#define MOTOR_SBYPIN GPIO_NUM_9  // standby must be taken high to drive motor (output)
 #define MOTOR_PWMPIN GPIO_NUM_12 // motor speed
 #define HX711_SCK GPIO_NUM_17    // DAC clock (i2c)
 #define HX711_DT GPIO_NUM_18     // DAC data (i2c)
@@ -47,9 +47,11 @@ static bool UsePersistentStore; // set true upon successful initialization
 static temperature_sensor_handle_t temp;
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
 static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
+static const ledc_channel_t MOTOR_CHAN = LEDC_CHANNEL_2;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 // defaults, some of which can be configured.
+static uint32_t MotorPWM;
 static uint32_t LowerPWM = 64;
 static uint32_t UpperPWM = 64;
 static uint32_t TargetTemp = 80;
@@ -515,6 +517,17 @@ void set_failure(const struct failure_indication *fin){
   set_led(fin);
 }
 
+// TB6612FNG
+int setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pin2){
+  pinMode(sbypin, OUTPUT);
+  pinMode(pin1, OUTPUT);
+  pinMode(pin2, OUTPUT);
+  pinMode(pwmpin, OUTPUT);
+  initialize_pwm(MOTOR_CHAN, pwmpin, 490, LEDC_TIMER_3);
+  set_pwm(MOTOR_CHAN, MotorPWM);
+  return 0;
+}
+
 void setup(void){
   neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
   Serial.begin(115200);
@@ -528,6 +541,9 @@ void setup(void){
     set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
+    set_failure(&SystemError);
+  }
+  if(setup_motor(MOTOR_SBYPIN, MOTOR_PWMPIN, MOTOR_1PIN, MOTOR_2PIN)){
     set_failure(&SystemError);
   }
   if(setup_sensors()){
@@ -588,6 +604,7 @@ send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
   if(weight >= 0 && weight < 5000){
     doc["load"] = weight;
   }
+  doc["mpwm"] = MotorPWM;
   auto len = serializeJson(doc, out, sizeof(out));
   if(len >= sizeof(out)){
     fprintf(stderr, "serialization exceeded buffer len (%zu > %zu)\n", len, sizeof(out));
