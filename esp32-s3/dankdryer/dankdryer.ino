@@ -560,6 +560,9 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
     *lrpm *= scale;
     *urpm *= scale;
     ret = 0;
+  }else{
+    *lrpm = UINT_MAX;
+    *urpm = UINT_MAX;
   }
   m = micros();
   LowerPulses = 0;
@@ -567,11 +570,17 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
   return ret;
 }
 
-void send_mqtt(int64_t curtime, float dtemp){
+void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm){
   JsonDocument doc;
   char out[256];
   doc["uptimesec"] = curtime / 1000000l;
   doc["dtemp"] = dtemp;
+  if(lrpm != UINT_MAX){
+    doc["lrpm"] = lrpm;
+  }
+  if(urpm != UINT_MAX){
+    doc["urpm"] = urpm;
+  }
   auto len = serializeJson(doc, out, sizeof(out));
   if(len >= sizeof(out)){
     fprintf(stderr, "serialization exceeded buffer len (%zu > %zu)\n", len, sizeof(out));
@@ -593,6 +602,6 @@ void loop(void){
     printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
   }
   auto curtime = esp_timer_get_time();
-  send_mqtt(curtime, ambient);
+  send_mqtt(curtime, ambient, lrpm, urpm);
   delay(15000);
 }
