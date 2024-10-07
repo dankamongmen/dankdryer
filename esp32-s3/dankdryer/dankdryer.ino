@@ -418,10 +418,25 @@ void ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }
 }
 
+void handle_mqtt_msg(const esp_mqtt_event_t* e){
+  printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
+}
+
 void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   if(id == MQTT_EVENT_CONNECTED){
     printf("connected to mqtt\n");
     set_network_state(MQTT_ESTABLISHED);
+    if(esp_mqtt_client_subscribe(MQTTHandle, "control/" DEVICE "/mpwm", 0)){
+      fprintf(stderr, "failure subscribing to mqtt mpwm topic\n");
+    }
+    if(esp_mqtt_client_subscribe(MQTTHandle, "control/" DEVICE "/lpwm", 0)){
+      fprintf(stderr, "failure subscribing to mqtt lpwm topic\n");
+    }
+    if(esp_mqtt_client_subscribe(MQTTHandle, "control/" DEVICE "/upwm", 0)){
+      fprintf(stderr, "failure subscribing to mqtt upwm topic\n");
+    }
+  }else if(id == MQTT_EVENT_DATA){
+    handle_mqtt_msg(static_cast<const esp_mqtt_event_t*>(data));
   }else{
     printf("unhandled mqtt event %ld\n", id);
   }
@@ -489,6 +504,10 @@ int setup_network(void){
     goto bail;
   }
   if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_CONNECTED, mqtt_event_handler, NULL)) != ESP_OK){
+    fprintf(stderr, "failure %d (%s) registering mqtt events\n", err, esp_err_to_name(err));
+    goto bail;
+  }
+  if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_DATA, mqtt_event_handler, NULL)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) registering mqtt events\n", err, esp_err_to_name(err));
     goto bail;
   }
