@@ -133,13 +133,13 @@ byte get_hex(char c){
 }
 
 // FIXME handle base 10 numbers as well (can we use strtoul?)
-int extract_pwm(const String& payload){
-  if(payload.length() != 2){
+int extract_pwm(const char* data, size_t dlen){
+  if(dlen != 2){
     printf("pwm wasn't 2 characters\n");
     return -1;
   }
-  char h = payload.charAt(0);
-  char l = payload.charAt(1);
+  char h = data[0];
+  char l = data[1];
   if(!isxdigit(h) || !isxdigit(l)){
     printf("invalid hex character\n");
     return -1;
@@ -147,7 +147,9 @@ int extract_pwm(const String& payload){
   byte hb = get_hex(h);
   byte lb = get_hex(l);
   // everything was valid
-  return hb * 16 + lb;
+  int pwm = hb * 16 + lb;
+  printf("got pwm value: %d\n", pwm);
+  return pwm;
 }
 
 // set the desired PWM value
@@ -418,21 +420,47 @@ void ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }
 }
 
+#define CCHAN "control/"
+#define MPWM_CHANNEL CCHAN DEVICE "/mpwm"
+#define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
+#define UPWM_CHANNEL CCHAN DEVICE "/upwm"
+
 void handle_mqtt_msg(const esp_mqtt_event_t* e){
   printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
+  if(strncmp(e->topic, MPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(MPWM_CHANNEL)){
+    auto pwm = extract_pwm(e->data, e->data_len);
+    if(pwm >= 0){
+      MotorPWM = pwm;
+      set_motor_pwm();
+    }
+  }else if(strncmp(e->topic, LPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(LPWM_CHANNEL)){
+    auto pwm = extract_pwm(e->data, e->data_len);
+    if(pwm >= 0){
+      LowerPWM = pwm;
+      set_pwm(LOWER_FANCHAN, LowerPWM);
+    }
+  }else if(strncmp(e->topic, UPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(UPWM_CHANNEL)){
+    auto pwm = extract_pwm(e->data, e->data_len);
+    if(pwm >= 0){
+      UpperPWM = pwm;
+      set_pwm(UPPER_FANCHAN, UpperPWM);
+    }
+  }else{
+    fprintf(stderr, "unknown topic, ignoring message\n");
+  }
 }
 
 void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   if(id == MQTT_EVENT_CONNECTED){
     printf("connected to mqtt\n");
     set_network_state(MQTT_ESTABLISHED);
-    if(esp_mqtt_client_subscribe(MQTTHandle, "control/" DEVICE "/mpwm", 0)){
+    if(esp_mqtt_client_subscribe(MQTTHandle, MPWM_CHANNEL, 0)){
       fprintf(stderr, "failure subscribing to mqtt mpwm topic\n");
     }
-    if(esp_mqtt_client_subscribe(MQTTHandle, "control/" DEVICE "/lpwm", 0)){
+    if(esp_mqtt_client_subscribe(MQTTHandle, LPWM_CHANNEL, 0)){
       fprintf(stderr, "failure subscribing to mqtt lpwm topic\n");
     }
-    if(esp_mqtt_client_subscribe(MQTTHandle, "control/" DEVICE "/upwm", 0)){
+    if(esp_mqtt_client_subscribe(MQTTHandle, UPWM_CHANNEL, 0)){
       fprintf(stderr, "failure subscribing to mqtt upwm topic\n");
     }
   }else if(id == MQTT_EVENT_DATA){
