@@ -52,7 +52,7 @@ module floorcuts(){
                     }
                 }
             }
-            translate([-31, 100, d / 2]){
+            translate([-31, 105, d / 2]){
                 cube([62, 14, d], true);
             }
         }
@@ -145,7 +145,7 @@ module rc522side(l){
     translate([-33.5 / 2 - holer, -22.25 / 2 - holer, l / 2]){
         screw("M4", length = l);
     }
-    translate([33.5 / 2 + holer, -22.25 / 2 - holer, l / 2]){
+    translate([34 / 2 + holer, -22.25 / 2 - holer, l / 2]){
         screw("M4", length = l);
     }
 }
