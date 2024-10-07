@@ -570,7 +570,9 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
   return ret;
 }
 
-void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm){
+inline void
+send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
+          float weight){
   JsonDocument doc;
   char out[256];
   doc["uptimesec"] = curtime / 1000000l;
@@ -583,6 +585,7 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm){
   }
   doc["lpwm"] = LowerPWM;
   doc["upwm"] = UpperPWM;
+  doc["load"] = weight;
   auto len = serializeJson(doc, out, sizeof(out));
   if(len >= sizeof(out)){
     fprintf(stderr, "serialization exceeded buffer len (%zu > %zu)\n", len, sizeof(out));
@@ -604,6 +607,6 @@ void loop(void){
     printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
   }
   auto curtime = esp_timer_get_time();
-  send_mqtt(curtime, ambient, lrpm, urpm);
+  send_mqtt(curtime, ambient, lrpm, urpm, weight);
   delay(15000);
 }
