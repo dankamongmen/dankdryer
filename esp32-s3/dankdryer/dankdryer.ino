@@ -663,10 +663,12 @@ send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
   char out[256];
   doc["uptimesec"] = curtime / 1000000l;
   doc["dtemp"] = dtemp;
-  if(lrpm != UINT_MAX){
+  // UINT_MAX is sentinel for known bad reading, but anything over 3KRPM on
+  // these Noctua NF-A8 fans is indicative of error; they max out at 2500.
+  if(lrpm < 3000){
     doc["lrpm"] = lrpm;
   }
-  if(urpm != UINT_MAX){
+  if(urpm < 3000){
     doc["urpm"] = urpm;
   }
   doc["lpwm"] = LowerPWM;
