@@ -27,5 +27,4 @@ jobs:
           mv dryer-network-sample.h esp32-s3/dankdryer/dryer-network.h
           PATH=$PATH:$HOME/bin arduino-cli core install esp32:esp32 
           PATH=$PATH:$HOME/bin arduino-cli lib install HX711
-          PATH=$PATH:$HOME/bin arduino-cli lib install "Adafruit BME680 Library"
           PATH=$PATH:$HOME/bin make

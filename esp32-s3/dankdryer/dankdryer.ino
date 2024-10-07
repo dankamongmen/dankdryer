@@ -1,7 +1,8 @@
 // dankdryer firmware
 // intended for use on an ESP32-S3-WROOM-1
 #define VERSION "0.0.1"
-#define CLIENTID "dankdryer" VERSION
+#define DEVICE "dankdryer"
+#define CLIENTID DEVICE VERSION
 #include "dryer-network.h"
 #include <lwip/netif.h>
 #include <nvs.h>
@@ -12,10 +13,10 @@
 #include <esp_netif.h>
 #include <nvs_flash.h>
 #include <esp_system.h>
+#include <ArduinoJson.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <hal/ledc_types.h>
-#include <Adafruit_BME680.h>
 #include <driver/temperature_sensor.h>
 
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
@@ -29,8 +30,6 @@
 #define UPPER_TACHPIN GPIO_NUM_7 // upper chamber fan rotations
 #define THERM_DATAPIN GPIO_NUM_8 // thermometer
 #define MOTOR_SBYPIN GPIO_NUM_9  // standby must be taken high to drive motor
-#define I2C_SCL GPIO_NUM_10      // BME680 clock (i2c)
-#define I2C_SDA GPIO_NUM_11      // BME680 data (i2c)
 #define MOTOR_PWMPIN GPIO_NUM_12 // motor speed
 #define HX711_SCK GPIO_NUM_17    // DAC clock (i2c)
 #define HX711_DT GPIO_NUM_18     // DAC data (i2c)
@@ -44,7 +43,6 @@
 #define NVS_HANDLE_NAME "pstore"
 
 HX711 Load;
-Adafruit_BME680 BME;
 static bool UsePersistentStore; // set true upon successful initialization
 static temperature_sensor_handle_t temp;
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
@@ -499,15 +497,10 @@ bail:
   return -1;
 }
 
-// HX711 and BME680
+// HX711
 int setup_sensors(void){
-  Wire.begin(I2C_SDA, I2C_SCL);
   Load.begin(HX711_DT, HX711_SCK);
   Load.set_scale(LoadcellScale);
-  if(!BME.begin(0x76, &Wire)){
-    fprintf(stderr, "couldn't find bme680 sensor\n");
-    return -1;
-  }
   return 0;
 }
 
@@ -559,7 +552,7 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
     const uint32_t diffu = micros() - m; // FIXME handle wrap
     *lrpm = LowerPulses;
     *urpm = UpperPulses;
-    printf("raw: %lu %lu\n", *lrpm, *urpm);
+    printf("raw: %u %u\n", *lrpm, *urpm);
     *lrpm /= 2; // two pulses for each rotation
     *urpm /= 2;
     const float scale = 60.0 * 1000000u / diffu;
@@ -574,15 +567,28 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
   return ret;
 }
 
+void send_mqtt(void){
+  JsonDocument doc;
+  char out[256];
+  auto len = serializeJson(doc, out, sizeof(out));
+  if(len >= sizeof(out)){
+    fprintf(stderr, "serialization exceeded buffer len (%zu > %zu)\n", len, sizeof(out));
+  }else{
+    if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, out, len, 0, 0)){
+      fprintf(stderr, "couldn't publish %zuB mqtt message\n", len);
+    }
+  }
+}
+
 void loop(void){
   float ambient = getAmbient();
   float weight = getWeight();
   printf("esp32 temp: %f weight: %f\n", ambient, weight);
-  printf("pwm-l: %u pwm-u: %u\n", LowerPWM, UpperPWM);
+  printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
   unsigned lrpm, urpm;
   if(!getFanTachs(&lrpm, &urpm)){
-    printf("tach-l: %lu\n", lrpm);
-    printf("tach-u: %lu\n", urpm);
+    printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
   }
-  delay(5000);
+  send_mqtt();
+  delay(15000);
 }
