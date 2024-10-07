@@ -20,10 +20,6 @@ $(OUT)/esp32-s3/dankdryer/dankdryer.ino.elf: $(addprefix esp32-s3/dankdryer/, da
 	@mkdir -p $(@D)
 	$(ACLI) compile $(CFLAGS) -b esp32:esp32:esp32s3 -v --output-dir $(@D) $<
 
-$(OUT)/scad/hotbox.stl: scad/hotbox.scad scad/core.scad scad/tween.scad
-	@mkdir -p $(@D)
-	time openscad $(SCADFLAGS) -o $@ $<
-
 $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
 	@mkdir -p $(@D)
 	time openscad $(SCADFLAGS) -o $@ $<
