@@ -1,15 +1,15 @@
 include <core.scad>
-use <tween.scad>
 
 module top(){
-    difference(){
-        // fills in the top of the hotbox, having radius
-        // innerr. give us a bit of smidge so it's not
-        // a tight fit.
-        core2(innerr - 1, 0);
-        /*translate([0, 0, 7]){
-            cylinder(3, totalxy / 2 - 5, totalxy / 2 - 5, true);
-        }*/
+    inh = 3;
+    // fills in the top of the hotbox, having radius
+    // innerr. give us a bit of smidge so it's not
+    // a tight fit.
+    translate([0, 0, 3 * inh / 2]){
+        cylinder(inh, innerr - 1, innerr - 1, true);
+    }
+    linear_extrude(inh){
+        polygon(ipoints);
     }
 }
 
