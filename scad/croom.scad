@@ -17,7 +17,8 @@ botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
 
-module croombottomside(){
+// used to be rounded, now just angled
+/* module croombottomside(){
     translate([0, -botalt + croomwall, wallz]){
         rotate([0, 90, 0]){
             intersection(){
@@ -47,6 +48,14 @@ module croombottom(){
     }
     translate([0, 0, wallz / 2]){
         cube([(botalt - croomwall) * 2, (botalt - croomwall) * 2, wallz], true);
+    }
+}*/
+
+module croombottom(){
+    translate([0, 0, wallz / 2]){
+        rotate([0, 0, 45]){
+            cylinder(wallz, toprad, botrad, $fn = 4, true);
+        }
     }
 }
 

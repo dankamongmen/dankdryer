@@ -36,8 +36,8 @@
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 // 38 is used for RGB LED
+#define MOTOR_1PIN GPIO_NUM_39
 // 45 and 46 are strapping pins
-#define MOTOR_1PIN GPIO_NUM_47
 #define MOTOR_2PIN GPIO_NUM_48
 
 #define NVS_HANDLE_NAME "pstore"
