@@ -6,6 +6,7 @@
 #include "dryer-network.h"
 #include <lwip/netif.h>
 #include <nvs.h>
+#include <math.h>
 #include <mdns.h>
 #include <cJSON.h>
 #include <esp_wifi.h>
@@ -100,8 +101,9 @@ static const esp_mqtt_client_config_t MQTTConfig = {
   },
 };
 
-void tach_isr(void* pulsecount){
-  auto pc = static_cast<uint32_t*>(pulsecount);
+static void
+tach_isr(void* pulsecount){
+  uint32_t* pc = pulsecount;
   ++*pc;
 }
 
@@ -110,7 +112,8 @@ static inline bool valid_pwm_p(int pwm){
 }
 
 // precondition: isxdigit(c) is true
-char get_hex(char c){
+static inline char
+get_hex(char c){
   if(isdigit(c)){
     return c - '0';
   }
@@ -408,6 +411,17 @@ void ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }
 }
 
+static void
+set_motor_pwm(void){
+  set_pwm(MOTOR_CHAN, MotorPWM);
+  // bring standby pin low if we're not sending any pwm, high otherwise
+  if(MotorPWM == 0){
+    digitalWrite(MOTOR_SBYPIN, LOW);
+  }else{
+    digitalWrite(MOTOR_SBYPIN, HIGH);
+  }
+}
+
 #define CCHAN "control/"
 #define MPWM_CHANNEL CCHAN DEVICE "/mpwm"
 #define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
@@ -563,16 +577,6 @@ void set_failure(const struct failure_indication *fin){
     StartupFailure = true;
   }
   set_led(fin);
-}
-
-void set_motor_pwm(void){
-  set_pwm(MOTOR_CHAN, MotorPWM);
-  // bring standby pin low if we're not sending any pwm, high otherwise
-  if(MotorPWM == 0){
-    digitalWrite(MOTOR_SBYPIN, LOW);
-  }else{
-    digitalWrite(MOTOR_SBYPIN, HIGH);
-  }
 }
 
 // TB6612FNG
