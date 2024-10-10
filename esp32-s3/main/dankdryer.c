@@ -98,20 +98,6 @@ static const esp_mqtt_client_config_t MQTTConfig = {
   },
 };
 
-// ---------------------------------------------------------
-// needed with 3.0.3, see https://github.com/espressif/arduino-esp32/issues/10084 
-// FIXME remove this garbage
-extern "C" int lwip_hook_ip6_input(struct pbuf *p, struct netif *inp) __attribute__((weak));
-extern "C" int lwip_hook_ip6_input(struct pbuf *p, struct netif *inp) {
-  if (ip6_addr_isany_val(inp->ip6_addr[0].u_addr.ip6)) {
-    // We don't have an LL address -> eat this packet here, so it won't get accepted on input netif
-    pbuf_free(p);
-    return 1;
-  }
-  return 0;
-}
-// ---------------------------------------------------------
-
 void tach_isr(void* pulsecount){
   auto pc = static_cast<uint32_t*>(pulsecount);
   ++*pc;
@@ -122,7 +108,7 @@ static inline bool valid_pwm_p(int pwm){
 }
 
 // precondition: isxdigit(c) is true
-byte get_hex(char c){
+char get_hex(char c){
   if(isdigit(c)){
     return c - '0';
   }
@@ -142,8 +128,8 @@ int extract_pwm(const char* data, size_t dlen){
     printf("invalid hex character\n");
     return -1;
   }
-  byte hb = get_hex(h);
-  byte lb = get_hex(l);
+  char hb = get_hex(h);
+  char lb = get_hex(l);
   // everything was valid
   int pwm = hb * 16 + lb;
   printf("got pwm value: %d\n", pwm);
