@@ -586,7 +586,8 @@ void set_motor_pwm(void){
 }
 
 // TB6612FNG
-int setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pin2){
+static int
+setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pin2){
   pinMode(sbypin, OUTPUT);
   pinMode(pin1, OUTPUT);
   pinMode(pin2, OUTPUT);
@@ -596,7 +597,8 @@ int setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_
   return 0;
 }
 
-void setup(void){
+static void
+setup(void){
   neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
   Serial.begin(115200);
   printf("dankdryer v" VERSION "\n");
@@ -686,7 +688,8 @@ send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
   }
 }
 
-void loop(void){
+void app_main(void){
+  setup();
   float ambient = getAmbient();
   float weight = getWeight();
   printf("esp32 temp: %f weight: %f\n", ambient, weight);

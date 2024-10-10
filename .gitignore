@@ -1,3 +1,4 @@
-esp32-s3/build
+esp32-s3/build/
 esp32-s3/main/dryer-network.h
+esp32-s3/managed_components/
 out
