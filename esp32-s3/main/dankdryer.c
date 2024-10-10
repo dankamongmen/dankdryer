@@ -362,7 +362,8 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
   return ret;
 }
 
-void set_network_state(network_state_e state){
+static void
+set_network_state(network_state_e state){
   // FIXME lock
   NetworkState = state;
   if(state != WIFI_INVALID){ // if invalid, leave any initial failure status up
@@ -372,7 +373,8 @@ void set_network_state(network_state_e state){
   }
 }
 
-void wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
+static void
+wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   esp_err_t err;
   if(strcmp(base, WIFI_EVENT)){
     fprintf(stderr, "non-wifi event %s in wifi handler\n", base);
@@ -394,7 +396,8 @@ void wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
   }
 }
 
-void ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
+static void
+ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   esp_err_t err;
   if(strcmp(base, IP_EVENT)){
     fprintf(stderr, "non-ip event %s in ip handler\n", base);
@@ -466,7 +469,7 @@ void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
       fprintf(stderr, "failure subscribing to mqtt upwm topic\n");
     }
   }else if(id == MQTT_EVENT_DATA){
-    handle_mqtt_msg(static_cast<const esp_mqtt_event_t*>(data));
+    handle_mqtt_msg(data);
   }else{
     printf("unhandled mqtt event %ld\n", id);
   }
@@ -594,7 +597,6 @@ setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pi
 static void
 setup(void){
   neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
-  Serial.begin(115200);
   printf("dankdryer v" VERSION "\n");
   if(!init_pstore()){
     if(!read_pstore()){
@@ -650,9 +652,8 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
   return ret;
 }
 
-inline void
-send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
-          float weight){
+void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
+               float weight){
   JsonDocument doc;
   char out[256];
   doc["uptimesec"] = curtime / 1000000l;
