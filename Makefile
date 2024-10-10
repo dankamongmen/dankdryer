@@ -1,24 +1,16 @@
-.PHONY: all deps clean
+.PHONY: all firmware clean
 
 OUT:=out
-ESP32HEX:=$(addprefix esp32-s3/, $(addsuffix .ino.elf, dankdryer/dankdryer))
-HEX:=$(addprefix $(OUT)/, $(ESP32HEX))
 STL:=$(addsuffix .stl, \
  $(addprefix $(OUT)/scad/, coupling croom hotbox top))
 
-CFLAGS:=--warnings all
-ACLI:=arduino-cli
 SCADFLAGS=--hardwarnings
 
-all: $(HEX) $(STL)
+all: $(STL) firmware
 
-deps:
-	arduino-cli lib download HX711
-	arduino-cli lib install HX711
-
-$(OUT)/esp32-s3/dankdryer/dankdryer.ino.elf: $(addprefix esp32-s3/dankdryer/, dankdryer.ino dryer-network.h) $(ESPCOMMON)
-	@mkdir -p $(@D)
-	$(ACLI) compile $(CFLAGS) -b esp32:esp32:esp32s3 -v --output-dir $(@D) $<
+# add actual esp-idf CMake output
+firmware:
+	@cd esp32-s3 && idf.py build
 
 $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
 	@mkdir -p $(@D)
@@ -26,3 +18,4 @@ $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
 
 clean:
 	rm -rf $(OUT)
+	@cd esp32-s3 && idf.py clean
