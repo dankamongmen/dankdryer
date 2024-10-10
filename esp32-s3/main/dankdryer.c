@@ -73,16 +73,16 @@ static enum network_state_e {
 } NetworkState;
 
 static bool StartupFailure;
-static const failure_indication PreFailure = { RGB_BRIGHTNESS, RGB_BRIGHTNESS, RGB_BRIGHTNESS };
-static const failure_indication SystemError = { RGB_BRIGHTNESS, 0, 0 };
-static const failure_indication NetworkError = { RGB_BRIGHTNESS, 0, RGB_BRIGHTNESS };
+static const failure_indication PreFailure = { 64, 64, 64 };
+static const failure_indication SystemError = { 64, 0, 0 };
+static const failure_indication NetworkError = { 64, 0, 64 };
 static const failure_indication PostFailure = { 0, 0, 0 };
 static const failure_indication NetworkIndications[NETWORK_STATE_COUNT] = {
   { 0, 255, 0 },  // WIFI_INVALID
-  { 0, 192, 0 }, // WIFI_CONNECTING
-  { 0, 128, 0 }, // NET_CONNECTING
-  { 0, 64, 0 },  // MQTT_CONNECTING
-  { 0, 0, 0 }    // MQTT_ESTABLISHED
+  { 0, 192, 0 },  // WIFI_CONNECTING
+  { 0, 128, 0 },  // NET_CONNECTING
+  { 0, 64, 0 },   // MQTT_CONNECTING
+  { 0, 0, 0 }     // MQTT_ESTABLISHED
 };
 
 static const esp_mqtt_client_config_t MQTTConfig = {
