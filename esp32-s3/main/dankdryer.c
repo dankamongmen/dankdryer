@@ -19,6 +19,7 @@
 
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
 #define RPMMAX (1u << 14u)
+#define MIN_TEMP (-80)
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
@@ -26,8 +27,10 @@
 #define UPPER_PWMPIN GPIO_NUM_5  // upper chamber fan speed (output)
 #define LOWER_TACHPIN GPIO_NUM_6 // lower chamber fan tachometer (input)
 #define UPPER_TACHPIN GPIO_NUM_7 // upper chamber fan tachometer (input)
-#define THERM_DATAPIN GPIO_NUM_8 // analog thermometer (input)
+#define THERM_DATAPIN GPIO_NUM_8 // analog thermometer (input, ADC1)
 #define MOTOR_SBYPIN GPIO_NUM_9  // standby must be taken high to drive motor (output)
+// 11-20 are connected to ADC2, which is used by wifi
+// (they can still be used as digital pins)
 #define MOTOR_PWMPIN GPIO_NUM_12 // motor speed
 #define HX711_SCK GPIO_NUM_17    // DAC clock (i2c)
 #define HX711_DT GPIO_NUM_18     // DAC data (i2c)
@@ -40,7 +43,6 @@
 
 #define NVS_HANDLE_NAME "pstore"
 
-HX711 Load;
 static bool UsePersistentStore; // set true upon successful initialization
 static temperature_sensor_handle_t temp;
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
@@ -149,18 +151,20 @@ int set_pwm(const ledc_channel_t channel, unsigned pwm){
   return 0;
 }
 
+// on error, returns MIN_TEMP - 1
 float getAmbient(void){
   float t;
   if(temperature_sensor_get_celsius(temp, &t)){
     fprintf(stderr, "failed acquiring temperature\n");
-    return NAN;
+    return MIN_TEMP - 1;
   }
   return t;
 }
 
 float getWeight(void){
-  Load.wait_ready();
-  return Load.read_average(5);
+  /*Load.wait_ready();
+  return Load.read_average(5);*/
+  return 0; // FIXME
 }
 
 // the esp32-s3 has a built in temperature sensor
@@ -648,7 +652,9 @@ send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
   JsonDocument doc;
   char out[256];
   doc["uptimesec"] = curtime / 1000000l;
-  doc["dtemp"] = dtemp;
+  if(dtemp >= MIN_TEMP){
+    doc["dtemp"] = dtemp;
+  }
   // UINT_MAX is sentinel for known bad reading, but anything over 3KRPM on
   // these Noctua NF-A8 fans is indicative of error; they max out at 2500.
   if(lrpm < 3000){
