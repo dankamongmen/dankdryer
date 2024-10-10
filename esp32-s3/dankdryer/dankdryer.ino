@@ -7,7 +7,6 @@
 #include <lwip/netif.h>
 #include <nvs.h>
 #include <mdns.h>
-#include <Wire.h>
 #include <HX711.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>

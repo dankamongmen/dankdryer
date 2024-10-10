@@ -26,13 +26,17 @@ More info at [dankwiki](https://nick-black.com/dankwiki/index.php/Dankdryer).
 
 The project is built with GNU Make.
 Running `make` in the toplevel will attempt to build firmware and STLs.
+Building the firmware requires the `esp-idf` library and a configured
+ESP-IDF environment (i.e. the various `IDF_*` environment variables
+must be set), along with CMake. `idf.py` ought be in your `$PATH`,
+and work when invoked.
 
 A network configuration file must be created and populated at
 `esp32-s3/dankdryer/dryer-network.h`.
 
 ## Firmware
-* `arduino-cli` with `esp32:esp32:esp32s3` board support
-* Rob Tillaart's [HX711](https://github.com/RobTillaart/HX711) 0.5.0+
+* [esp-idf](https://github.com/espressif/esp-idf) 5.3+
+* [CMake](https://gitlab.kitware.com/cmake/cmake) 3.16+
 
 ## 3D models
 * OpenSCAD 2021.01+
