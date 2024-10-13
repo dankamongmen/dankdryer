@@ -11,10 +11,16 @@ use <croom.scad>
 //  gear
 //  platform
 
+/* rectangular piece with two screw holes,
+   no longer used.
 translate([30, -60, 0]){
     loadcellmount(loadcellsupph);
-}
+}*/
 
+// the lower coupling screws into the load cell on
+// the floating end. it provides a space to hold the
+// bearing above the center of the load cell. the
+// bearing will freely rotate within the coupling.
 translate([spoold / 4 + 30, 0, 0]){
     rotate([0, 0, 90]){
         mirror([1, 0, 0]){
@@ -23,18 +29,29 @@ translate([spoold / 4 + 30, 0, 0]){
     }
 }
 
+// the worm gear, which is placed onto the rotor.
+// it must be tangent to the main gear.
 translate([45, -45, wormlen / 2]){
     rotate([90, 0, 0]){
         wormy();
     }
 }
 
+// the main gear. plugs into the bearing, and is
+// placed into the coupling. the gear needs be
+// at the same height as the worm gear.
 translate([-20, -spoold / 4 - 20, gearh / 2]){
     gear();
 }
 
+// the platter upon which the spool rests. plugs
+// into the main gear through the center shaft.
 translate([10, 0, shafth / 2]){
     mirror([0, 0, 1]){
         shaft();
     }
 }
+
+/*multicolor("pink"){
+    assembly();
+}*/
