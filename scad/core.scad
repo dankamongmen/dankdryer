@@ -134,7 +134,7 @@ loadcellmountw = 13.5;
 loadcellmountl = 21.05;
 loadcellmounth = 27;
 loadcellsupph = 4;
-bearingh = 8;
+
 module loadcellmount(baseh){
     difference(){
         // load cell mounting base
@@ -175,6 +175,10 @@ module lowersupport(){
 
 // height of inverse cone supporting bearing holder
 couplingh = 10;
+bearingh = 9; // height ("width") of bearing
+bearingr = 30 / 2; // bearing outer radius
+bearinginnerr = 10 / 2; // bearing inner radius
+bearingwall = 2;
 module lowercoupling(){
     // the brace comes out to the center of the load cell.
     // the bearing holder rises from the center--the shaft
@@ -186,16 +190,15 @@ module lowercoupling(){
     translate([-bracel - loadcellmountl / 2, 0, 0]){
         loadcellmount(loadcellsupph);
     }
-    // recessed area for 22m 608 bearing
+    // recessed area for 30mm 6200-2RS bearing
     translate([0, 0, couplingh / 2]){
         // floor and support for bearing
-        bearingr = 23 / 2;
         bearwallr = 1;
         cylinder(couplingh, loadcellmountw / 2, bearingr + bearwallr, true);
         translate([0, 0, couplingh / 2 + bearingh / 2]){
             difference(){
-                cylinder(bearingh, 25 / 2, bearingr + bearwallr, true);
-                cylinder(bearingh, 23 / 2, bearingr, true);
+                cylinder(bearingh, bearingr + bearwallr, bearingr + bearwallr, true);
+                cylinder(bearingh, bearingr, bearingr, true);
             }
         }
     }
@@ -221,10 +224,12 @@ module gear(){
                 lead_angle=10, optimized=1, together_built=0,
                 show_spur=1, show_worm=0);
     }
+    // cylinder plugs into bearing and encloses
+    // top of shaft
     translate([0, 0, gearh / 2 - (gearh - gearboth) / 2]){
         difference(){
-            cylinder(gearh, gearbore / 2 + 2, gearbore / 2 + 2, true);
-            cylinder(gearh, gearbore / 2, gearbore / 2, true);
+            cylinder(gearh, bearinginnerr + bearingwall, bearinginnerr + bearingwall, true);
+            cylinder(gearh, bearinginnerr, bearinginnerr, true);
         }
     }
 }
@@ -383,33 +388,6 @@ module platform(inr, outr){
     }
 }
 
-/*module platform(inr, outr){
-    translate([0, 0, -elevation - wallz / 2]){
-        cylinder(wallz, inr, inr, true);
-    }
-    translate([0, 0, -elevation / 2]){
-        difference(){
-            cylinder(elevation, inr, outr, true);
-            step = outr / 5;
-            for(i = [0 : step : outr]){
-            echo(i, inr, outr, step);
-                difference(){
-                    cylinder(elevation, i + step - 2, i + step - 2, true);
-                    cylinder(elevation, i, i, true);
-                }
-            }
-        }
-        intersection(){
-            for(i = [0 : 60 : 360]){
-                rotate([0, 0, i]){
-                    cube([5, outr * 2, elevation], true);
-                }
-            }
-            cylinder(elevation, inr, outr, true);
-        }
-    }
-}*/
-
 // platform for the top of the shaft. it expands into the
 // hotbox and supports the spool. locks down onto top of shaft.
 // shaft radius is bearingh / 2
@@ -417,7 +395,7 @@ module platform(inr, outr){
 // to calculate the shaft height, we add the amount in the hotbox
 // to the amount in the croom.
 platformh = elevation + wallz;
-shafth = platformh + 47;
+shafth = platformh + 52;
 shaftr = bearingh / 2;
 module shaft(){
     platforminnerr = columnr - 0.5;
@@ -435,45 +413,21 @@ module shaft(){
     }
 }
 
-// a hollow cylinder to vertically space shaft stuff
-module shaftsupport(l){
-    difference(){
-        cylinder(l, shaftr + 2, shaftr + 2, true);
-        cylinder(l, shaftr + 0.5, shaftr + 0.5, true);
-    }
-}
-
-bottomspacerh = 14;
 // put together for testing / visualization, never printed
 module assembly(){
-    translate([0, 0, wallz + loadcellmounth]){
-        translate([loadcellmountx, 0, 0]){
-            loadcellmount(loadcellsupph);
+    translate([0, 0, loadcellh / 2]){
+        loadcell();
+    }
+    translate([0, 0, loadcellh]){
+        mirror([1, 0, 0]){
+            lowercoupling();
         }
-        translate([0, 0, loadcellsupph]){
-            translate([0, 0, loadcellh / 2]){
-                loadcell();
-            }
-            translate([0, 0, loadcellh]){
-                translate([(loadcelll - loadcellmountl) / 2, 0, 0]){
-                    loadcellmount(loadcellsupph);
-                }
-                translate([0, 0, loadcellsupph]){
-                    mirror([1, 0, 0]){
-                        lowercoupling();
-                    }
-                    translate([0, 0, shafth / 2]){
-                        shaft();
-                    }
-                    translate([0, 0, couplingh + bearingh]){
-                        translate([0, 0, bottomspacerh / 2]){
-                            shaftsupport(bottomspacerh);
-                        }
-                        translate([0, 0, 4 + gearh / 2]){
-                            gear();
-                        }
-                    }
-                }
+        translate([0, 0, shafth / 2]){
+            shaft();
+        }
+        translate([0, 0, couplingh + bearingh]){
+            translate([0, 0, 4 + gearh / 2]){
+                gear();
             }
         }
     }

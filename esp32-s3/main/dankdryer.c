@@ -433,19 +433,19 @@ set_motor_pwm(void){
 void handle_mqtt_msg(const esp_mqtt_event_t* e){
   printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
   if(strncmp(e->topic, MPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(MPWM_CHANNEL)){
-    auto pwm = extract_pwm(e->data, e->data_len);
+    int pwm = extract_pwm(e->data, e->data_len);
     if(pwm >= 0){
       MotorPWM = pwm;
       set_motor_pwm();
     }
   }else if(strncmp(e->topic, LPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(LPWM_CHANNEL)){
-    auto pwm = extract_pwm(e->data, e->data_len);
+    int pwm = extract_pwm(e->data, e->data_len);
     if(pwm >= 0){
       LowerPWM = pwm;
       set_pwm(LOWER_FANCHAN, LowerPWM);
     }
   }else if(strncmp(e->topic, UPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(UPWM_CHANNEL)){
-    auto pwm = extract_pwm(e->data, e->data_len);
+    int pwm = extract_pwm(e->data, e->data_len);
     if(pwm >= 0){
       UpperPWM = pwm;
       set_pwm(UPPER_FANCHAN, UpperPWM);
