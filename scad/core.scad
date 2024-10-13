@@ -348,6 +348,7 @@ module dropmotormount(){
 // the actual platform should cover a good chunk of area.
 // cuts both allow heat to flow, and reduce weight.
 platformtoph = 2;
+platformh = elevation + wallz + platformtoph;
 module platform(inr, outr){
     difference(){
         union(){
@@ -358,13 +359,13 @@ module platform(inr, outr){
                 cylinder(elevation, inr, outr, true);
             }
         }
-        translate([0, 0, -(elevation + wallz) / 2]){
+        translate([0, 0, -(platformh) / 2]){
             step = outr / 5;
             istep = inr / 2;
             for(i = [0 : istep : inr]){
                 difference(){
-                    cylinder(elevation + wallz, i + step - 2, i + step - 2, true);
-                    cylinder(elevation + wallz, i, i, true);
+                    cylinder(platformh, i + step - 2, i + step - 2, true);
+                    cylinder(platformh, i, i, true);
                 }
             }
             ostep = (outr - inr) / 3;
@@ -382,12 +383,14 @@ module platform(inr, outr){
                 cube([5, outr * 2, elevation], true);
             }
         }
-        translate([0, 0, -elevation / 2]){
-            cylinder(elevation, inr, outr, true);
+        union(){
+            translate([0, 0, -elevation / 2]){
+                cylinder(elevation, inr, outr, true);
+            }
+            translate([0, 0, platformtoph / 2]){
+                cylinder(platformtoph, outr, outr, true);
+            }
         }
-    }
-    translate([0, 0, platformtoph / 2]){
-        cylinder(platformtoph, outr, outr, true);
     }
 }
 
@@ -397,7 +400,6 @@ module platform(inr, outr){
 // central column radius is columnr
 // to calculate the shaft height, we add the amount in the hotbox
 // to the amount in the croom.
-platformh = elevation + wallz + platformtoph;
 shafth = platformh + 52;
 shaftr = bearingh / 2;
 module shaft(){
