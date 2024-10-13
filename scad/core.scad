@@ -179,6 +179,7 @@ bearingh = 9; // height ("width") of bearing
 bearingr = 30 / 2; // bearing outer radius
 bearinginnerr = 10 / 2; // bearing inner radius
 bearingwall = 2;
+shaftr = bearingh / 2;
 module lowercoupling(){
     // the brace comes out to the center of the load cell.
     // the bearing holder rises from the center--the shaft
@@ -213,8 +214,10 @@ module drop(){
 }
 
 teeth = 48;
-gearboth = 8;
+gearboth = 8; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
+// remaining height ought be defined in terms
+// of the motor and coupling FIXME.
 gearh = gearboth + 10;
 gearbore = bearingh + 0.4;
 wormbore = 7;
@@ -227,11 +230,25 @@ module gear(){
                 show_spur=1, show_worm=0);
     }
     // cylinder plugs into bearing and encloses
-    // top of shaft
-    translate([0, 0, gearh / 2 - (gearh - gearboth) / 2]){
-        difference(){
-            cylinder(gearh, bearinginnerr + bearingwall, bearinginnerr + bearingwall, true);
-            cylinder(gearh, bearinginnerr, bearinginnerr, true);
+    // top of shaft, so outside radius is bearing
+    // inner radius, and inside radius is shaft
+    // radius. this should only be as tall as the
+    // bearing itself, and locked off beneath.
+    translate([0, 0, -gearh / 2 + gearboth]){
+        bigh = gearh - gearboth - bearingh;
+        echo("BIGH:", bigh);
+        // this should be bigger than the bearing
+        translate([0, 0, bigh / 2]){
+          difference(){
+            cylinder(bigh, bearinginnerr + bearingwall, bearinginnerr + bearingwall, true);
+            cylinder(bigh, shaftr, shaftr, true);
+          }
+        }
+        translate([0, 0, bigh + bearingh / 2]){
+            difference(){
+                cylinder(bearingh, bearinginnerr, bearinginnerr, true);
+                cylinder(bearingh, shaftr, shaftr, true);
+            }
         }
     }
 }
@@ -401,7 +418,6 @@ module platform(inr, outr){
 // to calculate the shaft height, we add the amount in the hotbox
 // to the amount in the croom.
 shafth = platformh + 52;
-shaftr = bearingh / 2;
 module shaft(){
     platforminnerr = columnr - 0.5;
     platformouterd = spoold / 2;
