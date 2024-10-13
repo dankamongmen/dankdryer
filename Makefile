@@ -8,7 +8,7 @@ STL:=$(addsuffix .stl, \
 
 CFLAGS:=--warnings all
 ACLI:=arduino-cli
-SCADFLAGS=--hardwarnings
+SCADFLAGS=--hardwarnings --backend Manifold --summary all
 
 all: $(HEX) $(STL)
 
