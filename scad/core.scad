@@ -192,13 +192,15 @@ module lowercoupling(){
     }
     // recessed area for 30mm 6200-2RS bearing
     translate([0, 0, couplingh / 2]){
+        coupr = bearingr + 0.2; // a bit of skoosh
         // floor and support for bearing
-        bearwallr = 1;
-        cylinder(couplingh, loadcellmountw / 2, bearingr + bearwallr, true);
+        bearwallr = 2;
+        // go from slab width to bearing diameter
+        cylinder(couplingh, loadcellmountw / 2, coupr + bearwallr, true);
         translate([0, 0, couplingh / 2 + bearingh / 2]){
             difference(){
-                cylinder(bearingh, bearingr + bearwallr, bearingr + bearwallr, true);
-                cylinder(bearingh, bearingr, bearingr, true);
+                cylinder(bearingh, coupr + bearwallr, coupr + bearwallr, true);
+                cylinder(bearingh, coupr, coupr, true);
             }
         }
     }
@@ -239,8 +241,8 @@ translate([0, 1, 0]){
     worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=wormbore, gear_bore=gearbore, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=0, show_worm=1);
 }
     // effect the D-shape of the rotor (6.5 vs 7)
-    translate([(wormbore - 1) / 2, 0, 0]){
-        cube([2, wormlen, wormbore], true);
+    translate([(wormbore - 2) / 2, 0, 0]){
+        cube([0.5, wormlen, wormbore], true);
     }
 }
 
