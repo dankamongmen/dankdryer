@@ -350,12 +350,12 @@ module dropmotormount(){
 platformtoph = 2;
 platformh = elevation + wallz + platformtoph;
 module platform(inr, outr){
-    difference(){
+    /*difference(){
         union(){
-            translate([0, 0, -elevation - wallz / 2]){
+            translate([0, 0, platformh / 2]){
                 cylinder(wallz, inr, inr, true);
             }
-            translate([0, 0, -elevation / 2]){
+            translate([0, 0, platformh / 2]){
                 cylinder(elevation, inr, outr, true);
             }
         }
@@ -376,7 +376,7 @@ module platform(inr, outr){
                 }
             }
         }
-    }
+    }*/
     intersection(){
         for(i = [0 : 60 : 360]){
             rotate([0, 0, i]){
@@ -413,7 +413,7 @@ module shaft(){
     }
     // this should fill most of the central hole, so it can't
     // fall over.
-    translate([0, 0, shafth / 2 - platformtoph]){
+    translate([0, 0, shafth / 2 - platformh]){
         platform(platforminnerr, platformouterd / 2);
     }
 }
