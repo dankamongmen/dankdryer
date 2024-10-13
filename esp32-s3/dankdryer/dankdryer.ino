@@ -454,14 +454,15 @@ void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
   if(id == MQTT_EVENT_CONNECTED){
     printf("connected to mqtt\n");
     set_network_state(MQTT_ESTABLISHED);
-    if(esp_mqtt_client_subscribe(MQTTHandle, MPWM_CHANNEL, 0)){
-      fprintf(stderr, "failure subscribing to mqtt mpwm topic\n");
+    int er;
+    if( (er = esp_mqtt_client_subscribe(MQTTHandle, MPWM_CHANNEL, 0)) ){
+      fprintf(stderr, "failure %d subscribing to mqtt mpwm topic\n", er);
     }
-    if(esp_mqtt_client_subscribe(MQTTHandle, LPWM_CHANNEL, 0)){
-      fprintf(stderr, "failure subscribing to mqtt lpwm topic\n");
+    if( (er = esp_mqtt_client_subscribe(MQTTHandle, LPWM_CHANNEL, 0)) ){
+      fprintf(stderr, "failure %d subscribing to mqtt lpwm topic\n", er);
     }
-    if(esp_mqtt_client_subscribe(MQTTHandle, UPWM_CHANNEL, 0)){
-      fprintf(stderr, "failure subscribing to mqtt upwm topic\n");
+    if( (er = esp_mqtt_client_subscribe(MQTTHandle, UPWM_CHANNEL, 0)) ){
+      fprintf(stderr, "failure %d subscribing to mqtt upwm topic\n", er);
     }
   }else if(id == MQTT_EVENT_DATA){
     handle_mqtt_msg(static_cast<const esp_mqtt_event_t*>(data));
