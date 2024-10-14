@@ -40,7 +40,7 @@ translate([45, -45, wormlen / 2]){
 // the main gear. plugs into the bearing, and is
 // placed into the coupling. the gear needs be
 // at the same height as the worm gear.
-translate([-20, -spoold / 4 - 20, gearh / 2]){
+translate([-20, -spoold / 4 - teeth / 2, gearh / 2]){
     gear();
 }
 

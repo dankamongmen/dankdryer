@@ -213,7 +213,7 @@ module drop(){
     }
 }
 
-teeth = 48;
+teeth = 52;
 gearboth = 8; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
 // remaining height ought be defined in terms
@@ -369,14 +369,20 @@ platformh = elevation + wallz + platformtoph;
 module platform(inr, outr){
     difference(){
         union(){
-            translate([0, 0, -elevation - wallz / 2]){
+            translate([0, 0, wallz / 2]){
                 cylinder(wallz, inr, inr, true);
             }
-            translate([0, 0, -elevation / 2]){
+			// platform blossoms out to full width
+            translate([0, 0, wallz + elevation / 2]){
                 cylinder(elevation, inr, outr, true);
             }
+			// now a fixed-radius plate at the top
+			translate([0, 0, wallz + elevation + platformtoph / 2]){
+				cylinder(platformtoph, outr, outr, true);
+			}
         }
-        translate([0, 0, -(platformh) / 2]){
+		// cut rings out from the platform as stands
+        translate([0, 0, platformh / 2]){
             step = outr / 5;
             istep = inr / 2;
             for(i = [0 : istep : inr]){
@@ -396,15 +402,17 @@ module platform(inr, outr){
     }
     intersection(){
         for(i = [0 : 60 : 360]){
-            rotate([0, 0, i]){
-                cube([5, outr * 2, elevation], true);
-            }
+			translate([0, 0, wallz + (elevation + platformtoph) / 2]){
+				rotate([0, 0, i]){
+					cube([5, outr * 2, elevation + platformtoph], true);
+				}
+			}
         }
         union(){
             translate([0, 0, -elevation / 2]){
                 cylinder(elevation, inr, outr, true);
             }
-            translate([0, 0, platformtoph / 2]){
+            translate([0, 0, wallz + elevation + platformtoph / 2]){
                 cylinder(platformtoph, outr, outr, true);
             }
         }
@@ -429,7 +437,7 @@ module shaft(){
     }
     // this should fill most of the central hole, so it can't
     // fall over.
-    translate([0, 0, shafth / 2 - platformtoph]){
+    translate([0, 0, shafth / 2 - platformh]){
         platform(platforminnerr, platformouterd / 2);
     }
 }
