@@ -424,9 +424,9 @@ set_motor_pwm(void){
   set_pwm(MOTOR_CHAN, MotorPWM);
   // bring standby pin low if we're not sending any pwm, high otherwise
   if(MotorPWM == 0){
-    digitalWrite(MOTOR_SBYPIN, LOW);
+    gpio_set_level(MOTOR_SBYPIN, 0);
   }else{
-    digitalWrite(MOTOR_SBYPIN, HIGH);
+    gpio_set_level(MOTOR_SBYPIN, 1);
   }
 }
 
