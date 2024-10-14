@@ -213,7 +213,7 @@ module drop(){
     }
 }
 
-teeth = 52;
+teeth = 54;
 gearboth = 8; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
 // remaining height ought be defined in terms
@@ -236,7 +236,6 @@ module gear(){
     // bearing itself, and locked off beneath.
     translate([0, 0, -gearh / 2 + gearboth]){
         bigh = gearh - gearboth - bearingh;
-        echo("BIGH:", bigh);
         // this should be bigger than the bearing
         translate([0, 0, bigh / 2]){
           difference(){
@@ -244,10 +243,10 @@ module gear(){
             cylinder(bigh, shaftr, shaftr, true);
           }
         }
-        translate([0, 0, bigh + bearingh / 2]){
+        translate([0, 0, bigh + (bearingh + 5) / 2]){
             difference(){
-                cylinder(bearingh, bearinginnerr, bearinginnerr, true);
-                cylinder(bearingh, shaftr, shaftr, true);
+                cylinder(bearingh + 5, bearinginnerr, bearinginnerr, true);
+                cylinder(bearingh + 5, shaftr, shaftr, true);
             }
         }
     }
@@ -402,14 +401,14 @@ module platform(inr, outr){
     }
     intersection(){
         for(i = [0 : 60 : 360]){
-			translate([0, 0, wallz + (elevation + platformtoph) / 2]){
+			translate([0, 0, (wallz + elevation + platformtoph) / 2]){
 				rotate([0, 0, i]){
-					cube([5, outr * 2, elevation + platformtoph], true);
+					cube([5, outr * 2, elevation + wallz + platformtoph], true);
 				}
 			}
         }
-        union(){
-            translate([0, 0, -elevation / 2]){
+		union(){
+            translate([0, 0, wallz + elevation / 2]){
                 cylinder(elevation, inr, outr, true);
             }
             translate([0, 0, wallz + elevation + platformtoph / 2]){
@@ -431,8 +430,9 @@ module shaft(){
     platformouterd = spoold / 2;
     cylinder(shafth, shaftr, shaftr, true);
     // fatten the shaft so that gear can be pushed up to this point
-    fath = 22;
-    translate([0, 0, shafth / 2 - platformh - fath / 2]){
+    unfath = 22;
+	fath = shafth - unfath;
+    translate([0, 0, (shafth - fath) / 2]){
         cylinder(fath, shaftr + 2, shaftr + 2, true);
     }
     // this should fill most of the central hole, so it can't
