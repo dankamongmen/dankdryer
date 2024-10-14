@@ -286,7 +286,11 @@ int read_pstore(void){
 }
 
 int initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_t timer){
-  pinMode(pin, OUTPUT);
+  esp_err_t e;
+  if((e = gpio_set_direction(pin, GPIO_MODE_OUTPUT)) != ESP_OK){
+    fprintf(stderr, "error %s setting pin %d as output\n", esp_err_to_name(e), pin);
+    return -1;
+  }
   ledc_channel_config_t conf;
   memset(&conf, 0, sizeof(conf));
   conf.gpio_num = pin;
@@ -587,10 +591,10 @@ void set_failure(const struct failure_indication *fin){
 // TB6612FNG
 static int
 setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pin2){
-  pinMode(sbypin, OUTPUT);
-  pinMode(pin1, OUTPUT);
-  pinMode(pin2, OUTPUT);
-  pinMode(pwmpin, OUTPUT);
+  gpio_set_direction(sbypin, GPIO_MODE_OUTPUT);
+  gpio_set_direction(pin1, GPIO_MODE_OUTPUT);
+  gpio_set_direction(pin2, GPIO_MODE_OUTPUT);
+  gpio_set_direction(pwmpin, GPIO_MODE_OUTPUT);
   initialize_pwm(MOTOR_CHAN, pwmpin, 490, LEDC_TIMER_3);
   set_motor_pwm();
   return 0;
