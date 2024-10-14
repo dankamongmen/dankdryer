@@ -12,6 +12,7 @@
 #include <esp_wifi.h>
 #include <esp_netif.h>
 #include <nvs_flash.h>
+#include <esp_timer.h>
 #include <esp_system.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
@@ -696,7 +697,7 @@ void app_main(void){
   if(!getFanTachs(&lrpm, &urpm)){
     printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
   }
-  auto curtime = esp_timer_get_time();
+  int64_t curtime = esp_timer_get_time();
   send_mqtt(curtime, ambient, lrpm, urpm, weight);
   delay(15000);
 }
