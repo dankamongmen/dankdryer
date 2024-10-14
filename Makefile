@@ -4,7 +4,7 @@ OUT:=out
 STL:=$(addsuffix .stl, \
  $(addprefix $(OUT)/scad/, coupling croom hotbox top))
 
-SCADFLAGS=--hardwarnings
+SCADFLAGS=--hardwarnings --backend Manifold --summary all
 
 all: $(STL) firmware
 
