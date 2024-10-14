@@ -65,7 +65,7 @@ typedef struct failure_indication {
   int r, g, b;
 } failure_indication;
 
-static enum network_state_e {
+static enum {
   WIFI_INVALID,
   WIFI_CONNECTING,
   NET_CONNECTING,
@@ -364,7 +364,7 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
 }
 
 static void
-set_network_state(network_state_e state){
+set_network_state(int state){
   // FIXME lock
   NetworkState = state;
   if(state != WIFI_INVALID){ // if invalid, leave any initial failure status up
