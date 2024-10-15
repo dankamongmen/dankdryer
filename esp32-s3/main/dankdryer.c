@@ -703,5 +703,5 @@ void app_main(void){
   }
   int64_t curtime = esp_timer_get_time();
   send_mqtt(curtime, ambient, lrpm, urpm, weight);
-  delay(15000);
+  vTaskDelay(pdMS_TO_TICKS(15000));
 }
