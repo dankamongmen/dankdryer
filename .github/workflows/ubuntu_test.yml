@@ -20,8 +20,8 @@ jobs:
           sudo apt install -y openscad make
           mkdir -p ~/bin
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=$HOME/bin sh
-          curl -OfsSL https://files.openscad.org/snapshots/$OSCAD
-          chmod 755 $OSCAD
+          curl -OfsSL https://files.openscad.org/snapshots/$OSCAD --output-dir $HOME/bin
+          chmod 755 $HOME/bin/$OSCAD
 
       - uses: actions/checkout@v2
         with:
