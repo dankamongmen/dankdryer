@@ -720,15 +720,17 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
 
 void app_main(void){
   setup();
-  float ambient = getAmbient();
-  float weight = getWeight();
-  printf("esp32 temp: %f weight: %f\n", ambient, weight);
-  printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
-  unsigned lrpm, urpm;
-  if(!getFanTachs(&lrpm, &urpm)){
-    printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
+  while(1){
+    float ambient = getAmbient();
+    float weight = getWeight();
+    printf("esp32 temp: %f weight: %f\n", ambient, weight);
+    printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
+    unsigned lrpm, urpm;
+    if(!getFanTachs(&lrpm, &urpm)){
+      printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
+    }
+    int64_t curtime = esp_timer_get_time();
+    send_mqtt(curtime, ambient, lrpm, urpm, weight);
+    vTaskDelay(pdMS_TO_TICKS(15000));
   }
-  int64_t curtime = esp_timer_get_time();
-  send_mqtt(curtime, ambient, lrpm, urpm, weight);
-  vTaskDelay(pdMS_TO_TICKS(15000));
 }
