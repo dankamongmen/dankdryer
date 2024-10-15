@@ -17,7 +17,7 @@ jobs:
       - name: install deps
         run: |
           sudo apt update
-          sudo apt install -y openscad make
+          sudo apt install -y libfuse2 make
           mkdir -p ~/bin
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=$HOME/bin sh
           curl -OfsSL https://files.openscad.org/snapshots/$OSCAD --output-dir $HOME/bin
