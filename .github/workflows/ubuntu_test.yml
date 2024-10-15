@@ -21,10 +21,8 @@ jobs:
           mkdir -p $HOME/bin
           curl -OfsSL https://files.openscad.org/snapshots/$OSCAD --output-dir $HOME/bin
           chmod 755 $HOME/bin/$OSCAD
-          curl -L https://github.com/espressif/esp-idf/archive/refs/tags/v$ESPIDFVER.tar.gz | tar -zxf-
-          cd esp-idf-$ESPIDFVER
-          sh export.sh && idf_tools.py install-python-env
-          /usr/bin/python3 tools/idf_tools.py install
+          cd $HOME/bin
+          git clone --recurse-submodules https://github.com/espressif/esp-idf.git
 
       - uses: actions/checkout@v2
         with:
@@ -32,6 +30,10 @@ jobs:
 
       - name: make
         run: |
+          cd $HOME/bin/esp-idf-$ESPIDFVER
+          python tools/idf_tools.py install-python-env
+          python tools/idf_tools.py install
+          source export.sh
+          cd -
           mv dryer-network-sample.h esp32-s3/main/dryer-network.h
-          cd $HOME/work/dankdryer/dankdryer/esp-idf-$ESPIDFVER && sh export.sh && cd -
-          idf.py build
+          PATH=$PATH:$HOME/bin make
