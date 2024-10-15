@@ -5,6 +5,7 @@ on:
   pull_request:
 
 env:
+  ESPIDFVER=5.3.1
   OSCAD: OpenSCAD-2024.10.14.ai20927-x86_64.AppImage
 
 jobs:
@@ -22,9 +23,11 @@ jobs:
           sudo apt-get upgrade
           sudo apt-get install -y libfuse2 make libopengl0 libegl1
           mkdir -p $HOME/bin
-          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=$HOME/bin sh
           curl -OfsSL https://files.openscad.org/snapshots/$OSCAD --output-dir $HOME/bin
           chmod 755 $HOME/bin/$OSCAD
+          curl -L https://github.com/espressif/esp-idf/archive/refs/tags/v$ESPIDFVER.tar.gz | tar -zxf-
+          cd esp-idf-$ESPIDFVER && /usr/bin/python3 /home/dank/e/esp-idf-$ESPIDFVER/tools/idf_tools.py install
+          cd esp-idf-$ESPIDFVER && sh export.sh && idf_tools.py install-python-env
 
       - uses: actions/checkout@v2
         with:
@@ -33,7 +36,5 @@ jobs:
       - name: make
         run: |
           mv dryer-network-sample.h esp32-s3/dankdryer/dryer-network.h
-          PATH=$PATH:$HOME/bin arduino-cli core install esp32:esp32 
-          PATH=$PATH:$HOME/bin arduino-cli lib install HX711
-          PATH=$PATH:$HOME/bin arduino-cli lib install ArduinoJson
-          PATH=$PATH:$HOME/bin make
+          cd esp-idf-$ESPIDFVER && sh export.sh && cd -
+          idf.py build

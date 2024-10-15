@@ -6,14 +6,14 @@
 #include "dryer-network.h"
 #include <lwip/netif.h>
 #include <nvs.h>
+#include <math.h>
 #include <mdns.h>
-#include <Wire.h>
-#include <HX711.h>
+#include <cJSON.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>
 #include <nvs_flash.h>
+#include <esp_timer.h>
 #include <esp_system.h>
-#include <ArduinoJson.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <hal/ledc_types.h>
@@ -21,16 +21,19 @@
 
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
 #define RPMMAX (1u << 14u)
+#define MIN_TEMP (-80)
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define MOTOR_PWMPIN GPIO_NUM_4 // motor speed
-#define THERM_DATAPIN GPIO_NUM_8 // analog thermometer (input)
+#define MOTOR_PWMPIN GPIO_NUM_6 // motor speed
+#define THERM_DATAPIN GPIO_NUM_8 // analog thermometer (input, ADC1)
 #define MOTOR_SBYPIN GPIO_NUM_9  // standby must be taken high to drive motor (output)
-#define LOWER_PWMPIN GPIO_NUM_11  // lower chamber fan speed (output)
+#define LOWER_PWMPIN GPIO_NUM_10  // lower chamber fan speed (output)
+#define UPPER_PWMPIN GPIO_NUM_11  // upper chamber fan speed (output)
 #define LOWER_TACHPIN GPIO_NUM_12 // lower chamber fan tachometer (input)
-#define UPPER_PWMPIN GPIO_NUM_10  // upper chamber fan speed (output)
 #define UPPER_TACHPIN GPIO_NUM_13 // upper chamber fan tachometer (input)
+// 11-20 are connected to ADC2, which is used by wifi
+// (they can still be used as digital pins)
 #define HX711_SCK GPIO_NUM_17    // DAC clock (i2c)
 #define HX711_DT GPIO_NUM_18     // DAC data (i2c)
 // 19--20 are used for JTAG (not strictly needed)
@@ -42,7 +45,6 @@
 
 #define NVS_HANDLE_NAME "pstore"
 
-HX711 Load;
 static bool UsePersistentStore; // set true upon successful initialization
 static temperature_sensor_handle_t temp;
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
@@ -63,7 +65,7 @@ typedef struct failure_indication {
   int r, g, b;
 } failure_indication;
 
-static enum network_state_e {
+static enum {
   WIFI_INVALID,
   WIFI_CONNECTING,
   NET_CONNECTING,
@@ -73,16 +75,15 @@ static enum network_state_e {
 } NetworkState;
 
 static bool StartupFailure;
-static const failure_indication PreFailure = { RGB_BRIGHTNESS, RGB_BRIGHTNESS, RGB_BRIGHTNESS };
-static const failure_indication SystemError = { RGB_BRIGHTNESS, 0, 0 };
-static const failure_indication NetworkError = { RGB_BRIGHTNESS, 0, RGB_BRIGHTNESS };
+static const failure_indication SystemError = { 64, 0, 0 };
+static const failure_indication NetworkError = { 64, 0, 64 };
 static const failure_indication PostFailure = { 0, 0, 0 };
 static const failure_indication NetworkIndications[NETWORK_STATE_COUNT] = {
   { 0, 255, 0 },  // WIFI_INVALID
-  { 0, 192, 0 }, // WIFI_CONNECTING
-  { 0, 128, 0 }, // NET_CONNECTING
-  { 0, 64, 0 },  // MQTT_CONNECTING
-  { 0, 0, 0 }    // MQTT_ESTABLISHED
+  { 0, 192, 0 },  // WIFI_CONNECTING
+  { 0, 128, 0 },  // NET_CONNECTING
+  { 0, 64, 0 },   // MQTT_CONNECTING
+  { 0, 0, 0 }     // MQTT_ESTABLISHED
 };
 
 static const esp_mqtt_client_config_t MQTTConfig = {
@@ -100,22 +101,9 @@ static const esp_mqtt_client_config_t MQTTConfig = {
   },
 };
 
-// ---------------------------------------------------------
-// needed with 3.0.3, see https://github.com/espressif/arduino-esp32/issues/10084 
-// FIXME remove this garbage
-extern "C" int lwip_hook_ip6_input(struct pbuf *p, struct netif *inp) __attribute__((weak));
-extern "C" int lwip_hook_ip6_input(struct pbuf *p, struct netif *inp) {
-  if (ip6_addr_isany_val(inp->ip6_addr[0].u_addr.ip6)) {
-    // We don't have an LL address -> eat this packet here, so it won't get accepted on input netif
-    pbuf_free(p);
-    return 1;
-  }
-  return 0;
-}
-// ---------------------------------------------------------
-
-void tach_isr(void* pulsecount){
-  auto pc = static_cast<uint32_t*>(pulsecount);
+static void
+tach_isr(void* pulsecount){
+  uint32_t* pc = pulsecount;
   ++*pc;
 }
 
@@ -124,7 +112,8 @@ static inline bool valid_pwm_p(int pwm){
 }
 
 // precondition: isxdigit(c) is true
-byte get_hex(char c){
+static inline char
+get_hex(char c){
   if(isdigit(c)){
     return c - '0';
   }
@@ -144,8 +133,8 @@ int extract_pwm(const char* data, size_t dlen){
     printf("invalid hex character\n");
     return -1;
   }
-  byte hb = get_hex(h);
-  byte lb = get_hex(l);
+  char hb = get_hex(h);
+  char lb = get_hex(l);
   // everything was valid
   int pwm = hb * 16 + lb;
   printf("got pwm value: %d\n", pwm);
@@ -165,18 +154,20 @@ int set_pwm(const ledc_channel_t channel, unsigned pwm){
   return 0;
 }
 
+// on error, returns MIN_TEMP - 1
 float getAmbient(void){
   float t;
   if(temperature_sensor_get_celsius(temp, &t)){
     fprintf(stderr, "failed acquiring temperature\n");
-    return NAN;
+    return MIN_TEMP - 1;
   }
   return t;
 }
 
 float getWeight(void){
-  Load.wait_ready();
-  return Load.read_average(5);
+  /*Load.wait_ready();
+  return Load.read_average(5);*/
+  return 0; // FIXME
 }
 
 // the esp32-s3 has a built in temperature sensor
@@ -294,7 +285,11 @@ int read_pstore(void){
 }
 
 int initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_t timer){
-  pinMode(pin, OUTPUT);
+  esp_err_t e;
+  if((e = gpio_set_direction(pin, GPIO_MODE_OUTPUT)) != ESP_OK){
+    fprintf(stderr, "error %s setting pin %d as output\n", esp_err_to_name(e), pin);
+    return -1;
+  }
   ledc_channel_config_t conf;
   memset(&conf, 0, sizeof(conf));
   conf.gpio_num = pin;
@@ -326,20 +321,24 @@ int initialize_25k_pwm(ledc_channel_t channel, gpio_num_t pin, ledc_timer_t time
 }
 
 int gpio_set_input(gpio_num_t pin){
+  gpio_reset_pin(pin);
   esp_err_t err;
   if((err = gpio_set_direction(pin, GPIO_MODE_INPUT)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) setting %d to input\n", err, esp_err_to_name(err), pin);
+    fprintf(stderr, "failure (%s) setting %d to input\n", esp_err_to_name(err), pin);
     return -1;
   }
+  // FIXME explicitly set pullup/pulldown?
   return 0;
 }
 
 int gpio_set_output(gpio_num_t pin){
+  gpio_reset_pin(pin);
   esp_err_t err;
   if((err = gpio_set_direction(pin, GPIO_MODE_OUTPUT)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) setting %d to output\n", err, esp_err_to_name(err), pin);
+    fprintf(stderr, "failure (%s) setting %d to output\n", esp_err_to_name(err), pin);
     return -1;
   }
+  // FIXME explicitly set pullup/pulldown?
   return 0;
 }
 
@@ -347,7 +346,19 @@ int initialize_tach(gpio_num_t pin, uint32_t* arg){
   if(gpio_set_input(pin)){
     return -1;
   }
-  attachInterruptArg(pin, tach_isr, arg, FALLING);
+  esp_err_t e = gpio_set_intr_type(pin, GPIO_INTR_NEGEDGE);
+  if(e != ESP_OK){
+    fprintf(stderr, "failure (%s) installing %d interrupt\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_isr_handler_add(pin, tach_isr, arg)) != ESP_OK){
+    fprintf(stderr, "failure (%s) setting %d isr\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_intr_enable(pin)) != ESP_OK){
+    fprintf(stderr, "failure (%s) enabling %d interrupt\n", esp_err_to_name(e), pin);
+    return -1;
+  }
   return 0;
 }
 
@@ -371,7 +382,22 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
   return ret;
 }
 
-void set_network_state(network_state_e state){
+static void
+set_led(const struct failure_indication *nin){
+  fprintf(stderr, "FIXME we don't yet have neopixel support\n");
+  // FIXME neopixelWrite(RGB_BUILTIN, nin->r, nin->g, nin->b);
+}
+
+static void
+set_failure(const struct failure_indication *fin){
+  if(fin != &PostFailure){
+    StartupFailure = true;
+  }
+  set_led(fin);
+}
+
+static void
+set_network_state(int state){
   // FIXME lock
   NetworkState = state;
   if(state != WIFI_INVALID){ // if invalid, leave any initial failure status up
@@ -381,7 +407,8 @@ void set_network_state(network_state_e state){
   }
 }
 
-void wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
+static void
+wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   esp_err_t err;
   if(strcmp(base, WIFI_EVENT)){
     fprintf(stderr, "non-wifi event %s in wifi handler\n", base);
@@ -398,12 +425,15 @@ void wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
     uint16_t aid = 65535u;
     esp_wifi_sta_get_aid(&aid);
     printf("association id: %u\n", aid);
+  }else if(id == WIFI_EVENT_HOME_CHANNEL_CHANGE){
+    printf("wifi channel changed\n");
   }else{
     fprintf(stderr, "unknown wifi event %ld\n", id);
   }
 }
 
-void ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
+static void
+ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   esp_err_t err;
   if(strcmp(base, IP_EVENT)){
     fprintf(stderr, "non-ip event %s in ip handler\n", base);
@@ -420,6 +450,17 @@ void ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }
 }
 
+static void
+set_motor_pwm(void){
+  set_pwm(MOTOR_CHAN, MotorPWM);
+  // bring standby pin low if we're not sending any pwm, high otherwise
+  if(MotorPWM == 0){
+    gpio_set_level(MOTOR_SBYPIN, 0);
+  }else{
+    gpio_set_level(MOTOR_SBYPIN, 1);
+  }
+}
+
 #define CCHAN "control/"
 #define MPWM_CHANNEL CCHAN DEVICE "/mpwm"
 #define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
@@ -428,19 +469,19 @@ void ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
 void handle_mqtt_msg(const esp_mqtt_event_t* e){
   printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
   if(strncmp(e->topic, MPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(MPWM_CHANNEL)){
-    auto pwm = extract_pwm(e->data, e->data_len);
+    int pwm = extract_pwm(e->data, e->data_len);
     if(pwm >= 0){
       MotorPWM = pwm;
       set_motor_pwm();
     }
   }else if(strncmp(e->topic, LPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(LPWM_CHANNEL)){
-    auto pwm = extract_pwm(e->data, e->data_len);
+    int pwm = extract_pwm(e->data, e->data_len);
     if(pwm >= 0){
       LowerPWM = pwm;
       set_pwm(LOWER_FANCHAN, LowerPWM);
     }
   }else if(strncmp(e->topic, UPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(UPWM_CHANNEL)){
-    auto pwm = extract_pwm(e->data, e->data_len);
+    int pwm = extract_pwm(e->data, e->data_len);
     if(pwm >= 0){
       UpperPWM = pwm;
       set_pwm(UPPER_FANCHAN, UpperPWM);
@@ -465,7 +506,7 @@ void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
       fprintf(stderr, "failure %d subscribing to mqtt upwm topic\n", er);
     }
   }else if(id == MQTT_EVENT_DATA){
-    handle_mqtt_msg(static_cast<const esp_mqtt_event_t*>(data));
+    handle_mqtt_msg(data);
   }else{
     printf("unhandled mqtt event %ld\n", id);
   }
@@ -562,51 +603,41 @@ bail:
 
 // HX711
 int setup_sensors(void){
+  fprintf(stderr, "we don't yet have hx711 support\n");
+  /* FIXME
   Load.begin(HX711_DT, HX711_SCK);
   Load.set_scale(LoadcellScale);
+  */
   return 0;
 }
 
-void set_led(const struct failure_indication *nin){
-  neopixelWrite(RGB_BUILTIN, nin->r, nin->g, nin->b);
-}
-
-void set_failure(const struct failure_indication *fin){
-  if(fin != &PostFailure){
-    StartupFailure = true;
-  }
-  set_led(fin);
-}
-
-void set_motor_pwm(void){
-  set_pwm(MOTOR_CHAN, MotorPWM);
-  // bring standby pin low if we're not sending any pwm, high otherwise
-  if(MotorPWM == 0){
-    digitalWrite(MOTOR_SBYPIN, LOW);
-  }else{
-    digitalWrite(MOTOR_SBYPIN, HIGH);
-  }
-}
-
 // TB6612FNG
-int setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pin2){
-  pinMode(sbypin, OUTPUT);
-  pinMode(pin1, OUTPUT);
-  pinMode(pin2, OUTPUT);
-  pinMode(pwmpin, OUTPUT);
+static int
+setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pin2){
+  gpio_set_direction(sbypin, GPIO_MODE_OUTPUT);
+  gpio_set_direction(pin1, GPIO_MODE_OUTPUT);
+  gpio_set_direction(pin2, GPIO_MODE_OUTPUT);
+  gpio_set_direction(pwmpin, GPIO_MODE_OUTPUT);
   initialize_pwm(MOTOR_CHAN, pwmpin, 490, LEDC_TIMER_3);
   set_motor_pwm();
   return 0;
 }
 
-void setup(void){
-  neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
-  Serial.begin(115200);
+static void
+setup(void){
+  // FIXME
+  //static const failure_indication PreFailure = { 64, 64, 64 };
+  //neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
   printf("dankdryer v" VERSION "\n");
   if(!init_pstore()){
     if(!read_pstore()){
       UsePersistentStore = true;
     }
+  }
+  esp_err_t e = gpio_install_isr_service(ESP_INTR_FLAG_IRAM);
+  if(e != ESP_OK){
+    fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
+    set_failure(&SystemError);
   }
   if(setup_esp32temp()){
     set_failure(&SystemError);
@@ -628,6 +659,7 @@ void setup(void){
     set_failure(&PostFailure);
   }
   printf("initialization %ssuccessful v" VERSION "\n", StartupFailure ? "un" : "");
+  gpio_dump_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
 }
 
 // we don't try to measure the first iteration, as we don't yet have a
@@ -636,14 +668,14 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
   static uint32_t m;
   int ret = -1;
   if(m){
-    const uint32_t diffu = micros() - m; // FIXME handle wrap
+    const int64_t diffu = esp_timer_get_time() - m;
     *lrpm = LowerPulses;
     *urpm = UpperPulses;
     printf("raw: %u %u\n", *lrpm, *urpm);
     *lrpm /= 2; // two pulses for each rotation
     *urpm /= 2;
     const float scale = 60.0 * 1000000u / diffu;
-    printf("scale: %f diffu: %lu\n", scale, diffu);
+    printf("scale: %f diffu: %lld\n", scale, diffu);
     *lrpm *= scale;
     *urpm *= scale;
     ret = 0;
@@ -651,54 +683,56 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
     *lrpm = UINT_MAX;
     *urpm = UINT_MAX;
   }
-  m = micros();
+  m = esp_timer_get_time();
   LowerPulses = 0;
   UpperPulses = 0;
   return ret;
 }
 
-inline void
-send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
-          float weight){
-  JsonDocument doc;
-  char out[256];
-  doc["uptimesec"] = curtime / 1000000l;
-  doc["dtemp"] = dtemp;
+void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
+               float weight){
+  // FIXME check errors throughout!
+  cJSON* root = cJSON_CreateObject();
+  cJSON_AddNumberToObject(root, "uptimesec", curtime / 1000000ll);
+  if(dtemp >= MIN_TEMP){
+    cJSON_AddNumberToObject(root, "dtemp", dtemp);
+  }
   // UINT_MAX is sentinel for known bad reading, but anything over 3KRPM on
   // these Noctua NF-A8 fans is indicative of error; they max out at 2500.
   if(lrpm < 3000){
-    doc["lrpm"] = lrpm;
+    cJSON_AddNumberToObject(root, "lrpm", lrpm);
   }
   if(urpm < 3000){
-    doc["urpm"] = urpm;
+    cJSON_AddNumberToObject(root, "urpm", urpm);
   }
-  doc["lpwm"] = LowerPWM;
-  doc["upwm"] = UpperPWM;
+  cJSON_AddNumberToObject(root, "lpwm", LowerPWM);
+  cJSON_AddNumberToObject(root, "upwm", UpperPWM);
   if(weight >= 0 && weight < 5000){
-    doc["load"] = weight;
+    cJSON_AddNumberToObject(root, "load", weight);
   }
-  doc["mpwm"] = MotorPWM;
-  auto len = serializeJson(doc, out, sizeof(out));
-  if(len >= sizeof(out)){
-    fprintf(stderr, "serialization exceeded buffer len (%zu > %zu)\n", len, sizeof(out));
-  }else{
-    printf("MQTT: %s\n", out);
-    if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, out, len, 0, 0)){
-      fprintf(stderr, "couldn't publish %zuB mqtt message\n", len);
-    }
+  cJSON_AddNumberToObject(root, "mpwm", MotorPWM);
+  char* s = cJSON_Print(root);
+  size_t slen = strlen(s);
+  printf("MQTT: %s\n", s);
+  if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, s, slen, 0, 0)){
+    fprintf(stderr, "couldn't publish %zuB mqtt message\n", slen);
   }
+  free(s);
 }
 
-void loop(void){
-  float ambient = getAmbient();
-  float weight = getWeight();
-  printf("esp32 temp: %f weight: %f\n", ambient, weight);
-  printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
-  unsigned lrpm, urpm;
-  if(!getFanTachs(&lrpm, &urpm)){
-    printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
+void app_main(void){
+  setup();
+  while(1){
+    float ambient = getAmbient();
+    float weight = getWeight();
+    printf("esp32 temp: %f weight: %f\n", ambient, weight);
+    printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
+    unsigned lrpm, urpm;
+    if(!getFanTachs(&lrpm, &urpm)){
+      printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
+    }
+    int64_t curtime = esp_timer_get_time();
+    send_mqtt(curtime, ambient, lrpm, urpm, weight);
+    vTaskDelay(pdMS_TO_TICKS(15000));
   }
-  auto curtime = esp_timer_get_time();
-  send_mqtt(curtime, ambient, lrpm, urpm, weight);
-  delay(15000);
 }
