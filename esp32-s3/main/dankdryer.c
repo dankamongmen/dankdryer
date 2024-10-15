@@ -75,7 +75,6 @@ static enum {
 } NetworkState;
 
 static bool StartupFailure;
-static const failure_indication PreFailure = { 64, 64, 64 };
 static const failure_indication SystemError = { 64, 0, 0 };
 static const failure_indication NetworkError = { 64, 0, 64 };
 static const failure_indication PostFailure = { 0, 0, 0 };
@@ -385,7 +384,8 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
 
 static void
 set_led(const struct failure_indication *nin){
-  neopixelWrite(RGB_BUILTIN, nin->r, nin->g, nin->b);
+  fprintf(stderr, "FIXME we don't yet have neopixel support\n");
+  // FIXME neopixelWrite(RGB_BUILTIN, nin->r, nin->g, nin->b);
 }
 
 static void
@@ -601,8 +601,11 @@ bail:
 
 // HX711
 int setup_sensors(void){
+  fprintf(stderr, "we don't yet have hx711 support\n");
+  /* FIXME
   Load.begin(HX711_DT, HX711_SCK);
   Load.set_scale(LoadcellScale);
+  */
   return 0;
 }
 
@@ -620,7 +623,9 @@ setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pi
 
 static void
 setup(void){
-  neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
+  // FIXME
+  //static const failure_indication PreFailure = { 64, 64, 64 };
+  //neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
   printf("dankdryer v" VERSION "\n");
   if(!init_pstore()){
     if(!read_pstore()){
