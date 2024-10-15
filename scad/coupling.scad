@@ -11,12 +11,6 @@ use <croom.scad>
 //  gear
 //  platform
 
-/* rectangular piece with two screw holes,
-   no longer used.
-translate([30, -60, 0]){
-    loadcellmount(loadcellsupph);
-}*/
-
 // the lower coupling screws into the load cell on
 // the floating end. it provides a space to hold the
 // bearing above the center of the load cell. the

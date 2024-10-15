@@ -17,40 +17,6 @@ botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
 
-// used to be rounded, now just angled
-/* module croombottomside(){
-    translate([0, -botalt + croomwall, wallz]){
-        rotate([0, 90, 0]){
-            intersection(){
-                cylinder((botalt - croomwall) * 2, croomwall, croomwall, true);
-                translate([croomwall, -croomwall, 0]){
-                    cube([croomwall * 2, croomwall * 2, botalt * 2], true);
-                }
-            }
-        }
-    }
-    translate([botalt - croomwall, botalt - croomwall, croomwall]){
-        sphere(croomwall);
-    }
-}
-
-// bottom with rounded corners for better printing
-module croombottom(){
-    croombottomside();
-    rotate([0, 0, 90]){
-        croombottomside();
-    }
-    rotate([0, 0, 180]){
-        croombottomside();
-    }
-    rotate([0, 0, 270]){
-        croombottomside();
-    }
-    translate([0, 0, wallz / 2]){
-        cube([(botalt - croomwall) * 2, (botalt - croomwall) * 2, wallz], true);
-    }
-}*/
-
 module croombottom(){
     translate([0, 0, wallz / 2]){
         rotate([0, 0, 45]){
@@ -230,10 +196,9 @@ module wirechannel(){
 }
 
 module wirechannels(){
-    wirechannel();
-    mirror([1, 0, 0]){
-        wirechannel();
-    }
+	mirror([1, 0, 0]){
+		wirechannel();
+	}
 }
 
 // hole for hotbox fan wires
@@ -247,14 +212,25 @@ module fancablehole(){
     }
 }
 
+// we want to keep air from moving across the load
+// cell's surface, so we put a shield around it.
 module lowershield(){
-    // the lower shield must not support the lower coupling,
-    // but it should come right up under it to block air
-    //(-shieldw + 6) / 2, (19.5 + 6) / 2
     translate([0, 0, wallz + loadcellmounth / 2]){
         difference(){
             cube([shieldw + 6, 38 / 2, loadcellmounth], true);
             cube([shieldw + 2, 34 / 2, loadcellmounth], true);
+        }
+        upperh = loadcellh;
+        // we need to still be able to install the
+        // load cell, though, so the shield is low
+        // on the back.
+        translate([0, 0, (loadcellmounth + upperh) / 2]){
+            difference(){
+                cube([shieldw + 6, 38 / 2, upperh], true);
+                translate([0, 2, 0]){
+                    cube([shieldw + 2, 34 / 2, upperh], true);
+                }
+            }
         }
     }
 }

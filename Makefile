@@ -6,6 +6,9 @@ STL:=$(addsuffix .stl, \
 
 SCADFLAGS=--hardwarnings --backend Manifold --summary all
 
+# allow OSCAD (openscad binary) to be set externally
+OSCAD?=openscad
+
 all: $(STL) firmware
 
 # add actual esp-idf CMake output
@@ -14,7 +17,7 @@ firmware:
 
 $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
 	@mkdir -p $(@D)
-	time openscad $(SCADFLAGS) -o $@ $<
+	time $(OSCAD) $(SCADFLAGS) -o $@ $<
 
 clean:
 	rm -rf $(OUT)

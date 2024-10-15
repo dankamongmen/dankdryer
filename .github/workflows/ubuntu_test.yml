@@ -6,6 +6,7 @@ on:
 
 env:
   ESPIDFVER=5.3.1
+  OSCAD: OpenSCAD-2024.10.14.ai20927-x86_64.AppImage
 
 jobs:
   tests:
@@ -16,8 +17,14 @@ jobs:
 
       - name: install deps
         run: |
-          sudo apt update
-          sudo apt install -y openscad make
+          # firefox is otherwise updated, taking a long time
+          sudo apt-get purge firefox
+          sudo apt-get update
+          sudo apt-get upgrade
+          sudo apt-get install -y libfuse2 make libopengl0 libegl1
+          mkdir -p $HOME/bin
+          curl -OfsSL https://files.openscad.org/snapshots/$OSCAD --output-dir $HOME/bin
+          chmod 755 $HOME/bin/$OSCAD
           curl -L https://github.com/espressif/esp-idf/archive/refs/tags/v$ESPIDFVER.tar.gz | tar -zxf-
           cd esp-idf-$ESPIDFVER && /usr/bin/python3 /home/dank/e/esp-idf-$ESPIDFVER/tools/idf_tools.py install
           cd esp-idf-$ESPIDFVER && sh export.sh && idf_tools.py install-python-env
