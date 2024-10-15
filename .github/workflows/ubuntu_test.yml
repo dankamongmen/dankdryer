@@ -29,6 +29,7 @@ jobs:
           cd esp-idf-$ESPIDFVER
           sh export.sh && idf_tools.py install-python-env
           /usr/bin/python3 tools/idf_tools.py install
+          cd ..
 
       - uses: actions/checkout@v2
         with:
