@@ -322,20 +322,24 @@ int initialize_25k_pwm(ledc_channel_t channel, gpio_num_t pin, ledc_timer_t time
 }
 
 int gpio_set_input(gpio_num_t pin){
+  gpio_reset_pin(pin);
   esp_err_t err;
   if((err = gpio_set_direction(pin, GPIO_MODE_INPUT)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) setting %d to input\n", err, esp_err_to_name(err), pin);
+    fprintf(stderr, "failure (%s) setting %d to input\n", esp_err_to_name(err), pin);
     return -1;
   }
+  // FIXME explicitly set pullup/pulldown?
   return 0;
 }
 
 int gpio_set_output(gpio_num_t pin){
+  gpio_reset_pin(pin);
   esp_err_t err;
   if((err = gpio_set_direction(pin, GPIO_MODE_OUTPUT)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) setting %d to output\n", err, esp_err_to_name(err), pin);
+    fprintf(stderr, "failure (%s) setting %d to output\n", esp_err_to_name(err), pin);
     return -1;
   }
+  // FIXME explicitly set pullup/pulldown?
   return 0;
 }
 
@@ -343,7 +347,19 @@ int initialize_tach(gpio_num_t pin, uint32_t* arg){
   if(gpio_set_input(pin)){
     return -1;
   }
-  attachInterruptArg(pin, tach_isr, arg, FALLING);
+  esp_err_t e = gpio_set_intr_type(pin, GPIO_INTR_NEGEDGE);
+  if(e != ESP_OK){
+    fprintf(stderr, "failure (%s) installing %d interrupt\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_isr_handler_add(pin, tach_isr, arg)) != ESP_OK){
+    fprintf(stderr, "failure (%s) setting %d isr\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_intr_enable(pin)) != ESP_OK){
+    fprintf(stderr, "failure (%s) enabling %d interrupt\n", esp_err_to_name(e), pin);
+    return -1;
+  }
   return 0;
 }
 
@@ -608,6 +624,11 @@ setup(void){
     if(!read_pstore()){
       UsePersistentStore = true;
     }
+  }
+  esp_err_t e = gpio_install_isr_service(ESP_INTR_FLAG_IRAM);
+  if(e != ESP_OK){
+    fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
+    set_failure(&SystemError);
   }
   if(setup_esp32temp()){
     set_failure(&SystemError);
