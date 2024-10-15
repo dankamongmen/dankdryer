@@ -25,15 +25,15 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define LOWER_PWMPIN GPIO_NUM_4  // lower chamber fan speed (output)
-#define UPPER_PWMPIN GPIO_NUM_5  // upper chamber fan speed (output)
-#define LOWER_TACHPIN GPIO_NUM_6 // lower chamber fan tachometer (input)
-#define UPPER_TACHPIN GPIO_NUM_7 // upper chamber fan tachometer (input)
+#define MOTOR_PWMPIN GPIO_NUM_6 // motor speed
 #define THERM_DATAPIN GPIO_NUM_8 // analog thermometer (input, ADC1)
 #define MOTOR_SBYPIN GPIO_NUM_9  // standby must be taken high to drive motor (output)
+#define LOWER_PWMPIN GPIO_NUM_10  // lower chamber fan speed (output)
+#define UPPER_PWMPIN GPIO_NUM_11  // upper chamber fan speed (output)
+#define LOWER_TACHPIN GPIO_NUM_12 // lower chamber fan tachometer (input)
+#define UPPER_TACHPIN GPIO_NUM_13 // upper chamber fan tachometer (input)
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
-#define MOTOR_PWMPIN GPIO_NUM_12 // motor speed
 #define HX711_SCK GPIO_NUM_17    // DAC clock (i2c)
 #define HX711_DT GPIO_NUM_18     // DAC data (i2c)
 // 19--20 are used for JTAG (not strictly needed)
@@ -659,7 +659,7 @@ setup(void){
     set_failure(&PostFailure);
   }
   printf("initialization %ssuccessful v" VERSION "\n", StartupFailure ? "un" : "");
-  gpio_dump_io_configuration(stdout, ~0ULL);
+  gpio_dump_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
 }
 
 // we don't try to measure the first iteration, as we don't yet have a
