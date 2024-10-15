@@ -10,6 +10,9 @@ CFLAGS:=--warnings all
 ACLI:=arduino-cli
 SCADFLAGS=--hardwarnings --backend Manifold --summary all
 
+# allow OSCAD (openscad binary) to be set externally
+OSCAD?=openscad
+
 all: $(HEX) $(STL)
 
 deps:
@@ -22,7 +25,7 @@ $(OUT)/esp32-s3/dankdryer/dankdryer.ino.elf: $(addprefix esp32-s3/dankdryer/, da
 
 $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
 	@mkdir -p $(@D)
-	time openscad $(SCADFLAGS) -o $@ $<
+	time $(OSCAD) $(SCADFLAGS) -o $@ $<
 
 clean:
 	rm -rf $(OUT)

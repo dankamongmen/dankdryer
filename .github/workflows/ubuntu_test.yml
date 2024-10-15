@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+env:
+  OSCAD: OpenSCAD-2024.10.14.ai20927-x86_64.AppImage
+
 jobs:
   tests:
     name: 🐧 build, test, & install
@@ -17,6 +20,8 @@ jobs:
           sudo apt install -y openscad make
           mkdir -p ~/bin
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=$HOME/bin sh
+          curl -OfsSL https://files.openscad.org/snapshots/$OSCAD
+          chmod 755 $OSCAD
 
       - uses: actions/checkout@v2
         with:
