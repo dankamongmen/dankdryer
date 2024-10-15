@@ -5,7 +5,6 @@ on:
   pull_request:
 
 env:
-  ESPIDFVER: 5.3.1
   OSCAD: OpenSCAD-2024.10.14.ai20927-x86_64.AppImage
 
 jobs:
@@ -30,7 +29,7 @@ jobs:
 
       - name: make
         run: |
-          cd $HOME/bin/esp-idf-$ESPIDFVER
+          cd $HOME/bin/esp-idf
           python tools/idf_tools.py install-python-env
           python tools/idf_tools.py install
           source export.sh
