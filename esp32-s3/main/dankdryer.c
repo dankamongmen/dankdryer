@@ -384,6 +384,19 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
 }
 
 static void
+set_led(const struct failure_indication *nin){
+  neopixelWrite(RGB_BUILTIN, nin->r, nin->g, nin->b);
+}
+
+static void
+set_failure(const struct failure_indication *fin){
+  if(fin != &PostFailure){
+    StartupFailure = true;
+  }
+  set_led(fin);
+}
+
+static void
 set_network_state(int state){
   // FIXME lock
   NetworkState = state;
@@ -591,17 +604,6 @@ int setup_sensors(void){
   Load.begin(HX711_DT, HX711_SCK);
   Load.set_scale(LoadcellScale);
   return 0;
-}
-
-void set_led(const struct failure_indication *nin){
-  neopixelWrite(RGB_BUILTIN, nin->r, nin->g, nin->b);
-}
-
-void set_failure(const struct failure_indication *fin){
-  if(fin != &PostFailure){
-    StartupFailure = true;
-  }
-  set_led(fin);
 }
 
 // TB6612FNG
