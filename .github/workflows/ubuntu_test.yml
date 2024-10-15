@@ -33,5 +33,5 @@ jobs:
       - name: make
         run: |
           mv dryer-network-sample.h esp32-s3/main/dryer-network.h
-          cd $HOME/esp-idf-$ESPIDFVER && sh export.sh && cd -
+          cd $HOME/work/dankdryer/dankdryer/esp-idf-$ESPIDFVER && sh export.sh && cd -
           idf.py build
