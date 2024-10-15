@@ -629,6 +629,7 @@ setup(void){
     set_failure(&PostFailure);
   }
   printf("initialization %ssuccessful v" VERSION "\n", StartupFailure ? "un" : "");
+  gpio_dump_io_configuration(stdout, ~0ULL);
 }
 
 // we don't try to measure the first iteration, as we don't yet have a
@@ -660,35 +661,33 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
 
 void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
                float weight){
-  JsonDocument doc;
-  char out[256];
-  doc["uptimesec"] = curtime / 1000000l;
+  // FIXME check errors throughout!
+  cJSON* root = cJSON_CreateObject();
+  cJSON_AddNumberToObject(root, "uptimesec", curtime / 1000000ll);
   if(dtemp >= MIN_TEMP){
-    doc["dtemp"] = dtemp;
+    cJSON_AddNumberToObject(root, "dtemp", dtemp);
   }
   // UINT_MAX is sentinel for known bad reading, but anything over 3KRPM on
   // these Noctua NF-A8 fans is indicative of error; they max out at 2500.
   if(lrpm < 3000){
-    doc["lrpm"] = lrpm;
+    cJSON_AddNumberToObject(root, "lrpm", lrpm);
   }
   if(urpm < 3000){
-    doc["urpm"] = urpm;
+    cJSON_AddNumberToObject(root, "urpm", urpm);
   }
-  doc["lpwm"] = LowerPWM;
-  doc["upwm"] = UpperPWM;
+  cJSON_AddNumberToObject(root, "lpwm", LowerPWM);
+  cJSON_AddNumberToObject(root, "upwm", UpperPWM);
   if(weight >= 0 && weight < 5000){
-    doc["load"] = weight;
+    cJSON_AddNumberToObject(root, "load", weight);
   }
-  doc["mpwm"] = MotorPWM;
-  auto len = serializeJson(doc, out, sizeof(out));
-  if(len >= sizeof(out)){
-    fprintf(stderr, "serialization exceeded buffer len (%zu > %zu)\n", len, sizeof(out));
-  }else{
-    printf("MQTT: %s\n", out);
-    if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, out, len, 0, 0)){
-      fprintf(stderr, "couldn't publish %zuB mqtt message\n", len);
-    }
+  cJSON_AddNumberToObject(root, "mpwm", MotorPWM);
+  char* s = cJSON_Print(root);
+  size_t slen = strlen(s);
+  printf("MQTT: %s\n", s);
+  if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, s, slen, 0, 0)){
+    fprintf(stderr, "couldn't publish %zuB mqtt message\n", slen);
   }
+  free(s);
 }
 
 void app_main(void){
