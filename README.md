@@ -43,9 +43,12 @@ A network configuration file must be created and populated at
 * [CMake](https://gitlab.kitware.com/cmake/cmake) 3.16+
 
 ## 3D models
-* OpenSCAD 2021.01+
-* Jörg Janssen's [gears.scad](https://github.com/chrisspen/gears) 2.2+
-* [BOSL2](https://github.com/BelfrySCAD/BOSL2)
+* OpenSCAD 2024.10+
+
+I use
+[BOSL2](https://github.com/BelfrySCAD/BOSL2) and
+Jörg Janssen's [gears.scad](https://github.com/chrisspen/gears), but
+they are included as submodules.
 
 # Construction
 
@@ -82,35 +85,11 @@ Combined OpenSCAD render for mating testing.
  <img alt="Combined render" src="images/stl.png"/>
 </p>
 
-# Current BOM
-
-* ESP32-S3:          $7
-* 150C thermostat:   $3.10
-* TB6612FNG:         $3.33
-* Geartisan:         $15
-* RC522:             $1.34
-* AC adapter:        $13
-* Load cell + HX711: $7.5
-* Perfboard:         $1
-* Buck converter:    $1.30
-* BME680:            $14
-* 5A fuse:           $0.60
-* AC cable:          $6
-* 2x 80mm fans:      $8.80
-* Polycarbonate:     $17.78 (assumes 25% failures)
-* PAHT-CF:           $32.89 (assumes 25% failures)
-
-$132.64. With 9.5% sales tax: $145.24.
-
-This does not consider hookup wire, ring/spade terminals, nor electricity.
-
 # Questions
 
 * How does air flow? Let's get some visible air and test it.
 * The ESP32-S3 has a MCPWM, a motor controller. Can we eliminate the TB6612FNG?
 * Would we benefit from thermal insulation material in the hotbox?
-* Can we replace the lower 80x80mm fan with e.g. 4x 40x40mm fans, and reduce height?
 * Ought we change our circuits to add protection or eliminate noise?
 * Ought we replace the perfboard and its various breakouts with a custom PCB?
 * Can we use a smaller (cheaper) motor / AC adapter?
-* How useful would it be to read Bambu RFID tags? How feasible?
