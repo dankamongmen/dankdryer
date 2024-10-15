@@ -151,28 +151,6 @@ module loadcellmount(baseh){
     }
 }
 
-// the upper part of the air shield, which is on the lower coupling
-module uppershieldside(){
-    rotate([0, 0, 0]){
-        //cube([]);
-    }
-}
-
-module uppershield(){
-    uppershieldside();
-    mirror([0, 1, 0]){
-        uppershieldside();
-    }
-}
-
-// fastens the load cell to the croom, and provides air shield
-module lowersupport(){
-    loadcellmount(loadcellsupph);
-    translate([0, 0, 0]){
-        uppershield();
-    }
-}
-
 // height of inverse cone supporting bearing holder
 couplingh = 10;
 bearingh = 9; // height ("width") of bearing
@@ -218,7 +196,7 @@ gearboth = 8; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
 // remaining height ought be defined in terms
 // of the motor and coupling FIXME.
-gearh = gearboth + 10;
+gearh = gearboth + 15;
 gearbore = bearingh + 0.4;
 wormbore = 7;
 module gear(){
@@ -243,10 +221,10 @@ module gear(){
             cylinder(bigh, shaftr, shaftr, true);
           }
         }
-        translate([0, 0, bigh + (bearingh + 5) / 2]){
+        translate([0, 0, bigh + bearingh / 2]){
             difference(){
-                cylinder(bearingh + 5, bearinginnerr, bearinginnerr, true);
-                cylinder(bearingh + 5, shaftr, shaftr, true);
+                cylinder(bearingh, bearinginnerr, bearinginnerr, true);
+                cylinder(bearingh, shaftr, shaftr, true);
             }
         }
     }
@@ -264,7 +242,7 @@ translate([0, 1, 0]){
 
 // motor is 37x75mm diameter gearbox and 6x14mm shaft
 // (with arbitrarily large worm gear on the shaft)
-motorboxh = 75;
+motorboxh = 70;
 motorboxd = 37;
 motorshafth = wormlen; // sans worm: 14
 motorshaftd = 13; // sans worm: 6
@@ -316,18 +294,24 @@ module motorholder(){
     }
 }
 
-// mount for motor. runs horizontal approximately a gear
-// radius away from the center.
+// mount for motor. runs horizontal approximately
+// a gear radius away from the center.
 module motormount(){
     mlength = motorboxh + motorholderh;
-    // the bottom is in a 'v' shape to save material
-    translate([-mlength / 2, 0, 0]){
+    // the bottom is in a 'v' shape to save material.
+	translate([-mlength / 2, 0, 0]){
         rotate([90, 0, 90]){
             linear_extrude(mlength){
+				h = motormounth - motorboxd / 2;
+				sh = motormounth - 3 * motorboxd / 4;
                 polygon([[-motorboxd / 4, 0],
+						 [-motorboxd / 8, 0],
+						 [-motorboxd / 4, sh],
+						 [motorboxd / 4, sh],
+						 [motorboxd / 8, 0],
                          [motorboxd / 4, 0],
-                         [motorboxd / 2, motormounth - motorboxd / 2],
-                         [-motorboxd / 2, motormounth - motorboxd / 2]]);
+                         [motorboxd / 2, h],
+                         [-motorboxd / 2, h]]);
             }
         }
     }
@@ -341,10 +325,8 @@ module motormount(){
                 cylinder(mlength, motorboxd / 2, motorboxd / 2, true);
             }
         }
-        // circular front mount. without the fudge factor, openscad
-        // considers the manifold broken, which i don't understand
-        // FIXME until then leave it in
-        translate([-37.5, 0, 0]){
+        // circular front mount.
+        translate([-35, 0, 0]){
             rotate([0, 90, 0]){
                 motorholder();
             }
@@ -352,6 +334,8 @@ module motormount(){
 
     }
 }
+
+//motormount();
 
 module dropmotormount(){
     translate([60, -41, wallz]){
@@ -444,22 +428,24 @@ module shaft(){
 
 // put together for testing / visualization, never printed
 module assembly(){
-    translate([0, 0, loadcellh / 2]){
-        loadcell();
-    }
-    translate([0, 0, loadcellh]){
-        mirror([1, 0, 0]){
-            lowercoupling();
-        }
-        translate([0, 0, shafth / 2]){
-            shaft();
-        }
-        translate([0, 0, couplingh + bearingh]){
-            translate([0, 0, 4 + gearh / 2]){
-                gear();
-            }
-        }
-    }
+	translate([0, 0, loadcellmounth + wallz]){
+		translate([0, 0, loadcellh / 2]){
+			loadcell();
+		}
+		translate([0, 0, loadcellh]){
+			mirror([1, 0, 0]){
+				lowercoupling();
+			}
+			translate([0, 0, shafth / 2]){
+				shaft();
+			}
+			translate([0, 0, couplingh + bearingh]){
+				translate([0, 0, 4 + gearh / 2]){
+					gear();
+				}
+			}
+		}
+	}
 }
 
 // the motor object, rotated and placed as it exists in the croom
