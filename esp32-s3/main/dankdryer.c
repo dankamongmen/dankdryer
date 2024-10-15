@@ -637,14 +637,14 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
   static uint32_t m;
   int ret = -1;
   if(m){
-    const uint32_t diffu = micros() - m; // FIXME handle wrap
+    const int64_t diffu = esp_timer_get_time() - m;
     *lrpm = LowerPulses;
     *urpm = UpperPulses;
     printf("raw: %u %u\n", *lrpm, *urpm);
     *lrpm /= 2; // two pulses for each rotation
     *urpm /= 2;
     const float scale = 60.0 * 1000000u / diffu;
-    printf("scale: %f diffu: %lu\n", scale, diffu);
+    printf("scale: %f diffu: %lld\n", scale, diffu);
     *lrpm *= scale;
     *urpm *= scale;
     ret = 0;
@@ -652,7 +652,7 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
     *lrpm = UINT_MAX;
     *urpm = UINT_MAX;
   }
-  m = micros();
+  m = esp_timer_get_time();
   LowerPulses = 0;
   UpperPulses = 0;
   return ret;
