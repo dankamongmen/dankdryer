@@ -16,6 +16,8 @@ jobs:
 
       - name: install deps
         run: |
+          # firefox is otherwise updated, taking a long time
+          sudo apt-get purge firefox
           sudo apt-get update
           sudo apt-get upgrade
           sudo apt-get install -y libfuse2 make libopengl0 libegl1
