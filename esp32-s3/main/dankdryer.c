@@ -425,6 +425,8 @@ wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
     uint16_t aid = 65535u;
     esp_wifi_sta_get_aid(&aid);
     printf("association id: %u\n", aid);
+  }else if(id == WIFI_EVENT_HOME_CHANNEL_CHANGE){
+    printf("wifi channel changed\n");
   }else{
     fprintf(stderr, "unknown wifi event %ld\n", id);
   }
