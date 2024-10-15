@@ -40,12 +40,13 @@ translate([-20, -spoold / 4 - teeth / 2, gearh / 2]){
 
 // the platter upon which the spool rests. plugs
 // into the main gear through the center shaft.
-/*translate([10, 0, shafth / 2]){
+translate([10, 0, shafth / 2]){
     mirror([0, 0, 1]){
         shaft();
     }
 }
 
+/*
 multicolor("pink"){
     assembly();
 }*/

@@ -335,8 +335,6 @@ module motormount(){
     }
 }
 
-//motormount();
-
 module dropmotormount(){
     translate([60, -41, wallz]){
         rotate([0, 0, motortheta]){
@@ -350,7 +348,7 @@ module dropmotormount(){
 platformtoph = 2;
 platformh = elevation + wallz + platformtoph;
 module platform(inr, outr){
-    /*difference(){
+    difference(){
         union(){
             translate([0, 0, wallz / 2]){
                 cylinder(wallz, inr, inr, true);
@@ -382,7 +380,7 @@ module platform(inr, outr){
                 }
             }
         }
-    }*/
+    }
     intersection(){
         for(i = [0 : 60 : 360]){
 			translate([0, 0, (wallz + elevation + platformtoph) / 2]){
