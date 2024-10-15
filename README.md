@@ -1,5 +1,9 @@
 ESP32-S3 firmware and SCAD sources for the Dankdryer, the world's best filament dryer.
 
+<p align="center">
+ <img alt="Side view" src="images/render.png"/>
+</p>
+
 # Features
 
 * Temperatures up to at least 125C when printed with proper materials.
@@ -166,6 +170,5 @@ This does not consider hookup wire, ring/spade terminals, nor electricity.
 * How useful would it be to read Bambu RFID tags? How feasible?
 
 <p align="center">
- <img alt="Side view" src="images/render.png"/>
  a nick black joint
 </p>
