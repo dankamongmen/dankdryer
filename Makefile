@@ -9,7 +9,7 @@ SCADFLAGS=--hardwarnings --backend Manifold --summary all
 # allow OSCAD (openscad binary) to be set externally
 OSCAD?=openscad
 
-all: $(STL) firmware
+all: firmware $(STL)
 
 # add actual esp-idf CMake output
 firmware:

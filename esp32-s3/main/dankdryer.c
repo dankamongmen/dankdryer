@@ -17,6 +17,7 @@
 #include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <hal/ledc_types.h>
+#include <esp_http_server.h>
 #include <driver/temperature_sensor.h>
 
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
@@ -58,6 +59,7 @@ static uint32_t LowerPWM = 64;
 static uint32_t UpperPWM = 64;
 static uint32_t TargetTemp = 80;
 static float LoadcellScale = 1.0;
+static httpd_handle_t HTTPServ;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 static esp_mqtt_client_handle_t MQTTHandle;
 
@@ -528,13 +530,33 @@ int setup_mdns(void){
   return 0;
 }
 
+static esp_err_t
+httpd_get_handler(httpd_req_t *req){
+  const char resp[] = "URI GET Response"; // FIXME
+  httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN);
+  return ESP_OK;
+}
+
 int setup_network(void){
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
     fprintf(stderr, "couldn't create mqtt client\n");
     return -1;
   }
-  const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
   esp_err_t err;
+  httpd_config_t hconf = HTTPD_DEFAULT_CONFIG();
+  if((err = httpd_start(&HTTPServ, &hconf)) != ESP_OK){
+    fprintf(stderr, "failure (%s) initializing httpd\n", esp_err_to_name(err));
+    goto bail;
+  }else{
+    const httpd_uri_t httpd_get = {
+      .uri = "/",
+      .method = HTTP_GET,
+      .handler = httpd_get_handler,
+      .user_ctx = NULL,
+    };
+    httpd_register_uri_handler(&HTTPServ, &httpd_get);
+  }
+  const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
   wifi_config_t stacfg = {
     .sta = {
         .ssid = WIFIESSID,
@@ -548,11 +570,11 @@ int setup_network(void){
     },
   };
   if((err = esp_netif_init()) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) initializing tcp/ip\n", err, esp_err_to_name(err));
+    fprintf(stderr, "failure (%s) initializing tcp/ip\n", esp_err_to_name(err));
     goto bail;
   }
   if((err = esp_event_loop_create_default()) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) creating loop\n", err, esp_err_to_name(err));
+    fprintf(stderr, "failure (%s) creating loop\n", esp_err_to_name(err));
     goto bail;
   }
   if(!esp_netif_create_default_wifi_sta()){
