@@ -5,7 +5,7 @@ on:
   pull_request:
 
 env:
-  ESPIDFVER=5.3.1
+  ESPIDFVER: 5.3.1
   OSCAD: OpenSCAD-2024.10.14.ai20927-x86_64.AppImage
 
 jobs:
