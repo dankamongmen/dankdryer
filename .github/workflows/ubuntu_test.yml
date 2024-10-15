@@ -18,8 +18,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get upgrade
-          sudo apt-get install -y libfuse2 make libopengl0
-          mkdir -p ~/bin
+          sudo apt-get install -y libfuse2 make libopengl0 libegl1
+          mkdir -p $HOME/bin
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=$HOME/bin sh
           curl -OfsSL https://files.openscad.org/snapshots/$OSCAD --output-dir $HOME/bin
           chmod 755 $HOME/bin/$OSCAD
