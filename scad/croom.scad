@@ -196,10 +196,9 @@ module wirechannel(){
 }
 
 module wirechannels(){
-    wirechannel();
-    mirror([1, 0, 0]){
-        wirechannel();
-    }
+	mirror([1, 0, 0]){
+		wirechannel();
+	}
 }
 
 // hole for hotbox fan wires
@@ -213,14 +212,25 @@ module fancablehole(){
     }
 }
 
+// we want to keep air from moving across the load
+// cell's surface, so we put a shield around it.
 module lowershield(){
-    // the lower shield must not support the lower coupling,
-    // but it should come right up under it to block air
-    //(-shieldw + 6) / 2, (19.5 + 6) / 2
     translate([0, 0, wallz + loadcellmounth / 2]){
         difference(){
             cube([shieldw + 6, 38 / 2, loadcellmounth], true);
             cube([shieldw + 2, 34 / 2, loadcellmounth], true);
+        }
+        upperh = loadcellh;
+        // we need to still be able to install the
+        // load cell, though, so the shield is low
+        // on the back.
+        translate([0, 0, (loadcellmounth + upperh) / 2]){
+            difference(){
+                cube([shieldw + 6, 38 / 2, upperh], true);
+                translate([0, 2, 0]){
+                    cube([shieldw + 2, 34 / 2, upperh], true);
+                }
+            }
         }
     }
 }
