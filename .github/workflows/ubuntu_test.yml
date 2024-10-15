@@ -26,7 +26,7 @@ jobs:
           curl -OfsSL https://files.openscad.org/snapshots/$OSCAD --output-dir $HOME/bin
           chmod 755 $HOME/bin/$OSCAD
           curl -L https://github.com/espressif/esp-idf/archive/refs/tags/v$ESPIDFVER.tar.gz | tar -zxf-
-          cd esp-idf-$ESPIDFVER && /usr/bin/python3 esp-idf-$ESPIDFVER/tools/idf_tools.py install
+          cd esp-idf-$ESPIDFVER && /usr/bin/python3 tools/idf_tools.py install
           cd esp-idf-$ESPIDFVER && sh export.sh && idf_tools.py install-python-env
 
       - uses: actions/checkout@v2
