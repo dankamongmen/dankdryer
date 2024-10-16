@@ -4,7 +4,6 @@
 #define DEVICE "dankdryer"
 #define CLIENTID DEVICE VERSION
 #include "dryer-network.h"
-#include <lwip/netif.h>
 #include <nvs.h>
 #include <math.h>
 #include <mdns.h>
@@ -13,11 +12,13 @@
 #include <esp_netif.h>
 #include <nvs_flash.h>
 #include <esp_timer.h>
+#include <lwip/netif.h>
 #include <esp_system.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <hal/ledc_types.h>
 #include <esp_http_server.h>
+#include <driver/i2c_master.h>
 #include <driver/temperature_sensor.h>
 
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
@@ -30,13 +31,13 @@
 #define MOTOR_1PIN GPIO_NUM_8
 #define UPPER_PWMPIN GPIO_NUM_9  // upper chamber fan speed (output)
 #define MOTOR_2PIN GPIO_NUM_10
+// 11-20 are connected to ADC2, which is used by wifi
+// (they can still be used as digital pins)
 #define THERM_DATAPIN GPIO_NUM_11 // analog thermometer (input, ADC1)
 #define LOWER_PWMPIN GPIO_NUM_12  // lower chamber fan speed (output)
 #define MOTOR_SBYPIN GPIO_NUM_13  // standby must be taken high to drive motor (output)
-// 11-20 are connected to ADC2, which is used by wifi
-// (they can still be used as digital pins)
-#define HX711_SCK GPIO_NUM_17    // DAC clock (i2c)
-#define HX711_DT GPIO_NUM_18     // DAC data (i2c)
+#define I2C_SDAPIN GPIO_NUM_14 // I2C data
+#define I2C_SCLPIN GPIO_NUM_15 // I2C clock
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 // 38 is used for RGB LED
@@ -60,6 +61,7 @@ static uint32_t UpperPWM = 64;
 static uint32_t TargetTemp = 80;
 static float LoadcellScale = 1.0;
 static httpd_handle_t HTTPServ;
+static i2c_master_bus_handle_t I2C;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 static esp_mqtt_client_handle_t MQTTHandle;
 
@@ -172,8 +174,62 @@ float getWeight(void){
   return 0; // FIXME
 }
 
+// gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
+static int
+gpio_setup(gpio_num_t pin, gpio_mode_t mode, const char *mstr){
+  gpio_reset_pin(pin);
+  esp_err_t err;
+  if((err = gpio_set_direction(pin, mode)) != ESP_OK){
+    fprintf(stderr, "failure (%s) setting %d to %s\n", esp_err_to_name(err), pin, mstr);
+    return -1;
+  }
+  return 0;
+}
+
+static inline int
+gpio_set_inputoutput_opendrain(gpio_num_t pin){
+  return gpio_setup(pin, GPIO_MODE_INPUT_OUTPUT_OD, "input+output(od)");
+}
+
+static inline int
+gpio_set_inputoutput(gpio_num_t pin){
+  return gpio_setup(pin, GPIO_MODE_INPUT_OUTPUT, "input+output");
+}
+
+static inline int
+gpio_set_input(gpio_num_t pin){
+  return gpio_setup(pin, GPIO_MODE_INPUT, "input");
+}
+
+static inline int
+gpio_set_output(gpio_num_t pin){
+  return gpio_setup(pin, GPIO_MODE_OUTPUT, "output");
+}
+
+static int
+setup_i2c(gpio_num_t sda, gpio_num_t scl){
+  i2c_master_bus_config_t i2cconf = {
+    .i2c_port = -1,
+    .sda_io_num = sda,
+    .scl_io_num = scl,
+    .clk_source = I2C_CLK_SRC_DEFAULT,
+    .flags.enable_internal_pullup = true,
+  };
+  if(gpio_set_inputoutput_opendrain(sda) || gpio_set_inputoutput_opendrain(scl)){
+    return -1;
+  }
+  esp_err_t e;
+  if((e = i2c_new_master_bus(&i2cconf, &I2C)) != ESP_OK){
+    fprintf(stderr, "error (%s) creating i2c master bus\n", esp_err_to_name(e));
+    return -1;
+  }
+  // FIXME add device with i2c_master_bus_add_device()
+  return 0;
+}
+
 // the esp32-s3 has a built in temperature sensor
-int setup_esp32temp(void){
+static int
+setup_esp32temp(void){
   temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
   if(temperature_sensor_install(&conf, &temp) != ESP_OK){
     fprintf(stderr, "failed to set up thermostat\n");
@@ -186,7 +242,8 @@ int setup_esp32temp(void){
   return 0;
 }
 
-int init_pstore(void){
+static int
+init_pstore(void){
   printf("initializing persistent store...\n");
   esp_err_t err = nvs_flash_init();
   if(err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND){
@@ -283,28 +340,6 @@ int read_pstore(void){
   // FIXME check any defaults we read and ensure they're sane
   // FIXME need we check for error here?
   nvs_close(nvsh);
-  return 0;
-}
-
-int gpio_set_input(gpio_num_t pin){
-  gpio_reset_pin(pin);
-  esp_err_t err;
-  if((err = gpio_set_direction(pin, GPIO_MODE_INPUT)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting %d to input\n", esp_err_to_name(err), pin);
-    return -1;
-  }
-  // FIXME explicitly set pullup/pulldown?
-  return 0;
-}
-
-int gpio_set_output(gpio_num_t pin){
-  gpio_reset_pin(pin);
-  esp_err_t err;
-  if((err = gpio_set_direction(pin, GPIO_MODE_OUTPUT)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting %d to output\n", esp_err_to_name(err), pin);
-    return -1;
-  }
-  // FIXME explicitly set pullup/pulldown?
   return 0;
 }
 
@@ -675,6 +710,9 @@ setup(void){
     set_failure(&SystemError);
   }
   if(setup_esp32temp()){
+    set_failure(&SystemError);
+  }
+  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN)){
     set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
