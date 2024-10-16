@@ -259,7 +259,7 @@ module motor(){
 }
 
 module dropworm(){
-    translate([motorboxd - 13, 12, motorboxh / 2 + motorboxd + wormwidth / 2]){
+    translate([motorboxd - 15, 12, motorboxh / 2 + motorboxd + wormwidth / 2]){
         rotate([0, 0, 90 + motortheta]){
             wormy();
         }
