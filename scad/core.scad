@@ -212,8 +212,8 @@ module gear(){
     // inner radius, and inside radius is shaft
     // radius. this should only be as tall as the
     // bearing itself, and locked off beneath.
+	bigh = gearh - gearboth - bearingh;
     translate([0, 0, -gearh / 2 + gearboth]){
-        bigh = gearh - gearboth - bearingh;
         // this should be bigger than the bearing
         translate([0, 0, bigh / 2]){
           difference(){
@@ -258,7 +258,7 @@ module motor(){
 }
 
 module dropworm(){
-    translate([motorboxd - 13, 12, motorboxh + 2]){
+    translate([motorboxd - 13, 12, motorboxh / 2 + motorboxd]){
         rotate([0, 0, 90 + motortheta]){
             wormy();
         }
@@ -411,11 +411,16 @@ module shaft(){
     platforminnerr = columnr - 0.5;
     platformouterd = spoold / 2;
     cylinder(shafth, shaftr, shaftr, true);
-    // fatten the shaft so that gear can be pushed up to this point
-    unfath = 22;
+    // fatten the shaft so that gear can be pushed
+	// only up to this point
+	unfath = gearh - bearingh;
 	fath = shafth - unfath;
     translate([0, 0, (shafth - fath) / 2]){
         cylinder(fath, shaftr + 2, shaftr + 2, true);
+		difference(){
+			cylinder(fath, platforminnerr, platforminnerr, true);
+			cylinder(fath, platforminnerr - 2, platforminnerr - 2, true);
+		}
     }
     // this should fill most of the central hole, so it can't
     // fall over.
