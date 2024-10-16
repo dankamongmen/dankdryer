@@ -103,7 +103,7 @@ static const esp_mqtt_client_config_t MQTTConfig = {
   },
 };
 
-static void
+static void IRAM_ATTR
 tach_isr(void* pulsecount){
   uint32_t* pc = pulsecount;
   ++*pc;
@@ -537,25 +537,30 @@ httpd_get_handler(httpd_req_t *req){
   return ESP_OK;
 }
 
+static int
+setup_httpd(void){
+  httpd_config_t hconf = HTTPD_DEFAULT_CONFIG();
+  esp_err_t err;
+  if((err = httpd_start(&HTTPServ, &hconf)) != ESP_OK){
+    fprintf(stderr, "failure (%s) initializing httpd\n", esp_err_to_name(err));
+    return -1;
+  }
+  const httpd_uri_t httpd_get = {
+    .uri = "/",
+    .method = HTTP_GET,
+    .handler = httpd_get_handler,
+    .user_ctx = NULL,
+  };
+  httpd_register_uri_handler(&HTTPServ, &httpd_get);
+  return 0;
+}
+
 int setup_network(void){
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
     fprintf(stderr, "couldn't create mqtt client\n");
     return -1;
   }
   esp_err_t err;
-  httpd_config_t hconf = HTTPD_DEFAULT_CONFIG();
-  if((err = httpd_start(&HTTPServ, &hconf)) != ESP_OK){
-    fprintf(stderr, "failure (%s) initializing httpd\n", esp_err_to_name(err));
-    goto bail;
-  }else{
-    const httpd_uri_t httpd_get = {
-      .uri = "/",
-      .method = HTTP_GET,
-      .handler = httpd_get_handler,
-      .user_ctx = NULL,
-    };
-    httpd_register_uri_handler(&HTTPServ, &httpd_get);
-  }
   const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
   wifi_config_t stacfg = {
     .sta = {
