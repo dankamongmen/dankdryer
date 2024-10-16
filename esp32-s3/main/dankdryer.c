@@ -207,6 +207,29 @@ gpio_set_output(gpio_num_t pin){
 }
 
 static int
+probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
+  esp_err_t e;
+  printf("probing for %s (I2C 0x%02x)...", dev, address);
+  fflush(stdout);
+  if((e = i2c_master_probe(i2c, address, -1)) != ESP_OK){
+    fprintf(stderr, "couldn't find %s (%s)\n", dev, esp_err_to_name(e));
+    return -1;
+  }
+  printf("found it!\n");
+  return 0;
+}
+
+static int
+probe_i2c(i2c_master_bus_handle_t i2c){
+  int ret = 0;
+  ret |= probe_i2c_slave(i2c, 0x77, "BME680");
+  ret |= probe_i2c_slave(i2c, 0x26, "HX711");
+  // looks like RC522 might only be SPI? need check datasheet
+  // ret |= probe_i2c_slave(i2c, 0x77, "RC522");
+  return ret;
+}
+
+static int
 setup_i2c(gpio_num_t sda, gpio_num_t scl){
   i2c_master_bus_config_t i2cconf = {
     .i2c_port = -1,
@@ -223,7 +246,19 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl){
     fprintf(stderr, "error (%s) creating i2c master bus\n", esp_err_to_name(e));
     return -1;
   }
-  // FIXME add device with i2c_master_bus_add_device()
+  i2c_device_config_t devcfg = {
+    .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+    .device_address = 0x58,
+    .scl_speed_hz = 100000,
+	};
+	i2c_master_dev_handle_t dev_handle;
+	if((e = i2c_master_bus_add_device(I2C, &devcfg, &dev_handle)) != ESP_OK){
+    fprintf(stderr, "error (%s) creating i2c master dev\n", esp_err_to_name(e));
+		return -1;
+	}
+  if(probe_i2c(I2C)){
+    return -1;
+  }
   return 0;
 }
 
