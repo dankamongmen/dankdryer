@@ -27,12 +27,12 @@
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
 #define MOTOR_PWMPIN GPIO_NUM_6 // motor speed
-#define THERM_DATAPIN GPIO_NUM_8 // analog thermometer (input, ADC1)
-#define MOTOR_SBYPIN GPIO_NUM_9  // standby must be taken high to drive motor (output)
-#define LOWER_PWMPIN GPIO_NUM_10  // lower chamber fan speed (output)
-#define UPPER_PWMPIN GPIO_NUM_11  // upper chamber fan speed (output)
-#define LOWER_TACHPIN GPIO_NUM_12 // lower chamber fan tachometer (input)
-#define UPPER_TACHPIN GPIO_NUM_13 // upper chamber fan tachometer (input)
+#define MOTOR_1PIN GPIO_NUM_8
+#define UPPER_PWMPIN GPIO_NUM_9  // upper chamber fan speed (output)
+#define MOTOR_2PIN GPIO_NUM_10
+#define THERM_DATAPIN GPIO_NUM_11 // analog thermometer (input, ADC1)
+#define LOWER_PWMPIN GPIO_NUM_12  // lower chamber fan speed (output)
+#define MOTOR_SBYPIN GPIO_NUM_13  // standby must be taken high to drive motor (output)
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
 #define HX711_SCK GPIO_NUM_17    // DAC clock (i2c)
@@ -40,9 +40,9 @@
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 // 38 is used for RGB LED
-#define MOTOR_1PIN GPIO_NUM_39
+#define UPPER_TACHPIN GPIO_NUM_39 // upper chamber fan tachometer (input)
 // 45 and 46 are strapping pins
-#define MOTOR_2PIN GPIO_NUM_48
+#define LOWER_TACHPIN GPIO_NUM_48 // lower chamber fan tachometer (input)
 
 #define NVS_HANDLE_NAME "pstore"
 
@@ -286,10 +286,30 @@ int read_pstore(void){
   return 0;
 }
 
+int gpio_set_input(gpio_num_t pin){
+  gpio_reset_pin(pin);
+  esp_err_t err;
+  if((err = gpio_set_direction(pin, GPIO_MODE_INPUT)) != ESP_OK){
+    fprintf(stderr, "failure (%s) setting %d to input\n", esp_err_to_name(err), pin);
+    return -1;
+  }
+  // FIXME explicitly set pullup/pulldown?
+  return 0;
+}
+
+int gpio_set_output(gpio_num_t pin){
+  gpio_reset_pin(pin);
+  esp_err_t err;
+  if((err = gpio_set_direction(pin, GPIO_MODE_OUTPUT)) != ESP_OK){
+    fprintf(stderr, "failure (%s) setting %d to output\n", esp_err_to_name(err), pin);
+    return -1;
+  }
+  // FIXME explicitly set pullup/pulldown?
+  return 0;
+}
+
 int initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_t timer){
-  esp_err_t e;
-  if((e = gpio_set_direction(pin, GPIO_MODE_OUTPUT)) != ESP_OK){
-    fprintf(stderr, "error %s setting pin %d as output\n", esp_err_to_name(e), pin);
+  if(gpio_set_output(pin)){
     return -1;
   }
   ledc_channel_config_t conf;
@@ -322,28 +342,6 @@ int initialize_25k_pwm(ledc_channel_t channel, gpio_num_t pin, ledc_timer_t time
   return initialize_pwm(channel, pin, 25000, timer);
 }
 
-int gpio_set_input(gpio_num_t pin){
-  gpio_reset_pin(pin);
-  esp_err_t err;
-  if((err = gpio_set_direction(pin, GPIO_MODE_INPUT)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting %d to input\n", esp_err_to_name(err), pin);
-    return -1;
-  }
-  // FIXME explicitly set pullup/pulldown?
-  return 0;
-}
-
-int gpio_set_output(gpio_num_t pin){
-  gpio_reset_pin(pin);
-  esp_err_t err;
-  if((err = gpio_set_direction(pin, GPIO_MODE_OUTPUT)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting %d to output\n", esp_err_to_name(err), pin);
-    return -1;
-  }
-  // FIXME explicitly set pullup/pulldown?
-  return 0;
-}
-
 int initialize_tach(gpio_num_t pin, uint32_t* arg){
   if(gpio_set_input(pin)){
     return -1;
@@ -366,22 +364,21 @@ int initialize_tach(gpio_num_t pin, uint32_t* arg){
 
 int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
                gpio_num_t lowertpin, gpio_num_t uppertpin){
-  int ret = 0;
   if(initialize_tach(lowertpin, &LowerPulses)){
-    ret = -1;
+    return -1;
   }
   if(initialize_tach(uppertpin, &UpperPulses)){
-    ret = -1;
+    return -1;
   }
-  // intentional '|'s to avoid short circuiting
-  if(gpio_set_output(lowerppin) | gpio_set_output(upperppin)){
-    ret = -1;
+  if(initialize_25k_pwm(LOWER_FANCHAN, lowerppin, LEDC_TIMER_1)){
+    return -1;
   }
-  initialize_25k_pwm(LOWER_FANCHAN, lowerppin, LEDC_TIMER_1);
-  initialize_25k_pwm(UPPER_FANCHAN, upperppin, LEDC_TIMER_2);
+  if(initialize_25k_pwm(UPPER_FANCHAN, upperppin, LEDC_TIMER_2)){
+    return -1;
+  }
   set_pwm(LOWER_FANCHAN, LowerPWM);
   set_pwm(UPPER_FANCHAN, UpperPWM);
-  return ret;
+  return 0;
 }
 
 static void
@@ -458,8 +455,10 @@ set_motor_pwm(void){
   // bring standby pin low if we're not sending any pwm, high otherwise
   if(MotorPWM == 0){
     gpio_set_level(MOTOR_SBYPIN, 0);
+    printf("set motor standby low\n");
   }else{
     gpio_set_level(MOTOR_SBYPIN, 1);
+    printf("set motor standby high\n");
   }
 }
 
@@ -643,11 +642,18 @@ int setup_sensors(void){
 // TB6612FNG
 static int
 setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pin2){
-  gpio_set_direction(sbypin, GPIO_MODE_OUTPUT);
-  gpio_set_direction(pin1, GPIO_MODE_OUTPUT);
-  gpio_set_direction(pin2, GPIO_MODE_OUTPUT);
-  gpio_set_direction(pwmpin, GPIO_MODE_OUTPUT);
-  initialize_pwm(MOTOR_CHAN, pwmpin, 490, LEDC_TIMER_3);
+  if(gpio_set_output(sbypin)){
+    return -1;
+  }
+  if(gpio_set_output(pin1)){
+    return -1;
+  }
+  if(gpio_set_output(pin2)){
+    return -1;
+  }
+  if(initialize_pwm(MOTOR_CHAN, pwmpin, 490, LEDC_TIMER_3)){
+    return -1;
+  }
   set_motor_pwm();
   return 0;
 }
