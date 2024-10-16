@@ -831,6 +831,7 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
 void app_main(void){
   setup();
   while(1){
+    vTaskDelay(pdMS_TO_TICKS(15000));
     float ambient = getAmbient();
     float weight = getWeight();
     printf("esp32 temp: %f weight: %f\n", ambient, weight);
@@ -841,6 +842,5 @@ void app_main(void){
     }
     int64_t curtime = esp_timer_get_time();
     send_mqtt(curtime, ambient, lrpm, urpm, weight);
-    vTaskDelay(pdMS_TO_TICKS(15000));
   }
 }
