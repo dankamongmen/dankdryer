@@ -230,9 +230,10 @@ module gear(){
     }
 }
 
+wormwidth = 8;
 module wormy(){
 translate([0, 1, 0]){
-    worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=8, length=wormlen, worm_bore=wormbore, gear_bore=gearbore, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=0, show_worm=1);
+    worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=wormwidth, length=wormlen, worm_bore=wormbore, gear_bore=gearbore, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=0, show_worm=1);
 }
     // effect the D-shape of the rotor (6.5 vs 7)
     translate([(wormbore - 2) / 2, 0, 0]){
@@ -258,7 +259,7 @@ module motor(){
 }
 
 module dropworm(){
-    translate([motorboxd - 13, 12, motorboxh / 2 + motorboxd]){
+    translate([motorboxd - 13, 12, motorboxh / 2 + motorboxd + wormwidth / 2]){
         rotate([0, 0, 90 + motortheta]){
             wormy();
         }
