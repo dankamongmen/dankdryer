@@ -551,7 +551,10 @@ setup_httpd(void){
     .handler = httpd_get_handler,
     .user_ctx = NULL,
   };
-  httpd_register_uri_handler(&HTTPServ, &httpd_get);
+  if((err = httpd_register_uri_handler(&HTTPServ, &httpd_get)) != ESP_OK){
+    fprintf(stderr, "failure (%s) preparing URI %s\n", esp_err_to_name(err), httpd_get.uri);
+    return -1;
+  }
   return 0;
 }
 
@@ -576,56 +579,55 @@ int setup_network(void){
   };
   if((err = esp_netif_init()) != ESP_OK){
     fprintf(stderr, "failure (%s) initializing tcp/ip\n", esp_err_to_name(err));
-    goto bail;
+    return -1;
   }
   if((err = esp_event_loop_create_default()) != ESP_OK){
     fprintf(stderr, "failure (%s) creating loop\n", esp_err_to_name(err));
-    goto bail;
+    return -1;
   }
   if(!esp_netif_create_default_wifi_sta()){
     fprintf(stderr, "failure creating default STA\n");
-    goto bail;
+    return -1;
   }
   if((err = esp_wifi_init(&wificfg)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) initializing wifi\n", err, esp_err_to_name(err));
-    goto bail;
+    return -1;
   }
   esp_event_handler_instance_t wid;
   if((err = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, wifi_event_handler, NULL, &wid)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) registering wifi events\n", err, esp_err_to_name(err));
-    goto bail;
+    return -1;
   }
   esp_event_handler_instance_t ipd;
   if((err = esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, ip_event_handler, NULL, &ipd)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) registering ip events\n", err, esp_err_to_name(err));
-    goto bail;
+    return -1;
   }
   if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_CONNECTED, mqtt_event_handler, NULL)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) registering mqtt events\n", err, esp_err_to_name(err));
-    goto bail;
+    return -1;
   }
   if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_DATA, mqtt_event_handler, NULL)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) registering mqtt events\n", err, esp_err_to_name(err));
-    goto bail;
+    return -1;
   }
   if((err = esp_wifi_set_mode(WIFI_MODE_STA)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) setting STA mode\n", err, esp_err_to_name(err));
-    goto bail;
+    return -1;
   }
   if((err = esp_wifi_set_config(WIFI_IF_STA, &stacfg)) != ESP_OK){
     fprintf(stderr, "failure %d (%s) configuring wifi\n", err, esp_err_to_name(err));
-    goto bail;
+    return -1;
   }
   if((err = esp_wifi_start()) != ESP_OK){
     fprintf(stderr, "failure %d (%s) starting wifi\n", err, esp_err_to_name(err));
-    goto bail;
+    return -1;
   }
   setup_mdns(); // allow a failure
+  // FIXME we currently get a "no slots" error when trying to load a URI
+  // handler. until this is fixed, don't bail on error.
+  setup_httpd();
   return 0;
-
-bail:
-  esp_mqtt_client_destroy(MQTTHandle);
-  return -1;
 }
 
 // HX711
