@@ -673,7 +673,7 @@ setup_httpd(void){
     .handler = httpd_get_handler,
     .user_ctx = NULL,
   };
-  if((err = httpd_register_uri_handler(&HTTPServ, &httpd_get)) != ESP_OK){
+  if((err = httpd_register_uri_handler(HTTPServ, &httpd_get)) != ESP_OK){
     fprintf(stderr, "failure (%s) preparing URI %s\n", esp_err_to_name(err), httpd_get.uri);
     return -1;
   }
