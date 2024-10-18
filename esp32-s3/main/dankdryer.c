@@ -483,8 +483,12 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
   if(initialize_25k_pwm(UPPER_FANCHAN, upperppin, LEDC_TIMER_2)){
     return -1;
   }
-  set_pwm(LOWER_FANCHAN, LowerPWM);
-  set_pwm(UPPER_FANCHAN, UpperPWM);
+  if(set_pwm(LOWER_FANCHAN, LowerPWM)){
+    return -1;
+  }
+  if(set_pwm(UPPER_FANCHAN, UpperPWM)){
+    return -1;
+  }
   return 0;
 }
 
@@ -556,16 +560,28 @@ ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }
 }
 
+// we enter short brake state with either:
+//  IN1 high IN2 high PWM don't care
+//  IN1 low  IN2 high PWM low
+//  IN1 high IN2 low  PWM low
+// we never want this state (it's acceptable at startup), as it is a
+// destructive operation. so just always keep PWM high, and if asked
+// for 0 PWM, set IN1+IN2 low. otherwise, set IN1 high and IN2 low,
+// but only after ensuring PWM is high. MotorPWM is only control, not data.
 static void
 set_motor_pwm(void){
-  set_pwm(MOTOR_CHAN, MotorPWM);
-  // bring standby pin low if we're not sending any pwm, high otherwise
+  set_pwm(MOTOR_CHAN, 255);
   if(MotorPWM == 0){
+    gpio_set_level(MOTOR_1PIN, 0);
+    gpio_set_level(MOTOR_2PIN, 0);
     gpio_set_level(MOTOR_SBYPIN, 0);
-    printf("set motor standby low\n");
+    printf("set motor standby / control1 / control2 low\n");
   }else{
+    // set PWM high first so we can't possibly enter short brake state
+    gpio_set_level(MOTOR_1PIN, 1);
+    gpio_set_level(MOTOR_2PIN, 0);
     gpio_set_level(MOTOR_SBYPIN, 1);
-    printf("set motor standby high\n");
+    printf("set motor standby / control1 high, control2 low\n");
   }
 }
 
@@ -754,6 +770,7 @@ setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pi
   if(gpio_set_output(pin2)){
     return -1;
   }
+  // FIXME where did we pull 490 from?
   if(initialize_pwm(MOTOR_CHAN, pwmpin, 490, LEDC_TIMER_3)){
     return -1;
   }
