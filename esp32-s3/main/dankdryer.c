@@ -620,13 +620,13 @@ void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
     printf("connected to mqtt\n");
     set_network_state(MQTT_ESTABLISHED);
     int er;
-    if( (er = esp_mqtt_client_subscribe(MQTTHandle, MPWM_CHANNEL, 0)) ){
+    if((er = esp_mqtt_client_subscribe(MQTTHandle, MPWM_CHANNEL, 0)) < 0){
       fprintf(stderr, "failure %d subscribing to mqtt mpwm topic\n", er);
     }
-    if( (er = esp_mqtt_client_subscribe(MQTTHandle, LPWM_CHANNEL, 0)) ){
+    if((er = esp_mqtt_client_subscribe(MQTTHandle, LPWM_CHANNEL, 0)) < 0){
       fprintf(stderr, "failure %d subscribing to mqtt lpwm topic\n", er);
     }
-    if( (er = esp_mqtt_client_subscribe(MQTTHandle, UPWM_CHANNEL, 0)) ){
+    if((er = esp_mqtt_client_subscribe(MQTTHandle, UPWM_CHANNEL, 0)) < 0){
       fprintf(stderr, "failure %d subscribing to mqtt upwm topic\n", er);
     }
   }else if(id == MQTT_EVENT_DATA){
@@ -654,9 +654,30 @@ int setup_mdns(void){
 
 static esp_err_t
 httpd_get_handler(httpd_req_t *req){
-  const char resp[] = "URI GET Response"; // FIXME
-  httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN);
-  return ESP_OK;
+#define RESPBYTES 1024
+  char* resp = malloc(RESPBYTES);
+  if(!resp){
+    fprintf(stderr, "couldn't allocate httpd response\n");
+    return ESP_FAIL;
+  }
+  // FIXME need locking or atomics now
+  int slen = snprintf(resp, RESPBYTES, "<!DOCTYPE html><html><head><title>" DEVICE "</title></head>"
+            "<body><h2>a drying comes across the sky</h2><br/>"
+            "lpwm: %lu upwm: %lu mpwm: %lu<br/>"
+            "</body></html>", LowerPWM, UpperPWM, MotorPWM);
+  esp_err_t ret = ESP_FAIL;
+  if(slen < 0 || slen >= RESPBYTES){
+    fprintf(stderr, "httpd response too large (%d)\n", slen);
+  }else{
+    esp_err_t e = httpd_resp_send(req, resp, slen);
+    if(e != ESP_OK){
+      fprintf(stderr, "failure (%s) sending http response\n", esp_err_to_name(e));
+    }else{
+      ret = ESP_OK;
+    }
+  }
+  free(resp);
+  return ret;
 }
 
 static int
