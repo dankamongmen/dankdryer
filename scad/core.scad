@@ -15,7 +15,7 @@ module multicolor(color) {
 	}
 }
 columnr = 25;
-wormlen = 50;
+wormlen = 40;
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
 spoold = 205;
@@ -232,7 +232,7 @@ module gear(){
 
 wormwidth = 8;
 module wormy(){
-translate([0, 1, 0]){
+translate([0, -0.75, 0]){
     worm_gear(modul=1, tooth_number=teeth, thread_starts=2, width=wormwidth, length=wormlen, worm_bore=wormbore, gear_bore=gearbore, pressure_angle=20, lead_angle=10, optimized=1, together_built=1, show_spur=0, show_worm=1);
 }
     // effect the D-shape of the rotor (6.5 vs 7)
@@ -407,7 +407,7 @@ module platform(inr, outr){
 // central column radius is columnr
 // to calculate the shaft height, we add the amount in the hotbox
 // to the amount in the croom.
-shafth = platformh + 52;
+shafth = platformh + 32;
 module shaft(){
     platforminnerr = columnr - 0.5;
     platformouterd = spoold / 2;

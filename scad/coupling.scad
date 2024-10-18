@@ -33,6 +33,12 @@ translate([spoold / 4 + 30, 0, 0]){
 }
 }
 
+multicolor("lightgreen"){
+translate([30, -80, 0]){
+	loadcellmount(loadcellsupph);
+}
+}
+
 // the worm gear, which is placed onto the rotor.
 // it must be tangent to the main gear.
 multicolor("white"){
