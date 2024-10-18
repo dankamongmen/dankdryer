@@ -17,8 +17,10 @@
 #include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <hal/ledc_types.h>
+#include <soc/adc_channel.h>
 #include <esp_http_server.h>
 #include <driver/i2c_master.h>
+#include <esp_adc/adc_oneshot.h>
 #include <driver/temperature_sensor.h>
 
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
@@ -27,23 +29,25 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define MOTOR_PWMPIN GPIO_NUM_6 // motor speed
-#define MOTOR_1PIN GPIO_NUM_8
-#define UPPER_PWMPIN GPIO_NUM_9  // upper chamber fan speed (output)
-#define MOTOR_2PIN GPIO_NUM_10
+#define TRIAC_GPIN GPIO_NUM_5     // triac gate
+#define MOTOR_PWMPIN GPIO_NUM_6   // motor speed
+#define MOTOR_1PIN GPIO_NUM_8     // motor control #1
+#define UPPER_PWMPIN GPIO_NUM_9   // upper chamber fan speed
+#define THERM_DATAPIN GPIO_NUM_10 // analog thermometer (ADC1)
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
-#define THERM_DATAPIN GPIO_NUM_11 // analog thermometer (input, ADC1)
-#define LOWER_PWMPIN GPIO_NUM_12  // lower chamber fan speed (output)
-#define MOTOR_SBYPIN GPIO_NUM_13  // standby must be taken high to drive motor (output)
-#define I2C_SDAPIN GPIO_NUM_14 // I2C data
-#define I2C_SCLPIN GPIO_NUM_15 // I2C clock
+#define MOTOR_2PIN GPIO_NUM_11    // motor control #2
+#define LOWER_PWMPIN GPIO_NUM_12  // lower chamber fan speed
+#define MOTOR_SBYPIN GPIO_NUM_13  // standby must be taken high to drive motor
+#define I2C_SDAPIN GPIO_NUM_14    // I2C data
+#define I2C_SCLPIN GPIO_NUM_15    // I2C clock
+#define RC522_INTPIN GPIO_NUM_16  // RFID interrupt
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 // 38 is used for RGB LED
-#define UPPER_TACHPIN GPIO_NUM_39 // upper chamber fan tachometer (input)
+#define UPPER_TACHPIN GPIO_NUM_39 // upper chamber fan tachometer
 // 45 and 46 are strapping pins
-#define LOWER_TACHPIN GPIO_NUM_48 // lower chamber fan tachometer (input)
+#define LOWER_TACHPIN GPIO_NUM_48 // lower chamber fan tachometer
 
 #define NVS_HANDLE_NAME "pstore"
 
@@ -58,9 +62,10 @@ static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 static uint32_t MotorPWM;
 static uint32_t LowerPWM = 64;
 static uint32_t UpperPWM = 64;
+static httpd_handle_t HTTPServ;
 static uint32_t TargetTemp = 80;
 static float LoadcellScale = 1.0;
-static httpd_handle_t HTTPServ;
+static adc_oneshot_unit_handle_t ADC1;
 static i2c_master_bus_handle_t I2C;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 static esp_mqtt_client_handle_t MQTTHandle;
@@ -262,9 +267,10 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl){
   return 0;
 }
 
-// the esp32-s3 has a built in temperature sensor
+// the esp32-s3 has a built in temperature sensor, which we enable.
+// we furthermore set up the LM35 pin for input/ADC.
 static int
-setup_esp32temp(void){
+setup_esp32temp(gpio_num_t thermpin, adc_channel_t* channel){
   temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
   if(temperature_sensor_install(&conf, &temp) != ESP_OK){
     fprintf(stderr, "failed to set up thermostat\n");
@@ -272,6 +278,30 @@ setup_esp32temp(void){
   }
   if(temperature_sensor_enable(temp) != ESP_OK){
     fprintf(stderr, "failed to enable thermostat\n");
+    return -1;
+  }
+  if(gpio_set_input(thermpin)){
+    return -1;
+  }
+  esp_err_t e;
+  adc_oneshot_unit_init_cfg_t acfg = {
+    .unit_id = ADC_UNIT_1,
+    .ulp_mode = ADC_ULP_MODE_DISABLE,
+  };
+  if((e = adc_oneshot_new_unit(&acfg, &ADC1)) != ESP_OK){
+    fprintf(stderr, "error (%s) getting adc unit\n", esp_err_to_name(e));
+    return -1;
+  }
+  if((e = adc_oneshot_io_to_channel(thermpin, &acfg.unit_id, channel)) != ESP_OK){
+    fprintf(stderr, "error (%s) getting adc channel for %d\n", esp_err_to_name(e), thermpin);
+    return -1;
+  }
+  adc_oneshot_chan_cfg_t ccfg = {
+    .bitwidth = ADC_BITWIDTH_DEFAULT,
+    .atten = ADC_ATTEN_DB_12,
+  };
+  if((e = adc_oneshot_config_channel(ADC1, *channel, &ccfg)) != ESP_OK){
+    fprintf(stderr, "error (%s) configuraing adc channel\n", esp_err_to_name(e));
     return -1;
   }
   return 0;
@@ -729,7 +759,7 @@ setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pi
 }
 
 static void
-setup(void){
+setup(adc_channel_t* thermchan){
   // FIXME
   //static const failure_indication PreFailure = { 64, 64, 64 };
   //neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
@@ -744,7 +774,7 @@ setup(void){
     fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
     set_failure(&SystemError);
   }
-  if(setup_esp32temp()){
+  if(setup_esp32temp(THERM_DATAPIN, thermchan)){
     set_failure(&SystemError);
   }
   if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN)){
@@ -798,7 +828,7 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
 }
 
 void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
-               float weight){
+               float weight, float hottemp){
   // FIXME check errors throughout!
   cJSON* root = cJSON_CreateObject();
   cJSON_AddNumberToObject(root, "uptimesec", curtime / 1000000ll);
@@ -819,6 +849,9 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
     cJSON_AddNumberToObject(root, "load", weight);
   }
   cJSON_AddNumberToObject(root, "mpwm", MotorPWM);
+  if(hottemp >= MIN_TEMP){
+    cJSON_AddNumberToObject(root, "htemp", hottemp);
+  }
   char* s = cJSON_Print(root);
   size_t slen = strlen(s);
   printf("MQTT: %s\n", s);
@@ -828,19 +861,36 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
   free(s);
 }
 
+static float
+getLM35(adc_channel_t channel){
+  int raw;
+  esp_err_t e = adc_oneshot_read(ADC1, channel, &raw);
+  if(e != ESP_OK){
+    fprintf(stderr, "error (%s) reading from adc\n", esp_err_to_name(e));
+    return MIN_TEMP - 1;
+  }
+  // Dmax is 4095 on single read mode, 8191 on continuous
+  // Vmax is 3100mA with ADC_ATTEN_DB_12
+  const unsigned vout = raw * 3100 / 4095;
+  return vout; // FIXME
+}
+
 void app_main(void){
-  setup();
+  adc_channel_t thermchan;
+  setup(&thermchan);
   while(1){
     vTaskDelay(pdMS_TO_TICKS(15000));
     float ambient = getAmbient();
     float weight = getWeight();
     printf("esp32 temp: %f weight: %f\n", ambient, weight);
-    printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
+    float hottemp = getLM35(thermchan);
+    printf("lm35: %f\n", hottemp);
     unsigned lrpm, urpm;
+    printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
     if(!getFanTachs(&lrpm, &urpm)){
       printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
     }
     int64_t curtime = esp_timer_get_time();
-    send_mqtt(curtime, ambient, lrpm, urpm, weight);
+    send_mqtt(curtime, ambient, lrpm, urpm, weight, hottemp);
   }
 }

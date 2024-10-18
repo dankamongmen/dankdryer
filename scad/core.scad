@@ -407,7 +407,7 @@ module platform(inr, outr){
 // central column radius is columnr
 // to calculate the shaft height, we add the amount in the hotbox
 // to the amount in the croom.
-shafth = platformh + 32;
+shafth = platformh + 35;
 module shaft(){
     platforminnerr = columnr - 0.5;
     platformouterd = spoold / 2;
