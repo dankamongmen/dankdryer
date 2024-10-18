@@ -896,7 +896,7 @@ getLM35(adc_channel_t channel){
   }
   // Dmax is 4095 on single read mode, 8191 on continuous
   // Vmax is 3100mA with ADC_ATTEN_DB_12
-  const unsigned vout = raw * 3100 / 4095;
+  const unsigned vout = raw * 3100.0 / 4095.0;
   return vout; // FIXME
 }
 
