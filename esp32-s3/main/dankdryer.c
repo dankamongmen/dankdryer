@@ -25,7 +25,8 @@
 
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
 #define RPMMAX (1u << 14u)
-#define MIN_TEMP (-80)
+#define MIN_TEMP -80
+#define MAX_TEMP 200
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
@@ -69,6 +70,7 @@ static adc_oneshot_unit_handle_t ADC1;
 static i2c_master_bus_handle_t I2C;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 static esp_mqtt_client_handle_t MQTTHandle;
+static bool FoundRC522, FoundNAU7802, FoundBME680;
 
 typedef struct failure_indication {
   int r, g, b;
@@ -174,9 +176,12 @@ float getAmbient(void){
 }
 
 float getWeight(void){
-  /*Load.wait_ready();
+  if(!FoundNAU7802){
+    return -1.0;
+  }
+  /*Load.wait_ready(); FIXME
   return Load.read_average(5);*/
-  return 0; // FIXME
+  return 0;
 }
 
 // gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
@@ -225,17 +230,19 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
 }
 
 static int
-probe_i2c(i2c_master_bus_handle_t i2c){
-  int ret = 0;
-  ret |= probe_i2c_slave(i2c, 0x77, "BME680");
-  ret |= probe_i2c_slave(i2c, 0x26, "HX711");
-  // looks like RC522 might only be SPI? need check datasheet
-  // ret |= probe_i2c_slave(i2c, 0x77, "RC522");
-  return ret;
+probe_i2c(i2c_master_bus_handle_t i2c, bool* rc522, bool* nau7802, bool* bme680){
+  *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680");
+  *nau7802 = !probe_i2c_slave(i2c, 0x26, "NAU7802");
+  // FIXME looks like RC522 might only be SPI? need check datasheet
+  *rc522 = !probe_i2c_slave(i2c, 0x28, "RC522"); // FIXME might be 0x77?
+  if(!(*rc522 && *nau7802 && *bme680)){
+    return -1;
+  }
+  return 0;
 }
 
 static int
-setup_i2c(gpio_num_t sda, gpio_num_t scl){
+setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* nau7802, bool* bme680){
   i2c_master_bus_config_t i2cconf = {
     .i2c_port = -1,
     .sda_io_num = sda,
@@ -261,7 +268,7 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl){
     fprintf(stderr, "error (%s) creating i2c master dev\n", esp_err_to_name(e));
 		return -1;
 	}
-  if(probe_i2c(I2C)){
+  if(probe_i2c(I2C, rc522, nau7802, bme680)){
     return -1;
   }
   return 0;
@@ -729,13 +736,9 @@ int setup_network(void){
   return 0;
 }
 
-// HX711
+// NAU7802
 int setup_sensors(void){
-  fprintf(stderr, "we don't yet have hx711 support\n");
-  /* FIXME
-  Load.begin(HX711_DT, HX711_SCK);
-  Load.set_scale(LoadcellScale);
-  */
+  fprintf(stderr, "we don't yet have nau7802 support\n");
   return 0;
 }
 
@@ -777,7 +780,7 @@ setup(adc_channel_t* thermchan){
   if(setup_esp32temp(THERM_DATAPIN, thermchan)){
     set_failure(&SystemError);
   }
-  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN)){
+  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundRC522, &FoundNAU7802, &FoundBME680)){
     set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
@@ -827,12 +830,17 @@ int getFanTachs(unsigned *lrpm, unsigned *urpm){
   return ret;
 }
 
+static inline bool
+temp_valid_p(float temp){
+  return temp >= MIN_TEMP && temp <= MAX_TEMP;
+}
+
 void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
                float weight, float hottemp){
   // FIXME check errors throughout!
   cJSON* root = cJSON_CreateObject();
   cJSON_AddNumberToObject(root, "uptimesec", curtime / 1000000ll);
-  if(dtemp >= MIN_TEMP){
+  if(temp_valid_p(dtemp)){
     cJSON_AddNumberToObject(root, "dtemp", dtemp);
   }
   // UINT_MAX is sentinel for known bad reading, but anything over 3KRPM on
@@ -846,10 +854,10 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
   cJSON_AddNumberToObject(root, "lpwm", LowerPWM);
   cJSON_AddNumberToObject(root, "upwm", UpperPWM);
   if(weight >= 0 && weight < 5000){
-    cJSON_AddNumberToObject(root, "load", weight);
+    cJSON_AddNumberToObject(root, "mass", weight);
   }
   cJSON_AddNumberToObject(root, "mpwm", MotorPWM);
-  if(hottemp >= MIN_TEMP){
+  if(temp_valid_p(hottemp)){
     cJSON_AddNumberToObject(root, "htemp", hottemp);
   }
   char* s = cJSON_Print(root);
@@ -880,6 +888,7 @@ void app_main(void){
   setup(&thermchan);
   while(1){
     vTaskDelay(pdMS_TO_TICKS(15000));
+    // FIXME check bme680, rc522
     float ambient = getAmbient();
     float weight = getWeight();
     printf("esp32 temp: %f weight: %f\n", ambient, weight);
