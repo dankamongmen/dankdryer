@@ -30,16 +30,12 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define TRIAC_GPIN GPIO_NUM_5     // triac gate
-#define MOTOR_PWMPIN GPIO_NUM_6   // motor speed
-#define MOTOR_1PIN GPIO_NUM_8     // motor control #1
+#define TRIAC_GPIN GPIO_NUM_5     // heater triac gate
 #define UPPER_PWMPIN GPIO_NUM_9   // upper chamber fan speed
 #define THERM_DATAPIN GPIO_NUM_10 // analog thermometer (ADC1)
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
-#define MOTOR_2PIN GPIO_NUM_11    // motor control #2
 #define LOWER_PWMPIN GPIO_NUM_12  // lower chamber fan speed
-#define MOTOR_SBYPIN GPIO_NUM_13  // standby must be taken high to drive motor
 #define I2C_SDAPIN GPIO_NUM_14    // I2C data
 #define I2C_SCLPIN GPIO_NUM_15    // I2C clock
 #define RC522_INTPIN GPIO_NUM_16  // RFID interrupt
@@ -47,6 +43,7 @@
 // 26--32 are used for pstore qspi flash
 // 38 is used for RGB LED
 #define UPPER_TACHPIN GPIO_NUM_39 // upper chamber fan tachometer
+#define MOTOR_GPIN GPIO_NUM_42    // motor mosfet gate
 // 45 and 46 are strapping pins
 #define LOWER_TACHPIN GPIO_NUM_48 // lower chamber fan tachometer
 
@@ -56,11 +53,10 @@ static bool UsePersistentStore; // set true upon successful initialization
 static temperature_sensor_handle_t temp;
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
 static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
-static const ledc_channel_t MOTOR_CHAN = LEDC_CHANNEL_2;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 // defaults, some of which can be configured.
-static uint32_t MotorPWM;
+static bool MotorState;
 static uint32_t LowerPWM = 64;
 static uint32_t UpperPWM = 64;
 static httpd_handle_t HTTPServ;
@@ -132,8 +128,26 @@ get_hex(char c){
   return c - 'a' + 10;
 }
 
+// FIXME ignore whitespace
+static int
+extract_bool(const char* data, size_t dlen, bool* val){
+  if(strcasecmp(data, "on") == 0 || strcasecmp(data, "yes") == 0 ||
+      strcasecmp(data, "true") == 0 || strcmp(data, "1") == 0){
+    *val = true;
+    return 0;
+  }
+  if(strcasecmp(data, "off") == 0 || strcasecmp(data, "no") == 0 ||
+      strcasecmp(data, "false") == 0 || strcmp(data, "0") == 0){
+    *val = false;
+    return 0;
+  }
+  printf("not a bool: [%s]\n", data);
+  return -1;
+}
+
 // FIXME handle base 10 numbers as well (can we use strtoul?)
-int extract_pwm(const char* data, size_t dlen){
+static int
+extract_pwm(const char* data, size_t dlen){
   if(dlen != 2){
     printf("pwm wasn't 2 characters\n");
     return -1;
@@ -153,7 +167,8 @@ int extract_pwm(const char* data, size_t dlen){
 }
 
 // set the desired PWM value
-int set_pwm(const ledc_channel_t channel, unsigned pwm){
+static int
+set_pwm(const ledc_channel_t channel, unsigned pwm){
   if(ledc_set_duty(LEDCMODE, channel, pwm) != ESP_OK){
     fprintf(stderr, "error setting pwm!\n");
     return -1;
@@ -166,7 +181,8 @@ int set_pwm(const ledc_channel_t channel, unsigned pwm){
 }
 
 // on error, returns MIN_TEMP - 1
-float getAmbient(void){
+static float
+getAmbient(void){
   float t;
   if(temperature_sensor_get_celsius(temp, &t)){
     fprintf(stderr, "failed acquiring temperature\n");
@@ -209,6 +225,19 @@ gpio_set_inputoutput(gpio_num_t pin){
 static inline int
 gpio_set_input(gpio_num_t pin){
   return gpio_setup(pin, GPIO_MODE_INPUT, "input");
+}
+
+static inline int
+gpio_set_output_nopull(gpio_num_t pin){
+  if(gpio_setup(pin, GPIO_MODE_OUTPUT, "output(np)")){
+    return -1;
+  }
+  esp_err_t e = gpio_set_pull_mode(pin, GPIO_FLOATING);
+  if(e != ESP_OK){
+    fprintf(stderr, "error (%s) setting nopull for %d\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  return 0;
 }
 
 static inline int
@@ -560,29 +589,21 @@ ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }
 }
 
-// we enter short brake state with either:
-//  IN1 high IN2 high PWM don't care
-//  IN1 low  IN2 high PWM low
-//  IN1 high IN2 low  PWM low
-// we never want this state (it's acceptable at startup), as it is a
-// destructive operation. so just always keep PWM high, and if asked
-// for 0 PWM, set IN1+IN2 low. otherwise, set IN1 high and IN2 low,
-// but only after ensuring PWM is high. MotorPWM is only control, not data.
-static void
-set_motor_pwm(void){
-  set_pwm(MOTOR_CHAN, 255);
-  if(MotorPWM == 0){
-    gpio_set_level(MOTOR_1PIN, 0);
-    gpio_set_level(MOTOR_2PIN, 0);
-    gpio_set_level(MOTOR_SBYPIN, 0);
-    printf("set motor standby / control1 / control2 low\n");
-  }else{
-    // set PWM high first so we can't possibly enter short brake state
-    gpio_set_level(MOTOR_1PIN, 1);
-    gpio_set_level(MOTOR_2PIN, 0);
-    gpio_set_level(MOTOR_SBYPIN, 1);
-    printf("set motor standby / control1 high, control2 low\n");
+static int
+gpio_level(gpio_num_t pin, bool level){
+  esp_err_t e = gpio_set_level(pin, level);
+  if(e != ESP_OK){
+    fprintf(stderr, "error (%s) setting pin %d to %u\n", esp_err_to_name(e), pin, level);
+    return -1;
   }
+  return 0;
+}
+
+static void
+set_motor(bool enabled){
+  MotorState = enabled;
+  gpio_level(MOTOR_GPIN, enabled);
+  printf("set motor %s\n", enabled ? "on" : "off");
 }
 
 #define CCHAN "control/"
@@ -593,10 +614,10 @@ set_motor_pwm(void){
 void handle_mqtt_msg(const esp_mqtt_event_t* e){
   printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
   if(strncmp(e->topic, MPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(MPWM_CHANNEL)){
-    int pwm = extract_pwm(e->data, e->data_len);
-    if(pwm >= 0){
-      MotorPWM = pwm;
-      set_motor_pwm();
+    bool motor;
+    int ret = extract_bool(e->data, e->data_len, &motor);
+    if(ret == 0){
+      set_motor(motor);
     }
   }else if(strncmp(e->topic, LPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(LPWM_CHANNEL)){
     int pwm = extract_pwm(e->data, e->data_len);
@@ -663,8 +684,11 @@ httpd_get_handler(httpd_req_t *req){
   // FIXME need locking or atomics now
   int slen = snprintf(resp, RESPBYTES, "<!DOCTYPE html><html><head><title>" DEVICE "</title></head>"
             "<body><h2>a drying comes across the sky</h2><br/>"
-            "lpwm: %lu upwm: %lu mpwm: %lu<br/>"
-            "</body></html>", LowerPWM, UpperPWM, MotorPWM);
+            "lpwm: %lu upwm: %lu<br/>"
+            "motor: %s<br/>"
+            "</body></html>",
+            LowerPWM, UpperPWM,
+            MotorState ? "on" : "off");
   esp_err_t ret = ESP_FAIL;
   if(slen < 0 || slen >= RESPBYTES){
     fprintf(stderr, "httpd response too large (%d)\n", slen);
@@ -781,21 +805,11 @@ int setup_sensors(void){
 
 // TB6612FNG
 static int
-setup_motor(gpio_num_t sbypin, gpio_num_t pwmpin, gpio_num_t pin1, gpio_num_t pin2){
-  if(gpio_set_output(sbypin)){
+setup_motor(gpio_num_t motorpin){
+  if(gpio_set_output(motorpin)){
     return -1;
   }
-  if(gpio_set_output(pin1)){
-    return -1;
-  }
-  if(gpio_set_output(pin2)){
-    return -1;
-  }
-  // FIXME where did we pull 490 from?
-  if(initialize_pwm(MOTOR_CHAN, pwmpin, 490, LEDC_TIMER_3)){
-    return -1;
-  }
-  set_motor_pwm();
+  set_motor(false);
   return 0;
 }
 
@@ -824,7 +838,7 @@ setup(adc_channel_t* thermchan){
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
     set_failure(&SystemError);
   }
-  if(setup_motor(MOTOR_SBYPIN, MOTOR_PWMPIN, MOTOR_1PIN, MOTOR_2PIN)){
+  if(setup_motor(MOTOR_GPIN)){
     set_failure(&SystemError);
   }
   if(setup_sensors()){
@@ -894,7 +908,7 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
   if(weight >= 0 && weight < 5000){
     cJSON_AddNumberToObject(root, "mass", weight);
   }
-  cJSON_AddNumberToObject(root, "mpwm", MotorPWM);
+  cJSON_AddNumberToObject(root, "motor", MotorState);
   if(temp_valid_p(hottemp)){
     cJSON_AddNumberToObject(root, "htemp", hottemp);
   }
