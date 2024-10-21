@@ -35,17 +35,17 @@
 #define THERM_DATAPIN GPIO_NUM_10 // analog thermometer (ADC1)
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
-#define LOWER_PWMPIN GPIO_NUM_12  // lower chamber fan speed
+#define LOWER_PWMPIN GPIO_NUM_11  // lower chamber fan speed
+#define LOWER_TACHPIN GPIO_NUM_12 // lower chamber fan tachometer
+#define UPPER_TACHPIN GPIO_NUM_13 // upper chamber fan tachometer
 #define I2C_SDAPIN GPIO_NUM_14    // I2C data
 #define I2C_SCLPIN GPIO_NUM_15    // I2C clock
 #define RC522_INTPIN GPIO_NUM_16  // RFID interrupt
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 // 38 is used for RGB LED
-#define UPPER_TACHPIN GPIO_NUM_39 // upper chamber fan tachometer
 #define MOTOR_GPIN GPIO_NUM_42    // motor mosfet gate
 // 45 and 46 are strapping pins
-#define LOWER_TACHPIN GPIO_NUM_48 // lower chamber fan tachometer
 
 #define NVS_HANDLE_NAME "pstore"
 
@@ -129,15 +129,25 @@ get_hex(char c){
 }
 
 // FIXME ignore whitespace
+// check if data (dlen bytes, no terminator) equals n, returning true
+// if it does, and false otherwise.
+static bool
+strarg_match_p(const char* data, size_t dlen, const char* n){
+  if(dlen != strlen(n)){
+    return false;
+  }
+  return strncasecmp(data, n, dlen) ? false : true;
+}
+
 static int
 extract_bool(const char* data, size_t dlen, bool* val){
-  if(strcasecmp(data, "on") == 0 || strcasecmp(data, "yes") == 0 ||
-      strcasecmp(data, "true") == 0 || strcmp(data, "1") == 0){
+  if(strarg_match_p(data, dlen, "on") || strarg_match_p(data, dlen, "yes") ||
+      strarg_match_p(data, dlen, "true") || strarg_match_p(data, dlen, "1")){
     *val = true;
     return 0;
   }
-  if(strcasecmp(data, "off") == 0 || strcasecmp(data, "no") == 0 ||
-      strcasecmp(data, "false") == 0 || strcmp(data, "0") == 0){
+  if(strarg_match_p(data, dlen, "off") || strarg_match_p(data, dlen, "no") ||
+      strarg_match_p(data, dlen, "false") || strarg_match_p(data, dlen, "0")){
     *val = false;
     return 0;
   }
@@ -599,21 +609,26 @@ gpio_level(gpio_num_t pin, bool level){
   return 0;
 }
 
+static const char*
+motor_state(void){
+  return MotorState ? "on" : "off";
+}
+
 static void
 set_motor(bool enabled){
   MotorState = enabled;
   gpio_level(MOTOR_GPIN, enabled);
-  printf("set motor %s\n", enabled ? "on" : "off");
+  printf("set motor %s\n", motor_state());
 }
 
 #define CCHAN "control/"
-#define MPWM_CHANNEL CCHAN DEVICE "/mpwm"
+#define MOTOR_CHANNEL CCHAN DEVICE "/motor"
 #define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
 #define UPWM_CHANNEL CCHAN DEVICE "/upwm"
 
 void handle_mqtt_msg(const esp_mqtt_event_t* e){
   printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
-  if(strncmp(e->topic, MPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(MPWM_CHANNEL)){
+  if(strncmp(e->topic, MOTOR_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(MOTOR_CHANNEL)){
     bool motor;
     int ret = extract_bool(e->data, e->data_len, &motor);
     if(ret == 0){
@@ -641,8 +656,8 @@ void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
     printf("connected to mqtt\n");
     set_network_state(MQTT_ESTABLISHED);
     int er;
-    if((er = esp_mqtt_client_subscribe(MQTTHandle, MPWM_CHANNEL, 0)) < 0){
-      fprintf(stderr, "failure %d subscribing to mqtt mpwm topic\n", er);
+    if((er = esp_mqtt_client_subscribe(MQTTHandle, MOTOR_CHANNEL, 0)) < 0){
+      fprintf(stderr, "failure %d subscribing to mqtt motor topic\n", er);
     }
     if((er = esp_mqtt_client_subscribe(MQTTHandle, LPWM_CHANNEL, 0)) < 0){
       fprintf(stderr, "failure %d subscribing to mqtt lpwm topic\n", er);
@@ -687,8 +702,7 @@ httpd_get_handler(httpd_req_t *req){
             "lpwm: %lu upwm: %lu<br/>"
             "motor: %s<br/>"
             "</body></html>",
-            LowerPWM, UpperPWM,
-            MotorState ? "on" : "off");
+            LowerPWM, UpperPWM, motor_state());
   esp_err_t ret = ESP_FAIL;
   if(slen < 0 || slen >= RESPBYTES){
     fprintf(stderr, "httpd response too large (%d)\n", slen);
@@ -948,6 +962,7 @@ void app_main(void){
     printf("lm35: %f\n", hottemp);
     unsigned lrpm, urpm;
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
+    printf("motor: %s\n", motor_state());
     if(!getFanTachs(&lrpm, &urpm)){
       printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
     }
