@@ -4,7 +4,7 @@
 include <core.scad>
 
 // thickness of croom xy walls (bottom is wallz)
-croomwall = 3;
+croomwall = 2;
 // the outer radii on our top and bottom
 botrad = (totalxy + 14) * sqrt(2) / 2;
 toprad = totalxy * sqrt(2) / 2;
@@ -255,7 +255,6 @@ module croom(){
         achole();
         fancablehole();
     }
-	/*
     lowershield();
     acadapterscrews(6);
     translate([loadcellmountx, 0, wallz]){
@@ -264,7 +263,7 @@ module croom(){
     wirechannels();
     lmsmounts();
     perfmounts();
-    dropmotormount();*/
+    dropmotormount();
 }
 
 croom();
