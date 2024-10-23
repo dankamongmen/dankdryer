@@ -461,6 +461,16 @@ int initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_
   if(gpio_set_output(pin)){
     return -1;
   }
+  ledc_timer_config_t ledc_timer;
+  memset(&ledc_timer, 0, sizeof(ledc_timer));
+  ledc_timer.speed_mode = LEDCMODE;
+  ledc_timer.duty_resolution = FANPWM_BIT_NUM;
+  ledc_timer.timer_num = timer;
+  ledc_timer.freq_hz = freq;
+  if(ledc_timer_config(&ledc_timer) != ESP_OK){
+    fprintf(stderr, "error (timer config)!\n");
+    return -1;
+  }
   ledc_channel_config_t conf;
   memset(&conf, 0, sizeof(conf));
   conf.gpio_num = pin;
@@ -472,16 +482,6 @@ int initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_
   printf("setting up pin %d for %dHz PWM\n", pin, freq);
   if(ledc_channel_config(&conf) != ESP_OK){
     fprintf(stderr, "error (channel config)!\n");
-    return -1;
-  }
-  ledc_timer_config_t ledc_timer;
-  memset(&ledc_timer, 0, sizeof(ledc_timer));
-  ledc_timer.speed_mode = LEDCMODE;
-  ledc_timer.duty_resolution = FANPWM_BIT_NUM;
-  ledc_timer.timer_num = timer;
-  ledc_timer.freq_hz = freq;
-  if(ledc_timer_config(&ledc_timer) != ESP_OK){
-    fprintf(stderr, "error (timer config)!\n");
     return -1;
   }
   return 0;
