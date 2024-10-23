@@ -35,12 +35,12 @@
 #define THERM_DATAPIN GPIO_NUM_10 // analog thermometer (ADC1)
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
-#define LOWER_PWMPIN GPIO_NUM_11  // lower chamber fan speed
-#define LOWER_TACHPIN GPIO_NUM_12 // lower chamber fan tachometer
 #define UPPER_TACHPIN GPIO_NUM_13 // upper chamber fan tachometer
 #define I2C_SDAPIN GPIO_NUM_14    // I2C data
 #define I2C_SCLPIN GPIO_NUM_15    // I2C clock
 #define RC522_INTPIN GPIO_NUM_16  // RFID interrupt
+#define LOWER_TACHPIN GPIO_NUM_17 // lower chamber fan tachometer
+#define LOWER_PWMPIN GPIO_NUM_18  // lower chamber fan speed
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 // 38 is used for RGB LED

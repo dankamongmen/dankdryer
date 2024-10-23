@@ -244,7 +244,7 @@ translate([0, -0.75, 0]){
 // motor is 37x75mm diameter gearbox and 6x14mm shaft
 // (with arbitrarily large worm gear on the shaft)
 motorboxh = 70;
-motorboxd = 37;
+motorboxd = 38;
 motorshafth = wormlen; // sans worm: 14
 motorshaftd = 13; // sans worm: 6
 motortheta = -60;
@@ -269,7 +269,7 @@ module dropworm(){
 // circular mount screwed into the front of the motor through six holes
 motorholderh = 3;
 module motorholder(){
-    d = (28.75 + 3) / 2;
+    d = 31 / 2;
     ch = motorholderh;
     difference(){
         cylinder(ch, motorboxd / 2, motorboxd / 2, true);
@@ -305,10 +305,12 @@ module motormount(){
             linear_extrude(mlength){
 				h = motormounth - motorboxd / 2;
 				sh = motormounth - 3 * motorboxd / 4;
+				s2h = sh - (motorboxd / 6);
                 polygon([[-motorboxd / 4, 0],
 						 [-motorboxd / 8, 0],
-						 [-motorboxd / 4, sh],
-						 [motorboxd / 4, sh],
+						 [-motorboxd / 4, s2h],
+						 [0, sh],
+						 [motorboxd / 4, s2h],
 						 [motorboxd / 8, 0],
                          [motorboxd / 4, 0],
                          [motorboxd / 2, h],
