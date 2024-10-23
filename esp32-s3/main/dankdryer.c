@@ -30,21 +30,24 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define LOWER_PWMPIN GPIO_NUM_4   // lower chamber fan speed
-#define LOWER_TACHPIN GPIO_NUM_5  // lower chamber fan tachometer
+#define TRIAC_GPIN GPIO_NUM_5     // heater triac gate
+#define THERM_DATAPIN GPIO_NUM_7  // analog thermometer (ADC1)
+#define UPPER_TACHPIN GPIO_NUM_8  // upper chamber fan tachometer
 #define UPPER_PWMPIN GPIO_NUM_9   // upper chamber fan speed
-#define THERM_DATAPIN GPIO_NUM_10 // analog thermometer (ADC1)
+#define MOTOR_APWM GPIO_NUM_10    // motor pwm
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
-#define UPPER_TACHPIN GPIO_NUM_13 // upper chamber fan tachometer
+#define MOTOR_AIN1 GPIO_NUM_11    // motor control 1
+#define MOTOR_AIN2 GPIO_NUM_12    // motor control 2
+#define MOTOR_STBY GPIO_NUM_13    // motor standby
 #define I2C_SDAPIN GPIO_NUM_14    // I2C data
 #define I2C_SCLPIN GPIO_NUM_15    // I2C clock
-#define RC522_INTPIN GPIO_NUM_16  // RFID interrupt
-#define TRIAC_GPIN GPIO_NUM_17    // heater triac gate
+//#define RC522_INTPIN GPIO_NUM_8   // RFID interrupt
+#define LOWER_TACHPIN GPIO_NUM_16 // lower chamber fan tachometer
+#define LOWER_PWMPIN GPIO_NUM_18  // lower chamber fan speed
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 // 38 is used for RGB LED
-#define MOTOR_GPIN GPIO_NUM_42    // motor mosfet gate
 // 45 and 46 are strapping pins
 
 #define NVS_HANDLE_NAME "pstore"
