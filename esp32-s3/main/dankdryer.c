@@ -620,7 +620,8 @@ motor_state(void){
 static void
 set_motor(bool enabled){
   MotorState = enabled;
-  gpio_level(MOTOR_GPIN, enabled);
+  gpio_level(MOTOR_STBY, enabled);
+  // FIXME complete
   printf("set motor %s\n", motor_state());
 }
 
@@ -822,10 +823,11 @@ int setup_sensors(void){
 
 // TB6612FNG
 static int
-setup_motor(gpio_num_t motorpin){
-  if(gpio_set_output(motorpin)){
+setup_motor(gpio_num_t stbypin){
+  if(gpio_set_output(stbypin)){
     return -1;
   }
+  // FIXME need others
   set_motor(false);
   return 0;
 }
@@ -855,7 +857,7 @@ setup(adc_channel_t* thermchan){
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
     set_failure(&SystemError);
   }
-  if(setup_motor(MOTOR_GPIN)){
+  if(setup_motor(MOTOR_STBY)){
     set_failure(&SystemError);
   }
   if(setup_sensors()){
