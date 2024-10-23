@@ -45,27 +45,31 @@ module croominnercore(){
     }
 }
 
+adj = (botrad - toprad) / sqrt(2);
+theta = (90 - atan(-croomz / adj));
 // a corner at the top, to which the hotbox is mounted
 module corner(){
     translate([-totalxy / 2, -totalxy / 2, croomz - 10]){
         difference(){
             union(){
                 cube([44, 44, 20], true);
-                translate([0, 0, -35]){
-                    rotate([0, 0, 45]){
-                        cylinder(50, 0, sqrt(2) * 22, true, $fn = 4);
-                    }
-                }
+				translate([0, 22, -20])
+				rotate([90, 0, 0])
+				linear_extrude(44){
+					polygon([
+						[-22, -10],
+						[22, 10],
+						[-22, 10]
+					]);
+				}
             }
-            translate([12, 12, 0]){
+			translate([12, 12, 0]){
                 screw("M5", length = 20);
             }
         }
     }
 }
 
-adj = (botrad - toprad) / sqrt(2);
-theta = (90 - atan(-croomz / adj));
 module rot(deg){
     rotate([theta + deg, 0, 0]){
         children();
@@ -251,6 +255,7 @@ module croom(){
         achole();
         fancablehole();
     }
+	/*
     lowershield();
     acadapterscrews(6);
     translate([loadcellmountx, 0, wallz]){
@@ -259,7 +264,7 @@ module croom(){
     wirechannels();
     lmsmounts();
     perfmounts();
-    dropmotormount();
+    dropmotormount();*/
 }
 
 croom();
