@@ -126,7 +126,7 @@ module corners(){
 
 module lmsmount(l){
 	translate([0, 0, wallz]){
-		screw("M4", length = wallz - 1);
+		screw("M4", length = wallz);
 	}
 }
 
@@ -148,7 +148,7 @@ module lmsmounts(){
 }
 
 module perfmount(h){
-    screw("M4", length = wallz - 1);
+    screw("M4", length = wallz);
 }
 
 module perfmounts(){
@@ -219,9 +219,9 @@ module fancablehole(){
 // we want to keep air from moving across the load
 // cell's surface, so we put a shield around it.
 module lowershield(){
-    translate([0, 0, wallz + loadcellmounth / 2]){
+    translate([0, -1, wallz + loadcellmounth / 2]){
         difference(){
-            cube([shieldw + 6, 38 / 2, loadcellmounth], true);
+            cube([shieldw + 4, 36 / 2, loadcellmounth], true);
             cube([shieldw + 2, 34 / 2, loadcellmounth], true);
         }
         upperh = loadcellh;
@@ -230,7 +230,7 @@ module lowershield(){
         // on the back.
         translate([0, 0, (loadcellmounth + upperh) / 2]){
             difference(){
-                cube([shieldw + 6, 38 / 2, upperh], true);
+                cube([shieldw + 4, 36 / 2, upperh], true);
                 translate([0, 2, 0]){
                     cube([shieldw + 2, 34 / 2, upperh], true);
                 }
