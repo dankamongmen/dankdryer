@@ -57,7 +57,7 @@ static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 // defaults, some of which can be configured.
 static bool MotorState;
-static uint32_t LowerPWM = 64;
+static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 64;
 static httpd_handle_t HTTPServ;
 static uint32_t TargetTemp = 80;
@@ -871,29 +871,19 @@ setup(adc_channel_t* thermchan){
 
 // we don't try to measure the first iteration, as we don't yet have a
 // timestamp (and the fans are spinning up, anyway).
-int getFanTachs(unsigned *lrpm, unsigned *urpm){
-  static uint32_t m;
-  int ret = -1;
-  if(m){
-    const int64_t diffu = esp_timer_get_time() - m;
-    *lrpm = LowerPulses;
-    *urpm = UpperPulses;
-    printf("raw: %u %u\n", *lrpm, *urpm);
-    *lrpm /= 2; // two pulses for each rotation
-    *urpm /= 2;
-    const float scale = 60.0 * 1000000u / diffu;
-    printf("scale: %f diffu: %lld\n", scale, diffu);
-    *lrpm *= scale;
-    *urpm *= scale;
-    ret = 0;
-  }else{
-    *lrpm = UINT_MAX;
-    *urpm = UINT_MAX;
-  }
-  m = esp_timer_get_time();
+void getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
+  const float diffu = curtime - lasttime;
+  *lrpm = LowerPulses;
+  *urpm = UpperPulses;
+  printf("raw: %u %u\n", *lrpm, *urpm);
+  *lrpm /= 2; // two pulses for each rotation
+  *urpm /= 2;
+  const float scale = 60.0 * 1000000u / diffu;
+  printf("scale: %f diffu: %f\n", scale, diffu);
+  *lrpm *= scale;
+  *urpm *= scale;
   LowerPulses = 0;
   UpperPulses = 0;
-  return ret;
 }
 
 static inline bool
@@ -952,6 +942,7 @@ getLM35(adc_channel_t channel){
 void app_main(void){
   adc_channel_t thermchan;
   setup(&thermchan);
+  int64_t lasttime = esp_timer_get_time();
   while(1){
     vTaskDelay(pdMS_TO_TICKS(15000));
     // FIXME check bme680, rc522
@@ -963,10 +954,9 @@ void app_main(void){
     unsigned lrpm, urpm;
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
     printf("motor: %s\n", motor_state());
-    if(!getFanTachs(&lrpm, &urpm)){
-      printf("tach-l: %u tach-u: %u\n", lrpm, urpm);
-    }
     int64_t curtime = esp_timer_get_time();
+    getFanTachs(&lrpm, &urpm, curtime, lasttime);
     send_mqtt(curtime, ambient, lrpm, urpm, weight, hottemp);
+    lasttime = curtime;
   }
 }
