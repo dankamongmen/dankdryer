@@ -4,7 +4,7 @@
 include <core.scad>
 
 // thickness of croom xy walls (bottom is wallz)
-croomwall = 2;
+croomwall = 3;
 // the outer radii on our top and bottom
 botrad = (totalxy + 14) * sqrt(2) / 2;
 toprad = totalxy * sqrt(2) / 2;
@@ -20,7 +20,7 @@ botinalt = botinrad / sqrt(2);
 module croombottom(){
     translate([0, 0, wallz / 2]){
         rotate([0, 0, 45]){
-            cylinder(wallz, toprad, botrad, $fn = 4, true);
+            cylinder(wallz, botrad - wallz, botrad, $fn = 4, true);
         }
     }
 }
