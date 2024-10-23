@@ -80,7 +80,7 @@ module acadaptermount(l){
     translate([165.1 / 2 - 2, -22, wallz + l / 2]){
         difference(){
             cube([7, 7, l], true);
-            screw("M4", length = l);
+			children();
         }
     }
 }
@@ -90,11 +90,15 @@ module acadaptermount(l){
 // 6mm (through 10mm) and 50mm (through 54mm)
 module acadapterscrews(l){
     translate([0, 60, 0]){
-        acadaptermount(l);
+        acadaptermount(l){
+			screw("M5", length = l);
+		}
         mirror([0, 1, 0]){
             acadaptermount(l);
-            mirror([1, 0, 0]){
-                acadaptermount(l);
+			mirror([1, 0, 0]){
+                acadaptermount(l){
+					screw("M5", length = l);
+				}
             }
         }
         mirror([1, 0, 0]){
@@ -113,18 +117,17 @@ module corners(){
     mirror([0, 1, 0]){
         corner();
     }
-    mirror([1, 1, 0]){
-        corner();
+    mirror([1, 0, 0]){
+		mirror([0, 1, 0]){
+			corner();
+		}
     }
 }
 
 module lmsmount(l){
-    translate([0, 0, wallz + l / 2]){
-        difference(){
-            cube([7, 7, l], true);
-            screw("M4", length = l);
-        }
-    }
+	translate([0, 0, wallz]){
+		screw("M4", length = wallz - 1);
+	}
 }
 
 // 32.14 on the diagonal
@@ -145,15 +148,12 @@ module lmsmounts(){
 }
 
 module perfmount(h){
-    difference(){
-        cube([7, 7, h], true);
-        screw("M4", length = h);
-    }
+    screw("M4", length = wallz - 1);
 }
 
 module perfmounts(){
     h = mh + 6;
-    translate([-mh, -0.95 * totalxy / 2 + mh, wallz + h / 2]){
+    translate([-mh, -0.95 * totalxy / 2 + mh, wallz]){
         perfmount(h);
         translate([-80 - 3.3, 0, 0]){
             perfmount(h);
@@ -252,6 +252,8 @@ module croom(){
                 fanhole(20);
             }
         }
+		perfmounts();
+		lmsmounts();
         achole();
         fancablehole();
     }
@@ -261,8 +263,6 @@ module croom(){
         loadcellmount(loadcellmounth);
     }
     wirechannels();
-    lmsmounts();
-    perfmounts();
     dropmotormount();
 }
 
