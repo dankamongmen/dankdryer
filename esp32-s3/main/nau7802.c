@@ -99,13 +99,14 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
-  // FIXME repeat this after a number of delays
+  // FIXME repeat this for some number of attempts
   uint8_t rbuf[1];
   esp_err_t e;
   if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
     ESP_LOGW(TAG, "error %d requesting data via I2C", e);
     return -1;
   }
+  vTaskDelay(pdMS_TO_TICKS(200));
   if(!(rbuf[0] & NAU7802_PU_CTRL_PUR)){
     ESP_LOGW(TAG, "never saw powered on bit");
     return -1;
