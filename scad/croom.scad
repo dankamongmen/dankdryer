@@ -17,12 +17,31 @@ botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
 
-module croombottom(){
-    translate([0, 0, wallz / 2]){
+module croombottom(rad, z){
+	brad = rad - z;
+    translate([0, 0, z / 2]){
         rotate([0, 0, 45]){
-            cylinder(wallz, botrad - wallz, botrad, $fn = 4, true);
+            cylinder(z, brad, rad, $fn = 4, true);
         }
     }
+	// we have a matrix of inverted pyramids at the
+	// bottom to fight warping
+	bd = brad * 2;
+	balt = bd / sqrt(2);
+	count = 20;
+	gap = balt / count;
+	bheight = 5;
+	prad = sqrt(2 * gap * gap) / 2;
+	echo("prad: ", prad);
+	for(x = [-count / 2:1:count / 2 - 1]){
+	  for(y = [-count / 2:1:count / 2 - 1]){
+		translate([(x + 0.5) * gap, (y + 0.5) * gap, -bheight]){
+			rotate([0, 0, 45]){
+				cylinder(bheight, 3, prad, $fn = 4);
+			}
+		}
+	  }
+	}
 }
 
 // the fundamental structure
@@ -32,7 +51,7 @@ module croomcore(){
             cylinder(croomz - wallz, botrad, toprad, $fn = 4);
         }
     }
-    croombottom();
+    croombottom(botrad, wallz);
 }
 
 // the vast majority of the interior, removed
@@ -89,7 +108,7 @@ module acadaptermount(l){
 // screw holes are 6mm in from sides, so they start at
 // 6mm (through 10mm) and 50mm (through 54mm)
 module acadapterscrews(l){
-    translate([0, 60, 0]){
+    translate([0, 50, 0]){
         acadaptermount(l){
 			screw("M5", length = l);
 		}
@@ -124,9 +143,14 @@ module corners(){
     }
 }
 
-module lmsmount(l){
-	translate([0, 0, wallz]){
-		screw("M4", length = wallz);
+// M4 screw hole through a 5x5x5 cube.
+module mount(){
+	c = 5;
+	translate([0, 0, wallz + c / 2]){
+		difference(){
+			cube([c, c, c], true);
+			screw("M4", length = wallz + c);
+		}
 	}
 }
 
@@ -134,34 +158,29 @@ module lmsmount(l){
 module lmsmounts(){
     // 12->5V mounts
     translate([39.8, -totalxy / 2 + 20, 0]){
-       lmsmount(mh + 6);
+       mount();
     }
     translate([39.8, -totalxy / 2 + 36.4, 0]){
-       lmsmount(mh + 6);
+       mount();
     }
     translate([8, -totalxy / 2 + 36.4, 0]){
-       lmsmount(mh + 6);
+       mount();
     }
     translate([8, -totalxy / 2 + 20, 0]){
-       lmsmount(mh + 6);
+       mount();
     }
-}
-
-module perfmount(h){
-    screw("M4", length = wallz);
 }
 
 module perfmounts(){
-    h = mh + 6;
-    translate([-mh, -0.95 * totalxy / 2 + mh, wallz]){
-        perfmount(h);
+    translate([-mh, -0.95 * totalxy / 2 + mh, 0]){
+        mount();
         translate([-80 - 3.3, 0, 0]){
-            perfmount(h);
+            mount();
         }
         translate([0, 61.75 + 3.3, 0]){
-            perfmount(h);
+            mount();
             translate([-80 - 3.3, 0, 0]){
-                perfmount(h);
+                mount();
             }
         }
     }
@@ -169,7 +188,7 @@ module perfmounts(){
 
 // hole for AC wire
 module achole(){
-    translate([-botalt + croomwall / 2, 60, 0]){
+    translate([-botalt + croomwall / 2, 80, 0]){
         rotate([0, 180 - theta, 0]){
             translate([0, 0, wallz + 20]){
                 rotate([0, 90, 0]){
@@ -247,9 +266,7 @@ module croom(){
                 fanhole(20);
             }
         }
-		perfmounts();
-		lmsmounts();
-        achole();
+		achole();
         fancablehole();
     }
     lowershield();
@@ -257,6 +274,8 @@ module croom(){
     translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
     }
+	perfmounts();
+	lmsmounts();
     wirechannels();
     dropmotormount();
 }
