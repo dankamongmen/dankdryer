@@ -1,3 +1,9 @@
 [submodule "scad/BOSL2"]
 	path = scad/BOSL2
 	url = https://github.com/BelfrySCAD/BOSL2.git
+[submodule "main/HX711_IDF"]
+	path = main/HX711_IDF
+	url = https://github.com/akshayvernekar/HX711_IDF.git
+[submodule "esp32-s3/main/HX711_IDF"]
+	path = esp32-s3/main/HX711_IDF
+	url = https://github.com/akshayvernekar/HX711_IDF.git

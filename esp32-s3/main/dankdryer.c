@@ -8,6 +8,7 @@
 #include <math.h>
 #include <mdns.h>
 #include <cJSON.h>
+#include <HX711.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>
 #include <nvs_flash.h>
@@ -30,7 +31,9 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define TRIAC_GPIN GPIO_NUM_5     // heater triac gate
+#define HX711_DPIN GPIO_NUM_4     // hx711 data
+#define HX711_CPIN GPIO_NUM_5     // hx711 clock
+#define TRIAC_GPIN GPIO_NUM_6     // heater triac gate
 #define THERM_DATAPIN GPIO_NUM_7  // analog thermometer (ADC1)
 #define UPPER_TACHPIN GPIO_NUM_8  // upper chamber fan tachometer
 #define UPPER_PWMPIN GPIO_NUM_9   // upper chamber fan speed
@@ -56,6 +59,7 @@ static bool UsePersistentStore; // set true upon successful initialization
 static temperature_sensor_handle_t temp;
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
 static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
+static const ledc_channel_t MOTOR_CHAN = LEDC_CHANNEL_2;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 // defaults, some of which can be configured.
@@ -620,8 +624,10 @@ motor_state(void){
 static void
 set_motor(bool enabled){
   MotorState = enabled;
+  set_pwm(MOTOR_CHAN, 255);
+  gpio_level(MOTOR_AIN1, enabled);
+  gpio_level(MOTOR_AIN2, 0);
   gpio_level(MOTOR_STBY, enabled);
-  // FIXME complete
   printf("set motor %s\n", motor_state());
 }
 
@@ -823,11 +829,19 @@ int setup_sensors(void){
 
 // TB6612FNG
 static int
-setup_motor(gpio_num_t stbypin){
+setup_motor(gpio_num_t pwmpin, gpio_num_t a1pin, gpio_num_t a2pin, gpio_num_t stbypin){
+  if(initialize_25k_pwm(MOTOR_CHAN, pwmpin, LEDC_TIMER_2)){
+    return -1;
+  }
+  if(gpio_set_output(a1pin)){
+    return -1;
+  }
+  if(gpio_set_output(a2pin)){
+    return -1;
+  }
   if(gpio_set_output(stbypin)){
     return -1;
   }
-  // FIXME need others
   set_motor(false);
   return 0;
 }
@@ -857,7 +871,7 @@ setup(adc_channel_t* thermchan){
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
     set_failure(&SystemError);
   }
-  if(setup_motor(MOTOR_STBY)){
+  if(setup_motor(MOTOR_APWM, MOTOR_AIN1, MOTOR_AIN2, MOTOR_STBY)){
     set_failure(&SystemError);
   }
   if(setup_sensors()){
