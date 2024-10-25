@@ -1,5 +1,6 @@
 #include "nau7802.h"
 #include <esp_log.h>
+#include <freertos/FreeRTOS.h>
 
 static const char* TAG = "nau";
 
@@ -99,18 +100,27 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
-  // FIXME repeat this for some number of attempts
+  int counter = 0;
   uint8_t rbuf[1];
-  esp_err_t e;
-  if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
-    ESP_LOGW(TAG, "error %d requesting data via I2C", e);
-    return -1;
+#define RETRIES 10
+  while(counter < RETRIES){
+    esp_err_t e;
+    if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
+      ESP_LOGW(TAG, "error %d requesting data via I2C", e);
+      return -1;
+    }
+    vTaskDelay(pdMS_TO_TICKS(200));
+printf("register: 0x%02x\n", rbuf[0]);
+    if((rbuf[0] & NAU7802_PU_CTRL_PUR)){
+      break;
+    }
+    ++counter;
   }
-  vTaskDelay(pdMS_TO_TICKS(200));
-  if(!(rbuf[0] & NAU7802_PU_CTRL_PUR)){
+  if(counter == RETRIES){
     ESP_LOGW(TAG, "never saw powered on bit");
     return -1;
   }
+#undef RETRIES
   buf[2] = rbuf[0] | NAU7802_PU_CTRL_CS;
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
