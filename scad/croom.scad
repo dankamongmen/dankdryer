@@ -219,22 +219,17 @@ module fancablehole(){
 // we want to keep air from moving across the load
 // cell's surface, so we put a shield around it.
 module lowershield(){
-    translate([0, -1, wallz + loadcellmounth / 2]){
+    upperh = loadcellh;
+    translate([0, -1, wallz + (loadcellmounth + upperh) / 2]){
         difference(){
-            cube([shieldw + 4, 36 / 2, loadcellmounth], true);
-            cube([shieldw + 2, 34 / 2, loadcellmounth], true);
-        }
-        upperh = loadcellh;
-        // we need to still be able to install the
-        // load cell, though, so the shield is low
-        // on the back.
-        translate([0, 0, (loadcellmounth + upperh) / 2]){
-            difference(){
-                cube([shieldw + 4, 36 / 2, upperh], true);
-                translate([0, 2, 0]){
-                    cube([shieldw + 2, 34 / 2, upperh], true);
-                }
-            }
+            cube([shieldw + 4, 36 / 2, loadcellmounth + upperh], true);
+            cube([shieldw + 2, 34 / 2, loadcellmounth + upperh], true);
+			// we need to still be able to install the
+			// load cell, though, so the shield is low
+			// on the back.
+			translate([0, 1, loadcellmounth / 2]){
+				cube([shieldw + 2, 34 / 2, upperh], true);
+			}
         }
     }
 }
