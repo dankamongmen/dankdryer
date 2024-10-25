@@ -6,14 +6,14 @@ static const char* TAG = "nau";
 
 //Bits within the PU_CTRL register
 typedef enum {
-  NAU7802_PU_CTRL_RR = 0,
-  NAU7802_PU_CTRL_PUD,
-  NAU7802_PU_CTRL_PUA,
-  NAU7802_PU_CTRL_PUR,
-  NAU7802_PU_CTRL_CS,
-  NAU7802_PU_CTRL_CR,
-  NAU7802_PU_CTRL_OSCS,
-  NAU7802_PU_CTRL_AVDDS,
+  NAU7802_PU_CTRL_RR = 1,
+  NAU7802_PU_CTRL_PUD = 2,
+  NAU7802_PU_CTRL_PUA = 4,
+  NAU7802_PU_CTRL_PUR = 8,
+  NAU7802_PU_CTRL_CS = 16,
+  NAU7802_PU_CTRL_CR = 32,
+  NAU7802_PU_CTRL_OSCS = 64,
+  NAU7802_PU_CTRL_AVDDS = 128,
 } PU_CTRL_Bits;
 
 typedef enum {
@@ -81,10 +81,10 @@ nau7802_xmit(i2c_master_dev_handle_t i2c, const void* buf, size_t blen){
 }
 
 int nau7802_reset(i2c_master_dev_handle_t i2c){
-  uint8_t buf[3];
-  buf[0] = NAU7802_ADDRESS;
-  buf[1] = NAU7802_PU_CTRL;
-  buf[2] = NAU7802_PU_CTRL_RR;
+  uint8_t buf[] = {
+    NAU7802_PU_CTRL,
+    NAU7802_PU_CTRL_RR
+  };
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
@@ -93,38 +93,35 @@ int nau7802_reset(i2c_master_dev_handle_t i2c){
 }
 
 int nau7802_poweron(i2c_master_dev_handle_t i2c){
-  uint8_t buf[3];
-  buf[0] = NAU7802_ADDRESS;
-  buf[1] = NAU7802_PU_CTRL;
-  buf[2] = NAU7802_PU_CTRL_PUD | NAU7802_PU_CTRL_PUA;
+  uint8_t buf[] = {
+    NAU7802_PU_CTRL,
+    NAU7802_PU_CTRL_PUD | NAU7802_PU_CTRL_PUA
+  };
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
-  int counter = 0;
-  uint8_t rbuf[1];
-#define RETRIES 10
-  while(counter < RETRIES){
-    esp_err_t e;
-    if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
-      ESP_LOGW(TAG, "error %d requesting data via I2C", e);
-      return -1;
-    }
-    vTaskDelay(pdMS_TO_TICKS(200));
-printf("register: 0x%02x\n", rbuf[0]);
-    if((rbuf[0] & NAU7802_PU_CTRL_PUR)){
-      break;
-    }
-    ++counter;
-  }
-  if(counter == RETRIES){
-    ESP_LOGW(TAG, "never saw powered on bit");
+  uint8_t rbuf[2];
+  vTaskDelay(pdMS_TO_TICKS(200));
+  esp_err_t e;
+  if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), -1)) != ESP_OK){
+    ESP_LOGW(TAG, "error %d requesting data via I2C", e);
     return -1;
   }
-#undef RETRIES
-  buf[2] = rbuf[0] | NAU7802_PU_CTRL_CS;
+  if(!(rbuf[0] & NAU7802_PU_CTRL_PUR)){
+    ESP_LOGW(TAG, "didn't see powered-on bit");
+    return -1;
+  }
+  buf[1] = rbuf[0] | NAU7802_PU_CTRL_CS;
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
   ESP_LOGI(TAG, "successfully started NAU7802 cycle");
+  buf[0] = NAU7802_DEVICE_REV;
+  e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), -1);
+  if(e != ESP_OK){
+    ESP_LOGW(TAG, "error %d reading device revision code", e);
+    return -1;
+  }
+  ESP_LOGI(TAG, "device revision code: 0x%02x 0x%02x", rbuf[0], rbuf[1]);
   return 0;
 }
