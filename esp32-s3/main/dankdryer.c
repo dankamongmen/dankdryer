@@ -73,7 +73,7 @@ static adc_oneshot_unit_handle_t ADC1;
 static i2c_master_bus_handle_t I2C;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 static esp_mqtt_client_handle_t MQTTHandle;
-static bool FoundRC522, FoundNAU7802, FoundBME680;
+static bool FoundRC522, FoundBME680;
 
 typedef struct failure_indication {
   int r, g, b;
@@ -209,12 +209,8 @@ getAmbient(void){
 }
 
 float getWeight(void){
-  if(!FoundNAU7802){
-    return -1.0;
-  }
-  /*Load.wait_ready(); FIXME
-  return Load.read_average(5);*/
-  return 0;
+  unsigned long w = HX711_read_average(1);
+  return w;
 }
 
 // gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
@@ -276,19 +272,18 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
 }
 
 static int
-probe_i2c(i2c_master_bus_handle_t i2c, bool* rc522, bool* nau7802, bool* bme680){
+probe_i2c(i2c_master_bus_handle_t i2c, bool* rc522, bool* bme680){
   *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680");
-  *nau7802 = !probe_i2c_slave(i2c, 0x26, "NAU7802");
   // FIXME looks like RC522 might only be SPI? need check datasheet
   *rc522 = !probe_i2c_slave(i2c, 0x28, "RC522"); // FIXME might be 0x77?
-  if(!(*rc522 && *nau7802 && *bme680)){
+  if(!(*rc522 && *bme680)){
     return -1;
   }
   return 0;
 }
 
 static int
-setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* nau7802, bool* bme680){
+setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* bme680){
   i2c_master_bus_config_t i2cconf = {
     .i2c_port = -1,
     .sda_io_num = sda,
@@ -314,7 +309,7 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* nau7802, bool* bme6
     fprintf(stderr, "error (%s) creating i2c master dev\n", esp_err_to_name(e));
 		return -1;
 	}
-  if(probe_i2c(I2C, rc522, nau7802, bme680)){
+  if(probe_i2c(I2C, rc522, bme680)){
     return -1;
   }
   return 0;
@@ -821,9 +816,10 @@ int setup_network(void){
   return 0;
 }
 
-// NAU7802
+// HX711
 int setup_sensors(void){
-  fprintf(stderr, "we don't yet have nau7802 support\n");
+  // handles pin setup
+  HX711_init(HX711_DPIN, HX711_CPIN, eGAIN_128);
   return 0;
 }
 
@@ -865,7 +861,7 @@ setup(adc_channel_t* thermchan){
   if(setup_esp32temp(THERM_DATAPIN, thermchan)){
     set_failure(&SystemError);
   }
-  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundRC522, &FoundNAU7802, &FoundBME680)){
+  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundRC522, &FoundBME680)){
     set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
@@ -880,7 +876,6 @@ setup(adc_channel_t* thermchan){
   if(setup_network()){
     set_failure(&NetworkError);
   }
-  //gpio_dump_all_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
   if(!StartupFailure){
     set_failure(&PostFailure);
   }
