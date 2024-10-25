@@ -84,7 +84,11 @@ int nau7802_reset(i2c_master_dev_handle_t i2c){
   buf[0] = NAU7802_ADDRESS;
   buf[1] = NAU7802_PU_CTRL;
   buf[2] = NAU7802_PU_CTRL_RR;
-  return nau7802_xmit(i2c, buf, sizeof(buf));
+  if(nau7802_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
+  ESP_LOGI(TAG, "successfully reset NAU7802");
+  return 0;
 }
 
 int nau7802_poweron(i2c_master_dev_handle_t i2c){
@@ -95,7 +99,21 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
-  // FIXME check for NAU7802_PU_CTRL_PUR in the CTRL register
-  // FIXME set NAU7802_PU_CTRL_CS in CTRL (cycle start)
+  // FIXME repeat this after a number of delays
+  uint8_t rbuf[1];
+  esp_err_t e;
+  if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGW(TAG, "error %d requesting data via I2C", e);
+    return -1;
+  }
+  if(!(rbuf[0] & NAU7802_PU_CTRL_PUR)){
+    ESP_LOGW(TAG, "never saw powered on bit");
+    return -1;
+  }
+  buf[2] = rbuf[0] | NAU7802_PU_CTRL_CS;
+  if(nau7802_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
+  ESP_LOGI(TAG, "successfully started NAU7802 cycle");
   return 0;
 }
