@@ -8,9 +8,9 @@
 #include <math.h>
 #include <mdns.h>
 #include <cJSON.h>
-#include <HX711.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>
+#include <led_strip.h>
 #include <nvs_flash.h>
 #include <esp_timer.h>
 #include <lwip/netif.h>
@@ -31,8 +31,8 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define HX711_DPIN GPIO_NUM_4     // hx711 data
-#define HX711_CPIN GPIO_NUM_5     // hx711 clock
+#define I2C_SDAPIN GPIO_NUM_4     // I2C data
+#define I2C_SCLPIN GPIO_NUM_5     // I2C clock
 #define TRIAC_GPIN GPIO_NUM_6     // heater triac gate
 #define THERM_DATAPIN GPIO_NUM_7  // analog thermometer (ADC1)
 #define UPPER_TACHPIN GPIO_NUM_8  // upper chamber fan tachometer
@@ -43,26 +43,24 @@
 #define MOTOR_AIN1 GPIO_NUM_11    // motor control 1
 #define MOTOR_AIN2 GPIO_NUM_12    // motor control 2
 #define MOTOR_STBY GPIO_NUM_13    // motor standby
-#define I2C_SDAPIN GPIO_NUM_14    // I2C data
-#define I2C_SCLPIN GPIO_NUM_15    // I2C clock
 //#define RC522_INTPIN GPIO_NUM_8   // RFID interrupt
 #define LOWER_TACHPIN GPIO_NUM_16 // lower chamber fan tachometer
 #define LOWER_PWMPIN GPIO_NUM_18  // lower chamber fan speed
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
-// 38 is used for RGB LED
+#define RGB_PIN GPIO_NUM_48       // onboard RGB neopixel
 // 45 and 46 are strapping pins
 
 #define NVS_HANDLE_NAME "pstore"
 
-static bool UsePersistentStore; // set true upon successful initialization
-static temperature_sensor_handle_t temp;
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
 static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
 static const ledc_channel_t MOTOR_CHAN = LEDC_CHANNEL_2;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 // defaults, some of which can be configured.
+static led_strip_handle_t Neopixel;
+static temperature_sensor_handle_t temp;
 static bool MotorState;
 static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 64;
@@ -73,7 +71,8 @@ static adc_oneshot_unit_handle_t ADC1;
 static i2c_master_bus_handle_t I2C;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 static esp_mqtt_client_handle_t MQTTHandle;
-static bool FoundRC522, FoundBME680;
+static bool UsePersistentStore; // set true upon successful initialization
+static bool FoundRC522, FoundNAU7802, FoundBME680;
 
 typedef struct failure_indication {
   int r, g, b;
@@ -92,13 +91,13 @@ static bool StartupFailure;
 static const failure_indication SystemError = { 64, 0, 0 };
 static const failure_indication NetworkError = { 64, 0, 64 };
 static const failure_indication PostFailure = { 0, 0, 0 };
-static const failure_indication NetworkIndications[NETWORK_STATE_COUNT] = {
+/*static const failure_indication NetworkIndications[NETWORK_STATE_COUNT] = {
   { 0, 255, 0 },  // WIFI_INVALID
   { 0, 192, 0 },  // WIFI_CONNECTING
   { 0, 128, 0 },  // NET_CONNECTING
   { 0, 64, 0 },   // MQTT_CONNECTING
   { 0, 0, 0 }     // MQTT_ESTABLISHED
-};
+};*/
 
 static const esp_mqtt_client_config_t MQTTConfig = {
   .broker = {
@@ -209,8 +208,7 @@ getAmbient(void){
 }
 
 float getWeight(void){
-  unsigned long w = HX711_read_average(1);
-  return w;
+  return -1.0;
 }
 
 // gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
@@ -272,18 +270,61 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
 }
 
 static int
-probe_i2c(i2c_master_bus_handle_t i2c, bool* rc522, bool* bme680){
+probe_i2c(i2c_master_bus_handle_t i2c, bool* rc522, bool* nau7802, bool* bme680){
   *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680");
+  *nau7802 = !probe_i2c_slave(i2c, 0x2A, "NAU7802");
   // FIXME looks like RC522 might only be SPI? need check datasheet
   *rc522 = !probe_i2c_slave(i2c, 0x28, "RC522"); // FIXME might be 0x77?
-  if(!(*rc522 && *bme680)){
+  if(!(*rc522 && *nau7802 && *bme680)){
     return -1;
   }
   return 0;
 }
 
 static int
-setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* bme680){
+rgbset(unsigned r, unsigned g, unsigned b){
+  esp_err_t e = led_strip_set_pixel(Neopixel, 0, r, g, b);
+  if(e != ESP_OK){
+    fprintf(stderr, "failure %d setting LED\n", e);
+    return -1;
+  }
+  if((e = led_strip_refresh(Neopixel)) != ESP_OK){
+    fprintf(stderr, "failure %d refreshing LED\n", e);
+    return -1;
+  }
+  return 0;
+}
+
+static int
+setup_neopixel(gpio_num_t pin){
+  if(gpio_set_output(pin)){
+    return -1;
+  }
+  led_strip_config_t sconf = {
+    .strip_gpio_num = pin,
+    .max_leds = 1,
+    .led_pixel_format = LED_PIXEL_FORMAT_GRB,
+    .led_model = LED_MODEL_WS2812,
+    .flags.invert_out = false,
+  };
+  led_strip_rmt_config_t rconf = {
+    .clk_src = RMT_CLK_SRC_DEFAULT,
+    .resolution_hz = 10 * 1000 * 1000,
+    .flags.with_dma = false,
+  };
+  esp_err_t e;
+  if((e = led_strip_new_rmt_device(&sconf, &rconf, &Neopixel)) != ESP_OK){
+    fprintf(stderr, "failure %d initializing LED at %d\n", e, pin);
+    return -1;
+  }
+  if(rgbset(64, 64, 64)){
+    return -1;
+  }
+  return 0;
+}
+
+static int
+setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* nau7802, bool* bme680){
   i2c_master_bus_config_t i2cconf = {
     .i2c_port = -1,
     .sda_io_num = sda,
@@ -309,7 +350,7 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* bme680){
     fprintf(stderr, "error (%s) creating i2c master dev\n", esp_err_to_name(e));
 		return -1;
 	}
-  if(probe_i2c(I2C, rc522, bme680)){
+  if(probe_i2c(I2C, rc522, nau7802, bme680)){
     return -1;
   }
   return 0;
@@ -318,7 +359,7 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* bme680){
 // the esp32-s3 has a built in temperature sensor, which we enable.
 // we furthermore set up the LM35 pin for input/ADC.
 static int
-setup_esp32temp(gpio_num_t thermpin, adc_channel_t* channel){
+setup_temp(gpio_num_t thermpin, adc_channel_t* channel){
   temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
   if(temperature_sensor_install(&conf, &temp) != ESP_OK){
     fprintf(stderr, "failed to set up thermostat\n");
@@ -535,8 +576,7 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
 
 static void
 set_led(const struct failure_indication *nin){
-  fprintf(stderr, "FIXME we don't yet have neopixel support\n");
-  // FIXME neopixelWrite(RGB_BUILTIN, nin->r, nin->g, nin->b);
+  rgbset(nin->r, nin->g, nin->b);
 }
 
 static void
@@ -553,7 +593,7 @@ set_network_state(int state){
   NetworkState = state;
   if(state != WIFI_INVALID){ // if invalid, leave any initial failure status up
     if(state < NETWORK_STATE_COUNT){
-      set_led(&NetworkIndications[state]);
+      //set_led(&NetworkIndications[state]);
     }
   }
 }
@@ -816,10 +856,7 @@ int setup_network(void){
   return 0;
 }
 
-// HX711
 int setup_sensors(void){
-  // handles pin setup
-  HX711_init(HX711_DPIN, HX711_CPIN, eGAIN_128);
   return 0;
 }
 
@@ -844,9 +881,7 @@ setup_motor(gpio_num_t pwmpin, gpio_num_t a1pin, gpio_num_t a2pin, gpio_num_t st
 
 static void
 setup(adc_channel_t* thermchan){
-  // FIXME
-  //static const failure_indication PreFailure = { 64, 64, 64 };
-  //neopixelWrite(RGB_BUILTIN, PreFailure.r, PreFailure.g, PreFailure.b);
+  setup_neopixel(RGB_PIN);
   printf("dankdryer v" VERSION "\n");
   if(!init_pstore()){
     if(!read_pstore()){
@@ -858,10 +893,10 @@ setup(adc_channel_t* thermchan){
     fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
     set_failure(&SystemError);
   }
-  if(setup_esp32temp(THERM_DATAPIN, thermchan)){
+  if(setup_temp(THERM_DATAPIN, thermchan)){
     set_failure(&SystemError);
   }
-  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundRC522, &FoundBME680)){
+  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundRC522, &FoundNAU7802, &FoundBME680)){
     set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
@@ -876,6 +911,7 @@ setup(adc_channel_t* thermchan){
   if(setup_network()){
     set_failure(&NetworkError);
   }
+  //gpio_dump_all_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
   if(!StartupFailure){
     set_failure(&PostFailure);
   }

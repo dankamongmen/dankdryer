@@ -24,24 +24,6 @@ module croombottom(rad, z){
             cylinder(z, brad, rad, $fn = 4, true);
         }
     }
-	// we have a matrix of inverted pyramids at the
-	// bottom to fight warping
-	bd = brad * 2;
-	balt = bd / sqrt(2);
-	count = 20;
-	gap = balt / count;
-	bheight = 5;
-	prad = sqrt(2 * gap * gap) / 2;
-	echo("prad: ", prad);
-	for(x = [-count / 2:1:count / 2 - 1]){
-	  for(y = [-count / 2:1:count / 2 - 1]){
-		translate([(x + 0.5) * gap, (y + 0.5) * gap, -bheight]){
-			rotate([0, 0, 45]){
-				cylinder(bheight, 3, prad, $fn = 4);
-			}
-		}
-	  }
-	}
 }
 
 // the fundamental structure
