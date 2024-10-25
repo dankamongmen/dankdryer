@@ -74,6 +74,7 @@ static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 static esp_mqtt_client_handle_t MQTTHandle;
 static bool UsePersistentStore; // set true upon successful initialization
 static bool FoundRC522, FoundNAU7802, FoundBME680;
+static i2c_master_dev_handle_t NAU7802;
 
 typedef struct failure_indication {
   int r, g, b;
@@ -273,7 +274,11 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
 static int
 probe_i2c(i2c_master_bus_handle_t i2c, bool* rc522, bool* nau7802, bool* bme680){
   *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680");
-  nau7802_detect(i2c, nau7802);
+  if(nau7802_detect(i2c, &NAU7802)){
+    *nau7802 = false;
+  }else{
+    *nau7802 = true;
+  }
   // FIXME looks like RC522 might only be SPI? need check datasheet
   *rc522 = !probe_i2c_slave(i2c, 0x28, "RC522"); // FIXME might be 0x77?
   if(!(*rc522 && *nau7802 && *bme680)){
@@ -331,7 +336,7 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* nau7802, bool* bme6
     .sda_io_num = sda,
     .scl_io_num = scl,
     .clk_source = I2C_CLK_SRC_DEFAULT,
-    .flags.enable_internal_pullup = true,
+    .flags.enable_internal_pullup = false,
   };
   if(gpio_set_inputoutput_opendrain(sda) || gpio_set_inputoutput_opendrain(scl)){
     return -1;
@@ -341,16 +346,6 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* nau7802, bool* bme6
     fprintf(stderr, "error (%s) creating i2c master bus\n", esp_err_to_name(e));
     return -1;
   }
-  i2c_device_config_t devcfg = {
-    .dev_addr_length = I2C_ADDR_BIT_LEN_7,
-    .device_address = 0x58,
-    .scl_speed_hz = 100000,
-	};
-	i2c_master_dev_handle_t dev_handle;
-	if((e = i2c_master_bus_add_device(I2C, &devcfg, &dev_handle)) != ESP_OK){
-    fprintf(stderr, "error (%s) creating i2c master dev\n", esp_err_to_name(e));
-		return -1;
-	}
   if(probe_i2c(I2C, rc522, nau7802, bme680)){
     return -1;
   }
@@ -857,7 +852,23 @@ int setup_network(void){
   return 0;
 }
 
+static int
+setup_nau7802(i2c_master_dev_handle_t dev){
+  if(nau7802_reset(dev)){
+    return -1;
+  }
+  if(nau7802_poweron(dev)){
+    return -1;
+  }
+  return 0;
+}
+
 int setup_sensors(void){
+  if(FoundNAU7802){
+    if(setup_nau7802(NAU7802)){
+      return -1;
+    }
+  }
   return 0;
 }
 
