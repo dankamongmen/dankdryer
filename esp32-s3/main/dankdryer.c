@@ -4,6 +4,7 @@
 #define DEVICE "dankdryer"
 #define CLIENTID DEVICE VERSION
 #include "dryer-network.h"
+#include "nau7802.h"
 #include <nvs.h>
 #include <math.h>
 #include <mdns.h>
@@ -48,7 +49,7 @@
 #define LOWER_PWMPIN GPIO_NUM_18  // lower chamber fan speed
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
-#define RGB_PIN GPIO_NUM_48       // onboard RGB neopixel
+#define RGB_PIN GPIO_NUM_46       // onboard RGB neopixel
 // 45 and 46 are strapping pins
 
 #define NVS_HANDLE_NAME "pstore"
@@ -272,7 +273,7 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
 static int
 probe_i2c(i2c_master_bus_handle_t i2c, bool* rc522, bool* nau7802, bool* bme680){
   *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680");
-  *nau7802 = !probe_i2c_slave(i2c, 0x2A, "NAU7802");
+  nau7802_detect(i2c, nau7802);
   // FIXME looks like RC522 might only be SPI? need check datasheet
   *rc522 = !probe_i2c_slave(i2c, 0x28, "RC522"); // FIXME might be 0x77?
   if(!(*rc522 && *nau7802 && *bme680)){
