@@ -210,7 +210,7 @@ getAmbient(void){
 }
 
 float getWeight(void){
-  return -1.0;
+  return nau7802_read(NAU7802);
 }
 
 // gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
