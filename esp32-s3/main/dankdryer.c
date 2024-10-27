@@ -266,7 +266,7 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
   esp_err_t e;
   printf("probing for %s (I2C 0x%02x)...", dev, address);
   fflush(stdout);
-  if((e = i2c_master_probe(i2c, address, -1)) != ESP_OK){
+  if((e = i2c_master_probe(i2c, address, TIMEOUT_MS)) != ESP_OK){
     fprintf(stderr, "couldn't find %s (%s)\n", dev, esp_err_to_name(e));
     return -1;
   }
