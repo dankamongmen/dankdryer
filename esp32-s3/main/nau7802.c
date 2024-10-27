@@ -51,7 +51,7 @@ typedef enum {
 
 int nau7802_detect(i2c_master_bus_handle_t i2c, i2c_master_dev_handle_t* i2cnau){
   const unsigned addr = NAU7802_ADDRESS;
-  esp_err_t e = i2c_master_probe(i2c, addr, -1);
+  esp_err_t e = i2c_master_probe(i2c, addr, TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGW(TAG, "error %d detecting NAU7802 at 0x%02x", e, addr);
     return -1;
@@ -101,9 +101,10 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
     return -1;
   }
   uint8_t rbuf[2];
+  // FIXME i think it's actually 200 microseconds, not milliseconds?
   vTaskDelay(pdMS_TO_TICKS(200));
   esp_err_t e;
-  if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), -1)) != ESP_OK){
+  if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
     ESP_LOGW(TAG, "error %d requesting data via I2C", e);
     return -1;
   }
@@ -117,11 +118,15 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   }
   ESP_LOGI(TAG, "successfully started NAU7802 cycle");
   buf[0] = NAU7802_DEVICE_REV;
-  e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), -1);
+  e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGW(TAG, "error %d reading device revision code", e);
     return -1;
   }
   ESP_LOGI(TAG, "device revision code: 0x%02x 0x%02x", rbuf[0], rbuf[1]);
   return 0;
+}
+
+float nau7802_read(i2c_master_dev_handle_t i2c){
+  return -1.0;
 }
