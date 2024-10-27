@@ -47,7 +47,6 @@ typedef enum {
 } Scale_Registers;
 
 #define NAU7802_ADDRESS 0x2A
-#define TIMEOUT_MS 1000 // FIXME
 
 int nau7802_detect(i2c_master_bus_handle_t i2c, i2c_master_dev_handle_t* i2cnau){
   const unsigned addr = NAU7802_ADDRESS;

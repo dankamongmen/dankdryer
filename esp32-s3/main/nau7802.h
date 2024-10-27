@@ -22,4 +22,6 @@ int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain);
 // read the current weight. returns a negative number on error.
 float nau7802_read(i2c_master_dev_handle_t i2c);
 
+#define TIMEOUT_MS 1000 // FIXME why 1s?
+
 #endif
