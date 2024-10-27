@@ -6,13 +6,16 @@
 #include <driver/i2c_master.h>
 
 // probe the I2C bus for an NAU7802. if it is found, configure i2cnau
-// as a device handle for it, and return 0.
+// as a device handle for it, and return 0. return non-zero on error.
 int nau7802_detect(i2c_master_bus_handle_t i2c, i2c_master_dev_handle_t* i2cnau);
 
-// send the reset command w/ timeout
+// send the reset command w/ timeout. returns non-zero on error.
 int nau7802_reset(i2c_master_dev_handle_t i2c);
 
-// send the poweron command w/ timeout
+// send the poweron command w/ timeout. returns non-zero on error.
 int nau7802_poweron(i2c_master_dev_handle_t i2c);
+
+// read the current weight. returns a negative number on error.
+float nau7802_read(i2c_master_dev_handle_t i2c);
 
 #endif
