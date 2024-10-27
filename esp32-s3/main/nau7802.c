@@ -143,7 +143,6 @@ int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain){
     return -1.0;
   }
   ESP_LOGI(TAG, "CTRL1: 0x%02x 0x%02x", rbuf[0], rbuf[1]);
-  // FIXME set up buf[1]
   buf[1] = rbuf[1] & 0xf8;
   if(gain >= 16){
     buf[1] |= 0x4;
@@ -157,11 +156,6 @@ int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain){
   e = i2c_master_transmit_receive(i2c, buf, 2, rbuf, sizeof(rbuf), TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGW(TAG, "error %s writing CTRL1", esp_err_to_name(e));
-    return -1.0;
-  }
-  e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS);
-  if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %s acquiring CTRL1", esp_err_to_name(e));
     return -1.0;
   }
   if(rbuf[1] != buf[1]){

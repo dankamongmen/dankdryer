@@ -210,6 +210,9 @@ getAmbient(void){
 }
 
 float getWeight(void){
+  if(!FoundNAU7802){
+    return -1.0;
+  }
   return nau7802_read(NAU7802);
 }
 
