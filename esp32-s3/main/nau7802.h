@@ -15,6 +15,10 @@ int nau7802_reset(i2c_master_dev_handle_t i2c);
 // send the poweron command w/ timeout. returns non-zero on error.
 int nau7802_poweron(i2c_master_dev_handle_t i2c);
 
+// set the gain (default 1). can be any power of 2 from 1 to 128.
+// confirms the set and returns 0 on success, non-zero on failure.
+int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain);
+
 // read the current weight. returns a negative number on error.
 float nau7802_read(i2c_master_dev_handle_t i2c);
 

@@ -860,6 +860,9 @@ setup_nau7802(i2c_master_dev_handle_t dev){
   if(nau7802_poweron(dev)){
     return -1;
   }
+  if(nau7802_setgain(dev, 128)){
+    return -1;
+  }
   return 0;
 }
 

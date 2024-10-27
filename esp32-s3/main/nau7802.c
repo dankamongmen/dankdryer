@@ -127,11 +127,54 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   return 0;
 }
 
+int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain){
+  if(gain > 128 || gain == 0 || (gain & (gain - 1))){
+    ESP_LOGW(TAG, "illegal gain value %u", gain);
+    return -1;
+  }
+  uint8_t buf[] = {
+    NAU7802_CTRL1,
+    0xff
+  };
+  uint8_t rbuf[2];
+  esp_err_t e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS);
+  if(e != ESP_OK){
+    ESP_LOGW(TAG, "error %s acquiring CTRL1", esp_err_to_name(e));
+    return -1.0;
+  }
+  ESP_LOGI(TAG, "CTRL1: 0x%02x 0x%02x", rbuf[0], rbuf[1]);
+  // FIXME set up buf[1]
+  buf[1] = rbuf[1] & 0xf8;
+  if(gain >= 16){
+    buf[1] |= 0x4;
+  }
+  if(gain > 32 || (gain < 16 && gain > 2)){
+    buf[1] |= 0x2;
+  }
+  if(gain == 128 || gain == 32 || gain == 8 || gain == 2){
+    buf[1] |= 0x1;
+  }
+  e = i2c_master_transmit_receive(i2c, buf, 2, rbuf, sizeof(rbuf), TIMEOUT_MS);
+  if(e != ESP_OK){
+    ESP_LOGW(TAG, "error %s writing CTRL1", esp_err_to_name(e));
+    return -1.0;
+  }
+  e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS);
+  if(e != ESP_OK){
+    ESP_LOGW(TAG, "error %s acquiring CTRL1", esp_err_to_name(e));
+    return -1.0;
+  }
+  if(rbuf[1] != buf[1]){
+    ESP_LOGW(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
+    return -1;
+  }
+  return 0;
+}
+
 float nau7802_read(i2c_master_dev_handle_t i2c){
-  // FIXME need first check for data ready
   uint8_t reg = NAU7802_PU_CTRL;
   uint8_t r0[2], r1[2], r2[2];
-  esp_err_t e = i2c_master_transmit_receive(i2c, &reg, sizeof(reg), r2, sizeof(r2), TIMEOUT_MS);
+  esp_err_t e = i2c_master_transmit_receive(i2c, &reg, 1, r2, 2, TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGW(TAG, "error %s checking CR", esp_err_to_name(e));
     return -1.0;
@@ -142,19 +185,19 @@ float nau7802_read(i2c_master_dev_handle_t i2c){
     return -1.0;
   }
   reg = NAU7802_ADCO_B2;
-  e = i2c_master_transmit_receive(i2c, &reg, sizeof(reg), r2, sizeof(r2), TIMEOUT_MS);
+  e = i2c_master_transmit_receive(i2c, &reg, 1, r2, 2, TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGW(TAG, "error %s reading ADC2", esp_err_to_name(e));
     return -1.0;
   }
   reg = NAU7802_ADCO_B1;
-  e = i2c_master_transmit_receive(i2c, &reg, sizeof(reg), r1, sizeof(r1), TIMEOUT_MS);
+  e = i2c_master_transmit_receive(i2c, &reg, 1, r1, 2, TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGW(TAG, "error %s reading ADC1", esp_err_to_name(e));
     return -1.0;
   }
   reg = NAU7802_ADCO_B0;
-  e = i2c_master_transmit_receive(i2c, &reg, sizeof(reg), r0, sizeof(r0), TIMEOUT_MS);
+  e = i2c_master_transmit_receive(i2c, &reg, 1, r0, 2, TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGW(TAG, "error %s reading ADC0", esp_err_to_name(e));
     return -1.0;
