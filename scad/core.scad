@@ -109,7 +109,7 @@ module fanhole(h){
     rotate([90, 0, 0]){
         cylinder(h, 80 / 2, 80 / 2, true);
     }
-    fanmounts(h);
+    fanmounts(6);
 }
 
 acadapterh = 30;
