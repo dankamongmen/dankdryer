@@ -26,6 +26,19 @@ module ceramheat230(height){
     }
 }
 
+// three small holes for the thermometer's leads
+module thermholes(h){
+	translate([-40, 10, h]){
+		cylinder(h, 0.5, 0.5);
+		translate([2, -2, 0]){
+			cylinder(h, 0.5, 0.5);
+			translate([2, -2, 0]){
+				cylinder(h, 0.5, 0.5);
+			}
+		}
+	}
+}
+
 // 2500mm² worth of air passage through one side of floor.
 // the fan is 80mm x 80mm, suggesting 6400 (and thus 3200 per
 // side), but it's actually only π40² or ~5027.
@@ -206,12 +219,12 @@ module hotbox(){
         translate([-42, -40, 0]){
             rc522holes(wallz);
 	    }
-	    translate([55, -55, 0]){
+	    translate([55, -55	, 0]){
 			rotate([0, 0, 45]){
 				relay3v(wallz);
 			}
 		}
-     
+		thermholes(wallz);
         // we want to clear everything in the central
         // cylinder from the floor up.
         cheight = totalz - wallz;
