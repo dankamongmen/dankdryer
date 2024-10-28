@@ -28,12 +28,12 @@ module ceramheat230(height){
 
 // three small holes for the thermometer's leads
 module thermholes(h){
-	translate([-40, 10, h]){
-		cylinder(h, 0.5, 0.5);
+	translate([-40, 10, -h / 2]){
+		cylinder(h * 10, 0.5, 0.5);
 		translate([2, -2, 0]){
-			cylinder(h, 0.5, 0.5);
+			cylinder(h * 10, 0.5, 0.5);
 			translate([2, -2, 0]){
-				cylinder(h, 0.5, 0.5);
+				cylinder(h * 10, 0.5, 0.5);
 			}
 		}
 	}
@@ -221,7 +221,7 @@ module hotbox(){
 	    }
 	    translate([55, -55	, 0]){
 			rotate([0, 0, 45]){
-				relay3v(wallz);
+				relay3v(wallz + 10);
 			}
 		}
 		thermholes(wallz);
