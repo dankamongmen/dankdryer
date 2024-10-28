@@ -103,7 +103,7 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   // FIXME i think it's actually 200 microseconds, not milliseconds?
   vTaskDelay(pdMS_TO_TICKS(200));
   esp_err_t e;
-  if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
+  if((e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
     ESP_LOGW(TAG, "error %d requesting data via I2C", e);
     return -1;
   }
@@ -159,6 +159,50 @@ int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain){
   }
   if(rbuf[1] != buf[1]){
     ESP_LOGW(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
+    return -1;
+  }
+  return 0;
+}
+
+int nau7802_setldo(i2c_master_dev_handle_t i2c, nau7802_ldo_mode mode){
+  if(mode < NAU7802_LDO_24V || mode > NAU7802_LDO_45V){
+    ESP_LOGW(TAG, "illegal LDO mode %d", mode);
+    return -1;
+  }
+  uint8_t buf[] = {
+    NAU7802_CTRL1,
+    0xff
+  };
+  uint8_t rbuf[2];
+  esp_err_t e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS);
+  if(e != ESP_OK){
+    ESP_LOGW(TAG, "error %s acquiring CTRL1", esp_err_to_name(e));
+    return -1.0;
+  }
+  ESP_LOGI(TAG, "CTRL1: 0x%02x 0x%02x", rbuf[0], rbuf[1]);
+  buf[1] = rbuf[1] & 0xc7;
+  buf[1] |= mode << 3u;
+  e = i2c_master_transmit_receive(i2c, buf, 2, rbuf, sizeof(rbuf), TIMEOUT_MS);
+  if(e != ESP_OK){
+    ESP_LOGW(TAG, "error %s writing CTRL1", esp_err_to_name(e));
+    return -1.0;
+  }
+  if(rbuf[1] != buf[1]){
+    ESP_LOGW(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
+    return -1;
+  }
+  buf[0] = NAU7802_PU_CTRL;
+  if((e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGW(TAG, "error %d requesting data via I2C", e);
+    return -1;
+  }
+  buf[1] = rbuf[1] | 0x80;
+  if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf), rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGW(TAG, "error %d requesting data via I2C", e);
+    return -1;
+  }
+  if(rbuf[1] != buf[1]){
+    ESP_LOGW(TAG, "PU_CTRL reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
     return -1;
   }
   return 0;

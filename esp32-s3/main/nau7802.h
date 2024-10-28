@@ -19,6 +19,20 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c);
 // confirms the set and returns 0 on success, non-zero on failure.
 int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain);
 
+typedef enum {
+  NAU7802_LDO_24V,
+  NAU7802_LDO_27V,
+  NAU7802_LDO_30V,
+  NAU7802_LDO_33V,
+  NAU7802_LDO_36V,
+  NAU7802_LDO_39V,
+  NAU7802_LDO_42V,
+  NAU7802_LDO_45V
+} nau7802_ldo_mode;
+
+// configure the LDO voltage and disable AVDD source.
+int nau7802_setldo(i2c_master_dev_handle_t i2c, nau7802_ldo_mode mode);
+
 // read the current weight. returns a negative number on error.
 float nau7802_read(i2c_master_dev_handle_t i2c);
 

@@ -32,13 +32,13 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define I2C_SDAPIN GPIO_NUM_4     // I2C data
-#define I2C_SCLPIN GPIO_NUM_5     // I2C clock
+#define UPPER_PWMPIN GPIO_NUM_4   // upper chamber fan speed
+#define MOTOR_APWM GPIO_NUM_5    // motor pwm
 #define TRIAC_GPIN GPIO_NUM_6     // heater triac gate
 #define THERM_DATAPIN GPIO_NUM_7  // analog thermometer (ADC1)
 #define UPPER_TACHPIN GPIO_NUM_8  // upper chamber fan tachometer
-#define UPPER_PWMPIN GPIO_NUM_9   // upper chamber fan speed
-#define MOTOR_APWM GPIO_NUM_10    // motor pwm
+#define I2C_SDAPIN GPIO_NUM_9     // I2C data
+#define I2C_SCLPIN GPIO_NUM_10     // I2C clock
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
 #define MOTOR_AIN1 GPIO_NUM_11    // motor control 1
@@ -635,6 +635,8 @@ ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
     if((err = esp_mqtt_client_start(MQTTHandle)) != ESP_OK){
       fprintf(stderr, "failure (%d %s) connecting to mqtt\n", err, esp_err_to_name(err));
     }
+  }else if(id == IP_EVENT_STA_LOST_IP){
+    fprintf(stderr, "lost ip address\n");
   }else{
     fprintf(stderr, "unknown ip event %ld\n", id);
   }
@@ -861,6 +863,9 @@ setup_nau7802(i2c_master_dev_handle_t dev){
     return -1;
   }
   if(nau7802_poweron(dev)){
+    return -1;
+  }
+  if(nau7802_setldo(dev, NAU7802_LDO_33V)){
     return -1;
   }
   if(nau7802_setgain(dev, 128)){
