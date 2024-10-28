@@ -98,6 +98,20 @@ module upcorner(){
             cylinder(3 * side / 2, side / 4, side / 2, true, $fn = 4);
         }
     }
+	// trim the two fat areas in quadrant I
+	// these eight areas might in the future
+	// become siting areas for dessicants...
+	hheight = totalz / 2;
+	translate([t, t, totalz - hheight]){
+		linear_extrude(hheight){
+			polygon([[-(side - 5), -5],
+					[-side * 2, -5],
+					[-(side - 5), -25]]);
+			polygon([[-5, -(side - 5)],
+					[-5, -side * 2],
+					[-25, -(side - 5)]]);
+		}
+	}
 }
 
 module upcorners(){
@@ -158,14 +172,14 @@ module rc522holes(l){
 }
 
 module relay3vside(l){
-    r = 1.3;
+    r = 1.5;
 	holegapl = 10 + r;
 	holegapw = 63 + r;
 	translate([-holegapw / 2 - r, -holegapl / 2 - r, l / 2]){
-		screw("M2.5", length = l);
+		screw("M3", length = l);
 	}
 	translate([holegapw / 2 + r, -holegapl / 2 - r, l / 2]){
-		screw("M2.5", length = l);
+		screw("M3", length = l);
 	}
 }
 
@@ -185,7 +199,6 @@ module hotbox(){
                 core();
                 // cut away top corners to reduce material costs
                 upcorners();
-
             }
         }
         translate([-40, -40, 0]){
