@@ -157,6 +157,25 @@ module rc522holes(l){
     }
 }
 
+module relay3vside(l){
+    r = 1.3;
+	holegapl = 10 + r;
+	holegapw = 63 + r;
+	translate([-holegapw / 2 - r, -holegapl / 2 - r, l / 2]){
+		screw("M2.5", length = l);
+	}
+	translate([holegapw / 2 + r, -holegapl / 2 - r, l / 2]){
+		screw("M2.5", length = l);
+	}
+}
+
+module relay3v(height){
+    relay3vside(height);
+	mirror([0, 1, 0]){
+        relay3vside(height);
+    }
+}
+
 module hotbox(){
     difference(){
         union(){
@@ -171,7 +190,13 @@ module hotbox(){
         }
         translate([-40, -40, 0]){
             rc522holes(wallz);
-        }
+	    }
+	    translate([50, -50, 0]){
+			rotate([0, 0, 45]){
+				relay3v(wallz);
+			}
+		}
+     
         // we want to clear everything in the central
         // cylinder from the floor up.
         cheight = totalz - wallz;
