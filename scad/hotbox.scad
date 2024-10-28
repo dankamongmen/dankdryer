@@ -158,7 +158,7 @@ module thermohole(){
 
 module rc522side(l){
     holer = 3.1 / 2;
-    translate([-33.5 / 2 - holer, -22.25 / 2 - holer, l / 2]){
+    translate([-35.5 / 2 - holer, -28.25 / 2 - holer, l / 2]){
         screw("M4", length = l);
     }
     translate([34 / 2 + holer, -22.25 / 2 - holer, l / 2]){
@@ -203,10 +203,10 @@ module hotbox(){
                 upcorners();
             }
         }
-        translate([-40, -40, 0]){
+        translate([-42, -40, 0]){
             rc522holes(wallz);
 	    }
-	    translate([50, -50, 0]){
+	    translate([55, -55, 0]){
 			rotate([0, 0, 45]){
 				relay3v(wallz);
 			}
@@ -238,7 +238,8 @@ module hotbox(){
         translate([0, totalxy / 4 + 8, wallz / 2]){
             ceramheat230(wallz);
         }
-        // hole and mounts for 150C thermocouple and heating element wires
+        // hole and mounts for 150C thermocouple and
+		// heating element wires
         translate([50, -15, wallz / 2]){
             rotate([0, 0, 45]){
                 thermohole();
