@@ -175,8 +175,8 @@ module rc522holes(l){
 
 module relay3vside(l){
     r = 1.5;
-	holegapl = 10 + r;
-	holegapw = 63 + r;
+	holegapl = 10;
+	holegapw = 63;
 	translate([-holegapw / 2 - r, -holegapl / 2 - r, l / 2]){
 		screw("M3", length = l);
 	}
