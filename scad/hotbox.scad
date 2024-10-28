@@ -101,6 +101,8 @@ module upcorner(){
 	// trim the two fat areas in quadrant I
 	// these eight areas might in the future
 	// become siting areas for dessicants...
+	// FIXME seems to *increase* material cost?!
+	/*
 	hheight = totalz / 2;
 	translate([t, t, totalz - hheight]){
 		linear_extrude(hheight){
@@ -111,7 +113,7 @@ module upcorner(){
 					[-5, -side * 2],
 					[-25, -(side - 5)]]);
 		}
-	}
+	}*/
 }
 
 module upcorners(){
