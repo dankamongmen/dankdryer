@@ -16,6 +16,8 @@
 #include <esp_timer.h>
 #include <lwip/netif.h>
 #include <esp_system.h>
+//#include <esp_adc/adc_cali.h>
+#include <esp_adc_cal.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <hal/ledc_types.h>
@@ -64,6 +66,7 @@ static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 static led_strip_handle_t Neopixel;
 static temperature_sensor_handle_t temp;
 static bool MotorState;
+static bool ADC1Calibrated;
 static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 64;
 static httpd_handle_t HTTPServ;
@@ -76,6 +79,7 @@ static esp_mqtt_client_handle_t MQTTHandle;
 static bool UsePersistentStore; // set true upon successful initialization
 static bool FoundRC522, FoundNAU7802, FoundBME680;
 static i2c_master_dev_handle_t NAU7802;
+static esp_adc_cal_characteristics_t ADC1Calibration;
 
 typedef struct failure_indication {
   int r, g, b;
@@ -388,11 +392,19 @@ setup_temp(gpio_num_t thermpin, adc_channel_t* channel){
   }
   adc_oneshot_chan_cfg_t ccfg = {
     .bitwidth = ADC_BITWIDTH_DEFAULT,
-    .atten = ADC_ATTEN_DB_12,
+    .atten = ADC_ATTEN_DB_6,
   };
   if((e = adc_oneshot_config_channel(ADC1, *channel, &ccfg)) != ESP_OK){
     fprintf(stderr, "error (%s) configuraing adc channel\n", esp_err_to_name(e));
     return -1;
+  }
+  if((e = esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_TP_FIT)) == ESP_OK){
+    printf("performing software ADC1 calibration\n");
+    esp_adc_cal_characterize(ADC_UNIT_1, ccfg.atten, ccfg.bitwidth, 0, &ADC1Calibration);
+    ADC1Calibrated = true;
+  }else{
+    fprintf(stderr, "error (%s) checking ADC1 calibration\n", esp_err_to_name(e));
+    // not a breaking error
   }
   return 0;
 }
@@ -1002,16 +1014,22 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
 
 static float
 getLM35(adc_channel_t channel){
-  int raw;
-  esp_err_t e = adc_oneshot_read(ADC1, channel, &raw);
+  esp_err_t e;
+  uint32_t vout;
+  if(ADC1Calibrated){
+    e = esp_adc_cal_get_voltage(channel, &ADC1Calibration, &vout);
+  }else{
+    int raw;
+    e = adc_oneshot_read(ADC1, channel, &raw);
+    // Dmax is 4095 on single read mode, 8191 on continuous
+    // Vmax is 3100mA with ADC_ATTEN_DB_12
+    vout = raw / 4095.0 * 3100.0;
+  }
   if(e != ESP_OK){
     fprintf(stderr, "error (%s) reading from adc\n", esp_err_to_name(e));
     return MIN_TEMP - 1;
   }
-  // Dmax is 4095 on single read mode, 8191 on continuous
-  // Vmax is 3100mA with ADC_ATTEN_DB_12
-  const unsigned vout = raw * 3100.0 / 4095.0;
-  return vout; // FIXME
+  return vout;
 }
 
 void app_main(void){
