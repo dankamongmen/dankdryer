@@ -29,6 +29,8 @@
 #define RPMMAX (1u << 14u)
 #define MIN_TEMP -80
 #define MAX_TEMP 200
+// minimum of 15s between mqtt publications
+#define MQTT_PUBLISH_QUANTUM_USEC 15000000ul
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
@@ -48,8 +50,8 @@
 #define LOWER_PWMPIN GPIO_NUM_18  // lower chamber fan speed
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
-#define RGB_PIN GPIO_NUM_46       // onboard RGB neopixel
 // 45 and 46 are strapping pins
+#define RGB_PIN GPIO_NUM_48       // onboard RGB neopixel
 
 #define NVS_HANDLE_NAME "pstore"
 #define LOAD_CELL_MAX 5000 // 5kg capable
@@ -975,14 +977,17 @@ temp_valid_p(float temp){
   return temp >= MIN_TEMP && temp <= MAX_TEMP;
 }
 
-void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
-               float weight, float hottemp){
+static inline bool
+weight_valid_p(float weight){
+  return weight >= 0 && weight <= 5000;
+}
+
+void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm, float hottemp){
   // FIXME check errors throughout!
   cJSON* root = cJSON_CreateObject();
   cJSON_AddNumberToObject(root, "uptimesec", curtime / 1000000ll);
-  if(temp_valid_p(dtemp)){
-    cJSON_AddNumberToObject(root, "dtemp", dtemp);
-    LastLowerTemp = dtemp;
+  if(temp_valid_p(LastLowerTemp)){
+    cJSON_AddNumberToObject(root, "dtemp", LastLowerTemp);
   }
   // UINT_MAX is sentinel for known bad reading, but anything over 3KRPM on
   // these Noctua NF-A8 fans is indicative of error; they max out at 2500.
@@ -996,9 +1001,8 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
   }
   cJSON_AddNumberToObject(root, "lpwm", LowerPWM);
   cJSON_AddNumberToObject(root, "upwm", UpperPWM);
-  if(weight >= 0 && weight < 5000){
-    cJSON_AddNumberToObject(root, "mass", weight);
-    LastWeight = weight;
+  if(weight_valid_p(LastWeight)){
+    cJSON_AddNumberToObject(root, "mass", LastWeight);
   }
   cJSON_AddNumberToObject(root, "motor", MotorState);
   if(temp_valid_p(hottemp)){
@@ -1042,10 +1046,16 @@ void app_main(void){
   setup(&thermchan);
   int64_t lasttime = esp_timer_get_time();
   while(1){
-    vTaskDelay(pdMS_TO_TICKS(15000));
+    vTaskDelay(pdMS_TO_TICKS(1000));
     // FIXME check bme680
     float ambient = getAmbient();
+    if(temp_valid_p(ambient)){
+      LastLowerTemp = ambient;
+    }
     float weight = getWeight();
+    if(weight_valid_p(weight)){
+      LastWeight = weight;
+    }
     printf("esp32 temp: %f weight: %f\n", ambient, weight);
     float hottemp = getLM35(thermchan);
     printf("lm35: %f\n", hottemp);
@@ -1054,7 +1064,9 @@ void app_main(void){
     printf("motor: %s\n", motor_state());
     int64_t curtime = esp_timer_get_time();
     getFanTachs(&lrpm, &urpm, curtime, lasttime);
-    send_mqtt(curtime, ambient, lrpm, urpm, weight, hottemp);
-    lasttime = curtime;
+    if(curtime - lasttime > MQTT_PUBLISH_QUANTUM_USEC){
+      send_mqtt(curtime, lrpm, urpm, hottemp);
+      lasttime = curtime;
+    }
   }
 }
