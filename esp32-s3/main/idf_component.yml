@@ -1,5 +1,6 @@
 ## IDF Component Manager Manifest File
 dependencies:
+  dankamongmen/nau7802: "*"
   espressif/led_strip: "*"
   espressif/mdns: "*"
   ## Required IDF version

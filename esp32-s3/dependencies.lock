@@ -1,14 +1,21 @@
 dependencies:
-  espressif/led_strip:
-    component_hash: 28c6509a727ef74925b372ed404772aeedf11cce10b78c3f69b3c66799095e2d
-    dependencies:
-    - name: idf
-      require: private
-      version: '>=4.4'
+  dankamongmen/nau7802:
+    component_hash: 4b7a711709cc7e7a9a42cdbd9ab4249da80cdebc8ffc16a49b2a7eebeb17cabf
+    dependencies: []
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 2.5.5
+    version: 0.0.2
+  espressif/led_strip:
+    component_hash: f907c58f722c58ab8545366668cfd8769cefb7d97a631a14e9d16234cc72bdff
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 3.0.0
   espressif/mdns:
     component_hash: af6306fe65d637a3683d1cf671508fcedd6b05f9ca029a8815abeab64001fb8d
     dependencies:
@@ -24,9 +31,10 @@ dependencies:
       type: idf
     version: 5.4.0
 direct_dependencies:
+- dankamongmen/nau7802
 - espressif/led_strip
 - espressif/mdns
 - idf
-manifest_hash: 6f08f409a2ffc53315846192aecbdbe98af30594cfbdaa9ec934e25a6b26bb92
+manifest_hash: a474d9945a64dbefdfdae4493038170466c7ab431674f79c0e8a66f1ee8d678b
 target: esp32s3
 version: 2.0.0
