@@ -391,7 +391,7 @@ setup_temp(gpio_num_t thermpin, adc_channel_t* channel){
   }
   adc_cali_curve_fitting_config_t caliconf = {
     .bitwidth = ADC_BITWIDTH_DEFAULT,
-    .atten = ADC_ATTEN_DB_6,
+    .atten = ADC_ATTEN_DB_2_5,
     .unit_id = ADC_UNIT_1,
   };
   if((e = adc_cali_create_scheme_curve_fitting(&caliconf, &ADC1Calibration)) != ESP_OK){
@@ -1023,8 +1023,8 @@ getLM35(adc_channel_t channel){
     }
   }
   // Dmax is 4095 on single read mode, 8191 on continuous
-  // Vmax is 3100mA with ADC_ATTEN_DB_12, 1750 with _6
-  float o = vout / 4095.0 * 1750.0;
+  // Vmax is 3100mA with ADC_ATTEN_DB_12, 1750 with _6, 1250 w/ _2_5
+  float o = vout / 4095.0 * 125;
   printf("ADC1: converted %d to %d -> %f\n", raw, vout, o);
   return o;
 }
