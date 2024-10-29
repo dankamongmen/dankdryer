@@ -24,7 +24,7 @@ spoolholed = 55;
 
 // we'll want some room around the spool, but the larger our
 // chamber, the more heat we lose.
-wallz = 3; // bottom thickness; don't want much
+wallz = 2; // bottom thickness; don't want much
 gapxy = 1; // gap between spool and walls; spool/walls might expand!
 wallxy = 5;
 topz = 5; // height of top piece
@@ -107,7 +107,7 @@ module fanmounts(h){
 
 module fanhole(h){
     rotate([90, 0, 0]){
-        cylinder(h, 80 / 2, 80 / 2, true);
+        cylinder(h, 80 / 2, 80 / 2, true, $fn = 64);
     }
     fanmounts(6);
 }
