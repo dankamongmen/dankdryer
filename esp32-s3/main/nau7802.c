@@ -228,38 +228,25 @@ int nau7802_setldo(i2c_master_dev_handle_t i2c, nau7802_ldo_mode mode){
 }
 
 float nau7802_read(i2c_master_dev_handle_t i2c){
-  uint8_t reg = NAU7802_PU_CTRL;
-  uint8_t r0[2], r1[2], r2[2];
-  esp_err_t e = i2c_master_transmit_receive(i2c, &reg, 1, r2, 2, TIMEOUT_MS);
-  if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %s checking CR", esp_err_to_name(e));
+  uint8_t r0, r1, r2;
+  if(nau7802_pu_ctrl(i2c, &r0)){
     return -1.0;
   }
-  if(!(r2[0] & NAU7802_PU_CTRL_CR)){
-    ESP_LOGW(TAG, "data not yet ready at ADC (0x%02x)", r2[0]);
+  if(!(r0 & NAU7802_PU_CTRL_CR)){
+    ESP_LOGW(TAG, "data not yet ready at ADC (0x%02x)", r0);
     // FIXME retry?
     return -1.0;
   }
-  reg = NAU7802_ADCO_B2;
-  e = i2c_master_transmit_receive(i2c, &reg, 1, r2, 2, TIMEOUT_MS);
-  if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %s reading ADC2", esp_err_to_name(e));
+  if(nau7802_readreg(i2c, NAU7802_ADCO_B2, "ADCO_B2", &r2)){
     return -1.0;
   }
-  reg = NAU7802_ADCO_B1;
-  e = i2c_master_transmit_receive(i2c, &reg, 1, r1, 2, TIMEOUT_MS);
-  if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %s reading ADC1", esp_err_to_name(e));
+  if(nau7802_readreg(i2c, NAU7802_ADCO_B1, "ADCO_B1", &r1)){
     return -1.0;
   }
-  reg = NAU7802_ADCO_B0;
-  e = i2c_master_transmit_receive(i2c, &reg, 1, r0, 2, TIMEOUT_MS);
-  if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %s reading ADC0", esp_err_to_name(e));
+  if(nau7802_readreg(i2c, NAU7802_ADCO_B0, "ADCO_B0", &r0)){
     return -1.0;
   }
-  uint32_t full = (r0[1] << 16u) + (r1[1] << 8u) + r2[1];
-  ESP_LOGI(TAG, "ADC reads: %u:%u %u:%u %u:%u full %lu",
-           r0[1], r0[0], r1[1], r1[0], r2[1], r2[0], full);
+  uint32_t full = (r0 << 16u) + (r1 << 8u) + r2;
+  ESP_LOGI(TAG, "ADC reads: %u %u %u full %lu", r0, r1, r2, full);
   return full;
 }
