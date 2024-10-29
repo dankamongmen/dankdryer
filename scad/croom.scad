@@ -50,18 +50,22 @@ adj = (botrad - toprad) / sqrt(2);
 theta = (90 - atan(-croomz / adj));
 // a corner at the top, to which the hotbox is mounted
 module corner(){
-    translate([-totalxy / 2, -totalxy / 2, croomz - 10]){
+	h = 15;
+	s = 40;
+    translate([-totalxy / 2, -totalxy / 2, croomz - h / 2]){
         difference(){
             union(){
-                cube([44, 44, 20], true);
-				translate([0, 22, -20])
-				rotate([90, 0, 0])
-				linear_extrude(44){
-					polygon([
-						[-22, -10],
-						[22, 10],
-						[-22, 10]
-					]);
+                cube([s, s, h], true);
+				translate([0, s / 2, -h / 2 - 10]){
+					rotate([90, 0, 0]){
+						linear_extrude(44){
+							polygon([
+								[-s / 2, -10],
+								[s / 2, 10],
+								[-s / 2, 10]
+							]);
+						}
+					}
 				}
             }
 			translate([12, 12, 0]){
@@ -153,7 +157,10 @@ module lmsmounts(){
     }
 }
 
+// FIXME we're using a different perfboard now,
+// so until we update this for it...
 module perfmounts(){
+/*
     translate([-mh, -0.95 * totalxy / 2 + mh, 0]){
         mount();
         translate([-80 - 3.3, 0, 0]){
@@ -166,6 +173,7 @@ module perfmounts(){
             }
         }
     }
+	*/
 }
 
 // hole for AC wire
