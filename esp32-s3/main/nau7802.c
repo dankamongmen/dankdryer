@@ -91,6 +91,30 @@ int nau7802_reset(i2c_master_dev_handle_t i2c){
   return 0;
 }
 
+// get the single byte of the PU_CTRL register
+static inline int
+nau7802_readreg(i2c_master_dev_handle_t i2c, Scale_Registers reg,
+                const char* regname, uint8_t* val){
+  uint8_t r = reg;
+  esp_err_t e;
+  if((e = i2c_master_transmit_receive(i2c, &r, 1, val, 1, TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGW(TAG, "error (%s) requesting %s via I2C", esp_err_to_name(e), regname);
+    return -1;
+  }
+  ESP_LOGI(TAG, "got %s: 0x%02x", regname, *val);
+  return 0;
+}
+
+static inline int
+nau7802_pu_ctrl(i2c_master_dev_handle_t i2c, uint8_t* val){
+  return nau7802_readreg(i2c, NAU7802_PU_CTRL, "PU_CTRL", val);
+}
+
+static inline int
+nau7802_ctrl1(i2c_master_dev_handle_t i2c, uint8_t* val){
+  return nau7802_readreg(i2c, NAU7802_CTRL1, "CTRL1", val);
+}
+
 int nau7802_poweron(i2c_master_dev_handle_t i2c){
   uint8_t buf[] = {
     NAU7802_PU_CTRL,
@@ -99,31 +123,29 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
-  uint8_t rbuf[2];
+  uint8_t rbuf;
   // FIXME i think it's actually 200 microseconds, not milliseconds?
   vTaskDelay(pdMS_TO_TICKS(200));
-  esp_err_t e;
-  if((e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
-    ESP_LOGW(TAG, "error %d requesting data via I2C", e);
+  if(nau7802_pu_ctrl(i2c, &rbuf)){
     return -1;
   }
-  ESP_LOGI(TAG, "PU_CTRL replied with 0x%02x 0x%02x", rbuf[0], rbuf[1]);
-  if(!(rbuf[0] & NAU7802_PU_CTRL_PUR)){
+  if(!(rbuf & NAU7802_PU_CTRL_PUR)){
     ESP_LOGW(TAG, "didn't see powered-on bit");
     return -1;
   }
-  buf[1] = rbuf[0] | NAU7802_PU_CTRL_CS;
+  esp_err_t e;
+  buf[1] = rbuf | NAU7802_PU_CTRL_CS;
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
-  ESP_LOGI(TAG, "successfully started NAU7802 cycle");
+  ESP_LOGI(TAG, "started NAU7802 cycle");
   buf[0] = NAU7802_DEVICE_REV;
-  e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS);
+  e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGW(TAG, "error %d reading device revision code", e);
     return -1;
   }
-  ESP_LOGI(TAG, "device revision code: 0x%02x 0x%02x", rbuf[0], rbuf[1]);
+  ESP_LOGI(TAG, "device revision code: 0x0%x", rbuf & 0xf);
   return 0;
 }
 
@@ -136,14 +158,11 @@ int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain){
     NAU7802_CTRL1,
     0xff
   };
-  uint8_t rbuf[2];
-  esp_err_t e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS);
-  if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %s acquiring CTRL1", esp_err_to_name(e));
-    return -1.0;
+  uint8_t rbuf;
+  if(nau7802_ctrl1(i2c, &rbuf)){
+    return -1;
   }
-  ESP_LOGI(TAG, "CTRL1: 0x%02x 0x%02x", rbuf[0], rbuf[1]);
-  buf[1] = rbuf[1] & 0xf8;
+  buf[1] = rbuf & 0xf8;
   if(gain >= 16){
     buf[1] |= 0x4;
   }
@@ -153,14 +172,16 @@ int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain){
   if(gain == 128 || gain == 32 || gain == 8 || gain == 2){
     buf[1] |= 0x1;
   }
-  e = i2c_master_transmit_receive(i2c, buf, 2, rbuf, sizeof(rbuf), TIMEOUT_MS);
+  esp_err_t e = i2c_master_transmit_receive(i2c, buf, 2, &rbuf, 1, TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGW(TAG, "error %s writing CTRL1", esp_err_to_name(e));
-    return -1.0;
+    return -1;
   }
-  if(rbuf[1] != buf[1]){
-    ESP_LOGW(TAG, "warning: CTRL1 reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
+  if(rbuf != buf[1]){
+    ESP_LOGW(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf, buf[1]);
+    return -1;
   }
+  ESP_LOGI(TAG, "set gain");
   return 0;
 }
 
@@ -173,40 +194,36 @@ int nau7802_setldo(i2c_master_dev_handle_t i2c, nau7802_ldo_mode mode){
     NAU7802_CTRL1,
     0xff
   };
-  uint8_t rbuf[2];
-  esp_err_t e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS);
-  if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %s acquiring CTRL1", esp_err_to_name(e));
-    return -1.0;
+  uint8_t rbuf;
+  if(nau7802_ctrl1(i2c, &rbuf)){
+    return -1;
   }
-  ESP_LOGI(TAG, "CTRL1: 0x%02x 0x%02x", rbuf[0], rbuf[1]);
-  buf[1] = rbuf[1] & 0xc7;
+  buf[1] = rbuf & 0xc7;
   buf[1] |= mode << 3u;
-  e = i2c_master_transmit_receive(i2c, buf, 2, rbuf, sizeof(rbuf), TIMEOUT_MS);
+  esp_err_t e = i2c_master_transmit_receive(i2c, buf, 2, &rbuf, 1, TIMEOUT_MS);
   if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %s writing CTRL1", esp_err_to_name(e));
-    return -1.0;
+    ESP_LOGW(TAG, "error (%s) writing CTRL1", esp_err_to_name(e));
+    return -1;
   }
-  if(rbuf[1] != buf[1]){
-    ESP_LOGW(TAG, "warning: CTRL1 reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
-  }else{
-    ESP_LOGI(TAG, "CTRL1 reply was 0x%02x", rbuf[1]);
+  if(rbuf != buf[1]){
+    ESP_LOGW(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf, buf[1]);
+    return -1;
   }
   buf[0] = NAU7802_PU_CTRL;
-  if((e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
-    ESP_LOGW(TAG, "error %d requesting data via I2C", e);
+  if((e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGW(TAG, "error (%s) requesting data via I2C", esp_err_to_name(e));
     return -1;
   }
-  buf[1] = rbuf[1] | 0x80;
-  if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf), rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
-    ESP_LOGW(TAG, "error %d requesting data via I2C", e);
+  buf[1] = rbuf | 0x80;
+  if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf), &rbuf, 1, TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGW(TAG, "error (%s) requesting data via I2C", esp_err_to_name(e));
     return -1;
   }
-  if(rbuf[1] != buf[1]){
-    ESP_LOGW(TAG, "PU_CTRL reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
-  }else{
-    ESP_LOGI(TAG, "PU_CTRL reply was 0x%02x", rbuf[1]);
+  if(rbuf != buf[1]){
+    ESP_LOGW(TAG, "PU_CTRL reply 0x%02x didn't match 0x%02x", rbuf, buf[1]);
+    return -1;
   }
+  ESP_LOGI(TAG, "set ldo");
   return 0;
 }
 
