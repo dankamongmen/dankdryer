@@ -115,6 +115,36 @@ nau7802_ctrl1(i2c_master_dev_handle_t i2c, uint8_t* val){
   return nau7802_readreg(i2c, NAU7802_CTRL1, "CTRL1", val);
 }
 
+static inline int
+nau7802_ctrl2(i2c_master_dev_handle_t i2c, uint8_t* val){
+  return nau7802_readreg(i2c, NAU7802_CTRL2, "CTRL2", val);
+}
+
+static int
+nau7802_internal_calibrate(i2c_master_dev_handle_t i2c){
+  uint8_t r;
+  if(nau7802_ctrl2(i2c, &r)){
+    return -1;
+  }
+  // queue the internal calibration
+  const uint8_t buf[] = {
+    NAU7802_CTRL2,
+    (r | 0x4) & 0xfc // set CALS, zero out CALMOD
+  };
+  ESP_LOGI(TAG, "running internal offset calibration");
+  if(nau7802_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
+  do{
+    if(nau7802_ctrl2(i2c, &r)){
+      return -1;
+    }
+  }while(r & 0x4);
+  bool failed = (r & 0x8);
+  ESP_LOGI(TAG, "completed internal offset calibration with%s error", failed ? "" : "out");
+  return 0;
+}
+
 // the power on sequence is:
 //  * send a reset
 //  * set PUD and PUA in PU_CTRL
@@ -123,6 +153,7 @@ nau7802_ctrl1(i2c_master_dev_handle_t i2c, uint8_t* val){
 //  * set 0x30 in ADC_CTRL (REG_CHPS)
 //  * clear 0x40 in PGA (LDOMODE)
 //  * set 0x80 in PWR_CTRL (PGA_CAP_EN)
+//  * run an internal offset calibration (CALS/CALMOD)
 int nau7802_poweron(i2c_master_dev_handle_t i2c){
   uint8_t buf[] = {
     NAU7802_PU_CTRL,
@@ -169,6 +200,9 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   }
   buf[1] &= 0xbf; // clear 0x40 LDOMODE
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
+  if(nau7802_internal_calibrate(i2c)){
     return -1;
   }
   buf[0] = NAU7802_DEVICE_REV;
