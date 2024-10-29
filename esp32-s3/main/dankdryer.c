@@ -956,7 +956,7 @@ void getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lastti
   const float diffu = curtime - lasttime;
   *lrpm = LowerPulses;
   *urpm = UpperPulses;
-  printf("raw: %u %u\n", *lrpm, *urpm);
+  printf("tach raw: %u %u\n", *lrpm, *urpm);
   *lrpm /= 2; // two pulses for each rotation
   *urpm /= 2;
   const float scale = 60.0 * 1000000u / diffu;
@@ -1023,8 +1023,8 @@ getLM35(adc_channel_t channel){
     }
   }
   // Dmax is 4095 on single read mode, 8191 on continuous
-  // Vmax is 3100mA with ADC_ATTEN_DB_12
-  float o = vout / 4095.0 * 3100.0;
+  // Vmax is 3100mA with ADC_ATTEN_DB_12, 1750 with _6
+  float o = vout / 4095.0 * 1750.0;
   printf("ADC1: converted %d to %d -> %f\n", raw, vout, o);
   return o;
 }
