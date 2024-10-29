@@ -121,6 +121,7 @@ nau7802_ctrl1(i2c_master_dev_handle_t i2c, uint8_t* val){
 //  * check for PUR bit in PU_CTRL after short delay
 //  * set CS in PU_CTRL
 //  * set 0x30 in ADC_CTRL (REG_CHPS)
+//  * set 0x80 in PWR_CTRL (PGA_CAP_EN)
 int nau7802_poweron(i2c_master_dev_handle_t i2c){
   uint8_t buf[] = {
     NAU7802_PU_CTRL,
@@ -152,7 +153,14 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
-  ESP_LOGI(TAG, "started NAU7802 cycle and set REG_CHPS");
+  buf[0] = NAU7802_PGA_PWR;
+  if(nau7802_readreg(i2c, buf[0], "PWR_CTRL", &buf[1])){
+    return -1;
+  }
+  buf[1] |= 0x80;
+  if(nau7802_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
   buf[0] = NAU7802_DEVICE_REV;
   e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS);
   if(e != ESP_OK){
