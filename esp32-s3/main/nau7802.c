@@ -121,6 +121,7 @@ nau7802_ctrl1(i2c_master_dev_handle_t i2c, uint8_t* val){
 //  * check for PUR bit in PU_CTRL after short delay
 //  * set CS in PU_CTRL
 //  * set 0x30 in ADC_CTRL (REG_CHPS)
+//  * clear 0x40 in PGA (LDOMODE)
 //  * set 0x80 in PWR_CTRL (PGA_CAP_EN)
 int nau7802_poweron(i2c_master_dev_handle_t i2c){
   uint8_t buf[] = {
@@ -131,8 +132,9 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
     return -1;
   }
   uint8_t rbuf;
-  // FIXME i think it's actually 200 microseconds, not milliseconds?
-  vTaskDelay(pdMS_TO_TICKS(200));
+  // the data sheet says we must allow up to 200 microseconds for the device
+  // to power up. we'll allow it a full millisecond.
+  vTaskDelay(pdMS_TO_TICKS(1));
   if(nau7802_pu_ctrl(i2c, &rbuf)){
     return -1;
   }
@@ -149,7 +151,7 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   if(nau7802_readreg(i2c, buf[0], "ADC", &buf[1])){
     return -1;
   }
-  buf[1] |= 0x30;
+  buf[1] |= 0x30; // set 0x30 REG_CHPS
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
@@ -157,7 +159,15 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   if(nau7802_readreg(i2c, buf[0], "PWR_CTRL", &buf[1])){
     return -1;
   }
-  buf[1] |= 0x80;
+  buf[1] |= 0x80; // set 0x80 PGA_CAP_EN
+  if(nau7802_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
+  buf[0] = NAU7802_PGA;
+  if(nau7802_readreg(i2c, buf[0], "PGA", &buf[1])){
+    return -1;
+  }
+  buf[1] &= 0xbf; // clear 0x40 LDOMODE
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }

@@ -13,6 +13,10 @@ int nau7802_detect(i2c_master_bus_handle_t i2c, i2c_master_dev_handle_t* i2cnau)
 int nau7802_reset(i2c_master_dev_handle_t i2c);
 
 // send the poweron command w/ timeout. returns non-zero on error.
+// it would not be unwise to call nau7802_reset() first.
+// this sets PUA+PUD+CS, verifies PUR after a short delay,
+// sets REG_CHPS, and sets PGA_CAP_EN, all as recommended
+// by the datasheet.
 int nau7802_poweron(i2c_master_dev_handle_t i2c);
 
 // set the gain (default 1). can be any power of 2 from 1 to 128.
