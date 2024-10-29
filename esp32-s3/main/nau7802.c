@@ -87,7 +87,7 @@ int nau7802_reset(i2c_master_dev_handle_t i2c){
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
-  ESP_LOGI(TAG, "successfully reset NAU7802");
+  ESP_LOGI(TAG, "reset NAU7802");
   return 0;
 }
 
@@ -107,6 +107,7 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
     ESP_LOGW(TAG, "error %d requesting data via I2C", e);
     return -1;
   }
+  ESP_LOGI(TAG, "PU_CTRL replied with 0x%02x 0x%02x", rbuf[0], rbuf[1]);
   if(!(rbuf[0] & NAU7802_PU_CTRL_PUR)){
     ESP_LOGW(TAG, "didn't see powered-on bit");
     return -1;
@@ -117,7 +118,7 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   }
   ESP_LOGI(TAG, "successfully started NAU7802 cycle");
   buf[0] = NAU7802_DEVICE_REV;
-  e = i2c_master_transmit_receive(i2c, buf, sizeof(buf) - 1, rbuf, sizeof(rbuf), TIMEOUT_MS);
+  e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGW(TAG, "error %d reading device revision code", e);
     return -1;
@@ -158,8 +159,7 @@ int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain){
     return -1.0;
   }
   if(rbuf[1] != buf[1]){
-    ESP_LOGW(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
-    return -1;
+    ESP_LOGW(TAG, "warning: CTRL1 reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
   }
   return 0;
 }
@@ -188,8 +188,9 @@ int nau7802_setldo(i2c_master_dev_handle_t i2c, nau7802_ldo_mode mode){
     return -1.0;
   }
   if(rbuf[1] != buf[1]){
-    ESP_LOGW(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
-    return -1;
+    ESP_LOGW(TAG, "warning: CTRL1 reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
+  }else{
+    ESP_LOGI(TAG, "CTRL1 reply was 0x%02x", rbuf[1]);
   }
   buf[0] = NAU7802_PU_CTRL;
   if((e = i2c_master_transmit_receive(i2c, buf, 1, rbuf, sizeof(rbuf), TIMEOUT_MS)) != ESP_OK){
@@ -203,7 +204,8 @@ int nau7802_setldo(i2c_master_dev_handle_t i2c, nau7802_ldo_mode mode){
   }
   if(rbuf[1] != buf[1]){
     ESP_LOGW(TAG, "PU_CTRL reply 0x%02x didn't match 0x%02x", rbuf[1], buf[1]);
-    return -1;
+  }else{
+    ESP_LOGI(TAG, "PU_CTRL reply was 0x%02x", rbuf[1]);
   }
   return 0;
 }

@@ -29,11 +29,11 @@ module ceramheat230(height){
 // three small holes for the thermometer's leads
 module thermholes(h){
 	translate([-40, 10, -h / 2]){
-		cylinder(h * 10, 0.5, 0.5);
+		cylinder(h * 10, 1, 1);
 		translate([2, -2, 0]){
-			cylinder(h * 10, 0.5, 0.5);
+			cylinder(h * 10, 1, 1);
 			translate([2, -2, 0]){
-				cylinder(h * 10, 0.5, 0.5);
+				cylinder(h * 10, 1, 1);
 			}
 		}
 	}
@@ -88,7 +88,7 @@ module hbcorner(){
 }
 
 module hbcorners(){
-    // four corners for mating to croom
+    // four corners for mating tChannelo croom
     hbcorner();
     mirror([0, 1, 0]){
         hbcorner();
@@ -171,7 +171,7 @@ module thermohole(){
 
 module rc522side(l){
     holer = 3.1 / 2;
-    translate([-35.5 / 2 - holer, -28.25 / 2 - holer, l / 2]){
+    translate([-35.5 / 2 - holer, -32.25 / 2 - holer, l / 2]){
         screw("M4", length = l);
     }
     translate([34 / 2 + holer, -22.25 / 2 - holer, l / 2]){
@@ -205,6 +205,17 @@ module relay3v(height){
     }
 }
 
+// holes for the solid state relay
+// two M5 holes, 47mm from center to center
+module ssrholes(h){
+	translate([0, 0, h / 2]){
+		screw("M5", l = h);
+		translate([0, 47, 0]){
+			screw("M5", l = h);
+		}
+	}
+}
+
 module hotbox(){
     difference(){
         union(){
@@ -216,6 +227,9 @@ module hotbox(){
                 upcorners();
             }
         }
+		translate([0, 40, 0]){
+			ssrholes(wallz);
+		}
         translate([-42, -40, 0]){
             rc522holes(wallz);
 	    }

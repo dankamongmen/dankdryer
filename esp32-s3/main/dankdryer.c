@@ -32,13 +32,13 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define UPPER_PWMPIN GPIO_NUM_4   // upper chamber fan speed
-#define MOTOR_APWM GPIO_NUM_5    // motor pwm
-#define TRIAC_GPIN GPIO_NUM_6     // heater triac gate
-#define THERM_DATAPIN GPIO_NUM_7  // analog thermometer (ADC1)
-#define UPPER_TACHPIN GPIO_NUM_8  // upper chamber fan tachometer
-#define I2C_SDAPIN GPIO_NUM_9     // I2C data
-#define I2C_SCLPIN GPIO_NUM_10     // I2C clock
+#define I2C_SDAPIN GPIO_NUM_4     // I2C data
+#define I2C_SCLPIN GPIO_NUM_5     // I2C clock
+#define MOTOR_APWM GPIO_NUM_6     // motor pwm
+#define TRIAC_GPIN GPIO_NUM_7     // heater triac gate
+#define THERM_DATAPIN GPIO_NUM_8  // analog thermometer (ADC1)
+#define UPPER_TACHPIN GPIO_NUM_9  // upper chamber fan tachometer
+#define UPPER_PWMPIN GPIO_NUM_10  // upper chamber fan speed
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
 #define MOTOR_AIN1 GPIO_NUM_11    // motor control 1
