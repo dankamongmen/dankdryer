@@ -463,7 +463,7 @@ int read_pstore(void){
     fprintf(stderr, "failure (%d) opening nvs:" NVS_HANDLE_NAME "\n", err);
     return -1;
   }
-  uint32_t bootcount;
+  uint32_t bootcount = 0;
 #define BOOTCOUNT_RECNAME "bootcount"
   err = nvs_get_u32(nvsh, BOOTCOUNT_RECNAME, &bootcount);
   if(err && err != ESP_ERR_NVS_NOT_FOUND){
