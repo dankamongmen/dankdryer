@@ -2,7 +2,7 @@ include <gears.scad>
 include <BOSL2/std.scad>
 include <BOSL2/screws.scad>
 
-$fn = 64;
+$fn = 128;
 
 current_color = "ALL";
 
@@ -107,7 +107,7 @@ module fanmounts(h){
 
 module fanhole(h){
     rotate([90, 0, 0]){
-        cylinder(h, 80 / 2, 80 / 2, true, $fn = 64);
+        cylinder(h, 80 / 2, 80 / 2, true);
     }
     fanmounts(6);
 }
