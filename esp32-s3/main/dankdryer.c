@@ -314,7 +314,6 @@ setup_neopixel(gpio_num_t pin){
   led_strip_config_t sconf = {
     .strip_gpio_num = pin,
     .max_leds = 1,
-    .led_pixel_format = LED_PIXEL_FORMAT_GRB,
     .led_model = LED_MODEL_WS2812,
     .flags.invert_out = false,
   };
