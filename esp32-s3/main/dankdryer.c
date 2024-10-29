@@ -982,7 +982,7 @@ weight_valid_p(float weight){
   return weight >= 0 && weight <= 5000;
 }
 
-void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm, float hottemp){
+void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
   // FIXME check errors throughout!
   cJSON* root = cJSON_CreateObject();
   cJSON_AddNumberToObject(root, "uptimesec", curtime / 1000000ll);
@@ -1005,9 +1005,8 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm, float hottemp){
     cJSON_AddNumberToObject(root, "mass", LastWeight);
   }
   cJSON_AddNumberToObject(root, "motor", MotorState);
-  if(temp_valid_p(hottemp)){
-    cJSON_AddNumberToObject(root, "htemp", hottemp);
-    LastUpperTemp = hottemp;
+  if(temp_valid_p(LastUpperTemp)){
+    cJSON_AddNumberToObject(root, "htemp", LastUpperTemp);
   }
   char* s = cJSON_Print(root);
   size_t slen = strlen(s);
@@ -1058,6 +1057,9 @@ void app_main(void){
     }
     printf("esp32 temp: %f weight: %f\n", ambient, weight);
     float hottemp = getLM35(thermchan);
+    if(temp_valid_p(hottemp)){
+      LastUpperTemp = hottemp;
+    }
     printf("lm35: %f\n", hottemp);
     unsigned lrpm, urpm;
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
@@ -1065,7 +1067,7 @@ void app_main(void){
     int64_t curtime = esp_timer_get_time();
     getFanTachs(&lrpm, &urpm, curtime, lasttime);
     if(curtime - lasttime > MQTT_PUBLISH_QUANTUM_USEC){
-      send_mqtt(curtime, lrpm, urpm, hottemp);
+      send_mqtt(curtime, lrpm, urpm);
       lasttime = curtime;
     }
   }
