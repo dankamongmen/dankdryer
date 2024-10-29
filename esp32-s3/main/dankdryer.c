@@ -955,9 +955,15 @@ setup(adc_channel_t* thermchan){
   //gpio_dump_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
 }
 
+static inline bool
+rpm_valid_p(unsigned rpm){
+  return rpm < 3000;
+}
+
 // we don't try to measure the first iteration, as we don't yet have a
 // timestamp (and the fans are spinning up, anyway).
-void getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
+static void
+getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
   const float diffu = curtime - lasttime;
   *lrpm = LowerPulses;
   *urpm = UpperPulses;
@@ -968,6 +974,12 @@ void getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lastti
   printf("scale: %f diffu: %f\n", scale, diffu);
   *lrpm *= scale;
   *urpm *= scale;
+  if(rpm_valid_p(*lrpm)){
+    LastLowerRPM = *lrpm;
+  }
+  if(rpm_valid_p(*urpm)){
+    LastUpperRPM = *urpm;
+  }
   LowerPulses = 0;
   UpperPulses = 0;
 }
@@ -979,7 +991,7 @@ temp_valid_p(float temp){
 
 static inline bool
 weight_valid_p(float weight){
-  return weight >= 0 && weight <= 5000;
+  return weight >= 0 && weight <= LOAD_CELL_MAX;
 }
 
 void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
@@ -991,13 +1003,11 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
   }
   // UINT_MAX is sentinel for known bad reading, but anything over 3KRPM on
   // these Noctua NF-A8 fans is indicative of error; they max out at 2500.
-  if(lrpm < 3000){
-    cJSON_AddNumberToObject(root, "lrpm", lrpm);
-    LastLowerRPM = lrpm;
+  if(rpm_valid_p(LastLowerRPM)){
+    cJSON_AddNumberToObject(root, "lrpm", LastLowerRPM);
   }
-  if(urpm < 3000){
-    cJSON_AddNumberToObject(root, "urpm", urpm);
-    LastUpperRPM = urpm;
+  if(rpm_valid_p(LastUpperRPM)){
+    cJSON_AddNumberToObject(root, "urpm", LastUpperRPM);
   }
   cJSON_AddNumberToObject(root, "lpwm", LowerPWM);
   cJSON_AddNumberToObject(root, "upwm", UpperPWM);
@@ -1043,7 +1053,8 @@ getLM35(adc_channel_t channel){
 void app_main(void){
   adc_channel_t thermchan;
   setup(&thermchan);
-  int64_t lasttime = esp_timer_get_time();
+  int64_t lastpub = esp_timer_get_time();
+  int64_t lastsense = lastpub;
   while(1){
     vTaskDelay(pdMS_TO_TICKS(1000));
     // FIXME check bme680
@@ -1065,10 +1076,11 @@ void app_main(void){
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
     printf("motor: %s\n", motor_state());
     int64_t curtime = esp_timer_get_time();
-    getFanTachs(&lrpm, &urpm, curtime, lasttime);
-    if(curtime - lasttime > MQTT_PUBLISH_QUANTUM_USEC){
+    getFanTachs(&lrpm, &urpm, curtime, lastsense);
+    lastsense = curtime;
+    if(curtime - lastpub > MQTT_PUBLISH_QUANTUM_USEC){
       send_mqtt(curtime, lrpm, urpm);
-      lasttime = curtime;
+      lastpub = curtime;
     }
   }
 }
