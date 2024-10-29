@@ -38,7 +38,7 @@ totalz = spoolh + wallz + topz + elevation * 2;
 totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 
 ctopz = wallz;
-croomz = wallz + ctopz + 90; // 80mm fan; ought just need sin(theta)80
+croomz = wallz + ctopz + 85; // 80mm fan; ought just need sin(theta)80
 
 flr = -croomz + wallz; // floor z offset
 mh = wallz; // mount height
@@ -248,7 +248,7 @@ motorboxd = 38;
 motorshafth = wormlen; // sans worm: 14
 motorshaftd = 13; // sans worm: 6
 motortheta = -60;
-motormounth = 74;
+motormounth = 66;
 // the worm gear on the motor's rotor needs to be tangent to, and at the same
 // elevation as, some point on the central gear.
 module motor(){

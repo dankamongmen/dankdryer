@@ -190,6 +190,7 @@ module wirechannel(){
                 difference(){
                     cylinder(totalxy / 2, channelh / 2, channelh / 2, true);
                     cylinder(totalxy / 2, (channelh - 2) / 2, (channelh - 2) / 2, true);
+					cylinder(2 * totalxy / 5, channelh / 2, channelh / 2, true);
                 }
                 translate([channelh / 2, channelh / 2, 0]){
                     cube([channelh, channelh, totalxy / 2], true);
