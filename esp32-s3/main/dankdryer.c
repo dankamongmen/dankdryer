@@ -53,6 +53,7 @@
 // 45 and 46 are strapping pins
 
 #define NVS_HANDLE_NAME "pstore"
+#define LOAD_CELL_MAX 5000 // 5kg capable
 
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
 static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
@@ -213,7 +214,11 @@ float getWeight(void){
   if(!FoundNAU7802){
     return -1.0;
   }
-  return nau7802_read(NAU7802);
+  float r;
+  if(nau7802_read_scaled(NAU7802, &r, LOAD_CELL_MAX)){
+    r = -1.0;
+  }
+  return r;
 }
 
 // gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
@@ -276,12 +281,9 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
 
 static int
 probe_i2c(i2c_master_bus_handle_t i2c, bool* rc522, bool* nau7802, bool* bme680){
+  // ENS160 is at 0x53
   *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680");
-  if(nau7802_detect(i2c, &NAU7802)){
-    *nau7802 = false;
-  }else{
-    *nau7802 = true;
-  }
+  *nau7802 = !nau7802_detect(i2c, &NAU7802);
   // FIXME looks like RC522 might only be SPI? need check datasheet
   *rc522 = !probe_i2c_slave(i2c, 0x28, "RC522"); // FIXME might be 0x77?
   if(!(*rc522 && *nau7802 && *bme680)){

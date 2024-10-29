@@ -33,8 +33,15 @@ typedef enum {
 // configure the LDO voltage and disable AVDD source.
 int nau7802_setldo(i2c_master_dev_handle_t i2c, nau7802_ldo_mode mode);
 
-// read the current weight. returns a negative number on error.
-float nau7802_read(i2c_master_dev_handle_t i2c);
+// read the 24-bit ADC into val. returns non-zero on error, in which case
+// *val is undefined. this is the raw ADC value.
+int nau7802_read(i2c_master_dev_handle_t i2c, uint32_t* val);
+
+// read the 24-bit ADC, interpreting it using some maximum value scale.
+// i.e. if scale is 5000 (representing e.g. a small bar load cell of 5kg),
+// the raw ADC value will be divided by 3355.4432 (1 << 24 / 5000).
+// on success, val will hold some value less than scale.
+int nau7802_read_scaled(i2c_master_dev_handle_t i2c, float* val, uint32_t scale);
 
 #define TIMEOUT_MS 1000 // FIXME why 1s?
 

@@ -227,26 +227,38 @@ int nau7802_setldo(i2c_master_dev_handle_t i2c, nau7802_ldo_mode mode){
   return 0;
 }
 
-float nau7802_read(i2c_master_dev_handle_t i2c){
+int nau7802_read_scaled(i2c_master_dev_handle_t i2c, float* val, uint32_t scale){
+  uint32_t v;
+  if(nau7802_read(i2c, &v)){
+    return -1;
+  }
+  const float ADCMAX = 1u << 24u; // can be represented perfectly in 32-bit float
+  const float adcper = ADCMAX / scale;
+  *val = v / adcper;
+  ESP_LOGI(TAG, "converted raw %lu to %f", v, *val);
+  return 0;
+}
+
+int nau7802_read(i2c_master_dev_handle_t i2c, uint32_t* val){
   uint8_t r0, r1, r2;
   if(nau7802_pu_ctrl(i2c, &r0)){
-    return -1.0;
+    return -1;
   }
   if(!(r0 & NAU7802_PU_CTRL_CR)){
     ESP_LOGW(TAG, "data not yet ready at ADC (0x%02x)", r0);
     // FIXME retry?
-    return -1.0;
+    return -1;
   }
   if(nau7802_readreg(i2c, NAU7802_ADCO_B2, "ADCO_B2", &r2)){
-    return -1.0;
+    return -1;
   }
   if(nau7802_readreg(i2c, NAU7802_ADCO_B1, "ADCO_B1", &r1)){
-    return -1.0;
+    return -1;
   }
   if(nau7802_readreg(i2c, NAU7802_ADCO_B0, "ADCO_B0", &r0)){
-    return -1.0;
+    return -1;
   }
-  uint32_t full = (r0 << 16u) + (r1 << 8u) + r2;
-  ESP_LOGI(TAG, "ADC reads: %u %u %u full %lu", r0, r1, r2, full);
-  return full;
+  *val = (r0 << 16u) + (r1 << 8u) + r2;
+  ESP_LOGI(TAG, "ADC reads: %u %u %u full %lu", r0, r1, r2, *val);
+  return 0;
 }
