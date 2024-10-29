@@ -16,13 +16,12 @@
 #include <esp_timer.h>
 #include <lwip/netif.h>
 #include <esp_system.h>
-//#include <esp_adc/adc_cali.h>
-#include <esp_adc_cal.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <hal/ledc_types.h>
 #include <soc/adc_channel.h>
 #include <esp_http_server.h>
+#include <esp_adc/adc_cali.h>
 #include <driver/i2c_master.h>
 #include <esp_adc/adc_oneshot.h>
 #include <driver/temperature_sensor.h>
@@ -79,7 +78,7 @@ static esp_mqtt_client_handle_t MQTTHandle;
 static bool UsePersistentStore; // set true upon successful initialization
 static bool FoundRC522, FoundNAU7802, FoundBME680;
 static i2c_master_dev_handle_t NAU7802;
-static esp_adc_cal_characteristics_t ADC1Calibration;
+static adc_cali_handle_t ADC1Calibration;
 
 typedef struct failure_indication {
   int r, g, b;
@@ -390,21 +389,16 @@ setup_temp(gpio_num_t thermpin, adc_channel_t* channel){
     fprintf(stderr, "error (%s) getting adc channel for %d\n", esp_err_to_name(e), thermpin);
     return -1;
   }
-  adc_oneshot_chan_cfg_t ccfg = {
+  adc_cali_curve_fitting_config_t caliconf = {
     .bitwidth = ADC_BITWIDTH_DEFAULT,
     .atten = ADC_ATTEN_DB_6,
+    .unit_id = ADC_UNIT_1,
   };
-  if((e = adc_oneshot_config_channel(ADC1, *channel, &ccfg)) != ESP_OK){
-    fprintf(stderr, "error (%s) configuraing adc channel\n", esp_err_to_name(e));
-    return -1;
-  }
-  if((e = esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_TP_FIT)) == ESP_OK){
-    printf("performing software ADC1 calibration\n");
-    esp_adc_cal_characterize(ADC_UNIT_1, ccfg.atten, ccfg.bitwidth, 0, &ADC1Calibration);
-    ADC1Calibrated = true;
+  if((e = adc_cali_create_scheme_curve_fitting(&caliconf, &ADC1Calibration)) != ESP_OK){
+    fprintf(stderr, "error (%s) creating ADC1 calibration\n", esp_err_to_name(e));
   }else{
-    fprintf(stderr, "error (%s) checking ADC1 calibration\n", esp_err_to_name(e));
-    // not a breaking error
+    printf("using curve fitting ADC1 calibration\n");
+    ADC1Calibrated = true;
   }
   return 0;
 }
@@ -1015,21 +1009,24 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
 static float
 getLM35(adc_channel_t channel){
   esp_err_t e;
-  uint32_t vout;
-  if(ADC1Calibrated){
-    e = esp_adc_cal_get_voltage(channel, &ADC1Calibration, &vout);
-  }else{
-    int raw;
-    e = adc_oneshot_read(ADC1, channel, &raw);
-    // Dmax is 4095 on single read mode, 8191 on continuous
-    // Vmax is 3100mA with ADC_ATTEN_DB_12
-    vout = raw / 4095.0 * 3100.0;
-  }
+  int raw;
+  e = adc_oneshot_read(ADC1, channel, &raw);
   if(e != ESP_OK){
     fprintf(stderr, "error (%s) reading from adc\n", esp_err_to_name(e));
     return MIN_TEMP - 1;
   }
-  return vout;
+  int vout;
+  if(ADC1Calibrated){
+    if((e = adc_cali_raw_to_voltage(ADC1Calibration, raw, &vout)) != ESP_OK){
+      fprintf(stderr, "error (%s) calibrating raw adc value %d\n", esp_err_to_name(e), raw);
+      vout = raw;
+    }
+  }
+  // Dmax is 4095 on single read mode, 8191 on continuous
+  // Vmax is 3100mA with ADC_ATTEN_DB_12
+  float o = vout / 4095.0 * 3100.0;
+  printf("ADC1: converted %d to %d -> %f\n", raw, vout, o);
+  return o;
 }
 
 void app_main(void){
