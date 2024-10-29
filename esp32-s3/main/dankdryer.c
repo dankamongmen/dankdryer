@@ -269,8 +269,7 @@ gpio_set_output(gpio_num_t pin){
 static int
 probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
   esp_err_t e;
-  printf("probing for %s (I2C 0x%02x)...", dev, address);
-  fflush(stdout);
+  printf("probing for %s (I2C 0x%02x)...\n", dev, address);
   if((e = i2c_master_probe(i2c, address, TIMEOUT_MS)) != ESP_OK){
     fprintf(stderr, "couldn't find %s (%s)\n", dev, esp_err_to_name(e));
     return -1;
@@ -285,10 +284,12 @@ probe_i2c(i2c_master_bus_handle_t i2c, bool* rc522, bool* nau7802, bool* bme680)
   *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680");
   *nau7802 = !nau7802_detect(i2c, &NAU7802);
   // FIXME looks like RC522 might only be SPI? need check datasheet
+  /*
   *rc522 = !probe_i2c_slave(i2c, 0x28, "RC522"); // FIXME might be 0x77?
   if(!(*rc522 && *nau7802 && *bme680)){
     return -1;
-  }
+  }*/
+  *rc522 = false;
   return 0;
 }
 
