@@ -52,7 +52,7 @@ int nau7802_detect(i2c_master_bus_handle_t i2c, i2c_master_dev_handle_t* i2cnau)
   const unsigned addr = NAU7802_ADDRESS;
   esp_err_t e = i2c_master_probe(i2c, addr, TIMEOUT_MS);
   if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %d detecting NAU7802 at 0x%02x", e, addr);
+    ESP_LOGE(TAG, "error %d detecting NAU7802 at 0x%02x", e, addr);
     return -1;
   }
   i2c_device_config_t devcfg = {
@@ -62,7 +62,7 @@ int nau7802_detect(i2c_master_bus_handle_t i2c, i2c_master_dev_handle_t* i2cnau)
 	};
   ESP_LOGI(TAG, "successfully detected NAU7802 at 0x%02x", addr);
   if((e = i2c_master_bus_add_device(i2c, &devcfg, i2cnau)) != ESP_OK){
-    ESP_LOGW(TAG, "error %d adding nau7802 i2c device", e);
+    ESP_LOGE(TAG, "error %d adding nau7802 i2c device", e);
     return -1;
   }
   return 0;
@@ -73,7 +73,7 @@ static int
 nau7802_xmit(i2c_master_dev_handle_t i2c, const void* buf, size_t blen){
   esp_err_t e = i2c_master_transmit(i2c, buf, blen, TIMEOUT_MS);
   if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %d transmitting %zuB via I2C", e, blen);
+    ESP_LOGE(TAG, "error %d transmitting %zuB via I2C", e, blen);
     return -1;
   }
   return 0;
@@ -98,10 +98,10 @@ nau7802_readreg(i2c_master_dev_handle_t i2c, Scale_Registers reg,
   uint8_t r = reg;
   esp_err_t e;
   if((e = i2c_master_transmit_receive(i2c, &r, 1, val, 1, TIMEOUT_MS)) != ESP_OK){
-    ESP_LOGW(TAG, "error (%s) requesting %s via I2C", esp_err_to_name(e), regname);
+    ESP_LOGE(TAG, "error (%s) requesting %s via I2C", esp_err_to_name(e), regname);
     return -1;
   }
-  ESP_LOGI(TAG, "got %s: 0x%02x", regname, *val);
+  ESP_LOGD(TAG, "got %s: 0x%02x", regname, *val);
   return 0;
 }
 
@@ -115,6 +115,12 @@ nau7802_ctrl1(i2c_master_dev_handle_t i2c, uint8_t* val){
   return nau7802_readreg(i2c, NAU7802_CTRL1, "CTRL1", val);
 }
 
+// the power on sequence is:
+//  * send a reset
+//  * set PUD and PUA in PU_CTRL
+//  * check for PUR bit in PU_CTRL after short delay
+//  * set CS in PU_CTRL
+//  * set 0x30 in ADC_CTRL (REG_CHPS)
 int nau7802_poweron(i2c_master_dev_handle_t i2c){
   uint8_t buf[] = {
     NAU7802_PU_CTRL,
@@ -130,7 +136,7 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
     return -1;
   }
   if(!(rbuf & NAU7802_PU_CTRL_PUR)){
-    ESP_LOGW(TAG, "didn't see powered-on bit");
+    ESP_LOGE(TAG, "didn't see powered-on bit");
     return -1;
   }
   esp_err_t e;
@@ -138,11 +144,19 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
   if(nau7802_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
-  ESP_LOGI(TAG, "started NAU7802 cycle");
+  buf[0] = NAU7802_ADC;
+  if(nau7802_readreg(i2c, buf[0], "ADC", &buf[1])){
+    return -1;
+  }
+  buf[1] |= 0x30;
+  if(nau7802_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
+  ESP_LOGI(TAG, "started NAU7802 cycle and set REG_CHPS");
   buf[0] = NAU7802_DEVICE_REV;
   e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS);
   if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %d reading device revision code", e);
+    ESP_LOGE(TAG, "error %d reading device revision code", e);
     return -1;
   }
   ESP_LOGI(TAG, "device revision code: 0x0%x", rbuf & 0xf);
@@ -151,7 +165,7 @@ int nau7802_poweron(i2c_master_dev_handle_t i2c){
 
 int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain){
   if(gain > 128 || gain == 0 || (gain & (gain - 1))){
-    ESP_LOGW(TAG, "illegal gain value %u", gain);
+    ESP_LOGE(TAG, "illegal gain value %u", gain);
     return -1;
   }
   uint8_t buf[] = {
@@ -174,14 +188,14 @@ int nau7802_setgain(i2c_master_dev_handle_t i2c, unsigned gain){
   }
   esp_err_t e = i2c_master_transmit_receive(i2c, buf, 2, &rbuf, 1, TIMEOUT_MS);
   if(e != ESP_OK){
-    ESP_LOGW(TAG, "error %s writing CTRL1", esp_err_to_name(e));
+    ESP_LOGE(TAG, "error %s writing CTRL1", esp_err_to_name(e));
     return -1;
   }
   if(rbuf != buf[1]){
-    ESP_LOGW(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf, buf[1]);
+    ESP_LOGE(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf, buf[1]);
     return -1;
   }
-  ESP_LOGI(TAG, "set gain");
+  ESP_LOGD(TAG, "set gain");
   return 0;
 }
 
@@ -202,28 +216,28 @@ int nau7802_setldo(i2c_master_dev_handle_t i2c, nau7802_ldo_mode mode){
   buf[1] |= mode << 3u;
   esp_err_t e = i2c_master_transmit_receive(i2c, buf, 2, &rbuf, 1, TIMEOUT_MS);
   if(e != ESP_OK){
-    ESP_LOGW(TAG, "error (%s) writing CTRL1", esp_err_to_name(e));
+    ESP_LOGE(TAG, "error (%s) writing CTRL1", esp_err_to_name(e));
     return -1;
   }
   if(rbuf != buf[1]){
-    ESP_LOGW(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf, buf[1]);
+    ESP_LOGE(TAG, "CTRL1 reply 0x%02x didn't match 0x%02x", rbuf, buf[1]);
     return -1;
   }
   buf[0] = NAU7802_PU_CTRL;
   if((e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS)) != ESP_OK){
-    ESP_LOGW(TAG, "error (%s) requesting data via I2C", esp_err_to_name(e));
+    ESP_LOGE(TAG, "error (%s) requesting data via I2C", esp_err_to_name(e));
     return -1;
   }
   buf[1] = rbuf | 0x80;
   if((e = i2c_master_transmit_receive(i2c, buf, sizeof(buf), &rbuf, 1, TIMEOUT_MS)) != ESP_OK){
-    ESP_LOGW(TAG, "error (%s) requesting data via I2C", esp_err_to_name(e));
+    ESP_LOGE(TAG, "error (%s) requesting data via I2C", esp_err_to_name(e));
     return -1;
   }
   if(rbuf != buf[1]){
-    ESP_LOGW(TAG, "PU_CTRL reply 0x%02x didn't match 0x%02x", rbuf, buf[1]);
+    ESP_LOGE(TAG, "PU_CTRL reply 0x%02x didn't match 0x%02x", rbuf, buf[1]);
     return -1;
   }
-  ESP_LOGI(TAG, "set ldo");
+  ESP_LOGD(TAG, "set ldo");
   return 0;
 }
 
@@ -235,7 +249,7 @@ int nau7802_read_scaled(i2c_master_dev_handle_t i2c, float* val, uint32_t scale)
   const float ADCMAX = 1u << 24u; // can be represented perfectly in 32-bit float
   const float adcper = ADCMAX / scale;
   *val = v / adcper;
-  ESP_LOGI(TAG, "converted raw %lu to %f", v, *val);
+  ESP_LOGD(TAG, "converted raw %lu to %f", v, *val);
   return 0;
 }
 
@@ -245,7 +259,7 @@ int nau7802_read(i2c_master_dev_handle_t i2c, uint32_t* val){
     return -1;
   }
   if(!(r0 & NAU7802_PU_CTRL_CR)){
-    ESP_LOGW(TAG, "data not yet ready at ADC (0x%02x)", r0);
+    ESP_LOGE(TAG, "data not yet ready at ADC (0x%02x)", r0);
     // FIXME retry?
     return -1;
   }
@@ -259,6 +273,6 @@ int nau7802_read(i2c_master_dev_handle_t i2c, uint32_t* val){
     return -1;
   }
   *val = (r0 << 16u) + (r1 << 8u) + r2;
-  ESP_LOGI(TAG, "ADC reads: %u %u %u full %lu", r0, r1, r2, *val);
+  ESP_LOGD(TAG, "ADC reads: %u %u %u full %lu", r0, r1, r2, *val);
   return 0;
 }
