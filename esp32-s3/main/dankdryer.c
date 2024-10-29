@@ -1,4 +1,3 @@
-// dankdryer firmware
 // intended for use on an ESP32-S3-WROOM-1
 #define VERSION "0.0.1"
 #define DEVICE "dankdryer"
@@ -45,7 +44,6 @@
 #define MOTOR_AIN1 GPIO_NUM_11    // motor control 1
 #define MOTOR_AIN2 GPIO_NUM_12    // motor control 2
 #define MOTOR_STBY GPIO_NUM_13    // motor standby
-//#define RC522_INTPIN GPIO_NUM_8   // RFID interrupt
 #define LOWER_TACHPIN GPIO_NUM_16 // lower chamber fan tachometer
 #define LOWER_PWMPIN GPIO_NUM_18  // lower chamber fan speed
 // 19--20 are used for JTAG (not strictly needed)
@@ -60,6 +58,11 @@ static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
 static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
 static const ledc_channel_t MOTOR_CHAN = LEDC_CHANNEL_2;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
+
+// the most recent readings/calculations, served via HTTP
+static float LastLowerTemp, LastUpperTemp;
+static unsigned LastLowerRPM, LastUpperRPM;
+static float LastWeight;
 
 // defaults, some of which can be configured.
 static led_strip_handle_t Neopixel;
@@ -76,7 +79,7 @@ static i2c_master_bus_handle_t I2C;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 static esp_mqtt_client_handle_t MQTTHandle;
 static bool UsePersistentStore; // set true upon successful initialization
-static bool FoundRC522, FoundNAU7802, FoundBME680;
+static bool FoundNAU7802, FoundBME680;
 static i2c_master_dev_handle_t NAU7802;
 static adc_cali_handle_t ADC1Calibration;
 
@@ -282,17 +285,9 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
 }
 
 static int
-probe_i2c(i2c_master_bus_handle_t i2c, bool* rc522, bool* nau7802, bool* bme680){
-  // ENS160 is at 0x53
-  *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680");
+probe_i2c(i2c_master_bus_handle_t i2c, bool* nau7802, bool* bme680){
+  *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680"); // ENS160 is at 0x53
   *nau7802 = !nau7802_detect(i2c, &NAU7802);
-  // FIXME looks like RC522 might only be SPI? need check datasheet
-  /*
-  *rc522 = !probe_i2c_slave(i2c, 0x28, "RC522"); // FIXME might be 0x77?
-  if(!(*rc522 && *nau7802 && *bme680)){
-    return -1;
-  }*/
-  *rc522 = false;
   return 0;
 }
 
@@ -338,7 +333,7 @@ setup_neopixel(gpio_num_t pin){
 }
 
 static int
-setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* nau7802, bool* bme680){
+setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* nau7802, bool* bme680){
   i2c_master_bus_config_t i2cconf = {
     .i2c_port = -1,
     .sda_io_num = sda,
@@ -354,7 +349,7 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* rc522, bool* nau7802, bool* bme6
     fprintf(stderr, "error (%s) creating i2c master bus\n", esp_err_to_name(e));
     return -1;
   }
-  if(probe_i2c(I2C, rc522, nau7802, bme680)){
+  if(probe_i2c(I2C, nau7802, bme680)){
     return -1;
   }
   return 0;
@@ -754,9 +749,17 @@ httpd_get_handler(httpd_req_t *req){
   int slen = snprintf(resp, RESPBYTES, "<!DOCTYPE html><html><head><title>" DEVICE "</title></head>"
             "<body><h2>a drying comes across the sky</h2><br/>"
             "lpwm: %lu upwm: %lu<br/>"
+            "lrpm: %u urpm: %u<br/>"
             "motor: %s<br/>"
+            "mass: %f<br/>"
+            "lm35: %f esp32s3: %f<br/>"
             "</body></html>",
-            LowerPWM, UpperPWM, motor_state());
+            LowerPWM, UpperPWM,
+            LastLowerRPM, LastUpperRPM,
+            motor_state(),
+            LastWeight,
+            LastUpperTemp, LastLowerTemp
+            );
   esp_err_t ret = ESP_FAIL;
   if(slen < 0 || slen >= RESPBYTES){
     fprintf(stderr, "httpd response too large (%d)\n", slen);
@@ -927,7 +930,7 @@ setup(adc_channel_t* thermchan){
   if(setup_temp(THERM_DATAPIN, thermchan)){
     set_failure(&SystemError);
   }
-  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundRC522, &FoundNAU7802, &FoundBME680)){
+  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundNAU7802, &FoundBME680)){
     set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
@@ -979,23 +982,28 @@ void send_mqtt(int64_t curtime, float dtemp, unsigned lrpm, unsigned urpm,
   cJSON_AddNumberToObject(root, "uptimesec", curtime / 1000000ll);
   if(temp_valid_p(dtemp)){
     cJSON_AddNumberToObject(root, "dtemp", dtemp);
+    LastLowerTemp = dtemp;
   }
   // UINT_MAX is sentinel for known bad reading, but anything over 3KRPM on
   // these Noctua NF-A8 fans is indicative of error; they max out at 2500.
   if(lrpm < 3000){
     cJSON_AddNumberToObject(root, "lrpm", lrpm);
+    LastLowerRPM = lrpm;
   }
   if(urpm < 3000){
     cJSON_AddNumberToObject(root, "urpm", urpm);
+    LastUpperRPM = urpm;
   }
   cJSON_AddNumberToObject(root, "lpwm", LowerPWM);
   cJSON_AddNumberToObject(root, "upwm", UpperPWM);
   if(weight >= 0 && weight < 5000){
     cJSON_AddNumberToObject(root, "mass", weight);
+    LastWeight = weight;
   }
   cJSON_AddNumberToObject(root, "motor", MotorState);
   if(temp_valid_p(hottemp)){
     cJSON_AddNumberToObject(root, "htemp", hottemp);
+    LastUpperTemp = hottemp;
   }
   char* s = cJSON_Print(root);
   size_t slen = strlen(s);
@@ -1035,7 +1043,7 @@ void app_main(void){
   int64_t lasttime = esp_timer_get_time();
   while(1){
     vTaskDelay(pdMS_TO_TICKS(15000));
-    // FIXME check bme680, rc522
+    // FIXME check bme680
     float ambient = getAmbient();
     float weight = getWeight();
     printf("esp32 temp: %f weight: %f\n", ambient, weight);
