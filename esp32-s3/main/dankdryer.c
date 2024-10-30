@@ -79,7 +79,7 @@ static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 // defaults, some of which can be configured.
 static uint32_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t LowerPWM = 128;
-static uint32_t UpperPWM = 64;
+static uint32_t UpperPWM = 128;
 static uint32_t TargetTemp = MIN_TEMP - 1;
 
 // ESP-IDF objects
@@ -93,6 +93,26 @@ static i2c_master_dev_handle_t NAU7802;
 static temperature_sensor_handle_t temp;
 static adc_cali_handle_t ADC1Calibration;
 static esp_mqtt_client_handle_t MQTTHandle;
+
+static inline bool
+rpm_valid_p(unsigned rpm){
+  return rpm < 3000;
+}
+
+static inline bool
+valid_pwm_p(int pwm){
+  return pwm >= 0 && pwm <= 255;
+}
+
+static inline bool
+temp_valid_p(float temp){
+  return temp >= MIN_TEMP && temp <= MAX_TEMP;
+}
+
+static inline bool
+weight_valid_p(float weight){
+  return weight >= 0 && weight <= LOAD_CELL_MAX;
+}
 
 typedef struct failure_indication {
   int r, g, b;
@@ -134,14 +154,11 @@ static const esp_mqtt_client_config_t MQTTConfig = {
   },
 };
 
+// FIXME i think pulsecount also needs be in IRAM?
 static void IRAM_ATTR
 tach_isr(void* pulsecount){
   uint32_t* pc = pulsecount;
   ++*pc;
-}
-
-static inline bool valid_pwm_p(int pwm){
-  return pwm >= 0 && pwm <= 255;
 }
 
 // precondition: isxdigit(c) is true
@@ -778,6 +795,9 @@ handle_dry(const char* payload, size_t plen){
   }
   printf("dry request for %us at %uC\n", seconds, temp);
   DryEndsAt = time(NULL) + seconds;
+  set_motor(seconds != 0);
+  // FIXME put dry operation into effect:
+  //  * turn on (or off) heater
   return 0;
 
 err:
@@ -1071,11 +1091,6 @@ setup(adc_channel_t* thermchan){
   //gpio_dump_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
 }
 
-static inline bool
-rpm_valid_p(unsigned rpm){
-  return rpm < 3000;
-}
-
 // we don't try to measure the first iteration, as we don't yet have a
 // timestamp (and the fans are spinning up, anyway).
 static void
@@ -1098,16 +1113,6 @@ getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
   }
   LowerPulses = 0;
   UpperPulses = 0;
-}
-
-static inline bool
-temp_valid_p(float temp){
-  return temp >= MIN_TEMP && temp <= MAX_TEMP;
-}
-
-static inline bool
-weight_valid_p(float weight){
-  return weight >= 0 && weight <= LOAD_CELL_MAX;
 }
 
 void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
