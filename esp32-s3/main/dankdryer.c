@@ -1,5 +1,5 @@
 // intended for use on an ESP32-S3-WROOM-1
-#define VERSION "0.0.1"
+#define VERSION "0.0.9"
 #define DEVICE "dankdryer"
 #define CLIENTID DEVICE VERSION
 #include "dryer-network.h"
