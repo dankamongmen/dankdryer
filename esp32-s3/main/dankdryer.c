@@ -63,24 +63,19 @@ static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
 static const ledc_channel_t MOTOR_CHAN = LEDC_CHANNEL_2;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
-// the most recent readings/calculations, served via HTTP
-static float LastLowerTemp, LastUpperTemp;
-static unsigned LastLowerRPM, LastUpperRPM;
-static float LastWeight;
-
 static bool MotorState;
 static bool HeaterState;
+static uint32_t LowerPWM = 128;
+static uint32_t UpperPWM = 128;
 static bool UsePersistentStore; // set true upon successful initialization
+static time_t DryEndsAt; // dry stop time in seconds since epoch
+static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static bool FoundNAU7802, FoundBME680;
+static unsigned LastLowerRPM, LastUpperRPM;
+static float LastLowerTemp, LastUpperTemp, LastWeight;
 
 // volatile counters
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
-
-// defaults, some of which can be configured.
-static uint32_t DryEndsAt; // dry stop time in seconds since epoch
-static uint32_t LowerPWM = 128;
-static uint32_t UpperPWM = 128;
-static uint32_t TargetTemp = MIN_TEMP - 1;
 
 // ESP-IDF objects
 static bool ADC1Calibrated;
@@ -888,7 +883,7 @@ httpd_get_handler(httpd_req_t *req){
             "motor: %s heater: %s<br/>"
             "mass: %f<br/>"
             "lm35: %f esp32s3: %f<br/>"
-            "dryends: %lu<br/>"
+            "dryends: %llu<br/>"
             "</body></html>",
             LowerPWM, UpperPWM,
             LastLowerRPM, LastUpperRPM,
@@ -1179,18 +1174,16 @@ update_upper_temp(float utemp){
   if(temp_valid_p(utemp)){
     LastUpperTemp = utemp;
   }
-  if(utemp >= TargetTemp){
-    if(HeaterState){
+  if(HeaterState){
+    if(!DryEndsAt || utemp >= TargetTemp){
       HeaterState = false;
       gpio_level(TRIAC_GPIN, false);
-      printf("%f >= %lu, disabled heater\n", utemp, TargetTemp);
+      printf("disabled heater\n");
     }
-  }else if(temp_valid_p(TargetTemp)){
-    if(!HeaterState){
-      HeaterState = true;
-      gpio_level(TRIAC_GPIN, true);
-      printf("%f < %lu, enabled heater\n", utemp, TargetTemp);
-    }
+  }else if(DryEndsAt && utemp < TargetTemp){
+    HeaterState = true;
+    gpio_level(TRIAC_GPIN, true);
+    printf("%f < %lu, enabled heater\n", utemp, TargetTemp);
   }
 }
 
@@ -1211,15 +1204,21 @@ void app_main(void){
       LastWeight = weight;
     }
     printf("esp32 temp: %f weight: %f\n", ambient, weight);
-    float hottemp = getLM35(thermchan);
-    update_upper_temp(hottemp);
-    printf("lm35: %f\n", hottemp);
     unsigned lrpm, urpm;
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
     printf("motor: %s heater: %s\n", motor_state(), heater_state());
     int64_t curtime = esp_timer_get_time();
     getFanTachs(&lrpm, &urpm, curtime, lastsense);
     lastsense = curtime;
+    const int64_t cursec = curtime / 1000000lu;
+    if(DryEndsAt && cursec >= DryEndsAt){
+      printf("completed drying operation (%llu >= %llu)\n", cursec, DryEndsAt);
+      set_motor(false);
+      DryEndsAt = 0;
+    }
+    float hottemp = getLM35(thermchan);
+    update_upper_temp(hottemp);
+    printf("lm35: %f\n", hottemp);
     if(curtime - lastpub > MQTT_PUBLISH_QUANTUM_USEC){
       send_mqtt(curtime, lrpm, urpm);
       lastpub = curtime;
