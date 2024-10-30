@@ -29,6 +29,8 @@
 #define RPMMAX (1u << 14u)
 #define MIN_TEMP -80
 #define MAX_TEMP 200
+#define MAX_DRYREQ_TMP 150
+#define MIN_DRYREQ_TMP 50
 // minimum of 15s between mqtt publications
 #define MQTT_PUBLISH_QUANTUM_USEC 15000000ul
 
@@ -75,6 +77,7 @@ static bool FoundNAU7802, FoundBME680;
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 
 // defaults, some of which can be configured.
+static uint32_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 64;
 static uint32_t TargetTemp = MIN_TEMP - 1;
@@ -692,29 +695,120 @@ set_motor(bool enabled){
 #define MOTOR_CHANNEL CCHAN DEVICE "/motor"
 #define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
 #define UPWM_CHANNEL CCHAN DEVICE "/upwm"
+#define DRY_CHANNEL CCHAN DEVICE "/dry"
+
+static inline bool
+topic_matches(const esp_mqtt_event_t* e, const char* chan){
+  if(strncmp(e->topic, chan, e->topic_len) == 0 && e->topic_len == strlen(chan)){
+    return true;
+  }
+  return false;
+}
+
+// arguments to dry are a target temp and number of seconds in the form
+// TEMP/SECONDS. a well-formed request replaces any existing one, including
+// cancelling it if SECONDS is 0. we allow leading and trailing space.
+static int
+handle_dry(const char* payload, size_t plen){
+  unsigned seconds = 0;
+  unsigned temp = 0;
+  size_t idx = 0;
+  enum {
+    PRESPACE,
+    TEMP,
+    SLASH,
+    SECONDS,
+    POSTSPACE
+  } state = PRESPACE;
+  // FIXME need address wrapping of temp and/or seconds
+  while(idx < plen){
+    if(payload[idx] >= 0x80 || payload[idx] <= 0){ // invalid character
+      goto err;
+    }
+    unsigned char c = payload[idx];
+    switch(state){
+      case PRESPACE:
+        if(!isspace(c)){
+          if(isdigit(c)){
+            state = TEMP;
+            temp = c - '0';
+          }else{
+            goto err;
+          }
+        }
+        break;
+      case TEMP:
+        if(isdigit(c)){
+          temp *= 10;
+          temp += c - '0';
+        }else if(c == '/'){
+          state = SLASH;
+        }else{
+          goto err;
+        }
+        break;
+      case SLASH:
+        if(isdigit(c)){
+          seconds = c - '0';
+          state = SECONDS;
+        }else{
+          goto err;
+        }
+        break;
+      case SECONDS:
+        if(isdigit(c)){
+          seconds *= 10;
+          seconds += c - '0';
+        }else if(isspace(c)){
+          state = POSTSPACE;
+        }else{
+          goto err;
+        }
+        break;
+      case POSTSPACE:
+        if(!isspace(c)){
+          goto err;
+        }
+        break;
+    }
+    ++idx;
+  }
+  if(temp > MAX_DRYREQ_TMP || temp < MIN_DRYREQ_TMP){
+    goto err;
+  }
+  printf("dry request for %us at %uC\n", seconds, temp);
+  DryEndsAt = time(NULL) + seconds;
+  return 0;
+
+err:
+  fprintf(stderr, "invalid dry payload [%.*s]\n", plen, payload);
+  return -1;
+}
 
 void handle_mqtt_msg(const esp_mqtt_event_t* e){
   printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
-  if(strncmp(e->topic, MOTOR_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(MOTOR_CHANNEL)){
+  if(topic_matches(e, DRY_CHANNEL)){
+    handle_dry(e->data, e->data_len);
+  }else if(topic_matches(e, MOTOR_CHANNEL)){
     bool motor;
     int ret = extract_bool(e->data, e->data_len, &motor);
     if(ret == 0){
       set_motor(motor);
     }
-  }else if(strncmp(e->topic, LPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(LPWM_CHANNEL)){
+  }else if(topic_matches(e, LPWM_CHANNEL)){
     int pwm = extract_pwm(e->data, e->data_len);
     if(pwm >= 0){
       LowerPWM = pwm;
       set_pwm(LOWER_FANCHAN, LowerPWM);
     }
-  }else if(strncmp(e->topic, UPWM_CHANNEL, e->topic_len) == 0 && e->topic_len == strlen(UPWM_CHANNEL)){
+  }else if(topic_matches(e, UPWM_CHANNEL)){
     int pwm = extract_pwm(e->data, e->data_len);
     if(pwm >= 0){
       UpperPWM = pwm;
       set_pwm(UPPER_FANCHAN, UpperPWM);
     }
   }else{
-    fprintf(stderr, "unknown topic, ignoring message\n");
+    fprintf(stderr, "unknown topic [%.*s], ignoring message\n", e->topic_len, e->topic);
   }
 }
 
@@ -731,6 +825,9 @@ void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
     }
     if((er = esp_mqtt_client_subscribe(MQTTHandle, UPWM_CHANNEL, 0)) < 0){
       fprintf(stderr, "failure %d subscribing to mqtt upwm topic\n", er);
+    }
+    if((er = esp_mqtt_client_subscribe(MQTTHandle, DRY_CHANNEL, 0)) < 0){
+      fprintf(stderr, "failure %d subscribing to mqtt dry topic\n", er);
     }
   }else if(id == MQTT_EVENT_DATA){
     handle_mqtt_msg(data);
@@ -771,13 +868,15 @@ httpd_get_handler(httpd_req_t *req){
             "motor: %s heater: %s<br/>"
             "mass: %f<br/>"
             "lm35: %f esp32s3: %f<br/>"
+            "dryends: %lu<br/>"
             "</body></html>",
             LowerPWM, UpperPWM,
             LastLowerRPM, LastUpperRPM,
             motor_state(),
             heater_state(),
             LastWeight,
-            LastUpperTemp, LastLowerTemp
+            LastUpperTemp, LastLowerTemp,
+            DryEndsAt
             );
   esp_err_t ret = ESP_FAIL;
   if(slen < 0 || slen >= RESPBYTES){
