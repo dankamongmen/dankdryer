@@ -66,24 +66,30 @@ static float LastLowerTemp, LastUpperTemp;
 static unsigned LastLowerRPM, LastUpperRPM;
 static float LastWeight;
 
-// defaults, some of which can be configured.
-static led_strip_handle_t Neopixel;
-static temperature_sensor_handle_t temp;
 static bool MotorState;
-static bool ADC1Calibrated;
-static uint32_t LowerPWM = 128;
-static uint32_t UpperPWM = 64;
-static httpd_handle_t HTTPServ;
-static uint32_t TargetTemp = 80;
-static float LoadcellScale = 1.0;
-static adc_oneshot_unit_handle_t ADC1;
-static i2c_master_bus_handle_t I2C;
-static uint32_t LowerPulses, UpperPulses; // tach signals recorded
-static esp_mqtt_client_handle_t MQTTHandle;
+static bool HeaterState;
 static bool UsePersistentStore; // set true upon successful initialization
 static bool FoundNAU7802, FoundBME680;
+
+// volatile counters
+static uint32_t LowerPulses, UpperPulses; // tach signals recorded
+
+// defaults, some of which can be configured.
+static uint32_t LowerPWM = 128;
+static uint32_t UpperPWM = 64;
+static uint32_t TargetTemp = MIN_TEMP - 1;
+
+// ESP-IDF objects
+static bool ADC1Calibrated;
+static httpd_handle_t HTTPServ;
+static float LoadcellScale = 1.0;
+static led_strip_handle_t Neopixel;
+static i2c_master_bus_handle_t I2C;
+static adc_oneshot_unit_handle_t ADC1;
 static i2c_master_dev_handle_t NAU7802;
+static temperature_sensor_handle_t temp;
 static adc_cali_handle_t ADC1Calibration;
+static esp_mqtt_client_handle_t MQTTHandle;
 
 typedef struct failure_indication {
   int r, g, b;
@@ -657,9 +663,19 @@ gpio_level(gpio_num_t pin, bool level){
   return 0;
 }
 
-static const char*
+static inline const char*
+bool_as_onoff(bool b){
+  return b ? "on" : "off";
+}
+
+static inline const char*
 motor_state(void){
-  return MotorState ? "on" : "off";
+  return bool_as_onoff(MotorState);
+}
+
+static inline const char*
+heater_state(void){
+  return bool_as_onoff(HeaterState);
 }
 
 static void
@@ -752,13 +768,14 @@ httpd_get_handler(httpd_req_t *req){
             "<body><h2>a drying comes across the sky</h2><br/>"
             "lpwm: %lu upwm: %lu<br/>"
             "lrpm: %u urpm: %u<br/>"
-            "motor: %s<br/>"
+            "motor: %s heater: %s<br/>"
             "mass: %f<br/>"
             "lm35: %f esp32s3: %f<br/>"
             "</body></html>",
             LowerPWM, UpperPWM,
             LastLowerRPM, LastUpperRPM,
             motor_state(),
+            heater_state(),
             LastWeight,
             LastUpperTemp, LastLowerTemp
             );
@@ -1015,6 +1032,7 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
     cJSON_AddNumberToObject(root, "mass", LastWeight);
   }
   cJSON_AddNumberToObject(root, "motor", MotorState);
+  cJSON_AddNumberToObject(root, "heater", HeaterState);
   if(temp_valid_p(LastUpperTemp)){
     cJSON_AddNumberToObject(root, "htemp", LastUpperTemp);
   }
@@ -1050,6 +1068,28 @@ getLM35(adc_channel_t channel){
   return o;
 }
 
+// if the upper chamber temperature as measured is a valid sample, update
+// LastUpperTemp, and turn heater on or off if appropriate.
+static void
+update_upper_temp(float utemp){
+  if(temp_valid_p(utemp)){
+    LastUpperTemp = utemp;
+  }
+  if(utemp >= TargetTemp){
+    if(HeaterState){
+      HeaterState = false;
+      gpio_level(TRIAC_GPIN, false);
+      printf("%f >= %lu, disabled heater\n", utemp, TargetTemp);
+    }
+  }else if(temp_valid_p(TargetTemp)){
+    if(!HeaterState){
+      HeaterState = true;
+      gpio_level(TRIAC_GPIN, true);
+      printf("%f < %lu, enabled heater\n", utemp, TargetTemp);
+    }
+  }
+}
+
 void app_main(void){
   adc_channel_t thermchan;
   setup(&thermchan);
@@ -1068,13 +1108,11 @@ void app_main(void){
     }
     printf("esp32 temp: %f weight: %f\n", ambient, weight);
     float hottemp = getLM35(thermchan);
-    if(temp_valid_p(hottemp)){
-      LastUpperTemp = hottemp;
-    }
+    update_upper_temp(hottemp);
     printf("lm35: %f\n", hottemp);
     unsigned lrpm, urpm;
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
-    printf("motor: %s\n", motor_state());
+    printf("motor: %s heater: %s\n", motor_state(), heater_state());
     int64_t curtime = esp_timer_get_time();
     getFanTachs(&lrpm, &urpm, curtime, lastsense);
     lastsense = curtime;
