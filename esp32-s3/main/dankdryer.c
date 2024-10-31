@@ -34,11 +34,13 @@
 #define MIN_DRYREQ_TMP 50
 // minimum of 15s between mqtt publications
 #define MQTT_PUBLISH_QUANTUM_USEC 15000000ul
+// give tachs a longer period to smooth them out
+#define TACH_SAMPLE_QUANTUM_USEC 5000000ul
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define I2C_SDAPIN GPIO_NUM_4     // I2C data
-#define I2C_SCLPIN GPIO_NUM_5     // I2C clock
+#define LOWER_PWMPIN GPIO_NUM_4  // lower chamber fan speed
+#define MOTOR_AIN1 GPIO_NUM_5    // motor control 1
 #define MOTOR_APWM GPIO_NUM_6     // motor pwm
 #define TRIAC_GPIN GPIO_NUM_7     // heater triac gate
 #define THERM_DATAPIN GPIO_NUM_8  // analog thermometer (ADC1)
@@ -46,11 +48,11 @@
 #define UPPER_PWMPIN GPIO_NUM_10  // upper chamber fan speed
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
-#define MOTOR_AIN1 GPIO_NUM_11    // motor control 1
+#define LOWER_TACHPIN GPIO_NUM_11 // lower chamber fan tachometer
 #define MOTOR_AIN2 GPIO_NUM_12    // motor control 2
 #define MOTOR_STBY GPIO_NUM_13    // motor standby
-#define LOWER_TACHPIN GPIO_NUM_16 // lower chamber fan tachometer
-#define LOWER_PWMPIN GPIO_NUM_18  // lower chamber fan speed
+#define I2C_SDAPIN GPIO_NUM_16     // I2C data
+#define I2C_SCLPIN GPIO_NUM_17     // I2C clock
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 // 45 and 46 are strapping pins
@@ -66,8 +68,8 @@ static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 static bool MotorState;
 static bool HeaterState;
-static uint32_t LowerPWM = 32;
-static uint32_t UpperPWM = 32;
+static uint32_t LowerPWM = 128;
+static uint32_t UpperPWM = 128;
 static bool UsePersistentStore; // set true upon successful initialization
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
@@ -1123,9 +1125,9 @@ getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
   *lrpm /= 2; // two pulses for each rotation
   *urpm /= 2;
   const float scale = 60.0 * 1000000u / diffu;
-  printf("scale: %f diffu: %f\n", scale, diffu);
   *lrpm *= scale;
   *urpm *= scale;
+  printf("scale: %f diffu: %f lrpm: %u urpm: %u\n", scale, diffu, *lrpm, *urpm);
   if(rpm_valid_p(*lrpm)){
     LastLowerRPM = *lrpm;
   }
@@ -1217,7 +1219,7 @@ void app_main(void){
   adc_channel_t thermchan;
   setup(&thermchan);
   int64_t lastpub = esp_timer_get_time();
-  int64_t lastsense = lastpub;
+  int64_t lasttachs = lastpub;
   while(1){
     vTaskDelay(pdMS_TO_TICKS(1000));
     // FIXME check bme680
@@ -1234,8 +1236,10 @@ void app_main(void){
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
     printf("motor: %s heater: %s\n", motor_state(), heater_state());
     int64_t curtime = esp_timer_get_time();
-    getFanTachs(&lrpm, &urpm, curtime, lastsense);
-    lastsense = curtime;
+    if(curtime - lasttachs > TACH_SAMPLE_QUANTUM_USEC){
+      getFanTachs(&lrpm, &urpm, curtime, lasttachs);
+      lasttachs = curtime;
+    }
     const int64_t cursec = curtime / 1000000lu;
     if(DryEndsAt && cursec >= DryEndsAt){
       printf("completed drying operation (%llu >= %llu)\n", cursec, DryEndsAt);
