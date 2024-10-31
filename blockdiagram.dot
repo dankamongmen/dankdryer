@@ -51,7 +51,7 @@ digraph blockdiagram {
     fontsize=12
     labelloc=b
 
-    Heater [ shape=doublerectangle label="Heater\n(120VAC)" ]
+    Heater [ shape=rectangle label="Heater\n(120VAC)" ]
     Fan2 [ shape=Msquare width=0.8 label="Exhaust\nfan" bgcolor=black style=filled fixedsize=true ]
     LM35 [ shape=triangle ]
     Molex1 -> Fan1 [ dir=both ]
