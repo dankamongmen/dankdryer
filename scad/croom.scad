@@ -157,23 +157,21 @@ module lmsmounts(){
     }
 }
 
-// FIXME we're using a different perfboard now,
-// so until we update this for it...
+// width: exterior 35mm with 3mm holes (32mm)
+// length: exterior 75.3mm with 3mm holes (72.3mm)
 module perfmounts(){
-/*
     translate([-mh, -0.95 * totalxy / 2 + mh, 0]){
         mount();
-        translate([-80 - 3.3, 0, 0]){
+        translate([72.3, 0, 0]){
             mount();
         }
-        translate([0, 61.75 + 3.3, 0]){
+        translate([0, 32, 0]){
             mount();
-            translate([-80 - 3.3, 0, 0]){
+            translate([72.3, 0, 0]){
                 mount();
             }
         }
     }
-	*/
 }
 
 // hole for AC wire
