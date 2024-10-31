@@ -1,11 +1,16 @@
 digraph blockdiagram {
   compound=true; // for links between subgraphs
   node [ fontname="Gentium Book Plus" ]
+  label="Dankdryer block diagram"
+  fontsize=24
+  labeljust = l
 
   subgraph clusterLower {
+    fontsize=12
 
     subgraph clusterPCB {
       label = "PCB"
+      labelloc = t
       style = filled
       fillcolor = limegreen
       ESP32S3 [ shape=rectangle width=2 fixedsize=true fillcolor=darkturquoise style=filled ]
@@ -34,26 +39,28 @@ digraph blockdiagram {
     ACAdapter -> Buck
     ACAdapter -> Motor
     ACAdapter -> Molex1 [ lhead=clusterPCB ]
+    AC [ shape=cylinder label="120VAC" ]
+    AC -> SSR
+    AC -> ACAdapter
     Buck -> USBC
+    SSR [ shape=box3d ]
+
   }
 
   subgraph clusterUpper {
+    fontsize=12
+    labelloc=b
 
     Heater [ shape=doublerectangle label="Heater\n(120VAC)" ]
-    SSR [ shape=box3d ]
     Fan2 [ shape=Msquare width=0.8 label="Exhaust\nfan" bgcolor=black style=filled fixedsize=true ]
     LM35 [ shape=triangle ]
     Molex1 -> Fan1 [ dir=both ]
     Molex2 -> Fan2 [ dir=both ]
     ESP32S3 -> SSR
     SSR -> Heater
-    ESP32S3 -> LM35
+    LM35 -> ESP32S3
     label = "Upper (hot) chamber"
 
   }
-
-  AC [ shape=cylinder label="120VAC" ]
-  AC -> SSR
-  AC -> ACAdapter
 
 }
