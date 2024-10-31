@@ -1,5 +1,5 @@
 digraph blockdiagram {
-
+  compound=true; // for links between subgraphs
   node [ fontname="Gentium Book Plus" ]
 
   subgraph clusterLower {
@@ -7,14 +7,14 @@ digraph blockdiagram {
     subgraph clusterPCB {
       label = "PCB"
       style = filled
-      color = olive
-      ESP32S3 [ shape=rectangle width=2 fixedsize=true color=darkturquoise style=filled ]
-      Molex1  [ shape=square color=yellow style=filled ]
-      Molex2  [ shape=square color=yellow style=filled ]
-      TB6612FNG [ shape=square width=1.2 color=indianred style=filled fixedsize=true ]
-      BME680 [ shape=square width=1.2 color=indianred style=filled fixedsize=true ]
-      NAU7802 [ shape=square width=1.2 color=indianred style=filled fixedsize=true ]
-      USBC [ shape=rectangle color=silver style=filled ]
+      fillcolor = limegreen
+      ESP32S3 [ shape=rectangle width=2 fixedsize=true fillcolor=darkturquoise style=filled ]
+      Molex1  [ shape=square fillcolor=yellow style=filled label="4 pin\nMolex" ]
+      Molex2  [ shape=square fillcolor=yellow style=filled label="4 pin\nMolex" ]
+      TB6612FNG [ shape=square width=1.2 fillcolor=indianred style=filled fixedsize=true ]
+      BME680 [ shape=square width=1.2 fillcolor=indianred style=filled fixedsize=true ]
+      NAU7802 [ shape=square width=1.2 fillcolor=indianred style=filled fixedsize=true ]
+      USBC [ shape=rectangle fillcolor=silver style=filled ]
       Molex1 -> ESP32S3 [ dir=both ]
       Molex2 -> ESP32S3 [ dir=both ]
       USBC -> ESP32S3
@@ -24,19 +24,24 @@ digraph blockdiagram {
     }
 
     Motor [ shape=doubleoctagon label="Motor\n(12VDC)" ]
-    Fan1 [ shape=doublecircle label="Intake\nfan" ]
+    Fan1 [ shape=Msquare width=0.8 label="Intake\nfan" bgcolor=black style=filled fixedsize=true ]
     TB6612FNG -> Motor
     label = "Lower (cool) chamber"
-    RC522 [ shape=square color=indianred style=filled width=1.2 fixedsize=true ]
+    RC522 [ shape=square fillcolor=indianred style=filled width=1.2 fixedsize=true ]
     ESP32S3 -> RC522 [ dir=both ]
-
+    ACAdapter [ shape=cylinder label="AC->DC\n(120VAC->12VDC)" ]
+    Buck [ shape=cylinder label="Buck\n(12VDC->5VDC)" ]
+    ACAdapter -> Buck
+    ACAdapter -> Motor
+    ACAdapter -> Molex1 [ lhead=clusterPCB ]
+    Buck -> USBC
   }
 
   subgraph clusterUpper {
 
-    Heater [ shape=Msquare label="Heater\n(120VAC)" ]
+    Heater [ shape=doublerectangle label="Heater\n(120VAC)" ]
     SSR [ shape=box3d ]
-    Fan2 [ shape=doublecircle label="Exhaust\nfan" ]
+    Fan2 [ shape=Msquare width=0.8 label="Exhaust\nfan" bgcolor=black style=filled fixedsize=true ]
     LM35 [ shape=triangle ]
     Molex1 -> Fan1 [ dir=both ]
     Molex2 -> Fan2 [ dir=both ]
@@ -46,5 +51,9 @@ digraph blockdiagram {
     label = "Upper (hot) chamber"
 
   }
+
+  AC [ shape=cylinder label="120VAC" ]
+  AC -> SSR
+  AC -> ACAdapter
 
 }
