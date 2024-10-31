@@ -17,6 +17,7 @@
 #include <esp_system.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
+#include <esp_netif_sntp.h>
 #include <hal/ledc_types.h>
 #include <soc/adc_channel.h>
 #include <esp_http_server.h>
@@ -633,7 +634,7 @@ wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   if(id == WIFI_EVENT_STA_START || id == WIFI_EVENT_STA_DISCONNECTED){
     set_network_state(WIFI_CONNECTING);
     if((err = esp_wifi_connect()) != ESP_OK){
-      fprintf(stderr, "failure (%d %s) connecting to wifi\n", err, esp_err_to_name(err));
+      fprintf(stderr, "error (%s) connecting to wifi\n", esp_err_to_name(err));
     }
   }else if(id == WIFI_EVENT_STA_CONNECTED){
     set_network_state(NET_CONNECTING);
@@ -656,10 +657,13 @@ ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
     return;
   }
   if(id == IP_EVENT_STA_GOT_IP || id == IP_EVENT_GOT_IP6){
-    printf("got network address, connecting to mqtt\n");
+    printf("got network address, connecting to mqtt/sntp\n");
+    if((err = esp_netif_sntp_start()) != ESP_OK){
+      fprintf(stderr, "error (%s) starting SNTP\n", esp_err_to_name(err));
+    }
     set_network_state(MQTT_CONNECTING);
     if((err = esp_mqtt_client_start(MQTTHandle)) != ESP_OK){
-      fprintf(stderr, "failure (%d %s) connecting to mqtt\n", err, esp_err_to_name(err));
+      fprintf(stderr, "error (%s) connecting to mqtt\n", esp_err_to_name(err));
     }
   }else if(id == IP_EVENT_STA_LOST_IP){
     fprintf(stderr, "lost ip address\n");
@@ -932,7 +936,25 @@ setup_httpd(void){
   return 0;
 }
 
-int setup_network(void){
+// we want to use the NTP servers provided by DHCP, so don't provide any
+// static ones
+static int
+setup_sntp(void){
+  esp_sntp_config_t sconf = ESP_NETIF_SNTP_DEFAULT_CONFIG_MULTIPLE(0, {});
+  sconf.start = false;
+  sconf.server_from_dhcp = true;
+  sconf.renew_servers_after_new_IP = true;
+  sconf.ip_event_to_renew = IP_EVENT_STA_GOT_IP;
+  esp_err_t e = esp_netif_sntp_init(&sconf);
+  if(e != ESP_OK){
+    fprintf(stderr, "error (%s) initializing SNTP\n", esp_err_to_name(e));
+    return -1;
+  }
+  return 0;
+}
+
+static int
+setup_network(void){
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
     fprintf(stderr, "couldn't create mqtt client\n");
     return -1;
@@ -997,6 +1019,7 @@ int setup_network(void){
     fprintf(stderr, "failure %d (%s) starting wifi\n", err, esp_err_to_name(err));
     return -1;
   }
+  setup_sntp(); // allow a failure
   setup_mdns(); // allow a failure
   // FIXME we currently get a "no slots" error when trying to load a URI
   // handler. until this is fixed, don't bail on error.
