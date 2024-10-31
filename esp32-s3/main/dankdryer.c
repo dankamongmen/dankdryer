@@ -65,8 +65,8 @@ static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 static bool MotorState;
 static bool HeaterState;
-static uint32_t LowerPWM = 128;
-static uint32_t UpperPWM = 128;
+static uint32_t LowerPWM = 32;
+static uint32_t UpperPWM = 32;
 static bool UsePersistentStore; // set true upon successful initialization
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
