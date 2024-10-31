@@ -160,7 +160,7 @@ module lmsmounts(){
 // width: exterior 35mm with 3mm holes (32mm)
 // length: exterior 75.3mm with 3mm holes (72.3mm)
 module perfmounts(){
-    translate([-mh, -0.95 * totalxy / 2 + mh, 0]){
+    translate([-mh - 15, -0.95 * totalxy / 2 + mh + 30, 0]){
         mount();
         translate([-72.3, 0, 0]){
             mount();
