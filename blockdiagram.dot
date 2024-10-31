@@ -16,21 +16,20 @@ digraph blockdiagram {
       ESP32S3 [ shape=rectangle width=2 fixedsize=true fillcolor=darkturquoise style=filled ]
       Molex1  [ shape=square fillcolor=yellow style=filled label="4 pin\nMolex" ]
       Molex2  [ shape=square fillcolor=yellow style=filled label="4 pin\nMolex" ]
-      TB6612FNG [ shape=square width=1.2 fillcolor=indianred style=filled fixedsize=true ]
+      //TB6612FNG [ shape=square width=1.2 fillcolor=indianred style=filled fixedsize=true ]
       BME680 [ shape=square width=1.2 fillcolor=indianred style=filled fixedsize=true ]
       NAU7802 [ shape=square width=1.2 fillcolor=indianred style=filled fixedsize=true ]
       USBC [ shape=rectangle fillcolor=silver style=filled ]
       Molex1 -> ESP32S3 [ dir=both ]
       Molex2 -> ESP32S3 [ dir=both ]
       USBC -> ESP32S3
-      ESP32S3 -> TB6612FNG
       ESP32S3 -> BME680 [ dir=both ]
       ESP32S3 -> NAU7802 [ dir=both ]
     }
 
     Motor [ shape=doubleoctagon label="Motor\n(12VDC)" ]
     Fan1 [ shape=Msquare width=0.8 label="Intake\nfan" bgcolor=black style=filled fixedsize=true ]
-    TB6612FNG -> Motor
+    //TB6612FNG -> Motor
     label = "Lower (cool) chamber"
     RC522 [ shape=square fillcolor=indianred style=filled width=1.2 fixedsize=true ]
     ESP32S3 -> RC522 [ dir=both ]
@@ -43,6 +42,9 @@ digraph blockdiagram {
     AC -> SSR
     AC -> ACAdapter
     Buck -> USBC
+    Relay [ shape=rectangle ]
+    Relay -> Motor
+    ESP32S3 -> Relay
     SSR [ shape=box3d ]
 
   }
