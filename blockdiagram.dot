@@ -1,0 +1,50 @@
+digraph blockdiagram {
+
+  node [ fontname="Gentium Book Plus" ]
+
+  subgraph clusterLower {
+
+    subgraph clusterPCB {
+      label = "PCB"
+      style = filled
+      color = olive
+      ESP32S3 [ shape=rectangle width=2 fixedsize=true color=darkturquoise style=filled ]
+      Molex1  [ shape=square color=yellow style=filled ]
+      Molex2  [ shape=square color=yellow style=filled ]
+      TB6612FNG [ shape=square width=1.2 color=indianred style=filled fixedsize=true ]
+      BME680 [ shape=square width=1.2 color=indianred style=filled fixedsize=true ]
+      NAU7802 [ shape=square width=1.2 color=indianred style=filled fixedsize=true ]
+      USBC [ shape=rectangle color=silver style=filled ]
+      Molex1 -> ESP32S3 [ dir=both ]
+      Molex2 -> ESP32S3 [ dir=both ]
+      USBC -> ESP32S3
+      ESP32S3 -> TB6612FNG
+      ESP32S3 -> BME680 [ dir=both ]
+      ESP32S3 -> NAU7802 [ dir=both ]
+    }
+
+    Motor [ shape=doubleoctagon label="Motor\n(12VDC)" ]
+    Fan1 [ shape=doublecircle label="Intake\nfan" ]
+    TB6612FNG -> Motor
+    label = "Lower (cool) chamber"
+    RC522 [ shape=square color=indianred style=filled width=1.2 fixedsize=true ]
+    ESP32S3 -> RC522 [ dir=both ]
+
+  }
+
+  subgraph clusterUpper {
+
+    Heater [ shape=Msquare label="Heater\n(120VAC)" ]
+    SSR [ shape=box3d ]
+    Fan2 [ shape=doublecircle label="Exhaust\nfan" ]
+    LM35 [ shape=triangle ]
+    Molex1 -> Fan1 [ dir=both ]
+    Molex2 -> Fan2 [ dir=both ]
+    ESP32S3 -> SSR
+    SSR -> Heater
+    ESP32S3 -> LM35
+    label = "Upper (hot) chamber"
+
+  }
+
+}
