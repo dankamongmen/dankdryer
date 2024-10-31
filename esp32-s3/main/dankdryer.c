@@ -44,15 +44,15 @@
 #define MOTOR_APWM GPIO_NUM_6     // motor pwm
 #define TRIAC_GPIN GPIO_NUM_7     // heater triac gate
 #define THERM_DATAPIN GPIO_NUM_8  // analog thermometer (ADC1)
-#define UPPER_TACHPIN GPIO_NUM_9  // upper chamber fan tachometer
+#define I2C_SDAPIN GPIO_NUM_9     // I2C data
 #define UPPER_PWMPIN GPIO_NUM_10  // upper chamber fan speed
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
 #define LOWER_TACHPIN GPIO_NUM_11 // lower chamber fan tachometer
 #define MOTOR_AIN2 GPIO_NUM_12    // motor control 2
 #define MOTOR_STBY GPIO_NUM_13    // motor standby
-#define I2C_SDAPIN GPIO_NUM_16     // I2C data
 #define I2C_SCLPIN GPIO_NUM_17     // I2C clock
+#define UPPER_TACHPIN GPIO_NUM_18  // upper chamber fan tachometer
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 // 45 and 46 are strapping pins
