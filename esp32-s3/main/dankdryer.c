@@ -875,6 +875,7 @@ httpd_get_handler(httpd_req_t *req){
     fprintf(stderr, "couldn't allocate httpd response\n");
     return ESP_FAIL;
   }
+  time_t now = time(NULL);
   // FIXME need locking or atomics now
   int slen = snprintf(resp, RESPBYTES, "<!DOCTYPE html><html><head><title>" DEVICE "</title></head>"
             "<body><h2>a drying comes across the sky</h2><br/>"
@@ -884,6 +885,7 @@ httpd_get_handler(httpd_req_t *req){
             "mass: %f<br/>"
             "lm35: %f esp32s3: %f<br/>"
             "dryends: %llu<br/>"
+            "<hr/>%s<br/>"
             "</body></html>",
             LowerPWM, UpperPWM,
             LastLowerRPM, LastUpperRPM,
@@ -891,7 +893,8 @@ httpd_get_handler(httpd_req_t *req){
             heater_state(),
             LastWeight,
             LastUpperTemp, LastLowerTemp,
-            DryEndsAt
+            DryEndsAt,
+            asctime(localtime(&now))
             );
   esp_err_t ret = ESP_FAIL;
   if(slen < 0 || slen >= RESPBYTES){
