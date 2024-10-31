@@ -46,6 +46,8 @@ digraph blockdiagram {
     Relay -> Motor
     ESP32S3 -> Relay
     SSR [ shape=box3d ]
+    LoadCell [ shape=rectangle fillcolor=grey label="5KG\nload cell" ]
+    NAU7802 -> LoadCell
 
   }
 
