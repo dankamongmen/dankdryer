@@ -162,12 +162,12 @@ module lmsmounts(){
 module perfmounts(){
     translate([-mh, -0.95 * totalxy / 2 + mh, 0]){
         mount();
-        translate([72.3, 0, 0]){
+        translate([-72.3, 0, 0]){
             mount();
         }
         translate([0, 32, 0]){
             mount();
-            translate([72.3, 0, 0]){
+            translate([-72.3, 0, 0]){
                 mount();
             }
         }
