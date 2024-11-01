@@ -191,7 +191,7 @@ module drop(){
     }
 }
 
-teeth = 54;
+teeth = 60;
 gearboth = 8; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
 // remaining height ought be defined in terms
