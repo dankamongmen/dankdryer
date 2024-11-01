@@ -40,16 +40,13 @@
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
 #define LOWER_PWMPIN GPIO_NUM_4   // lower chamber fan speed
-#define MOTOR_AIN1 GPIO_NUM_5     // motor control 1
-#define MOTOR_APWM GPIO_NUM_6     // motor pwm
 #define UPPER_PWMPIN GPIO_NUM_7   // upper chamber fan speed
 #define THERM_DATAPIN GPIO_NUM_8  // analog thermometer (ADC1)
 #define I2C_SCLPIN GPIO_NUM_10    // I2C clock
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
 #define LOWER_TACHPIN GPIO_NUM_11 // lower chamber fan tachometer
-#define MOTOR_AIN2 GPIO_NUM_12    // motor control 2
-#define MOTOR_STBY GPIO_NUM_13    // motor standby
+#define MOTOR_RELAY GPIO_NUM_12   // enable relay for motor
 #define UPPER_TACHPIN GPIO_NUM_18 // upper chamber fan tachometer
 // 19--20 are used for JTAG (not strictly needed)
 #define I2C_SDAPIN GPIO_NUM_21    // I2C data
@@ -63,7 +60,7 @@
 
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
 static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
-static const ledc_channel_t MOTOR_CHAN = LEDC_CHANNEL_2;
+//static const ledc_channel_t MOTOR_CHAN = LEDC_CHANNEL_2;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 static bool MotorState;
@@ -704,10 +701,11 @@ heater_state(void){
 static void
 set_motor(bool enabled){
   MotorState = enabled;
-  set_pwm(MOTOR_CHAN, 255);
+  /*set_pwm(MOTOR_CHAN, 255);
   gpio_level(MOTOR_AIN1, enabled);
   gpio_level(MOTOR_AIN2, 0);
-  gpio_level(MOTOR_STBY, enabled);
+  gpio_level(MOTOR_STBY, enabled);*/
+  gpio_level(MOTOR_RELAY, enabled);
   printf("set motor %s\n", motor_state());
 }
 
@@ -1063,8 +1061,9 @@ int setup_sensors(void){
 
 // TB6612FNG
 static int
-setup_motor(gpio_num_t pwmpin, gpio_num_t a1pin, gpio_num_t a2pin, gpio_num_t stbypin){
-  if(initialize_25k_pwm(MOTOR_CHAN, pwmpin, LEDC_TIMER_2)){
+//setup_motor(gpio_num_t pwmpin, gpio_num_t a1pin, gpio_num_t a2pin, gpio_num_t stbypin){
+setup_motor(gpio_num_t mrelaypin){
+  /*if(initialize_25k_pwm(MOTOR_CHAN, pwmpin, LEDC_TIMER_2)){
     return -1;
   }
   if(gpio_set_output(a1pin)){
@@ -1074,6 +1073,9 @@ setup_motor(gpio_num_t pwmpin, gpio_num_t a1pin, gpio_num_t a2pin, gpio_num_t st
     return -1;
   }
   if(gpio_set_output(stbypin)){
+    return -1;
+  }*/
+  if(gpio_set_output(mrelaypin)){
     return -1;
   }
   set_motor(false);
@@ -1103,7 +1105,8 @@ setup(adc_channel_t* thermchan){
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
     set_failure(&SystemError);
   }
-  if(setup_motor(MOTOR_APWM, MOTOR_AIN1, MOTOR_AIN2, MOTOR_STBY)){
+  //if(setup_motor(MOTOR_APWM, MOTOR_AIN1, MOTOR_AIN2, MOTOR_STBY)){
+  if(setup_motor(MOTOR_RELAY)){
     set_failure(&SystemError);
   }
   if(setup_sensors()){
