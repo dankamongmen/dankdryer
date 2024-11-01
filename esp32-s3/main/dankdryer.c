@@ -637,6 +637,8 @@ wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
     set_network_state(WIFI_CONNECTING);
     if((err = esp_wifi_connect()) != ESP_OK){
       fprintf(stderr, "error (%s) connecting to wifi\n", esp_err_to_name(err));
+    }else{
+      printf("attempting to connect to wifi\n");
     }
   }else if(id == WIFI_EVENT_STA_CONNECTED){
     set_network_state(NET_CONNECTING);
@@ -988,38 +990,42 @@ setup_network(void){
     return -1;
   }
   if((err = esp_wifi_init(&wificfg)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) initializing wifi\n", err, esp_err_to_name(err));
+    fprintf(stderr, "failure (%s) initializing wifi\n", esp_err_to_name(err));
     return -1;
   }
   esp_event_handler_instance_t wid;
   if((err = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, wifi_event_handler, NULL, &wid)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) registering wifi events\n", err, esp_err_to_name(err));
+    fprintf(stderr, "failure (%s) registering wifi events\n", esp_err_to_name(err));
     return -1;
   }
   esp_event_handler_instance_t ipd;
   if((err = esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, ip_event_handler, NULL, &ipd)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) registering ip events\n", err, esp_err_to_name(err));
+    fprintf(stderr, "failure (%s) registering ip events\n", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_CONNECTED, mqtt_event_handler, NULL)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) registering mqtt events\n", err, esp_err_to_name(err));
+    fprintf(stderr, "failure (%s) registering mqtt events\n", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_DATA, mqtt_event_handler, NULL)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) registering mqtt events\n", err, esp_err_to_name(err));
+    fprintf(stderr, "failure (%s) registering mqtt events\n", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_wifi_set_mode(WIFI_MODE_STA)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) setting STA mode\n", err, esp_err_to_name(err));
+    fprintf(stderr, "failure (%s) setting STA mode\n", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_wifi_set_config(WIFI_IF_STA, &stacfg)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) configuring wifi\n", err, esp_err_to_name(err));
+    fprintf(stderr, "failure (%s) configuring wifi\n", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_wifi_start()) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) starting wifi\n", err, esp_err_to_name(err));
+    fprintf(stderr, "failure (%s) starting wifi\n", esp_err_to_name(err));
     return -1;
+  }
+  const int8_t txpower = 84;
+  if((err = esp_wifi_set_max_tx_power(txpower)) != ESP_OK){
+    fprintf(stderr, "warning: error (%s) setting tx power to %hd\n", esp_err_to_name(err), txpower);
   }
   setup_sntp(); // allow a failure
   setup_mdns(); // allow a failure
