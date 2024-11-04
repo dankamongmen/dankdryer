@@ -70,8 +70,8 @@ static adc_channel_t Thermchan;
 static bool UsePersistentStore; // set true upon successful initialization
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
-static bool FoundNAU7802, FoundBME680;
 static unsigned LastLowerRPM, LastUpperRPM;
+static bool FoundNAU7802, FoundBME680, FoundENS160;
 static float LastLowerTemp, LastUpperTemp, LastWeight;
 
 // volatile counters
@@ -308,8 +308,9 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
 }
 
 static int
-probe_i2c(i2c_master_bus_handle_t i2c, bool* nau7802, bool* bme680){
-  *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680"); // ENS160 is at 0x53
+probe_i2c(i2c_master_bus_handle_t i2c, bool* nau7802, bool* bme680, bool* ens160){
+  *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680");
+  *ens160 = !probe_i2c_slave(i2c, 0x53, "ENS160");
   *nau7802 = !nau7802_detect(i2c, &NAU7802);
   return 0;
 }
@@ -356,7 +357,7 @@ setup_neopixel(gpio_num_t pin){
 }
 
 static int
-setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* nau7802, bool* bme680){
+setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* nau7802, bool* bme680, bool* ens160){
   i2c_master_bus_config_t i2cconf = {
     .i2c_port = -1,
     .sda_io_num = sda,
@@ -372,7 +373,7 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* nau7802, bool* bme680){
     fprintf(stderr, "error (%s) creating i2c master bus\n", esp_err_to_name(e));
     return -1;
   }
-  if(probe_i2c(I2C, nau7802, bme680)){
+  if(probe_i2c(I2C, nau7802, bme680, ens160)){
     return -1;
   }
   return 0;
@@ -1153,7 +1154,7 @@ setup(adc_channel_t* thermchan){
   if(setup_temp(THERM_DATAPIN, thermchan)){
     set_failure(&SystemError);
   }
-  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundNAU7802, &FoundBME680)){
+  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundNAU7802, &FoundBME680, &FoundENS160)){
     set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
