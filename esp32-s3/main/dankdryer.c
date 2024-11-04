@@ -4,6 +4,7 @@
 #define CLIENTID DEVICE VERSION
 #include "dryer-network.h"
 #include "nau7802.h"
+#include "bme680.h"
 #include <nvs.h>
 #include <math.h>
 #include <mdns.h>
@@ -84,6 +85,7 @@ static float LoadcellScale = 1.0;
 static led_strip_handle_t Neopixel;
 static i2c_master_bus_handle_t I2C;
 static adc_oneshot_unit_handle_t ADC1;
+static i2c_master_dev_handle_t BME680;
 static i2c_master_dev_handle_t NAU7802;
 static temperature_sensor_handle_t temp;
 static adc_cali_handle_t ADC1Calibration;
@@ -309,7 +311,7 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
 
 static int
 probe_i2c(i2c_master_bus_handle_t i2c, bool* nau7802, bool* bme680, bool* ens160){
-  *bme680 = !probe_i2c_slave(i2c, 0x77, "BME680");
+  *bme680 = !bme680_detect(i2c, &BME680);
   *ens160 = !probe_i2c_slave(i2c, 0x53, "ENS160");
   *nau7802 = !nau7802_detect(i2c, &NAU7802);
   return 0;
@@ -1119,9 +1121,22 @@ setup_nau7802(i2c_master_dev_handle_t dev){
   return 0;
 }
 
+static int
+setup_bme680(i2c_master_dev_handle_t dev){
+  if(bme680_init(dev)){
+    return -1;
+  }
+  return 0;
+}
+
 int setup_sensors(void){
   if(FoundNAU7802){
     if(setup_nau7802(NAU7802)){
+      return -1;
+    }
+  }
+  if(FoundBME680){
+    if(setup_bme680(BME680)){
       return -1;
     }
   }
