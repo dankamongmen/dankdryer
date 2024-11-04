@@ -219,7 +219,7 @@ module hotbox(){
         // cylinder from the floor up.
         cheight = totalz - wallz;
         translate([0, 0, cheight / 2 + wallz]){
-            cylinder(cheight, innerr, innerr, true);
+            cylinder(cheight, innerr, innerr, true, $fn=256);
         }
         // now remove all other interacting pieces
         // 80x80mm worth of air passage cut into the floor
