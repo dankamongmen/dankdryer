@@ -46,12 +46,12 @@
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
 #define LOWER_TACHPIN GPIO_NUM_11 // lower chamber fan tachometer
-#define MOTOR_RELAY GPIO_NUM_12   // enable relay for motor
 #define UPPER_TACHPIN GPIO_NUM_18 // upper chamber fan tachometer
 // 19--20 are used for JTAG (not strictly needed)
 #define I2C_SDAPIN GPIO_NUM_21    // I2C data
 // 26--32 are used for pstore qspi flash
 #define TRIAC_GPIN GPIO_NUM_33    // heater triac gate
+#define MOTOR_RELAY GPIO_NUM_36   // enable relay for motor
 // 45 and 46 are strapping pins
 #define RGB_PIN GPIO_NUM_48       // onboard RGB neopixel
 

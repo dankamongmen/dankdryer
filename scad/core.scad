@@ -157,7 +157,7 @@ bearingh = 9; // height ("width") of bearing
 bearingr = 30 / 2; // bearing outer radius
 bearinginnerr = 10 / 2; // bearing inner radius
 bearingwall = 2;
-shaftr = bearingh / 2;
+shaftr = bearinginnerr - 1;
 module lowercoupling(){
     // the brace comes out to the center of the load cell.
     // the bearing holder rises from the center--the shaft
