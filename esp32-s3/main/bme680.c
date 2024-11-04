@@ -5,12 +5,14 @@
 static const char* TAG = "bme";
 
 enum {
+
   BME680_REG_PRESSURE0 = 0x1f,
   BME680_REG_PRESSURE1 = 0x20,
   BME680_REG_PRESSURE2 = 0x21,
   BME680_REG_TEMP0 = 0x22,
   BME680_REG_TEMP1 = 0x23,
   BME680_REG_TEMP2 = 0x24,
+  BME680_REG_CTRL_MEAS = 0x74,
   BME680_REG_ID = 0xd0,
   BME680_REG_RESET = 0xe0,
 };
@@ -47,6 +49,40 @@ bme680_xmit(i2c_master_dev_handle_t i2c, const void* buf, size_t blen){
   return 0;
 }
 
+// temp and pressure are oversampling settings, or 0 to skip the relevant
+// measurements. oversampling can be done at x1, x2, x4, x8, or x16.
+static int
+bme680_set_measurements(i2c_master_dev_handle_t i2c, unsigned temp, unsigned pressure){
+  uint8_t buf[] = {
+    BME680_REG_CTRL_MEAS,
+    0x0
+  };
+  uint8_t tbits = 0, pbits = 0;
+  // check both temp and pressure to ensure they are powers of 2 and <= 16
+  if((temp & (temp - 1)) || (temp > 16)){
+    ESP_LOGE(TAG, "invalid temp ctrl %u", temp);
+    return -1;
+  }
+  while(temp){
+    ++tbits;
+    temp /= 2;
+  }
+  if((pressure & (pressure - 1)) || (pressure > 16)){
+    ESP_LOGE(TAG, "invalid pressure ctrl %u", pressure);
+    return -1;
+  }
+  while(pressure){
+    ++pbits;
+    pressure /= 2;
+  }
+  buf[1] = (tbits << 5u) | (pbits << 2u); // what's the rest?
+  if(bme680_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
+  ESP_LOGI(TAG, "configured measurements with 0x%02x", buf[1]);
+  return 0;
+}
+
 int bme680_reset(i2c_master_dev_handle_t i2c){
   uint8_t buf[] = {
     BME680_REG_RESET,
@@ -71,6 +107,9 @@ int bme680_init(i2c_master_dev_handle_t i2c){
     return -1;
   }
   ESP_LOGI(TAG, "device id: 0x%02x", rbuf);
+  if(bme680_set_measurements(i2c, 16, 16)){
+    return -1;
+  }
   return 0;
 }
 
