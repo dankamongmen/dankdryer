@@ -189,25 +189,25 @@ module perfmounts(){
 }
 
 // 2 relay mounts
-module relay3vside(l){
+module relay3vside(){
     r = 1.5;
 	holegapl = 10;
 	holegapw = 63;
-	translate([-holegapw / 2 - r, -holegapl / 2 - r, l / 2]){
+	translate([-holegapw / 2 - r, -holegapl / 2 - r, 0]){
 		mount();
 	}
-	translate([holegapw / 2 + r, -holegapl / 2 - r, l / 2]){
+	translate([holegapw / 2 + r, -holegapl / 2 - r, 0]){
 		mount();
 	}
 }
 
 // 3v3 relay for the motor. we want to replace
 // this with a MOSFET.
-module relay3v(height){
+module relay3v(){
 	translate([40, -botinrad + 62, 0]){
-		relay3vside(height);
+		relay3vside();
 		mirror([0, 1, 0]){
-			relay3vside(height);
+			relay3vside();
 		}
 	}
 }
@@ -269,12 +269,12 @@ module lowershield(){
     translate([0, -1, wallz + (loadcellmounth + upperh) / 2]){
         difference(){
             cube([shieldw + 4, 36 / 2, loadcellmounth + upperh], true);
-            cube([shieldw + 2, 34 / 2, loadcellmounth + upperh], true);
+            cube([shieldw, 32 / 2, loadcellmounth + upperh], true);
 			// we need to still be able to install the
 			// load cell, though, so the shield is low
 			// on the back.
 			translate([0, 1, loadcellmounth / 2]){
-				cube([shieldw + 2, 34 / 2, upperh], true);
+				cube([shieldw, 32 / 2, upperh], true);
 			}
         }
     }
@@ -302,7 +302,7 @@ module croom(){
         loadcellmount(loadcellmounth);
     }
 	perfmounts();
-	relay3v(wallz);
+	relay3v();
 	lmsmounts();
     wirechannels();
     dropmotormount();
