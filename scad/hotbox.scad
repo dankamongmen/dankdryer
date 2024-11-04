@@ -186,25 +186,6 @@ module rc522holes(l){
     }
 }
 
-module relay3vside(l){
-    r = 1.5;
-	holegapl = 10;
-	holegapw = 63;
-	translate([-holegapw / 2 - r, -holegapl / 2 - r, l / 2]){
-		screw("M3", length = l);
-	}
-	translate([holegapw / 2 + r, -holegapl / 2 - r, l / 2]){
-		screw("M3", length = l);
-	}
-}
-
-module relay3v(height){
-    relay3vside(height);
-	mirror([0, 1, 0]){
-        relay3vside(height);
-    }
-}
-
 // holes for the solid state relay
 // two M5 holes, 47mm from center to center
 module ssrholes(h){
@@ -233,11 +214,6 @@ module hotbox(){
         translate([-42, -40, 0]){
             rc522holes(wallz);
 	    }
-	    translate([55, -55	, 0]){
-			rotate([0, 0, 45]){
-				relay3v(wallz + 10);
-			}
-		}
 		thermholes(wallz);
         // we want to clear everything in the central
         // cylinder from the floor up.

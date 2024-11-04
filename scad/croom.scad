@@ -142,25 +142,33 @@ module mount(){
 
 // 32.14 on the diagonal
 module lmsmounts(){
-    // 12->5V mounts
-    translate([39.8, -totalxy / 2 + 20, 0]){
-       mount();
-    }
-    translate([39.8, -totalxy / 2 + 36.4, 0]){
-       mount();
-    }
-    translate([8, -totalxy / 2 + 36.4, 0]){
-       mount();
-    }
-    translate([8, -totalxy / 2 + 20, 0]){
-       mount();
+	// holes are 31.8 and 16.4 apart at center
+	// rotate it through motortheta
+	// upper (most negative) left (most positive)
+    translate([20, -40, 0]){
+		mount();
+	    // upper right ought be 16.4 away
+		translate([-cos(motortheta) * 16.4,
+					sin(motortheta) * 16.4,	0]){
+			mount();
+			// lower right ought be 31.8 away from UR
+			translate([cos(motortheta) * 31.8,
+						sin(motortheta) * 31.8, 0]){
+				mount();
+			}
+        }
+		// lower left ought be 31.8 from UL
+		translate([cos(motortheta) * 31.8,
+					sin(motortheta) * 31.8, 0]){
+			mount();
+		}
     }
 }
 
 // width: exterior 35mm with 3mm holes (32mm)
 // length: exterior 75.3mm with 3mm holes (72.3mm)
 module perfmounts(){
-    translate([-mh - 15, -0.95 * totalxy / 2 + mh + 30, 0]){
+    translate([-mh - 15, -0.95 * totalxy / 2 + mh + 20, 0]){
         mount();
         translate([-72.3, 0, 0]){
             mount();
@@ -172,6 +180,30 @@ module perfmounts(){
             }
         }
     }
+}
+
+// 2 relay mounts
+module relay3vside(l){
+    r = 1.5;
+	holegapl = 10;
+	holegapw = 63;
+	translate([-holegapw / 2 - r, -holegapl / 2 - r, l / 2]){
+		mount();
+	}
+	translate([holegapw / 2 + r, -holegapl / 2 - r, l / 2]){
+		mount();
+	}
+}
+
+// 3v3 relay for the motor. we want to replace
+// this with a MOSFET.
+module relay3v(height){
+	translate([40, -botinrad + 60, 0]){
+		relay3vside(height);
+		mirror([0, 1, 0]){
+			relay3vside(height);
+		}
+	}
 }
 
 // hole for AC wire
@@ -264,6 +296,7 @@ module croom(){
         loadcellmount(loadcellmounth);
     }
 	perfmounts();
+	relay3v(wallz);
 	lmsmounts();
     wirechannels();
     dropmotormount();
