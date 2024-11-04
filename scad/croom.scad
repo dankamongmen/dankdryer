@@ -50,7 +50,7 @@ adj = (botrad - toprad) / sqrt(2);
 theta = (90 - atan(-croomz / adj));
 // a corner at the top, to which the hotbox is mounted
 module corner(){
-	h = 15;
+	h = 5;
 	s = 40;
     translate([-totalxy / 2, -totalxy / 2, croomz - h / 2]){
         difference(){
@@ -69,9 +69,26 @@ module corner(){
 				}
             }
 			translate([12, 12, 0]){
-                screw("M5", length = 20);
+                screw("M5", length = 10);
             }
         }
+    }
+}
+
+// mounts for the hotbox
+module corners(){
+    // cut top corners out of removal, leaving supports for top
+    corner();
+    mirror([1, 0, 0]){
+        corner();
+    }
+    mirror([0, 1, 0]){
+        corner();
+    }
+    mirror([1, 0, 0]){
+		mirror([0, 1, 0]){
+			corner();
+		}
     }
 }
 
@@ -112,63 +129,52 @@ module acadapterscrews(l){
     }
 }
 
-// mounts for the hotbox
-module corners(){
-    // cut top corners out of removal, leaving supports for top
-    corner();
-    mirror([1, 0, 0]){
-        corner();
-    }
-    mirror([0, 1, 0]){
-        corner();
-    }
-    mirror([1, 0, 0]){
-		mirror([0, 1, 0]){
-			corner();
-		}
-    }
+module fullmount(){
+	c = 5;
+	translate([0, 0, wallz + c / 2]){
+		cube([c, c, c], true);
+	}
 }
 
 // M4 screw hole through a 5x5x5 cube.
 module mount(){
 	c = 5;
-	translate([0, 0, wallz + c / 2]){
-		difference(){
-			cube([c, c, c], true);
+	difference(){
+		fullmount();
+		translate([0, 0, wallz + c / 2]){
 			screw("M4", length = wallz + c);
 		}
 	}
 }
 
-// 32.14 on the diagonal
+// only has two mounting holes, on a 35mm diagonal
 module lmsmounts(){
-	// holes are 31.8 and 16.4 apart at center
-	// rotate it through motortheta
-	// upper (most negative) left (most positive)
-    translate([20, -40, 0]){
-		mount();
-	    // upper right ought be 16.4 away
-		translate([-cos(motortheta) * 16.4,
-					sin(motortheta) * 16.4,	0]){
+	translate([20, -30, 0]){
+		rotate([0, 0, 90 - -motortheta]){
+			// holes are 31.8 and 16.4 apart at center
+			// rotate it through motortheta
+			// upper (most negative) left (most positive)
 			mount();
-			// lower right ought be 31.8 away from UR
-			translate([cos(motortheta) * 31.8,
-						sin(motortheta) * 31.8, 0]){
-				mount();
+			// upper right ought be 16.4 away
+			translate([-16.4, 0, 0]){
+				fullmount();
+				// lower right ought be 31.8 away from UR
+				translate([0, -31.8, 0]){
+					mount();
+				}
 			}
-        }
-		// lower left ought be 31.8 from UL
-		translate([cos(motortheta) * 31.8,
-					sin(motortheta) * 31.8, 0]){
-			mount();
+			// lower left ought be 31.8 from UL
+			translate([0, -31.8, 0]){
+				fullmount();
+			}
 		}
-    }
+	}
 }
 
 // width: exterior 35mm with 3mm holes (32mm)
 // length: exterior 75.3mm with 3mm holes (72.3mm)
 module perfmounts(){
-    translate([-mh - 15, -0.95 * totalxy / 2 + mh + 20, 0]){
+    translate([-mh - 15, -0.95 * totalxy / 2 + mh + 10, 0]){
         mount();
         translate([-72.3, 0, 0]){
             mount();
@@ -198,7 +204,7 @@ module relay3vside(l){
 // 3v3 relay for the motor. we want to replace
 // this with a MOSFET.
 module relay3v(height){
-	translate([40, -botinrad + 60, 0]){
+	translate([40, -botinrad + 62, 0]){
 		relay3vside(height);
 		mirror([0, 1, 0]){
 			relay3vside(height);
