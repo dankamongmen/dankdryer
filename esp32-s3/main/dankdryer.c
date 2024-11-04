@@ -41,7 +41,6 @@
 // 0 and 3 are strapping pins
 #define LOWER_PWMPIN GPIO_NUM_4   // lower chamber fan speed
 #define UPPER_PWMPIN GPIO_NUM_7   // upper chamber fan speed
-#define SSR_GPIN GPIO_NUM_8       // heater solid state relay
 #define I2C_SCLPIN GPIO_NUM_10    // I2C clock
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
@@ -51,6 +50,7 @@
 // 19--20 are used for JTAG (not strictly needed)
 #define I2C_SDAPIN GPIO_NUM_21    // I2C data
 // 26--32 are used for pstore qspi flash
+#define SSR_GPIN GPIO_NUM_35      // heater solid state relay
 #define MOTOR_RELAY GPIO_NUM_36   // enable relay for motor
 // 45 and 46 are strapping pins
 #define RGB_PIN GPIO_NUM_48       // onboard RGB neopixel
@@ -66,6 +66,7 @@ static bool MotorState;
 static bool HeaterState;
 static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 128;
+static adc_channel_t Thermchan;
 static bool UsePersistentStore; // set true upon successful initialization
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
@@ -122,8 +123,8 @@ static enum {
 } NetworkState;
 
 static bool StartupFailure;
-static const failure_indication SystemError = { 64, 0, 0 };
-static const failure_indication NetworkError = { 64, 0, 64 };
+static const failure_indication SystemError = { 32, 0, 0 };
+static const failure_indication NetworkError = { 32, 0, 32 };
 static const failure_indication PostFailure = { 0, 0, 0 };
 /*static const failure_indication NetworkIndications[NETWORK_STATE_COUNT] = {
   { 0, 255, 0 },  // WIFI_INVALID
@@ -719,6 +720,64 @@ set_motor(bool enabled){
   printf("set motor %s\n", motor_state());
 }
 
+static float
+getLM35(adc_channel_t channel){
+  esp_err_t e;
+  int raw;
+  e = adc_oneshot_read(ADC1, channel, &raw);
+  if(e != ESP_OK){
+    fprintf(stderr, "error (%s) reading from adc\n", esp_err_to_name(e));
+    return MIN_TEMP - 1;
+  }
+  int vout;
+  if(ADC1Calibrated){
+    if((e = adc_cali_raw_to_voltage(ADC1Calibration, raw, &vout)) != ESP_OK){
+      fprintf(stderr, "error (%s) calibrating raw adc value %d\n", esp_err_to_name(e), raw);
+      vout = raw;
+    }
+  }
+  // Dmax is 4095 on single read mode, 8191 on continuous
+  // Vmax is 3100mA with ADC_ATTEN_DB_12, 1750 with _6, 1250 w/ _2_5
+  float o = vout / 4095.0 * 125;
+  printf("ADC1: converted %d to %d -> %f\n", raw, vout, o);
+  return o;
+}
+
+static void
+set_heater_state(bool enabled){
+  HeaterState = enabled;
+  gpio_level(SSR_GPIN, enabled);
+  printf("%sabled heater\n", enabled ? "en" : "dis");
+}
+
+// if the upper chamber temperature as measured is a valid sample, update
+// LastUpperTemp, and turn heater on or off if appropriate.
+static float
+update_upper_temp(void){
+  float utemp = getLM35(Thermchan);
+  printf("lm35: %f\n", utemp);
+  // if there is no drying scheduled, but the heater is on, we ought turn
+  // it off even if we got an invalid temperature
+  if(HeaterState && !DryEndsAt){
+    set_heater_state(false);
+  }
+  // take actions based on a valid read. even if we did just disable the
+  // heater, we still want to update LastUpperTemp.
+  if(temp_valid_p(utemp)){
+    LastUpperTemp = utemp;
+    if(HeaterState){
+      // turn it off if we're above the target temp
+      if(utemp >= TargetTemp){
+        set_heater_state(false);
+      }
+      // turn it on if we're below the target temp, and scheduled to dry
+    }else if(DryEndsAt && utemp < TargetTemp){
+      set_heater_state(true);
+    }
+  }
+  return utemp;
+}
+
 #define CCHAN "control/"
 #define MOTOR_CHANNEL CCHAN DEVICE "/motor"
 #define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
@@ -807,8 +866,7 @@ handle_dry(const char* payload, size_t plen){
   printf("dry request for %us at %uC\n", seconds, temp);
   DryEndsAt = time(NULL) + seconds;
   set_motor(seconds != 0);
-  // FIXME put dry operation into effect:
-  //  * turn on (or off) heater
+  update_upper_temp();
   return 0;
 
 err:
@@ -1176,52 +1234,8 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
   free(s);
 }
 
-static float
-getLM35(adc_channel_t channel){
-  esp_err_t e;
-  int raw;
-  e = adc_oneshot_read(ADC1, channel, &raw);
-  if(e != ESP_OK){
-    fprintf(stderr, "error (%s) reading from adc\n", esp_err_to_name(e));
-    return MIN_TEMP - 1;
-  }
-  int vout;
-  if(ADC1Calibrated){
-    if((e = adc_cali_raw_to_voltage(ADC1Calibration, raw, &vout)) != ESP_OK){
-      fprintf(stderr, "error (%s) calibrating raw adc value %d\n", esp_err_to_name(e), raw);
-      vout = raw;
-    }
-  }
-  // Dmax is 4095 on single read mode, 8191 on continuous
-  // Vmax is 3100mA with ADC_ATTEN_DB_12, 1750 with _6, 1250 w/ _2_5
-  float o = vout / 4095.0 * 125;
-  printf("ADC1: converted %d to %d -> %f\n", raw, vout, o);
-  return o;
-}
-
-// if the upper chamber temperature as measured is a valid sample, update
-// LastUpperTemp, and turn heater on or off if appropriate.
-static void
-update_upper_temp(float utemp){
-  if(temp_valid_p(utemp)){
-    LastUpperTemp = utemp;
-  }
-  if(HeaterState){
-    if(!DryEndsAt || utemp >= TargetTemp){
-      HeaterState = false;
-      gpio_level(SSR_GPIN, false);
-      printf("disabled heater\n");
-    }
-  }else if(DryEndsAt && utemp < TargetTemp){
-    HeaterState = true;
-    gpio_level(SSR_GPIN, true);
-    printf("%f < %lu, enabled heater\n", utemp, TargetTemp);
-  }
-}
-
 void app_main(void){
-  adc_channel_t thermchan;
-  setup(&thermchan);
+  setup(&Thermchan);
   int64_t lastpub = esp_timer_get_time();
   int64_t lasttachs = lastpub;
   while(1){
@@ -1250,9 +1264,7 @@ void app_main(void){
       set_motor(false);
       DryEndsAt = 0;
     }
-    float hottemp = getLM35(thermchan);
-    update_upper_temp(hottemp);
-    printf("lm35: %f\n", hottemp);
+    update_upper_temp();
     if(curtime - lastpub > MQTT_PUBLISH_QUANTUM_USEC){
       send_mqtt(curtime, lrpm, urpm);
       lastpub = curtime;
