@@ -75,7 +75,8 @@ bme680_set_measurements(i2c_master_dev_handle_t i2c, unsigned temp, unsigned pre
     ++pbits;
     pressure /= 2;
   }
-  buf[1] = (tbits << 5u) | (pbits << 2u); // what's the rest?
+  // set up osrs_t, osrs_p, and (forced) mode
+  buf[1] = (tbits << 5u) | (pbits << 2u) | 1u;
   if(bme680_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
