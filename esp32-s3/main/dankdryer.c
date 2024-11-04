@@ -60,7 +60,6 @@
 
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
 static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
-//static const ledc_channel_t MOTOR_CHAN = LEDC_CHANNEL_2;
 static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 static bool MotorState;
@@ -701,10 +700,6 @@ heater_state(void){
 static void
 set_motor(bool enabled){
   MotorState = enabled;
-  /*set_pwm(MOTOR_CHAN, 255);
-  gpio_level(MOTOR_AIN1, enabled);
-  gpio_level(MOTOR_AIN2, 0);
-  gpio_level(MOTOR_STBY, enabled);*/
   gpio_level(MOTOR_RELAY, enabled);
   printf("set motor %s\n", motor_state());
 }
@@ -1059,22 +1054,8 @@ int setup_sensors(void){
   return 0;
 }
 
-// TB6612FNG
 static int
-//setup_motor(gpio_num_t pwmpin, gpio_num_t a1pin, gpio_num_t a2pin, gpio_num_t stbypin){
 setup_motor(gpio_num_t mrelaypin){
-  /*if(initialize_25k_pwm(MOTOR_CHAN, pwmpin, LEDC_TIMER_2)){
-    return -1;
-  }
-  if(gpio_set_output(a1pin)){
-    return -1;
-  }
-  if(gpio_set_output(a2pin)){
-    return -1;
-  }
-  if(gpio_set_output(stbypin)){
-    return -1;
-  }*/
   if(gpio_set_output(mrelaypin)){
     return -1;
   }
@@ -1105,7 +1086,6 @@ setup(adc_channel_t* thermchan){
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
     set_failure(&SystemError);
   }
-  //if(setup_motor(MOTOR_APWM, MOTOR_AIN1, MOTOR_AIN2, MOTOR_STBY)){
   if(setup_motor(MOTOR_RELAY)){
     set_failure(&SystemError);
   }
