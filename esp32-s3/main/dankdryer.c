@@ -50,7 +50,7 @@
 // 19--20 are used for JTAG (not strictly needed)
 #define I2C_SDAPIN GPIO_NUM_21    // I2C data
 // 26--32 are used for pstore qspi flash
-#define TRIAC_GPIN GPIO_NUM_33    // heater triac gate
+#define SSR_GPIN GPIO_NUM_33      // heater solid state relay
 #define MOTOR_RELAY GPIO_NUM_36   // enable relay for motor
 // 45 and 46 are strapping pins
 #define RGB_PIN GPIO_NUM_48       // onboard RGB neopixel
@@ -688,13 +688,28 @@ bool_as_onoff(bool b){
 }
 
 static inline const char*
+bool_as_onoff_http(bool b){
+  return b ? "<font color=\"green\">on</font>" : "off";
+}
+
+static inline const char*
 motor_state(void){
   return bool_as_onoff(MotorState);
 }
 
 static inline const char*
+motor_state_http(void){
+  return bool_as_onoff_http(MotorState);
+}
+
+static inline const char*
 heater_state(void){
   return bool_as_onoff(HeaterState);
+}
+
+static inline const char*
+heater_state_http(void){
+  return bool_as_onoff_http(HeaterState);
 }
 
 static void
@@ -890,8 +905,8 @@ httpd_get_handler(httpd_req_t *req){
             "</body></html>",
             LowerPWM, UpperPWM,
             LastLowerRPM, LastUpperRPM,
-            motor_state(),
-            heater_state(),
+            motor_state_http(),
+            heater_state_http(),
             LastWeight,
             LastUpperTemp, LastLowerTemp,
             DryEndsAt,
@@ -1194,12 +1209,12 @@ update_upper_temp(float utemp){
   if(HeaterState){
     if(!DryEndsAt || utemp >= TargetTemp){
       HeaterState = false;
-      gpio_level(TRIAC_GPIN, false);
+      gpio_level(SSR_GPIN, false);
       printf("disabled heater\n");
     }
   }else if(DryEndsAt && utemp < TargetTemp){
     HeaterState = true;
-    gpio_level(TRIAC_GPIN, true);
+    gpio_level(SSR_GPIN, true);
     printf("%f < %lu, enabled heater\n", utemp, TargetTemp);
   }
 }
