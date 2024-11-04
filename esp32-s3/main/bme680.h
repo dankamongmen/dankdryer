@@ -15,4 +15,10 @@ int bme680_reset(i2c_master_dev_handle_t i2c);
 // Initialize the device, making it suitable for use.
 int bme680_init(i2c_master_dev_handle_t i2c);
 
+// Get the 20-bit temperature (low 4 bits depend on oversampling).
+int bme680_temp(i2c_master_dev_handle_t i2c, uint32_t* temp);
+
+// Get the 20-bit pressure (low 4 bits depend on oversampling).
+int bme680_pressure(i2c_master_dev_handle_t i2c, uint32_t* pressure);
+
 #endif

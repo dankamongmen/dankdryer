@@ -5,6 +5,12 @@
 static const char* TAG = "bme";
 
 enum {
+  BME680_REG_PRESSURE0 = 0x1f,
+  BME680_REG_PRESSURE1 = 0x20,
+  BME680_REG_PRESSURE2 = 0x21,
+  BME680_REG_TEMP0 = 0x22,
+  BME680_REG_TEMP1 = 0x23,
+  BME680_REG_TEMP2 = 0x24,
   BME680_REG_ID = 0xd0,
   BME680_REG_RESET = 0xe0,
 };
@@ -65,5 +71,63 @@ int bme680_init(i2c_master_dev_handle_t i2c){
     return -1;
   }
   ESP_LOGI(TAG, "device id: 0x%02x", rbuf);
+  return 0;
+}
+
+int bme680_temp(i2c_master_dev_handle_t i2c, uint32_t *temp){
+  uint8_t buf[] = {
+    BME680_REG_TEMP0
+  };
+  uint8_t rbuf;
+  esp_err_t e;
+  *temp = 0;
+  e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS);
+  if(e != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) reading temp MSB", esp_err_to_name(e));
+    return -1;
+  }
+  *temp = rbuf << 12lu;
+  buf[0] = BME680_REG_TEMP1;
+  if((e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) reading temp LSB", esp_err_to_name(e));
+    return -1;
+  }
+  *temp |= (rbuf << 4lu);
+  buf[0] = BME680_REG_TEMP2;
+  if((e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) reading temp XLSB", esp_err_to_name(e));
+    return -1;
+  }
+  *temp |= (rbuf >> 4lu);
+  ESP_LOGI(TAG, "read temperature: %lu", *temp);
+  return 0;
+}
+
+int bme680_pressure(i2c_master_dev_handle_t i2c, uint32_t* pressure){
+  uint8_t buf[] = {
+    BME680_REG_PRESSURE0
+  };
+  uint8_t rbuf;
+  esp_err_t e;
+  *pressure = 0;
+  e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS);
+  if(e != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) reading pressure MSB", esp_err_to_name(e));
+    return -1;
+  }
+  *pressure = rbuf << 12lu;
+  buf[0] = BME680_REG_PRESSURE1;
+  if((e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) reading pressure LSB", esp_err_to_name(e));
+    return -1;
+  }
+  *pressure |= (rbuf << 4lu);
+  buf[0] = BME680_REG_PRESSURE2;
+  if((e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) reading pressure XLSB", esp_err_to_name(e));
+    return -1;
+  }
+  *pressure |= (rbuf >> 4lu);
+  ESP_LOGI(TAG, "read pressure: %lu", *pressure);
   return 0;
 }
