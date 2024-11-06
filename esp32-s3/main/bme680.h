@@ -18,10 +18,9 @@ int bme680_init(i2c_master_dev_handle_t i2c);
 // Is data ready? Reading measurements can fail otherwise.
 int bme680_data_ready(i2c_master_dev_handle_t i2c, bool* ready);
 
-// Get the 20-bit temperature (low 4 bits depend on oversampling).
-int bme680_temp(i2c_master_dev_handle_t i2c, uint32_t* temp);
-
-// Get the 20-bit pressure (low 4 bits depend on oversampling).
-int bme680_pressure(i2c_master_dev_handle_t i2c, uint32_t* pressure);
+// Get the 20-bit temperature (low 4 bits depend on oversampling), 20-bit
+// pressure (same), and the 16-bit humidity.
+int bme680_sense(i2c_master_dev_handle_t i2c, uint32_t* temp,
+                 uint32_t* pressure, uint32_t* humidity);
 
 #endif

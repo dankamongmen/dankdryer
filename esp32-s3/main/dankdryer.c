@@ -75,8 +75,8 @@ static unsigned LastLowerRPM, LastUpperRPM;
 static bool FoundNAU7802, FoundBME680, FoundENS160;
 static float LastLowerTemp, LastUpperTemp, LastWeight;
 
-// volatile counters
-static uint32_t LowerPulses, UpperPulses; // tach signals recorded
+// ISR counters
+static IRAM_ATTR uint32_t LowerPulses, UpperPulses; // tach signals recorded
 
 // ESP-IDF objects
 static bool ADC1Calibrated;
@@ -151,7 +151,6 @@ static const esp_mqtt_client_config_t MQTTConfig = {
   },
 };
 
-// FIXME i think pulsecount also needs be in IRAM?
 static void IRAM_ATTR
 tach_isr(void* pulsecount){
   uint32_t* pc = pulsecount;
@@ -1251,11 +1250,11 @@ void app_main(void){
   int64_t lasttachs = lastpub;
   while(1){
     vTaskDelay(pdMS_TO_TICKS(1000));
-    uint32_t btemp, bpressure;
+    uint32_t btemp, bpressure, bhumidity;
     if(FoundBME680){
-      bme680_temp(BME680, &btemp);
-      bme680_pressure(BME680, &bpressure);
-      printf("bme680 temp: %lu pressure: %lu\n", btemp, bpressure);
+      if(!bme680_sense(BME680, &btemp, &bpressure, &bhumidity)){
+        printf("bme680 temp: %lu pressure: %lu humidity %lu\n", btemp, bpressure, bhumidity);
+      }
     }else{
       printf("no BME680 present\n");
     }
