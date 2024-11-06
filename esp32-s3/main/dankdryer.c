@@ -337,7 +337,7 @@ setup_nau7802(i2c_master_dev_handle_t dev){
 static int
 probe_i2c(i2c_master_bus_handle_t i2c, bool* nau7802, bool* bme680, bool* ens160){
   *bme680 = false;
-  if(bme680_detect(i2c, &BME680)){
+  if(!bme680_detect(i2c, &BME680)){
     if(setup_bme680(BME680)){
       return -1;
     }
@@ -345,7 +345,7 @@ probe_i2c(i2c_master_bus_handle_t i2c, bool* nau7802, bool* bme680, bool* ens160
   }
   *ens160 = !probe_i2c_slave(i2c, 0x53, "ENS160");
   *nau7802 = false;
-  if(nau7802_detect(i2c, &NAU7802)){
+  if(!nau7802_detect(i2c, &NAU7802)){
     if(setup_nau7802(NAU7802)){
       return -1;
     }
