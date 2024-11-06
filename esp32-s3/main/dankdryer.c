@@ -310,10 +310,47 @@ probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
 }
 
 static int
+setup_bme680(i2c_master_dev_handle_t dev){
+  if(bme680_init(dev)){
+    return -1;
+  }
+  return 0;
+}
+
+static int
+setup_nau7802(i2c_master_dev_handle_t dev){
+  if(nau7802_reset(dev)){
+    return -1;
+  }
+  if(nau7802_poweron(dev)){
+    return -1;
+  }
+  if(nau7802_setldo(dev, NAU7802_LDO_33V)){
+    return -1;
+  }
+  if(nau7802_setgain(dev, 128)){
+    return -1;
+  }
+  return 0;
+}
+
+static int
 probe_i2c(i2c_master_bus_handle_t i2c, bool* nau7802, bool* bme680, bool* ens160){
-  *bme680 = !bme680_detect(i2c, &BME680);
+  *bme680 = false;
+  if(bme680_detect(i2c, &BME680)){
+    if(setup_bme680(BME680)){
+      return -1;
+    }
+    *bme680 = true;
+  }
   *ens160 = !probe_i2c_slave(i2c, 0x53, "ENS160");
-  *nau7802 = !nau7802_detect(i2c, &NAU7802);
+  *nau7802 = false;
+  if(nau7802_detect(i2c, &NAU7802)){
+    if(setup_nau7802(NAU7802)){
+      return -1;
+    }
+    *nau7802 = true;
+  }
   return 0;
 }
 
@@ -1105,45 +1142,6 @@ setup_network(void){
 }
 
 static int
-setup_nau7802(i2c_master_dev_handle_t dev){
-  if(nau7802_reset(dev)){
-    return -1;
-  }
-  if(nau7802_poweron(dev)){
-    return -1;
-  }
-  if(nau7802_setldo(dev, NAU7802_LDO_33V)){
-    return -1;
-  }
-  if(nau7802_setgain(dev, 128)){
-    return -1;
-  }
-  return 0;
-}
-
-static int
-setup_bme680(i2c_master_dev_handle_t dev){
-  if(bme680_init(dev)){
-    return -1;
-  }
-  return 0;
-}
-
-int setup_sensors(void){
-  if(FoundNAU7802){
-    if(setup_nau7802(NAU7802)){
-      return -1;
-    }
-  }
-  if(FoundBME680){
-    if(setup_bme680(BME680)){
-      return -1;
-    }
-  }
-  return 0;
-}
-
-static int
 setup_motor(gpio_num_t mrelaypin){
   if(gpio_set_output(mrelaypin)){
     return -1;
@@ -1176,9 +1174,6 @@ setup(adc_channel_t* thermchan){
     set_failure(&SystemError);
   }
   if(setup_motor(MOTOR_RELAY)){
-    set_failure(&SystemError);
-  }
-  if(setup_sensors()){
     set_failure(&SystemError);
   }
   if(setup_network()){
