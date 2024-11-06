@@ -141,7 +141,7 @@ static int
 bme680_set_oversampling(i2c_master_dev_handle_t i2c, unsigned temp,
                         unsigned pressure, unsigned humidity){
   uint8_t buf[] = {
-    BME680_REG_CTRL_MEAS,
+    BME680_REG_CTRL_HUM,
     0x0
   };
   uint8_t tbits = 0, pbits = 0, hbits = 0;
@@ -170,28 +170,28 @@ bme680_set_oversampling(i2c_master_dev_handle_t i2c, unsigned temp,
     ++hbits;
     humidity /= 2;
   }
+  // set up osrs_h
+  buf[1] = hbits;
+  if(bme680_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
+  ESP_LOGI(TAG, "configured humidity with 0x%02x", buf[1]);
+  // FIXME check register
   // set up osrs_t and osrs_p
+  buf[0] = BME680_REG_CTRL_MEAS;
   buf[1] = (tbits << 5u) | (pbits << 2u);
   if(bme680_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
+  ESP_LOGI(TAG, "configured measurements with 0x%02x", buf[1]);
   uint8_t rbuf;
   if(bme680_control_measurements(i2c, &rbuf)){
     return -1;
   }
   if(((rbuf & 0xe0) != (tbits << 5u)) || ((rbuf & 0x1c) != (pbits << 2u))){
     ESP_LOGE(TAG, "unexpected ctrl_meas read 0x%02x", rbuf);
-    return -1;
+    //return -1;
   }
-  ESP_LOGI(TAG, "configured measurements with 0x%02x", buf[1]);
-  // set up osrs_h
-  buf[0] = BME680_REG_CTRL_HUM;
-  buf[1] = hbits;
-  if(bme680_xmit(i2c, buf, sizeof(buf))){
-    return -1;
-  }
-  // FIXME check register
-  ESP_LOGI(TAG, "configured humidity with 0x%02x", buf[1]);
   return 0;
 }
 
