@@ -1257,9 +1257,13 @@ void app_main(void){
   while(1){
     vTaskDelay(pdMS_TO_TICKS(1000));
     uint32_t btemp, bpressure;
-    bme680_temp(BME680, &btemp);
-    bme680_pressure(BME680, &bpressure);
-    printf("bme680 temp: %lu pressure: %lu\n", btemp, bpressure);
+    if(FoundBME680){
+      bme680_temp(BME680, &btemp);
+      bme680_pressure(BME680, &bpressure);
+      printf("bme680 temp: %lu pressure: %lu\n", btemp, bpressure);
+    }else{
+      printf("no BME680 present\n");
+    }
     float ambient = getAmbient();
     if(temp_valid_p(ambient)){
       LastLowerTemp = ambient;
