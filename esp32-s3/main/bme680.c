@@ -5,7 +5,7 @@
 static const char* TAG = "bme";
 
 enum {
-
+  BME680_REG_MEAS_STATUS = 0x1d,
   BME680_REG_PRESSURE0 = 0x1f,
   BME680_REG_PRESSURE1 = 0x20,
   BME680_REG_PRESSURE2 = 0x21,
@@ -115,12 +115,20 @@ int bme680_init(i2c_master_dev_handle_t i2c){
 }
 
 int bme680_temp(i2c_master_dev_handle_t i2c, uint32_t *temp){
+  *temp = ~0UL;
+  bool ready;
+  if(bme680_data_ready(i2c, &ready)){
+    return -1;
+  }
+  if(!ready){
+    ESP_LOGE(TAG, "measurement data wasn't ready");
+    return -1;
+  }
   uint8_t buf[] = {
     BME680_REG_TEMP0
   };
   uint8_t rbuf;
   esp_err_t e;
-  *temp = 0;
   e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGE(TAG, "error (%s) reading temp MSB", esp_err_to_name(e));
@@ -144,12 +152,20 @@ int bme680_temp(i2c_master_dev_handle_t i2c, uint32_t *temp){
 }
 
 int bme680_pressure(i2c_master_dev_handle_t i2c, uint32_t* pressure){
+  *pressure = ~0UL;
+  bool ready;
+  if(bme680_data_ready(i2c, &ready)){
+    return -1;
+  }
+  if(!ready){
+    ESP_LOGE(TAG, "measurement data wasn't ready");
+    return -1;
+  }
   uint8_t buf[] = {
     BME680_REG_PRESSURE0
   };
   uint8_t rbuf;
   esp_err_t e;
-  *pressure = 0;
   e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS);
   if(e != ESP_OK){
     ESP_LOGE(TAG, "error (%s) reading pressure MSB", esp_err_to_name(e));
@@ -169,5 +185,19 @@ int bme680_pressure(i2c_master_dev_handle_t i2c, uint32_t* pressure){
   }
   *pressure |= (rbuf >> 4lu);
   ESP_LOGI(TAG, "read pressure: %lu", *pressure);
+  return 0;
+}
+
+int bme680_data_ready(i2c_master_dev_handle_t i2c, bool* ready){
+  uint8_t buf[] = {
+    BME680_REG_MEAS_STATUS
+  };
+  uint8_t rbuf;
+  esp_err_t e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS);
+  if(e != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) reading measure status register", esp_err_to_name(e));
+    return -1;
+  }
+  *ready = !!(rbuf & 0x8u);
   return 0;
 }

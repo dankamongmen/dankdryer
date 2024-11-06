@@ -15,6 +15,9 @@ int bme680_reset(i2c_master_dev_handle_t i2c);
 // Initialize the device, making it suitable for use.
 int bme680_init(i2c_master_dev_handle_t i2c);
 
+// Is data ready? Reading measurements can fail otherwise.
+int bme680_data_ready(i2c_master_dev_handle_t i2c, bool* ready);
+
 // Get the 20-bit temperature (low 4 bits depend on oversampling).
 int bme680_temp(i2c_master_dev_handle_t i2c, uint32_t* temp);
 
