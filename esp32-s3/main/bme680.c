@@ -5,6 +5,17 @@
 static const char* TAG = "bme";
 
 enum {
+  BME680_IIR_0 = 0,
+  BME680_IIR_1 = 1,
+  BME680_IIR_3 = 2,
+  BME680_IIR_7 = 3,
+  BME680_IIR_15 = 4,
+  BME680_IIR_31 = 5,
+  BME680_IIR_63 = 6,
+  BME680_IIR_127 = 7,
+};
+
+typedef enum {
   BME680_REG_MEAS_STATUS = 0x1d,
   BME680_REG_PRESSURE_MSB = 0x1f,
   BME680_REG_PRESSURE_LSB = 0x20,
@@ -23,7 +34,7 @@ enum {
   BME680_REG_CONFIG = 0x75,
   BME680_REG_ID = 0xd0,
   BME680_REG_RESET = 0xe0,
-};
+} registers;
 
 static const unsigned TIMEOUT_MS = 1000u; // FIXME why 1s?
 
@@ -47,6 +58,25 @@ int bme680_detect(i2c_master_bus_handle_t i2c, i2c_master_dev_handle_t* i2cbme){
   return 0;
 }
 
+// get the single byte of some register
+static inline int
+bme680_readreg(i2c_master_dev_handle_t i2c, registers reg,
+               const char* regname, uint8_t* val){
+  uint8_t r = reg;
+  esp_err_t e;
+  if((e = i2c_master_transmit_receive(i2c, &r, 1, val, 1, TIMEOUT_MS)) != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) requesting %s via I2C", esp_err_to_name(e), regname);
+    return -1;
+  }
+  ESP_LOGD(TAG, "got %s: 0x%02x", regname, *val);
+  return 0;
+}
+
+static inline int
+bme680_control_measurements(i2c_master_dev_handle_t i2c, uint8_t* val){
+  return bme680_readreg(i2c, BME680_REG_CTRL_MEAS, "CTRLMEAS", val);
+}
+
 static int
 bme680_xmit(i2c_master_dev_handle_t i2c, const void* buf, size_t blen){
   esp_err_t e = i2c_master_transmit(i2c, buf, blen, TIMEOUT_MS);
@@ -57,10 +87,58 @@ bme680_xmit(i2c_master_dev_handle_t i2c, const void* buf, size_t blen){
   return 0;
 }
 
+// set the filter bits of the config register. iir must come from BME680_IIR_*.
+static int
+bme680_set_iirfilter(i2c_master_dev_handle_t i2c, unsigned iir){
+  uint8_t buf[] = {
+    BME680_REG_CONFIG,
+    0x0
+  };
+  if(iir >= 8){
+    ESP_LOGE(TAG, "invalid IIR filter %u", iir);
+    return -1;
+  }
+  uint8_t rbuf;
+  esp_err_t e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS);
+  if(e != ESP_OK){
+    ESP_LOGE(TAG, "error %s reading config register", esp_err_to_name(e));
+  }
+  // filter is bits 4..2
+  rbuf &= 0xe3;
+  rbuf |= (iir << 2u);
+  if(bme680_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
+  ESP_LOGI(TAG, "wrote 0x%02x to config register", rbuf);
+  return 0;
+}
+
+// set force mode, which ought lead to a measurement.
+static int
+bme680_set_forcemode(i2c_master_dev_handle_t i2c){
+  uint8_t buf[] = {
+    BME680_REG_CTRL_MEAS,
+    0x0
+  };
+  uint8_t rbuf;
+  esp_err_t e = i2c_master_transmit_receive(i2c, buf, 1, &rbuf, 1, TIMEOUT_MS);
+  if(e != ESP_OK){
+    ESP_LOGE(TAG, "error %s reading measurement control register", esp_err_to_name(e));
+  }
+  // mode is bits 1..0
+  rbuf &= 0xfc;
+  rbuf |= 0x1;
+  if(bme680_xmit(i2c, buf, sizeof(buf))){
+    return -1;
+  }
+  ESP_LOGI(TAG, "wrote 0x%02x to measurement control register", rbuf);
+  return 0;
+}
+
 // temp, pressure, and humidity are oversampling settings, or 0 to skip the
 // relevant measurements. oversampling can be done at x1, x2, x4, x8, or x16.
 static int
-bme680_set_measurements(i2c_master_dev_handle_t i2c, unsigned temp,
+bme680_set_oversampling(i2c_master_dev_handle_t i2c, unsigned temp,
                         unsigned pressure, unsigned humidity){
   uint8_t buf[] = {
     BME680_REG_CTRL_MEAS,
@@ -97,13 +175,23 @@ bme680_set_measurements(i2c_master_dev_handle_t i2c, unsigned temp,
   if(bme680_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
+  uint8_t rbuf;
+  if(bme680_control_measurements(i2c, &rbuf)){
+    return -1;
+  }
+  if(((rbuf & 0xe0) != (tbits << 5u)) || ((rbuf & 0x1c) != (pbits << 2u))){
+    ESP_LOGE(TAG, "unexpected ctrl_meas read 0x%02x", rbuf);
+    return -1;
+  }
+  ESP_LOGI(TAG, "configured measurements with 0x%02x", buf[1]);
   // set up osrs_h
   buf[0] = BME680_REG_CTRL_HUM;
   buf[1] = hbits;
   if(bme680_xmit(i2c, buf, sizeof(buf))){
     return -1;
   }
-  ESP_LOGI(TAG, "configured measurements with 0x%02x", buf[1]);
+  // FIXME check register
+  ESP_LOGI(TAG, "configured humidity with 0x%02x", buf[1]);
   return 0;
 }
 
@@ -131,7 +219,13 @@ int bme680_init(i2c_master_dev_handle_t i2c){
     return -1;
   }
   ESP_LOGI(TAG, "device id: 0x%02x", rbuf);
-  if(bme680_set_measurements(i2c, 16, 16, 16)){
+  if(bme680_set_oversampling(i2c, 16, 16, 16)){
+    return -1;
+  }
+  if(bme680_set_iirfilter(i2c, BME680_IIR_3)){
+    return -1;
+  }
+  if(bme680_set_forcemode(i2c)){
     return -1;
   }
   return 0;
