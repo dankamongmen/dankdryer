@@ -76,7 +76,7 @@ static bool FoundNAU7802, FoundBME680, FoundENS160;
 static float LastLowerTemp, LastUpperTemp, LastWeight;
 
 // ISR counters
-static IRAM_ATTR uint32_t LowerPulses, UpperPulses; // tach signals recorded
+static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 
 // ESP-IDF objects
 static bool ADC1Calibrated;
