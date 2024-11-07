@@ -332,7 +332,7 @@ module croom(){
         fancablehole();
     }
 	ssrholes();
-    /*lowershield();
+    lowershield();
     acadapterscrews(6);
     translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
@@ -341,7 +341,7 @@ module croom(){
 	relay3v();
 	lmsmounts();
     wirechannels();
-    dropmotormount();*/
+    dropmotormount();
 }
 
 croom();
