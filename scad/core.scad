@@ -196,7 +196,7 @@ gearboth = 8; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
 // remaining height ought be defined in terms
 // of the motor and coupling FIXME.
-gearh = gearboth + 15;
+gearh = gearboth + 12;
 gearbore = bearingh + 0.4;
 wormbore = 7;
 module gear(){

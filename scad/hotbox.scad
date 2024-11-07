@@ -186,17 +186,6 @@ module rc522holes(l){
     }
 }
 
-// holes for the solid state relay
-// two M5 holes, 47mm from center to center
-module ssrholes(h){
-	translate([0, 0, h / 2]){
-		screw("M5", l = h);
-		translate([0, 47, 0]){
-			screw("M5", l = h);
-		}
-	}
-}
-
 module hotbox(){
     difference(){
         union(){
@@ -208,9 +197,6 @@ module hotbox(){
                 upcorners();
             }
         }
-		translate([0, 40, 0]){
-			ssrholes(wallz);
-		}
         translate([-42, -40, 0]){
             rc522holes(wallz);
 	    }

@@ -280,6 +280,41 @@ module lowershield(){
     }
 }
 
+// platform for the solid state relay on the wall
+// above the AC adapter. it mounts to two M5s,
+// 47mm from center to center. 25x62x45mm total.
+ssrh = 25;
+ssrw = 45;
+ssrl = 62;
+module ssrholes(){
+	ssrholew = 47;
+	ssrplatformh = 3;
+	totalh = ssrh + ssrplatformh;
+	// platform emerges from wall
+	translate([-80, topinalt - ssrw + 5, croomz - totalh - 5]){
+		rotate([180 - theta, 0, 0]){
+			rotate([0, 90, 0]){
+				difference(){
+					linear_extrude(ssrl){
+						polygon([[0, 0],
+								[0, ssrw],
+								[ssrh, ssrw]]);
+					}
+					translate([4, ssrw / 2, (ssrl - ssrholew) / 2]){
+						rotate([0, 90, 0]){
+			
+							screw("M5", l = ssrh / 2);
+							translate([-47, 0, 0]){
+								screw("M5", l = ssrh / 2);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 // hollow frustrum
 module croom(){
     difference(){
@@ -296,7 +331,8 @@ module croom(){
 		achole();
         fancablehole();
     }
-    lowershield();
+	ssrholes();
+    /*lowershield();
     acadapterscrews(6);
     translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
@@ -305,7 +341,7 @@ module croom(){
 	relay3v();
 	lmsmounts();
     wirechannels();
-    dropmotormount();
+    dropmotormount();*/
 }
 
 croom();
