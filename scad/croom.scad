@@ -284,7 +284,7 @@ module lowershield(){
 // above the AC adapter. it mounts to two M5s,
 // 47mm from center to center. 25x62x45mm total.
 ssrh = 25;
-ssrw = 45;
+ssrw = 49;
 ssrl = 62;
 module ssrplatform(){
 	ssrholew = 47;
@@ -300,7 +300,7 @@ module ssrplatform(){
 								[0, ssrw],
 								[ssrh, ssrw]]);
 					}
-					translate([4, ssrw / 2, (ssrl - ssrholew) / 2]){
+					translate([4, (ssrw - 5) / 2, (ssrl - ssrholew) / 2]){
 						rotate([0, 90, 0]){
 			
 							screw("M5", l = ssrh / 2);
@@ -316,9 +316,9 @@ module ssrplatform(){
 }
 
 // hole for three-prong rocker switch
-// 10.35mm high, 25.65mm width, but orient it
+// 10.35mm high, 29.1mm width, but orient it
 // vertically for less unsupported width
-rockerh = 25.65;
+rockerh = 29.1;
 rockerw = 10.35;
 module rockerhole(){
 	translate([-botinalt, botinalt / 3, rockerh / 2 + 10]){
