@@ -286,7 +286,7 @@ module lowershield(){
 ssrh = 25;
 ssrw = 45;
 ssrl = 62;
-module ssrholes(){
+module ssrplatform(){
 	ssrholew = 47;
 	ssrplatformh = 3;
 	totalh = ssrh + ssrplatformh;
@@ -315,6 +315,19 @@ module ssrholes(){
 	}
 }
 
+// hole for three-prong rocker switch
+// 10.35mm high, 25.65mm width, but orient it
+// vertically for less unsupported width
+rockerh = 25.65;
+rockerw = 10.35;
+module rockerhole(){
+	translate([-botinalt, botinalt / 3, rockerh / 2 + 10]){
+	    rotate([0, 180 - theta, 0]){
+			cube([croomwall + 2, rockerw, rockerh], true);
+		}
+	}
+}
+
 // hollow frustrum
 module croom(){
     difference(){
@@ -324,14 +337,15 @@ module croom(){
             corners();
         }
         translate([0, -botalt + 10, croomz / 2]){
-            rot(0){
+            rotate([]){
                 fanhole(20);
             }
         }
 		achole();
         fancablehole();
+		rockerhole();
     }
-	ssrholes();
+	ssrplatform();
     lowershield();
     acadapterscrews(6);
     translate([loadcellmountx, 0, wallz]){
