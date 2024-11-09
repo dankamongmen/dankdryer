@@ -336,12 +336,12 @@ module croom(){
             croominnercore();
             corners();
         }
-        translate([0, -botalt + 10, croomz / 2]){
-            rotate([]){
+		translate([0, -botalt + 10, croomz / 2]){
+            rotate([theta, 0, 0]){
                 fanhole(20);
             }
         }
-		achole();
+	    achole();
         fancablehole();
 		rockerhole();
     }
