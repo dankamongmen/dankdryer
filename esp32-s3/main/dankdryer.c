@@ -40,15 +40,15 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define LOWER_PWMPIN GPIO_NUM_4   // lower chamber fan speed
-#define UPPER_PWMPIN GPIO_NUM_7   // upper chamber fan speed
-#define I2C_SCLPIN GPIO_NUM_10    // I2C clock
+#define LOWER_TACHPIN GPIO_NUM_8  // lower chamber fan tachometer
+#define LOWER_PWMPIN GPIO_NUM_9   // lower chamber fan speed
+#define UPPER_TACHPIN GPIO_NUM_10 // upper chamber fan tachometer
+#define UPPER_PWMPIN GPIO_NUM_11  // upper chamber fan speed
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
-#define LOWER_TACHPIN GPIO_NUM_11 // lower chamber fan tachometer
 #define I2C_SDAPIN GPIO_NUM_12    // I2C data
 #define THERM_DATAPIN GPIO_NUM_17 // analog thermometer (ADC1)
-#define UPPER_TACHPIN GPIO_NUM_18 // upper chamber fan tachometer
+#define I2C_SCLPIN GPIO_NUM_18    // I2C clock
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 #define SSR_GPIN GPIO_NUM_35      // heater solid state relay
