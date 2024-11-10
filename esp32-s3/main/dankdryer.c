@@ -52,7 +52,7 @@
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 #define SSR_GPIN GPIO_NUM_35      // heater solid state relay
-#define MOTOR_RELAY GPIO_NUM_36   // enable relay for motor
+#define MOTOR_RELAY GPIO_NUM_42   // enable relay for motor
 // 45 and 46 are strapping pins
 #define RGB_PIN GPIO_NUM_48       // onboard RGB neopixel
 
@@ -848,6 +848,7 @@ handle_dry(const char* payload, size_t plen){
   } state = PRESPACE;
   // FIXME need address wrapping of temp and/or seconds
   while(idx < plen){
+    printf("payload[%zu] = 0x%02x state: %d temp: %u\n", idx, payload[idx], state, temp);
     if(payload[idx] >= 0x80 || payload[idx] <= 0){ // invalid character
       goto err;
     }
