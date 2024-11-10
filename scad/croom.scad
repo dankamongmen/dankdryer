@@ -253,10 +253,10 @@ module wirechannels(){
 
 // hole for hotbox fan wires
 module fancablehole(){
-    rotate([180 - theta, 0, 0]){
-        translate([-40, botinalt + 2, croomz - 8]){
+    translate([-40, botinalt - 6, croomz]){
+		rotate([180 - theta, 0, 0]){
             rotate([90, 0, 0]){
-                cylinder(croomwall + 2, 3, 3, true);
+                cylinder(croomwall + 1, 5, 5, true);
             }
         }
     }
@@ -345,6 +345,7 @@ module croom(){
         fancablehole();
 		rockerhole();
     }
+	/*
 	ssrplatform();
     lowershield();
     acadapterscrews(6);
@@ -356,6 +357,7 @@ module croom(){
 	lmsmounts();
     wirechannels();
     dropmotormount();
+	*/
 }
 
 croom();
