@@ -904,7 +904,7 @@ handle_dry(const char* payload, size_t plen){
     goto err;
   }
   printf("dry request for %us at %uC\n", seconds, temp);
-  DryEndsAt = time(NULL) + seconds;
+  DryEndsAt = esp_timer_get_time() + seconds * 1000000ull;
   set_motor(seconds != 0);
   update_upper_temp();
   return 0;
@@ -1276,9 +1276,9 @@ void app_main(void){
       getFanTachs(&lrpm, &urpm, curtime, lasttachs);
       lasttachs = curtime;
     }
-    const int64_t cursec = curtime / 1000000lu;
-    if(DryEndsAt && cursec >= DryEndsAt){
-      printf("completed drying operation (%llu >= %llu)\n", cursec, DryEndsAt);
+    printf("dryends: %lld cursec: %lld\n", DryEndsAt, curtime);
+    if(DryEndsAt && curtime >= DryEndsAt){
+      printf("completed drying operation (%llu >= %llu)\n", curtime, DryEndsAt);
       set_motor(false);
       DryEndsAt = 0;
     }
