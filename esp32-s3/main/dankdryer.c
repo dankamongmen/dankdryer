@@ -4,7 +4,7 @@
 #define CLIENTID DEVICE VERSION
 #include "dryer-network.h"
 #include "nau7802.h"
-#include "bme680.h"
+#include "hx711.h"
 #include <nvs.h>
 #include <math.h>
 #include <mdns.h>
@@ -41,6 +41,8 @@
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
 #define SSR_GPIN GPIO_NUM_4       // heater solid state relay
+#define HX711_CLOCKPIN GPIO_NUM_6 // hx711 clock (output)
+#define HX711_DATAPIN GPIO_NUM_7  // hx711 data (input)
 #define LOWER_TACHPIN GPIO_NUM_8  // lower chamber fan tachometer
 #define LOWER_PWMPIN GPIO_NUM_9   // lower chamber fan speed
 #define UPPER_TACHPIN GPIO_NUM_10 // upper chamber fan tachometer
@@ -72,8 +74,9 @@ static bool UsePersistentStore; // set true upon successful initialization
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static unsigned LastLowerRPM, LastUpperRPM;
-static bool FoundNAU7802, FoundBME680, FoundENS160;
+static bool FoundNAU7802;
 static float LastLowerTemp, LastUpperTemp, LastWeight;
+static HX711 hx711;
 
 // ISR counters
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
@@ -85,7 +88,6 @@ static float LoadcellScale = 1.0;
 static led_strip_handle_t Neopixel;
 static i2c_master_bus_handle_t I2C;
 static adc_oneshot_unit_handle_t ADC1;
-static i2c_master_dev_handle_t BME680;
 static i2c_master_dev_handle_t NAU7802;
 static temperature_sensor_handle_t temp;
 static adc_cali_handle_t ADC1Calibration;
@@ -297,26 +299,6 @@ gpio_set_output(gpio_num_t pin){
 }
 
 static int
-probe_i2c_slave(i2c_master_bus_handle_t i2c, unsigned address, const char* dev){
-  esp_err_t e;
-  printf("probing for %s (I2C 0x%02x)...\n", dev, address);
-  if((e = i2c_master_probe(i2c, address, TIMEOUT_MS)) != ESP_OK){
-    fprintf(stderr, "couldn't find %s (%s)\n", dev, esp_err_to_name(e));
-    return -1;
-  }
-  printf("found it!\n");
-  return 0;
-}
-
-static int
-setup_bme680(i2c_master_dev_handle_t dev){
-  if(bme680_init(dev)){
-    return -1;
-  }
-  return 0;
-}
-
-static int
 setup_nau7802(i2c_master_dev_handle_t dev){
   if(nau7802_reset(dev)){
     return -1;
@@ -334,15 +316,7 @@ setup_nau7802(i2c_master_dev_handle_t dev){
 }
 
 static int
-probe_i2c(i2c_master_bus_handle_t i2c, bool* nau7802, bool* bme680, bool* ens160){
-  *bme680 = false;
-  if(!bme680_detect(i2c, &BME680)){
-    if(setup_bme680(BME680)){
-      return -1;
-    }
-    *bme680 = true;
-  }
-  *ens160 = !probe_i2c_slave(i2c, 0x53, "ENS160");
+probe_i2c(i2c_master_bus_handle_t i2c, bool* nau7802){
   *nau7802 = false;
   if(!nau7802_detect(i2c, &NAU7802)){
     if(setup_nau7802(NAU7802)){
@@ -395,7 +369,7 @@ setup_neopixel(gpio_num_t pin){
 }
 
 static int
-setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* nau7802, bool* bme680, bool* ens160){
+setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* nau7802){
   i2c_master_bus_config_t i2cconf = {
     .i2c_port = -1,
     .sda_io_num = sda,
@@ -411,7 +385,7 @@ setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* nau7802, bool* bme680, bool* ens
     fprintf(stderr, "error (%s) creating i2c master bus\n", esp_err_to_name(e));
     return -1;
   }
-  if(probe_i2c(I2C, nau7802, bme680, ens160)){
+  if(probe_i2c(I2C, nau7802)){
     return -1;
   }
   return 0;
@@ -1170,7 +1144,10 @@ setup(adc_channel_t* thermchan){
   if(setup_temp(THERM_DATAPIN, thermchan)){
     set_failure(&SystemError);
   }
-  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundNAU7802, &FoundBME680, &FoundENS160)){
+  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundNAU7802)){
+    set_failure(&SystemError);
+  }
+  if(hx711_init(&hx711, HX711_DATAPIN, HX711_CLOCKPIN)){
     set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
@@ -1256,12 +1233,6 @@ void app_main(void){
   int64_t lasttachs = lastpub;
   while(1){
     vTaskDelay(pdMS_TO_TICKS(1000));
-    uint32_t btemp, bpressure, bhumidity;
-    if(FoundBME680){
-      if(!bme680_sense(BME680, &btemp, &bpressure, &bhumidity)){
-        printf("bme680 temp: %lu pressure: %lu humidity %lu\n", btemp, bpressure, bhumidity);
-      }
-    }
     float ambient = getAmbient();
     if(temp_valid_p(ambient)){
       LastLowerTemp = ambient;
