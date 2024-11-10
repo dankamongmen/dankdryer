@@ -40,6 +40,7 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
+#define SSR_GPIN GPIO_NUM_4       // heater solid state relay
 #define LOWER_TACHPIN GPIO_NUM_8  // lower chamber fan tachometer
 #define LOWER_PWMPIN GPIO_NUM_9   // lower chamber fan speed
 #define UPPER_TACHPIN GPIO_NUM_10 // upper chamber fan tachometer
@@ -51,7 +52,6 @@
 #define I2C_SCLPIN GPIO_NUM_18    // I2C clock
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
-#define SSR_GPIN GPIO_NUM_35      // heater solid state relay
 #define MOTOR_RELAY GPIO_NUM_42   // enable relay for motor
 // 45 and 46 are strapping pins
 #define RGB_PIN GPIO_NUM_48       // onboard RGB neopixel
@@ -906,6 +906,7 @@ handle_dry(const char* payload, size_t plen){
   printf("dry request for %us at %uC\n", seconds, temp);
   DryEndsAt = esp_timer_get_time() + seconds * 1000000ull;
   set_motor(seconds != 0);
+  TargetTemp = temp;
   update_upper_temp();
   return 0;
 
