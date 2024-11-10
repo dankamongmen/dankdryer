@@ -1000,6 +1000,7 @@ httpd_get_handler(httpd_req_t *req){
             "mass: %f<br/>"
             "lm35: %f esp32s3: %f<br/>"
             "dryends: %llu<br/>"
+            "target temp: %lu<br/>"
             "<hr/>%s<br/>"
             "</body></html>",
             LowerPWM, UpperPWM,
@@ -1009,6 +1010,7 @@ httpd_get_handler(httpd_req_t *req){
             LastWeight,
             LastUpperTemp, LastLowerTemp,
             DryEndsAt,
+            TargetTemp,
             asctime(localtime(&now))
             );
   esp_err_t ret = ESP_FAIL;
@@ -1237,6 +1239,8 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
   if(temp_valid_p(LastUpperTemp)){
     cJSON_AddNumberToObject(root, "htemp", LastUpperTemp);
   }
+  cJSON_AddNumberToObject(root, "ttemp", TargetTemp);
+  cJSON_AddNumberToObject(root, "dryends", DryEndsAt);
   char* s = cJSON_Print(root);
   size_t slen = strlen(s);
   printf("MQTT: %s\n", s);
@@ -1257,8 +1261,6 @@ void app_main(void){
       if(!bme680_sense(BME680, &btemp, &bpressure, &bhumidity)){
         printf("bme680 temp: %lu pressure: %lu humidity %lu\n", btemp, bpressure, bhumidity);
       }
-    }else{
-      printf("no BME680 present\n");
     }
     float ambient = getAmbient();
     if(temp_valid_p(ambient)){
@@ -1277,7 +1279,7 @@ void app_main(void){
       getFanTachs(&lrpm, &urpm, curtime, lasttachs);
       lasttachs = curtime;
     }
-    printf("dryends: %lld cursec: %lld\n", DryEndsAt, curtime);
+    //printf("dryends: %lld cursec: %lld\n", DryEndsAt, curtime);
     if(DryEndsAt && curtime >= DryEndsAt){
       printf("completed drying operation (%llu >= %llu)\n", curtime, DryEndsAt);
       set_motor(false);
