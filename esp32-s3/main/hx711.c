@@ -85,7 +85,7 @@ hx711_data_ready_p(const HX711* hx){
   return true;
 }
 
-int hx711_read(HX711 *hx, uint32_t* val){
+int hx711_read(HX711 *hx, int32_t* val){
   if(!hx711_data_ready_p(hx)){
     return -1;
   }
@@ -106,6 +106,9 @@ int hx711_read(HX711 *hx, uint32_t* val){
     ret = -1;
   }
 	portENABLE_INTERRUPTS();
-	*val ^= 0x800000ul;
+  // sign extend 24-bit value to 32 bits
+  if(*val & 0x800000ul){
+    *val |= (0xfful << 24u);
+  }
   return ret;
 }

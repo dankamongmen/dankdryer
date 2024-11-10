@@ -63,6 +63,7 @@ static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 static bool MotorState;
 static bool HeaterState;
+static float LastWeight;
 static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 128;
 static adc_channel_t Thermchan;
@@ -70,7 +71,7 @@ static bool UsePersistentStore; // set true upon successful initialization
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static unsigned LastLowerRPM, LastUpperRPM;
-static float LastLowerTemp, LastUpperTemp, LastWeight;
+static float LastLowerTemp, LastUpperTemp;
 static HX711 hx711;
 
 // ISR counters
@@ -235,12 +236,14 @@ getAmbient(void){
   return t;
 }
 
-uint32_t getWeight(void){
-  uint32_t v;
-  if(hx711_read(&hx711, &v)){
-    v = ~0ul;
+float getWeight(void){
+  int32_t v;
+  if(hx711_read(&hx711, &v) || v < 0){
+    return -1.0;
   }
-  return v;
+  float newv = (float)v * LOAD_CELL_MAX / 0xfffffful;
+  printf("scaling ADC of %ld to %f\n", v, newv);
+  return newv;
 }
 
 // gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
@@ -1176,7 +1179,8 @@ void app_main(void){
     if(weight_valid_p(weight)){
       LastWeight = weight;
     }
-    printf("esp32 temp: %f weight: %f\n", ambient, weight);
+    printf("esp32 temp: %f weight: %f (%s)\n", ambient, weight,
+            weight_valid_p(weight) ? "valid" : "invalid");
     unsigned lrpm, urpm;
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
     printf("motor: %s heater: %s\n", motor_state(), heater_state());

@@ -18,6 +18,6 @@ int hx711_init(HX711 *hx, gpio_num_t dpin, gpio_num_t clockpin);
 
 // read from the HX711. nonblocking, and will return error immediately
 // if data is unavailable.
-int hx711_read(HX711 *hx, uint32_t* val);
+int hx711_read(HX711 *hx, int32_t* val);
 
 #endif
