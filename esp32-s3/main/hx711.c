@@ -76,9 +76,17 @@ int hx711_init(HX711 *hx, gpio_num_t dpin, gpio_num_t clockpin){
   return 0;
 }
 
-int hx711_read(HX711 *hx, uint32_t* val){
-  if(!gpio_get_level(hx->dpin)){
+static inline bool
+hx711_data_ready_p(const HX711* hx){
+  if(gpio_get_level(hx->dpin)){
     ESP_LOGE(TAG, "data wasn't ready");
+    return false;
+  }
+  return true;
+}
+
+int hx711_read(HX711 *hx, uint32_t* val){
+  if(!hx711_data_ready_p(hx)){
     return -1;
   }
   int ret = 0;

@@ -3,7 +3,6 @@
 #define DEVICE "dankdryer"
 #define CLIENTID DEVICE VERSION
 #include "dryer-network.h"
-#include "nau7802.h"
 #include "hx711.h"
 #include <nvs.h>
 #include <math.h>
@@ -23,7 +22,6 @@
 #include <soc/adc_channel.h>
 #include <esp_http_server.h>
 #include <esp_adc/adc_cali.h>
-#include <driver/i2c_master.h>
 #include <esp_adc/adc_oneshot.h>
 #include <driver/temperature_sensor.h>
 
@@ -49,9 +47,7 @@
 #define UPPER_PWMPIN GPIO_NUM_11  // upper chamber fan speed
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
-#define I2C_SDAPIN GPIO_NUM_12    // I2C data
 #define THERM_DATAPIN GPIO_NUM_17 // analog thermometer (ADC1)
-#define I2C_SCLPIN GPIO_NUM_18    // I2C clock
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
 #define MOTOR_RELAY GPIO_NUM_42   // enable relay for motor
@@ -74,7 +70,6 @@ static bool UsePersistentStore; // set true upon successful initialization
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static unsigned LastLowerRPM, LastUpperRPM;
-static bool FoundNAU7802;
 static float LastLowerTemp, LastUpperTemp, LastWeight;
 static HX711 hx711;
 
@@ -86,9 +81,7 @@ static bool ADC1Calibrated;
 static httpd_handle_t HTTPServ;
 static float LoadcellScale = 1.0;
 static led_strip_handle_t Neopixel;
-static i2c_master_bus_handle_t I2C;
 static adc_oneshot_unit_handle_t ADC1;
-static i2c_master_dev_handle_t NAU7802;
 static temperature_sensor_handle_t temp;
 static adc_cali_handle_t ADC1Calibration;
 static esp_mqtt_client_handle_t MQTTHandle;
@@ -242,15 +235,12 @@ getAmbient(void){
   return t;
 }
 
-float getWeight(void){
-  if(!FoundNAU7802){
-    return -1.0;
+uint32_t getWeight(void){
+  uint32_t v;
+  if(hx711_read(&hx711, &v)){
+    v = ~0ul;
   }
-  float r;
-  if(nau7802_read_scaled(NAU7802, &r, LOAD_CELL_MAX)){
-    r = -1.0;
-  }
-  return r;
+  return v;
 }
 
 // gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
@@ -299,35 +289,6 @@ gpio_set_output(gpio_num_t pin){
 }
 
 static int
-setup_nau7802(i2c_master_dev_handle_t dev){
-  if(nau7802_reset(dev)){
-    return -1;
-  }
-  if(nau7802_poweron(dev)){
-    return -1;
-  }
-  if(nau7802_setldo(dev, NAU7802_LDO_33V)){
-    return -1;
-  }
-  if(nau7802_setgain(dev, 128)){
-    return -1;
-  }
-  return 0;
-}
-
-static int
-probe_i2c(i2c_master_bus_handle_t i2c, bool* nau7802){
-  *nau7802 = false;
-  if(!nau7802_detect(i2c, &NAU7802)){
-    if(setup_nau7802(NAU7802)){
-      return -1;
-    }
-    *nau7802 = true;
-  }
-  return 0;
-}
-
-static int
 rgbset(unsigned r, unsigned g, unsigned b){
   esp_err_t e = led_strip_set_pixel(Neopixel, 0, r, g, b);
   if(e != ESP_OK){
@@ -363,29 +324,6 @@ setup_neopixel(gpio_num_t pin){
     return -1;
   }
   if(rgbset(64, 64, 64)){
-    return -1;
-  }
-  return 0;
-}
-
-static int
-setup_i2c(gpio_num_t sda, gpio_num_t scl, bool* nau7802){
-  i2c_master_bus_config_t i2cconf = {
-    .i2c_port = -1,
-    .sda_io_num = sda,
-    .scl_io_num = scl,
-    .clk_source = I2C_CLK_SRC_DEFAULT,
-    .flags.enable_internal_pullup = false,
-  };
-  if(gpio_set_inputoutput_opendrain(sda) || gpio_set_inputoutput_opendrain(scl)){
-    return -1;
-  }
-  esp_err_t e;
-  if((e = i2c_new_master_bus(&i2cconf, &I2C)) != ESP_OK){
-    fprintf(stderr, "error (%s) creating i2c master bus\n", esp_err_to_name(e));
-    return -1;
-  }
-  if(probe_i2c(I2C, nau7802)){
     return -1;
   }
   return 0;
@@ -1142,9 +1080,6 @@ setup(adc_channel_t* thermchan){
     set_failure(&SystemError);
   }
   if(setup_temp(THERM_DATAPIN, thermchan)){
-    set_failure(&SystemError);
-  }
-  if(setup_i2c(I2C_SDAPIN, I2C_SCLPIN, &FoundNAU7802)){
     set_failure(&SystemError);
   }
   if(hx711_init(&hx711, HX711_DATAPIN, HX711_CLOCKPIN)){
