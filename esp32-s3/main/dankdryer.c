@@ -63,9 +63,10 @@ static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
 
 static bool MotorState;
 static bool HeaterState;
-static float LastWeight;
 static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 128;
+static float LastWeight = -1.0;
+static float TareWeight = -1.0;
 static adc_channel_t Thermchan;
 static bool UsePersistentStore; // set true upon successful initialization
 static time_t DryEndsAt; // dry stop time in seconds since epoch
@@ -241,8 +242,13 @@ float getWeight(void){
   if(hx711_read(&hx711, &v) || v < 0){
     return -1.0;
   }
+  float tare = 0;
+  if(weight_valid_p(TareWeight)){
+    tare = TareWeight;
+  }
   float newv = (float)v * LOAD_CELL_MAX / 0xfffffful;
-  printf("scaling ADC of %ld to %f\n", v, newv);
+  printf("scaling ADC of %ld to %f, tare (%f) to %f\n", v, newv, tare, newv - tare);
+  newv -= tare;
   return newv;
 }
 
@@ -737,6 +743,8 @@ update_upper_temp(void){
 #define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
 #define UPWM_CHANNEL CCHAN DEVICE "/upwm"
 #define DRY_CHANNEL CCHAN DEVICE "/dry"
+#define TARE_CHANNEL CCHAN DEVICE "/tare"
+#define CALIBRATE_CHANNEL CCHAN DEVICE "/calibrate"
 
 static inline bool
 topic_matches(const esp_mqtt_event_t* e, const char* chan){
@@ -852,8 +860,25 @@ void handle_mqtt_msg(const esp_mqtt_event_t* e){
       UpperPWM = pwm;
       set_pwm(UPPER_FANCHAN, UpperPWM);
     }
+  }else if(topic_matches(e, TARE_CHANNEL)){
+    if(weight_valid_p(LastWeight)){
+      TareWeight = LastWeight;
+      printf("tared at %f\n", TareWeight);
+    }else{
+      fprintf(stderr, "requested tare, but no valid measurements yet\n");
+    }
+  }else if(topic_matches(e, CALIBRATE_CHANNEL)){
+    // FIXME get value, match against LastWeight - TareWeight
   }else{
     fprintf(stderr, "unknown topic [%.*s], ignoring message\n", e->topic_len, e->topic);
+  }
+}
+
+static void
+subscribe(esp_mqtt_client_handle_t handle, const char* chan){
+  int er;
+  if((er = esp_mqtt_client_subscribe(handle, chan, 0)) < 0){
+    fprintf(stderr, "failure %d subscribing to %s\n", er, chan);
   }
 }
 
@@ -861,19 +886,12 @@ void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
   if(id == MQTT_EVENT_CONNECTED){
     printf("connected to mqtt\n");
     set_network_state(MQTT_ESTABLISHED);
-    int er;
-    if((er = esp_mqtt_client_subscribe(MQTTHandle, MOTOR_CHANNEL, 0)) < 0){
-      fprintf(stderr, "failure %d subscribing to mqtt motor topic\n", er);
-    }
-    if((er = esp_mqtt_client_subscribe(MQTTHandle, LPWM_CHANNEL, 0)) < 0){
-      fprintf(stderr, "failure %d subscribing to mqtt lpwm topic\n", er);
-    }
-    if((er = esp_mqtt_client_subscribe(MQTTHandle, UPWM_CHANNEL, 0)) < 0){
-      fprintf(stderr, "failure %d subscribing to mqtt upwm topic\n", er);
-    }
-    if((er = esp_mqtt_client_subscribe(MQTTHandle, DRY_CHANNEL, 0)) < 0){
-      fprintf(stderr, "failure %d subscribing to mqtt dry topic\n", er);
-    }
+    subscribe(MQTTHandle, MOTOR_CHANNEL);
+    subscribe(MQTTHandle, LPWM_CHANNEL);
+    subscribe(MQTTHandle, UPWM_CHANNEL);
+    subscribe(MQTTHandle, DRY_CHANNEL);
+    subscribe(MQTTHandle, TARE_CHANNEL);
+    subscribe(MQTTHandle, CALIBRATE_CHANNEL);
   }else if(id == MQTT_EVENT_DATA){
     handle_mqtt_msg(data);
   }else{
