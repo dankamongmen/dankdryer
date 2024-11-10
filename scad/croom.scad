@@ -345,7 +345,6 @@ module croom(){
         fancablehole();
 		rockerhole();
     }
-	/*
 	ssrplatform();
     lowershield();
     acadapterscrews(6);
@@ -357,7 +356,6 @@ module croom(){
 	lmsmounts();
     wirechannels();
     dropmotormount();
-	*/
 }
 
 croom();
