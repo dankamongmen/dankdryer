@@ -65,6 +65,22 @@ Use heat-resistant filaments. My lower chamber is polycarbonate, and my upper
 chamber is Bambu PAHT-CF. You obviously don't want to use a target temperature
 within 10% of your material's heat deformation temperature.
 
+# MQTT
+
+MQTT is used to report status and to accept commands.
+
+## Controls
+
+* `NAME/control/tare`: tare using the last weight read
+* `NAME/control/dry`: takes as argument a string "DRYS/TEMP", where DRYS and TEMP are unsigned integers
+    specifying the number of seconds to dry, and the temperature to dry at. Any ongoing drying operation
+    will be replaced with the newly specified one. Specifying zero for DRYS will cancel any ongoing
+    drying operation.
+* `NAME/control/lpwm`: takes as argument a hexadecimal number between 0 and 255, left-padded with zeroes
+    so as to be exactly two digits, i.e. "00".."ff". Sets the lower fan's PWM.
+* `NAME/control/upwm`: takes as argument a hexadecimal number between 0 and 255, left-padded with zeroes
+    so as to be exactly two digits, i.e. "00".."ff". Sets the upper fan's PWM.
+
 # Renderings
 
 View from the top with spool present, top not present.
