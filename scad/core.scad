@@ -132,7 +132,7 @@ module loadcell(){
 loadcellmountx = -76 / 2 + 21.05 / 2;
 loadcellmountw = 13.5;
 loadcellmountl = 21.05;
-loadcellmounth = 27;
+loadcellmounth = 25;
 loadcellsupph = 4;
 
 module loadcellmount(baseh){

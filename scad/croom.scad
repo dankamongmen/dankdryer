@@ -262,24 +262,6 @@ module fancablehole(){
     }
 }
 
-// we want to keep air from moving across the load
-// cell's surface, so we put a shield around it.
-module lowershield(){
-    upperh = loadcellh;
-    translate([0, -1, wallz + (loadcellmounth + upperh) / 2]){
-        difference(){
-            cube([shieldw + 4, 36 / 2, loadcellmounth + upperh], true);
-            cube([shieldw, 32 / 2, loadcellmounth + upperh], true);
-			// we need to still be able to install the
-			// load cell, though, so the shield is low
-			// on the back.
-			translate([0, 1, loadcellmounth / 2]){
-				cube([shieldw, 32 / 2, upperh], true);
-			}
-        }
-    }
-}
-
 // platform for the solid state relay on the wall
 // above the AC adapter. it mounts to two M5s,
 // 47mm from center to center. 25x62x45mm total.
@@ -346,7 +328,6 @@ module croom(){
 		rockerhole();
     }
 	ssrplatform();
-    lowershield();
     acadapterscrews(6);
     translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
