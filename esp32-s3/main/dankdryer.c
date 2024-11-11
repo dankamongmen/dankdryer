@@ -55,6 +55,9 @@
 #define RGB_PIN GPIO_NUM_48       // onboard RGB neopixel
 
 #define NVS_HANDLE_NAME "pstore"
+#define BOOTCOUNT_RECNAME "bootcount"
+#define TAREOFFSET_RECNAME "tare"
+
 #define LOAD_CELL_MAX 5000 // 5kg capable
 
 static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
@@ -81,7 +84,6 @@ static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 // ESP-IDF objects
 static bool ADC1Calibrated;
 static httpd_handle_t HTTPServ;
-static float LoadcellScale = 1.0;
 static led_strip_handle_t Neopixel;
 static adc_oneshot_unit_handle_t ADC1;
 static temperature_sensor_handle_t temp;
@@ -437,7 +439,6 @@ int read_pstore(void){
     return -1;
   }
   uint32_t bootcount = 0;
-#define BOOTCOUNT_RECNAME "bootcount"
   err = nvs_get_u32(nvsh, BOOTCOUNT_RECNAME, &bootcount);
   if(err && err != ESP_ERR_NVS_NOT_FOUND){
     fprintf(stderr, "failure (%d) reading " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME "\n", err);
@@ -452,20 +453,20 @@ int read_pstore(void){
     nvs_close(nvsh);
     return -1;
   }
-#undef BOOTCOUNT_RECNAME
   err = nvs_commit(nvsh);
   if(err){
     fprintf(stderr, "failure (%d) committing nvs:" NVS_HANDLE_NAME "\n", err);
     nvs_close(nvsh);
     return -1;
   }
-  nvs_get_opt_u32(nvsh, "targtemp", &TargetTemp);
-  nvs_get_opt_u32(nvsh, "upperfanpwm", &UpperPWM);
-  nvs_get_opt_u32(nvsh, "lowerfanpwm", &LowerPWM);
-  nvs_get_opt_float(nvsh, "tare", &TareWeight);
-  nvs_get_opt_float(nvsh, "loadcellscale", &LoadcellScale);
-  // FIXME check any defaults we read and ensure they're sane
-  // FIXME need we check for error here?
+  float tare;
+  if(nvs_get_opt_float(nvsh, TAREOFFSET_RECNAME, &tare) == 0){
+    if(weight_valid_p(tare)){
+      TareWeight = tare;
+    }else{
+      fprintf(stderr, "read invalid tare offset %f\n", tare);
+    }
+  }
   nvs_close(nvsh);
   return 0;
 }
@@ -826,6 +827,35 @@ err:
   return -1;
 }
 
+// update NVS with tare offset
+static int
+write_tare_offset(float tare){
+  nvs_handle_t nvsh;
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  if(err){
+    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    return -1;
+  }
+  char buf[20];
+  if(snprintf(buf, sizeof(buf), "%.8f", tare) > sizeof(buf)){
+    fprintf(stderr, "warning: couldn't store tare offset %f in buf\n", tare);
+  }
+  err = nvs_set_str(nvsh, TAREOFFSET_RECNAME, buf);
+  if(err){
+    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":" TAREOFFSET_RECNAME "\n", esp_err_to_name(err));
+    nvs_close(nvsh);
+    return -1;
+  }
+  err = nvs_commit(nvsh);
+  if(err){
+    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    nvs_close(nvsh);
+    return -1;
+  }
+  nvs_close(nvsh);
+  return 0;
+}
+
 void handle_mqtt_msg(const esp_mqtt_event_t* e){
   printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
   if(topic_matches(e, DRY_CHANNEL)){
@@ -851,6 +881,7 @@ void handle_mqtt_msg(const esp_mqtt_event_t* e){
   }else if(topic_matches(e, TARE_CHANNEL)){
     if(weight_valid_p(LastWeight)){
       TareWeight = LastWeight;
+      write_tare_offset(TareWeight);
       printf("tared at %f\n", TareWeight);
     }else{
       fprintf(stderr, "requested tare, but no valid measurements yet\n");
