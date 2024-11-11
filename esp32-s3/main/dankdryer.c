@@ -459,7 +459,7 @@ int read_pstore(void){
     nvs_close(nvsh);
     return -1;
   }
-  float tare = -1.0;
+  float tare = TareWeight; // if not present, don't change initialized value
   if(nvs_get_opt_float(nvsh, TAREOFFSET_RECNAME, &tare) == 0){
     if(weight_valid_p(tare)){
       TareWeight = tare;
