@@ -874,6 +874,30 @@ write_tare_offset(float tare){
   return 0;
 }
 
+static int
+write_pwm(const char* recname, uint32_t pwm){
+  nvs_handle_t nvsh;
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  if(err){
+    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    return -1;
+  }
+  err = nvs_set_u32(nvsh, recname, pwm);
+  if(err){
+    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), recname);
+    nvs_close(nvsh);
+    return -1;
+  }
+  err = nvs_commit(nvsh);
+  if(err){
+    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    nvs_close(nvsh);
+    return -1;
+  }
+  nvs_close(nvsh);
+  return 0;
+}
+
 void handle_mqtt_msg(const esp_mqtt_event_t* e){
   printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
   if(topic_matches(e, DRY_CHANNEL)){
@@ -888,12 +912,14 @@ void handle_mqtt_msg(const esp_mqtt_event_t* e){
     int pwm = extract_pwm(e->data, e->data_len);
     if(pwm >= 0){
       LowerPWM = pwm;
+      write_pwm(LOWERPWM_RECNAME, pwm);
       set_pwm(LOWER_FANCHAN, LowerPWM);
     }
   }else if(topic_matches(e, UPWM_CHANNEL)){
     int pwm = extract_pwm(e->data, e->data_len);
     if(pwm >= 0){
       UpperPWM = pwm;
+      write_pwm(UPPERPWM_RECNAME, pwm);
       set_pwm(UPPER_FANCHAN, UpperPWM);
     }
   }else if(topic_matches(e, TARE_CHANNEL)){
