@@ -38,25 +38,27 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define SSR_GPIN GPIO_NUM_4       // heater solid state relay
-#define UPPER_PWMPIN GPIO_NUM_9  // upper chamber fan speed
+#define SSR_GPIN GPIO_NUM_4        // heater solid state relay
+#define UPPER_PWMPIN GPIO_NUM_10   // upper chamber fan speed
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
 #define LOWER_PWMPIN GPIO_NUM_17   // lower chamber fan speed
-#define THERM_DATAPIN GPIO_NUM_18 // analog thermometer (ADC1)
+#define THERM_DATAPIN GPIO_NUM_18  // analog thermometer (ADC1)
 // 19--20 are used for JTAG (not strictly needed)
 #define HX711_CLOCKPIN GPIO_NUM_21 // hx711 clock (output)
 // 26--32 are used for pstore qspi flash
-#define UPPER_TACHPIN GPIO_NUM_35 // upper chamber fan tachometer
+#define UPPER_TACHPIN GPIO_NUM_35  // upper chamber fan tachometer
 #define LOWER_TACHPIN GPIO_NUM_41  // lower chamber fan tachometer
-#define MOTOR_RELAY GPIO_NUM_42   // enable relay for motor
+#define MOTOR_RELAY GPIO_NUM_42    // enable relay for motor
 // 45 and 46 are strapping pins
 #define HX711_DATAPIN GPIO_NUM_47  // hx711 data (input)
-#define RGB_PIN GPIO_NUM_48       // onboard RGB neopixel
+#define RGB_PIN GPIO_NUM_48        // onboard RGB neopixel
 
 #define NVS_HANDLE_NAME "pstore"
 #define BOOTCOUNT_RECNAME "bootcount"
 #define TAREOFFSET_RECNAME "tare"
+#define LOWERPWM_RECNAME "lpwm"
+#define UPPERPWM_RECNAME "lpwm"
 
 #define LOAD_CELL_MAX 5000 // 5kg capable
 
@@ -96,7 +98,7 @@ rpm_valid_p(unsigned rpm){
 }
 
 static inline bool
-valid_pwm_p(int pwm){
+pwm_valid_p(int pwm){
   return pwm >= 0 && pwm <= 255;
 }
 
@@ -458,6 +460,22 @@ int read_pstore(void){
     fprintf(stderr, "failure (%d) committing nvs:" NVS_HANDLE_NAME "\n", err);
     nvs_close(nvsh);
     return -1;
+  }
+  uint32_t lpwm = LowerPWM;
+  if(nvs_get_opt_u32(nvsh, LOWERPWM_RECNAME, &lpwm) == 0){
+    if(pwm_valid_p(lpwm)){
+      LowerPWM = lpwm;
+    }else{
+      fprintf(stderr, "read invalid lower pwm %lu\n", lpwm);
+    }
+  }
+  uint32_t upwm = UpperPWM;
+  if(nvs_get_opt_u32(nvsh, UPPERPWM_RECNAME, &upwm) == 0){
+    if(pwm_valid_p(upwm)){
+      UpperPWM = upwm;
+    }else{
+      fprintf(stderr, "read invalid upper pwm %lu\n", upwm);
+    }
   }
   float tare = TareWeight; // if not present, don't change initialized value
   if(nvs_get_opt_float(nvsh, TAREOFFSET_RECNAME, &tare) == 0){
