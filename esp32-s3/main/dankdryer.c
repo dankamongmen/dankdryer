@@ -280,19 +280,6 @@ gpio_set_input(gpio_num_t pin){
 }
 
 static inline int
-gpio_set_output_nopull(gpio_num_t pin){
-  if(gpio_setup(pin, GPIO_MODE_OUTPUT, "output(np)")){
-    return -1;
-  }
-  esp_err_t e = gpio_set_pull_mode(pin, GPIO_FLOATING);
-  if(e != ESP_OK){
-    fprintf(stderr, "error (%s) setting nopull for %d\n", esp_err_to_name(e), pin);
-    return -1;
-  }
-  return 0;
-}
-
-static inline int
 gpio_set_output(gpio_num_t pin){
   return gpio_setup(pin, GPIO_MODE_OUTPUT, "output");
 }
@@ -475,6 +462,7 @@ int read_pstore(void){
   nvs_get_opt_u32(nvsh, "targtemp", &TargetTemp);
   nvs_get_opt_u32(nvsh, "upperfanpwm", &UpperPWM);
   nvs_get_opt_u32(nvsh, "lowerfanpwm", &LowerPWM);
+  nvs_get_opt_float(nvsh, "tare", &TareWeight);
   nvs_get_opt_float(nvsh, "loadcellscale", &LoadcellScale);
   // FIXME check any defaults we read and ensure they're sane
   // FIXME need we check for error here?
@@ -930,7 +918,7 @@ httpd_get_handler(httpd_req_t *req){
             "lpwm: %lu upwm: %lu<br/>"
             "lrpm: %u urpm: %u<br/>"
             "motor: %s heater: %s<br/>"
-            "mass: %f<br/>"
+            "mass: %f tare: %f<br/>"
             "lm35: %f esp32s3: %f<br/>"
             "dryends: %llu<br/>"
             "target temp: %lu<br/>"
@@ -940,7 +928,7 @@ httpd_get_handler(httpd_req_t *req){
             LastLowerRPM, LastUpperRPM,
             motor_state_http(),
             heater_state_http(),
-            LastWeight,
+            LastWeight, TareWeight,
             LastUpperTemp, LastLowerTemp,
             DryEndsAt,
             TargetTemp,
@@ -1167,6 +1155,7 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
   if(weight_valid_p(LastWeight)){
     cJSON_AddNumberToObject(root, "mass", LastWeight);
   }
+  cJSON_AddNumberToObject(root, "tare", TareWeight);
   cJSON_AddNumberToObject(root, "motor", MotorState);
   cJSON_AddNumberToObject(root, "heater", HeaterState);
   if(temp_valid_p(LastUpperTemp)){
