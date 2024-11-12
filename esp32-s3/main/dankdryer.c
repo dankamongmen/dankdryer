@@ -38,10 +38,10 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define SSR_GPIN GPIO_NUM_4        // heater solid state relay
 #define UPPER_PWMPIN GPIO_NUM_10   // upper chamber fan speed
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
+#define SSR_GPIN GPIO_NUM_14       // heater solid state relay
 #define LOWER_PWMPIN GPIO_NUM_17   // lower chamber fan speed
 #define THERM_DATAPIN GPIO_NUM_18  // analog thermometer (ADC1)
 // 19--20 are used for JTAG (not strictly needed)
@@ -687,6 +687,13 @@ set_motor(bool enabled){
   printf("set motor %s\n", motor_state());
 }
 
+static void
+set_heater(bool enabled){
+  HeaterState = enabled;
+  gpio_level(SSR_GPIN, enabled);
+  printf("set heater %s\n", heater_state());
+}
+
 static float
 getLM35(adc_channel_t channel){
   esp_err_t e;
@@ -710,13 +717,6 @@ getLM35(adc_channel_t channel){
   return o;
 }
 
-static void
-set_heater_state(bool enabled){
-  HeaterState = enabled;
-  gpio_level(SSR_GPIN, enabled);
-  printf("%sabled heater\n", enabled ? "en" : "dis");
-}
-
 // if the upper chamber temperature as measured is a valid sample, update
 // LastUpperTemp, and turn heater on or off if appropriate.
 static float
@@ -726,7 +726,7 @@ update_upper_temp(void){
   // if there is no drying scheduled, but the heater is on, we ought turn
   // it off even if we got an invalid temperature
   if(HeaterState && !DryEndsAt){
-    set_heater_state(false);
+    set_heater(false);
   }
   // take actions based on a valid read. even if we did just disable the
   // heater, we still want to update LastUpperTemp.
@@ -735,11 +735,11 @@ update_upper_temp(void){
     if(HeaterState){
       // turn it off if we're above the target temp
       if(utemp >= TargetTemp){
-        set_heater_state(false);
+        set_heater(false);
       }
       // turn it on if we're below the target temp, and scheduled to dry
     }else if(DryEndsAt && utemp < TargetTemp){
-      set_heater_state(true);
+      set_heater(true);
     }
   }
   return utemp;
@@ -747,6 +747,7 @@ update_upper_temp(void){
 
 #define CCHAN "control/"
 #define MOTOR_CHANNEL CCHAN DEVICE "/motor"
+#define HEATER_CHANNEL CCHAN DEVICE "/heater"
 #define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
 #define UPWM_CHANNEL CCHAN DEVICE "/upwm"
 #define DRY_CHANNEL CCHAN DEVICE "/dry"
@@ -907,6 +908,12 @@ void handle_mqtt_msg(const esp_mqtt_event_t* e){
     int ret = extract_bool(e->data, e->data_len, &motor);
     if(ret == 0){
       set_motor(motor);
+    }
+  }else if(topic_matches(e, HEATER_CHANNEL)){
+    bool heater;
+    int ret = extract_bool(e->data, e->data_len, &heater);
+    if(ret == 0){
+      set_heater(heater);
     }
   }else if(topic_matches(e, LPWM_CHANNEL)){
     int pwm = extract_pwm(e->data, e->data_len);
@@ -1149,6 +1156,15 @@ setup_motor(gpio_num_t mrelaypin){
   return 0;
 }
 
+static int
+setup_heater(gpio_num_t hrelaypin){
+  if(gpio_set_output(hrelaypin)){
+    return -1;
+  }
+  set_heater(false);
+  return 0;
+}
+
 static void
 setup(adc_channel_t* thermchan){
   setup_neopixel(RGB_PIN);
@@ -1170,6 +1186,9 @@ setup(adc_channel_t* thermchan){
     set_failure(&SystemError);
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
+    set_failure(&SystemError);
+  }
+  if(setup_heater(SSR_GPIN)){
     set_failure(&SystemError);
   }
   if(setup_motor(MOTOR_RELAY)){
