@@ -216,19 +216,6 @@ module relay3v(){
 	}
 }
 
-// hole for AC wire
-module achole(){
-    translate([-botalt + croomwall / 2, 80, 0]){
-        rotate([0, 180 - theta, 0]){
-            translate([0, 0, wallz + 20]){
-                rotate([0, 90, 0]){
-                    cylinder(croomwall * 2, 7, 7, true);
-                }
-            }
-        }
-    }
-}
-
 // channel for ac wires running from adapter to heater
 module wirechannel(){
     channelh = 20;
@@ -302,11 +289,12 @@ module ssrplatform(){
 	}
 }
 
-// hole for three-prong rocker switch
-// 10.35mm high, 29.1mm width, but orient it
-// vertically for less unsupported width
-rockerh = 29.1;
-rockerw = 10.35;
+// hole for four-prong rocker switch + receptacle.
+// https://www.amazon.com/dp/B0CW2XJ339
+// 45.7mm wide, 20mm high. if we can't print
+// the bridge, we'll have to reorient it.
+rockerh = 20;
+rockerw = 45.7;
 module rockerhole(){
 	translate([-botinalt, botinalt / 3, rockerh / 2 + 10]){
 	    rotate([0, 180 - theta, 0]){
@@ -340,7 +328,6 @@ module croom(){
                 fanhole(20);
             }
         }
-	    achole();
         fancablehole();
 		rockerhole();
 	//	ledhole();
