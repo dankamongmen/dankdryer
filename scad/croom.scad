@@ -277,7 +277,8 @@ module ssrplatform(){
 	ssrplatformh = 3;
 	totalh = ssrh + ssrplatformh;
 	// platform emerges from wall
-	translate([-80, topinalt - ssrw + 5, croomz - totalh - 5]){
+	rotate([0, 0, 90])
+	translate([-45, topinalt - ssrw + 5, croomz - totalh - 5]){
 		rotate([180 - theta, 0, 0]){
 			rotate([0, 90, 0]){
 				difference(){

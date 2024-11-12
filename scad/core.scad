@@ -306,13 +306,13 @@ module motormount(){
 				h = motormounth - motorboxd / 2;
 				sh = motormounth - 3 * motorboxd / 5;
 				s2h = sh - (motorboxd / 6);
-                polygon([[-motorboxd / 4, 0],
-						 [-motorboxd / 8, 0],
+                polygon([[-motorboxd / 2, 0],
+						 [-motorboxd / 3, 0],
 						 [-motorboxd / 4, s2h],
 						 [0, sh],
 						 [motorboxd / 4, s2h],
-						 [motorboxd / 8, 0],
-                         [motorboxd / 4, 0],
+						 [motorboxd / 3, 0],
+                         [motorboxd / 2, 0],
                          [motorboxd / 2, h],
                          [-motorboxd / 2, h]]);
             }
