@@ -38,9 +38,9 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-#define UPPER_PWMPIN GPIO_NUM_10   // upper chamber fan speed
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
+#define UPPER_PWMPIN GPIO_NUM_11   // upper chamber fan speed
 #define SSR_GPIN GPIO_NUM_14       // heater solid state relay
 #define LOWER_PWMPIN GPIO_NUM_17   // lower chamber fan speed
 #define THERM_DATAPIN GPIO_NUM_18  // analog thermometer (ADC1)
