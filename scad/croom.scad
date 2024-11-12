@@ -113,13 +113,13 @@ module acadaptermount(l){
 module acadapterscrews(l){
     translate([0, 50, 0]){
         acadaptermount(l){
-			screw("M5", length = l);
+			screw("M5", length = l, thread=true);
 		}
         mirror([0, 1, 0]){
             acadaptermount(l);
 			mirror([1, 0, 0]){
                 acadaptermount(l){
-					screw("M5", length = l);
+					screw("M5", length = l, thread=true);
 				}
             }
         }
@@ -129,43 +129,43 @@ module acadapterscrews(l){
     }
 }
 
-module fullmount(){
-	c = 5;
-	translate([0, 0, wallz + c / 2]){
-		cube([c, c, c], true);
+module fullmount(c, h){
+	translate([0, 0, wallz + h / 2]){
+		cube([c, c, h], true);
 	}
 }
 
-// M4 screw hole through a 5x5x5 cube.
-module mount(){
-	c = 5;
+// M4 screw hole through a cxcxh cube.
+module mount(c, h){
 	difference(){
-		fullmount();
-		translate([0, 0, wallz + c / 2]){
-			screw("M4", length = wallz + c);
+		fullmount(c, h);
+		translate([0, 0, wallz + h / 2]){
+			screw("M4", length = wallz + h, thread=true);
 		}
 	}
 }
 
 // only has two mounting holes, on a 35mm diagonal
 module lmsmounts(){
+	c = 5;
+	h = 4;
 	translate([20, -30, 0]){
 		rotate([0, 0, 90 - -motortheta]){
 			// holes are 31.8 and 16.4 apart at center
 			// rotate it through motortheta
 			// upper (most negative) left (most positive)
-			mount();
+			mount(c, h);
 			// upper right ought be 16.4 away
 			translate([-16.4, 0, 0]){
-				fullmount();
+				fullmount(c, h);
 				// lower right ought be 31.8 away from UR
 				translate([0, -31.8, 0]){
-					mount();
+					mount(c, h);
 				}
 			}
 			// lower left ought be 31.8 from UL
 			translate([0, -31.8, 0]){
-				fullmount();
+				fullmount(c, h);
 			}
 		}
 	}
@@ -174,15 +174,17 @@ module lmsmounts(){
 // width: exterior 35mm with 3mm holes (32mm)
 // length: exterior 75.3mm with 3mm holes (72.3mm)
 module perfmounts(){
+	c = 5;
+	h = 4;
     translate([-mh - 15, -0.95 * totalxy / 2 + mh + 10, 0]){
-        mount();
+        mount(c, h);
         translate([-72.3, 0, 0]){
-            mount();
+            mount(c, h);
         }
         translate([0, 32, 0]){
-            mount();
+            mount(c, h);
             translate([-72.3, 0, 0]){
-                mount();
+                mount(c, h);
             }
         }
     }
@@ -190,14 +192,16 @@ module perfmounts(){
 
 // 2 relay mounts
 module relay3vside(){
+	c = 5;
+	h = 4;
     r = 1.5;
 	holegapl = 10;
 	holegapw = 63;
 	translate([-holegapw / 2 - r, -holegapl / 2 - r, 0]){
-		mount();
+		mount(c, h);
 	}
 	translate([holegapw / 2 + r, -holegapl / 2 - r, 0]){
-		mount();
+		mount(c, h);
 	}
 }
 
@@ -285,9 +289,9 @@ module ssrplatform(){
 					translate([4, (ssrw - 5) / 2, (ssrl - ssrholew) / 2]){
 						rotate([0, 90, 0]){
 			
-							screw("M5", l = ssrh / 2);
+							screw("M5", l = ssrh / 2, thread=true);
 							translate([-47, 0, 0]){
-								screw("M5", l = ssrh / 2);
+								screw("M5", l = ssrh / 2, thread=true);
 							}
 						}
 					}
@@ -341,7 +345,7 @@ module croom(){
 	//	ledhole();
     }
 	ssrplatform();
-    acadapterscrews(6);
+    acadapterscrews(5);
     translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
     }
