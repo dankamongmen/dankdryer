@@ -310,6 +310,18 @@ module rockerhole(){
 	}
 }
 
+// space for a ILI9341 240x320 TFT LCD on the same
+// side as the AC adapter hole and on/off switch
+ledw = 69;
+ledh = 50;
+module ledhole(){
+	translate([-topinalt - croomwall, -20, croomz - ledh / 2 + 0.25]){
+		rotate([0, 180 - theta, 0]){
+			cube([croomwall + 2, ledw, ledh], true);
+		}
+	}
+}
+
 // hollow frustrum
 module croom(){
     difference(){
@@ -326,6 +338,7 @@ module croom(){
 	    achole();
         fancablehole();
 		rockerhole();
+	//	ledhole();
     }
 	ssrplatform();
     acadapterscrews(6);
