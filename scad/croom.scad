@@ -190,32 +190,6 @@ module perfmounts(){
     }
 }
 
-// 2 relay mounts
-module relay3vside(){
-	c = 5;
-	h = 4;
-    r = 1.5;
-	holegapl = 10;
-	holegapw = 63;
-	translate([-holegapw / 2 - r, -holegapl / 2 - r, 0]){
-		mount(c, h);
-	}
-	translate([holegapw / 2 + r, -holegapl / 2 - r, 0]){
-		mount(c, h);
-	}
-}
-
-// 3v3 relay for the motor. we want to replace
-// this with a MOSFET.
-module relay3v(){
-	translate([40, -botinrad + 62, 0]){
-		relay3vside();
-		mirror([0, 1, 0]){
-			relay3vside();
-		}
-	}
-}
-
 // channel for ac wires running from adapter to heater
 module wirechannel(){
     channelh = 20;
@@ -338,7 +312,6 @@ module croom(){
         loadcellmount(loadcellmounth);
     }
 	perfmounts();
-	relay3v();
 	lmsmounts();
     wirechannels();
     dropmotormount();
