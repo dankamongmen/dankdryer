@@ -38,7 +38,7 @@ totalz = spoolh + wallz + topz + elevation * 2;
 totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 
 ctopz = wallz;
-croomz = wallz + ctopz + 85; // 80mm fan; ought just need sin(theta)80
+croomz = wallz + ctopz + 80; // 80mm fan; ought just need sin(theta)80
 
 flr = -croomz + wallz; // floor z offset
 mh = wallz; // mount height
@@ -132,7 +132,7 @@ module loadcell(){
 loadcellmountx = -76 / 2 + 21.05 / 2;
 loadcellmountw = 13.5;
 loadcellmountl = 21.05;
-loadcellmounth = 25;
+loadcellmounth = 17;
 loadcellsupph = 4;
 
 module loadcellmount(baseh){
@@ -191,7 +191,9 @@ module drop(){
     }
 }
 
-teeth = 60;
+// 60 was too big, as was 55 at 20 height
+// now try 53 and 17
+teeth = 53;
 gearboth = 8; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
 // remaining height ought be defined in terms
@@ -248,7 +250,7 @@ motorboxd = 38;
 motorshafth = wormlen; // sans worm: 14
 motorshaftd = 13; // sans worm: 6
 motortheta = -60;
-motormounth = 66;
+motormounth = 61;
 // the worm gear on the motor's rotor needs to be tangent to, and at the same
 // elevation as, some point on the central gear.
 module motor(){

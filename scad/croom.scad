@@ -135,7 +135,7 @@ module fullmount(c, h){
 	}
 }
 
-// M4 screw hole through a cxcxh cube.
+// M4 screw hole through a cXcXh cube.
 module mount(c, h){
 	difference(){
 		fullmount(c, h);
@@ -230,7 +230,7 @@ module fancablehole(){
 // platform for the solid state relay on the wall
 // above the AC adapter. it mounts to two M5s,
 // 47mm from center to center. 25x62x45mm total.
-ssrh = 25;
+/*ssrh = 25;
 ssrw = 49;
 ssrl = 62;
 module ssrplatform(){
@@ -261,7 +261,7 @@ module ssrplatform(){
 			}
 		}
 	}
-}
+}*/
 
 // hole for four-prong rocker switch + receptacle.
 // https://www.amazon.com/dp/B0CW2XJ339
@@ -306,7 +306,7 @@ module croom(){
 		rockerhole();
 	//	ledhole();
     }
-	ssrplatform();
+//	ssrplatform();
     acadapterscrews(5);
     translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
