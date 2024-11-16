@@ -4,6 +4,7 @@
 #define CLIENTID DEVICE VERSION
 #include "dryer-network.h"
 #include "hx711.h"
+#include "ota.h"
 #include <nvs.h>
 #include <math.h>
 #include <mdns.h>
@@ -17,8 +18,10 @@
 #include <esp_system.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
+#include <esp_app_desc.h>
 #include <esp_netif_sntp.h>
 #include <hal/ledc_types.h>
+#include <esp_idf_version.h>
 #include <soc/adc_channel.h>
 #include <esp_http_server.h>
 #include <esp_adc/adc_cali.h>
@@ -58,7 +61,7 @@
 #define BOOTCOUNT_RECNAME "bootcount"
 #define TAREOFFSET_RECNAME "tare"
 #define LOWERPWM_RECNAME "lpwm"
-#define UPPERPWM_RECNAME "lpwm"
+#define UPPERPWM_RECNAME "upwm"
 
 #define LOAD_CELL_MAX 5000 // 5kg capable
 
@@ -1174,6 +1177,9 @@ setup(adc_channel_t* thermchan){
       UsePersistentStore = true;
     }
   }
+  if(ota_init()){
+    set_failure(&SystemError);
+  }
   esp_err_t e = gpio_install_isr_service(ESP_INTR_FLAG_IRAM);
   if(e != ESP_OK){
     fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
@@ -1266,8 +1272,17 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
   free(s);
 }
 
+static void
+info(void){
+  const char *espv = esp_get_idf_version();
+  printf("espidf version: %s\n", espv);
+  const esp_app_desc_t *appdesc = esp_app_get_description();
+  printf("esp reported app %s version %s\n", appdesc->project_name, appdesc->version);
+}
+
 void app_main(void){
   setup(&Thermchan);
+  info();
   int64_t lastpub = esp_timer_get_time();
   int64_t lasttachs = lastpub;
   while(1){
