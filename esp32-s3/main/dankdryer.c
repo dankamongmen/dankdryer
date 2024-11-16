@@ -418,7 +418,7 @@ int nvs_get_opt_float(nvs_handle_t nh, const char* recname, float* val){
   esp_err_t err = nvs_get_str(nh, recname, buf, &blen);
   if(err == ESP_ERR_NVS_NOT_FOUND){
     printf("no record '%s' in nvs\n", recname);
-    return 0;
+    return -1;
   }else if(err){
     fprintf(stderr, "failure (%s) reading %s\n", esp_err_to_name(err), recname);
     return -1;
