@@ -307,14 +307,14 @@ module motormount(){
         rotate([90, 0, 90]){
             linear_extrude(mlength){
 				h = motormounth - motorboxd / 2;
-				sh = motormounth - 3 * motorboxd / 5;
-				s2h = sh - (motorboxd / 6);
+				sh = motormounth - 11 * motorboxd / 20;
+				s2h = sh - (motorboxd / 8);
                 polygon([[-motorboxd / 2, 0],
-						 [-motorboxd / 3, 0],
-						 [-motorboxd / 4, s2h],
+						 [-5 * motorboxd / 12, 0],
+						 [-motorboxd / 3, s2h],
 						 [0, sh],
-						 [motorboxd / 4, s2h],
-						 [motorboxd / 3, 0],
+						 [motorboxd / 3, s2h],
+						 [5 * motorboxd / 12, 0],
                          [motorboxd / 2, 0],
                          [motorboxd / 2, h],
                          [-motorboxd / 2, h]]);
