@@ -17,13 +17,25 @@ botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
 
-module croombottom(rad, z){
-	brad = rad - z;
-    translate([0, 0, z / 2]){
-        rotate([0, 0, 45]){
-            cylinder(z, brad, rad, $fn = 4, true);
-        }
+module foursquare(){
+    children();
+    mirror([1, 0, 0]){
+        children();
+		mirror([0, 1, 0]){
+			children();
+		}
     }
+    mirror([0, 1, 0]){
+        children();
+    }
+}
+
+module bottommounts(dist, z){
+	foursquare(){
+		translate([dist, dist, 0]){
+			screw("M5", length = z);
+		}
+	}
 }
 
 // the fundamental structure
@@ -33,7 +45,6 @@ module croomcore(){
             cylinder(croomz - wallz, botrad, toprad, $fn = 4);
         }
     }
-    croombottom(botrad, wallz);
 }
 
 // the vast majority of the interior, removed
@@ -77,19 +88,34 @@ module corner(){
 
 // mounts for the hotbox
 module corners(){
-    // cut top corners out of removal, leaving supports for top
-    corner();
-    mirror([1, 0, 0]){
-        corner();
+    // cut top corners out of removal,
+	// leaving supports for top
+	foursquare(){
+		corner();
+	}
+}
+
+// a corner to which the bottom is fastened
+module bottomcorner(){
+	h = 10;
+	s = 20;
+    translate([-totalxy / 2, -totalxy / 2, h / 2]){
+        difference(){
+            union(){
+                cube([s, s, h], true);
+            }
+			translate([6, 6, 0]){
+                screw("M5", length = 10);
+            }
+        }
     }
-    mirror([0, 1, 0]){
-        corner();
-    }
-    mirror([1, 0, 0]){
-		mirror([0, 1, 0]){
-			corner();
-		}
-    }
+}
+
+// mounts for the bottom
+module bottomcorners(){
+	foursquare(){
+		bottomcorner();
+	}
 }
 
 module rot(deg){
@@ -289,6 +315,27 @@ module ledhole(){
 	}
 }
 
+module croombottom(rad, z){
+	brad = rad - z;
+    translate([0, 0, z / 2]){
+		difference(){
+			rotate([0, 0, 45]){
+				cylinder(z, brad, rad, $fn = 4, true);
+			}
+			bottommounts(totalxy / 2 - 6, z);
+		}
+    }
+    acadapterscrews(5);
+    translate([loadcellmountx, 0, wallz]){
+        loadcellmount(loadcellmounth);
+    }
+	perfmounts();
+	lmsmounts();
+    wirechannels();
+    dropmotormount();
+}
+
+
 // hollow frustrum
 module croom(){
     difference(){
@@ -296,6 +343,7 @@ module croom(){
         difference(){
             croominnercore();
             corners();
+			bottomcorners();
         }
 		translate([0, -botalt + 10, croomz / 2]){
             rotate([theta, 0, 0]){
@@ -307,20 +355,24 @@ module croom(){
 	//	ledhole();
     }
 //	ssrplatform();
-    acadapterscrews(5);
-    translate([loadcellmountx, 0, wallz]){
-        loadcellmount(loadcellmounth);
-    }
-	perfmounts();
-	lmsmounts();
-    wirechannels();
-    dropmotormount();
 }
 
-croom();
+// translate it so it can be broken
+// into parts in the slicer
+translate([0, 0, -wallz]){
+	croom();
+}
+translate([botrad * 2 + 1, botrad * 2 + 1, 0]){
+	croombottom(botrad, wallz);
+}
 
 // testing + full assemblage
 /*
+multicolor("green"){
+	croom();
+	croombottom(); // don't translate it
+}
+
 multicolor("black"){
     assembly();
 }
