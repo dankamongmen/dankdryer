@@ -80,6 +80,8 @@ MQTT is used to report status and to accept commands.
     so as to be exactly two digits, i.e. "00".."ff". Sets the lower fan's PWM.
 * `NAME/control/upwm`: takes as argument a hexadecimal number between 0 and 255, left-padded with zeroes
     so as to be exactly two digits, i.e. "00".."ff". Sets the upper fan's PWM.
+* `NAME/control/factoryreset`: takes no arguments. Blanks the persistent storage, disables the motor
+    and heater, and reboots.
 
 # Renderings
 
