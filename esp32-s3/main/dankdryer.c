@@ -756,6 +756,7 @@ update_upper_temp(void){
 #define DRY_CHANNEL CCHAN DEVICE "/dry"
 #define TARE_CHANNEL CCHAN DEVICE "/tare"
 #define CALIBRATE_CHANNEL CCHAN DEVICE "/calibrate"
+#define FACTORYRESET_CHANNEL CCHAN DEVICE "/factoryreset"
 
 static inline bool
 topic_matches(const esp_mqtt_event_t* e, const char* chan){
@@ -942,6 +943,9 @@ void handle_mqtt_msg(const esp_mqtt_event_t* e){
     }
   }else if(topic_matches(e, CALIBRATE_CHANNEL)){
     // FIXME get value, match against LastWeight - TareWeight
+  }else if(topic_matches(e, FACTORYRESET_CHANNEL)){
+    printf("requested factory reset\n");
+    // FIXME
   }else{
     fprintf(stderr, "unknown topic [%.*s], ignoring message\n", e->topic_len, e->topic);
   }
@@ -965,6 +969,7 @@ void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data
     subscribe(MQTTHandle, DRY_CHANNEL);
     subscribe(MQTTHandle, TARE_CHANNEL);
     subscribe(MQTTHandle, CALIBRATE_CHANNEL);
+    subscribe(MQTTHandle, FACTORYRESET_CHANNEL);
   }else if(id == MQTT_EVENT_DATA){
     handle_mqtt_msg(data);
   }else{
