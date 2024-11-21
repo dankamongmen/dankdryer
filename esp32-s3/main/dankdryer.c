@@ -903,6 +903,17 @@ write_pwm(const char* recname, uint32_t pwm){
   return 0;
 }
 
+static void
+factory_reset(void){
+  printf("requested factory reset, erasing nvs...\n");
+  esp_err_t e = nvs_flash_erase();
+  if(e != ESP_OK){
+    fprintf(stderr, "error (%s) erasing nvs\n", esp_err_to_name(e));
+  }
+  printf("rebooting\n");
+  esp_restart();
+}
+
 void handle_mqtt_msg(const esp_mqtt_event_t* e){
   printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
   if(topic_matches(e, DRY_CHANNEL)){
@@ -944,8 +955,8 @@ void handle_mqtt_msg(const esp_mqtt_event_t* e){
   }else if(topic_matches(e, CALIBRATE_CHANNEL)){
     // FIXME get value, match against LastWeight - TareWeight
   }else if(topic_matches(e, FACTORYRESET_CHANNEL)){
-    printf("requested factory reset\n");
-    // FIXME
+    factory_reset();
+    // ought not reach here
   }else{
     fprintf(stderr, "unknown topic [%.*s], ignoring message\n", e->topic_len, e->topic);
   }
@@ -1149,9 +1160,9 @@ setup_network(void){
   }
   setup_sntp(); // allow a failure
   setup_mdns(); // allow a failure
-  // FIXME we currently get a "no slots" error when trying to load a URI
-  // handler. until this is fixed, don't bail on error.
-  setup_httpd();
+  if(setup_httpd()){
+    return -1;
+  }
   return 0;
 }
 
