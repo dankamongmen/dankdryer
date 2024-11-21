@@ -155,7 +155,7 @@ static const esp_mqtt_client_config_t MQTTConfig = {
   },
 };
 
-static void IRAM_ATTR
+static void
 tach_isr(void* pulsecount){
   uint32_t* pc = pulsecount;
   ++*pc;
@@ -1180,7 +1180,7 @@ setup(adc_channel_t* thermchan){
   if(ota_init()){
     set_failure(&SystemError);
   }
-  esp_err_t e = gpio_install_isr_service(ESP_INTR_FLAG_IRAM);
+  esp_err_t e = gpio_install_isr_service(0);
   if(e != ESP_OK){
     fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
     set_failure(&SystemError);
