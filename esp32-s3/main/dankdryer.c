@@ -906,6 +906,8 @@ write_pwm(const char* recname, uint32_t pwm){
 static void
 factory_reset(void){
   printf("requested factory reset, erasing nvs...\n");
+  set_motor(false);
+  set_heater(false);
   esp_err_t e = nvs_flash_erase();
   if(e != ESP_OK){
     fprintf(stderr, "error (%s) erasing nvs\n", esp_err_to_name(e));
