@@ -30,13 +30,13 @@ module foursquare(){
     }
 }
 
-module bottommounts(dist, z){
+/*module bottommounts(dist, z){
 	foursquare(){
 		translate([dist, dist, 0]){
 			screw("M5", length = z);
 		}
 	}
-}
+}*/
 
 // the fundamental structure
 module croomcore(){
@@ -172,7 +172,7 @@ module mount(c, h){
 }
 
 // only has two mounting holes, on a 35mm diagonal
-module lmsmounts(){
+/*module lmsmounts(){
 	c = 5;
 	h = 4;
 	translate([20, -30, 0]){
@@ -195,21 +195,21 @@ module lmsmounts(){
 			}
 		}
 	}
-}
+}*/
 
-// width: exterior 35mm with 3mm holes (32mm)
-// length: exterior 75.3mm with 3mm holes (72.3mm)
+// width: mid2mid 65mm with 5mm holes
+// length: mid2mid 90mm with 5mm holes
 module perfmounts(){
 	c = 5;
 	h = 4;
     translate([-mh - 15, -0.95 * totalxy / 2 + mh + 10, 0]){
         mount(c, h);
-        translate([-72.3, 0, 0]){
+        translate([-90, 0, 0]){
             mount(c, h);
         }
-        translate([0, 32, 0]){
+        translate([0, 65, 0]){
             mount(c, h);
-            translate([-72.3, 0, 0]){
+            translate([-90, 0, 0]){
                 mount(c, h);
             }
         }
@@ -322,7 +322,7 @@ module croombottom(rad, z){
 			rotate([0, 0, 45]){
 				cylinder(z, brad, rad, $fn = 4, true);
 			}
-			bottommounts(totalxy / 2 - 6, z);
+			//bottommounts(totalxy / 2 - 6, z);
 		}
     }
     acadapterscrews(5);
@@ -330,11 +330,9 @@ module croombottom(rad, z){
         loadcellmount(loadcellmounth);
     }
 	perfmounts();
-	lmsmounts();
     wirechannels();
     dropmotormount();
 }
-
 
 // hollow frustrum
 module croom(){
@@ -343,7 +341,6 @@ module croom(){
         difference(){
             croominnercore();
             corners();
-			bottomcorners();
         }
 		translate([0, -botalt + 10, croomz / 2]){
             rotate([theta, 0, 0]){
@@ -354,6 +351,7 @@ module croom(){
 		rockerhole();
 	//	ledhole();
     }
+	croombottom(botrad, wallz);
 //	ssrplatform();
 }
 
@@ -362,15 +360,11 @@ module croom(){
 translate([0, 0, -wallz]){
 	croom();
 }
-translate([botrad * 2 + 1, botrad * 2 + 1, 0]){
-	croombottom(botrad, wallz);
-}
 
 // testing + full assemblage
 /*
 multicolor("green"){
 	croom();
-	croombottom(); // don't translate it
 }
 
 multicolor("black"){
