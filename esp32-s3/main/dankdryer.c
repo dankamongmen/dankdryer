@@ -1285,16 +1285,17 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
   cJSON_AddNumberToObject(root, "ttemp", TargetTemp);
   cJSON_AddNumberToObject(root, "dryends", DryEndsAt);
   char* s = cJSON_Print(root);
-  if(s == NULL){
+  if(s){
+    size_t slen = strlen(s);
+    printf("MQTT: %s\n", s);
+    if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, s, slen, 0, 0)){
+      fprintf(stderr, "couldn't publish %zuB mqtt message\n", slen);
+    }
+    cJSON_free(s);
+  }else{
     fprintf(stderr, "couldn't stringize JSON object\n");
-    return;
   }
-  size_t slen = strlen(s);
-  printf("MQTT: %s\n", s);
-  if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, s, slen, 0, 0)){
-    fprintf(stderr, "couldn't publish %zuB mqtt message\n", slen);
-  }
-  cJSON_free(s);
+  cJSON_Delete(root);
 }
 
 static void
