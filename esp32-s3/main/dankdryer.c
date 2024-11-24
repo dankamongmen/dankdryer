@@ -1254,8 +1254,11 @@ getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
 }
 
 void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
-  // FIXME check errors throughout!
   cJSON* root = cJSON_CreateObject();
+  if(root == NULL){
+    fprintf(stderr, "couldn't create JSON object\n");
+    return;
+  }
   cJSON_AddNumberToObject(root, "uptimesec", curtime / 1000000ll);
   if(temp_valid_p(LastLowerTemp)){
     cJSON_AddNumberToObject(root, "dtemp", LastLowerTemp);
@@ -1282,12 +1285,16 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
   cJSON_AddNumberToObject(root, "ttemp", TargetTemp);
   cJSON_AddNumberToObject(root, "dryends", DryEndsAt);
   char* s = cJSON_Print(root);
+  if(s == NULL){
+    fprintf(stderr, "couldn't stringize JSON object\n");
+    return;
+  }
   size_t slen = strlen(s);
   printf("MQTT: %s\n", s);
   if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, s, slen, 0, 0)){
     fprintf(stderr, "couldn't publish %zuB mqtt message\n", slen);
   }
-  free(s);
+  cJSON_free(s);
 }
 
 static void
