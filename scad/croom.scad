@@ -216,7 +216,6 @@ module croombottom(rad, z){
 			rotate([0, 0, 45]){
 				cylinder(z, rad, rad, $fn = 4, true);
 			}
-			//bottommounts(totalxy / 2 - 6, z);
 		}
     }
     acadapterscrews(5);
