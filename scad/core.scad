@@ -191,10 +191,9 @@ module drop(){
     }
 }
 
-// 60 was too big, as was 55 at 20 height
 // now try 53 and 17
-// 53 was too small; try 54
-teeth = 54;
+// 54 was too small; try 55
+teeth = 55;
 gearboth = 8; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
 // remaining height ought be defined in terms

@@ -46,15 +46,15 @@
 #define UPPER_PWMPIN GPIO_NUM_4    // upper chamber fan speed
 #define LOWER_PWMPIN GPIO_NUM_7    // lower chamber fan speed
 #define SSR_GPIN GPIO_NUM_8        // heater solid state relay
+#define HX711_DATAPIN GPIO_NUM_12  // hx711 data (input)
+#define HX711_CLOCKPIN GPIO_NUM_13 // hx711 clock (output)
 #define MOTOR_RELAY GPIO_NUM_17    // enable relay for motor
 #define THERM_DATAPIN GPIO_NUM_18  // analog thermometer (ADC1)
 // 19--20 are used for JTAG (not strictly needed)
-#define HX711_CLOCKPIN GPIO_NUM_21 // hx711 clock (output)
 // 26--32 are used for pstore qspi flash
 #define LOWER_TACHPIN GPIO_NUM_36  // lower chamber fan tachometer
 #define UPPER_TACHPIN GPIO_NUM_42  // upper chamber fan tachometer
 // 45 and 46 are strapping pins
-#define HX711_DATAPIN GPIO_NUM_47  // hx711 data (input)
 #define RGB_PIN GPIO_NUM_48        // onboard RGB neopixel
 
 #define NVS_HANDLE_NAME "pstore"
@@ -247,6 +247,7 @@ getAmbient(void){
 float getWeight(void){
   int32_t v;
   if(hx711_read(&hx711, &v) || v < 0){
+    fprintf(stderr, "bad hx711 read %ld\n", v);
     return -1.0;
   }
   float tare = 0;
@@ -1242,7 +1243,7 @@ getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
   const float scale = 60.0 * 1000000u / diffu;
   *lrpm *= scale;
   *urpm *= scale;
-  printf("scale: %f diffu: %f lrpm: %u urpm: %u\n", scale, diffu, *lrpm, *urpm);
+  printf("tachscale: %f diffu: %f lrpm: %u urpm: %u\n", scale, diffu, *lrpm, *urpm);
   if(rpm_valid_p(*lrpm)){
     LastLowerRPM = *lrpm;
   }
@@ -1321,8 +1322,8 @@ void app_main(void){
     if(weight_valid_p(weight)){
       LastWeight = weight;
     }
-    printf("esp32 temp: %f weight: %f (%s)\n", ambient, weight,
-            weight_valid_p(weight) ? "valid" : "invalid");
+    printf("esp32 temp: %f weight: %f (%svalid)\n", ambient, weight,
+            weight_valid_p(weight) ? "" : "in");
     unsigned lrpm, urpm;
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
     printf("motor: %s heater: %s\n", motor_state(), heater_state());
