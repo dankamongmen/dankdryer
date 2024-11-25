@@ -204,19 +204,21 @@ gearbore = bearingh + 0.4;
 wormbore = 7;
 module gear(){
     translate([teeth, 0, -gearh / 2]){
-    worm_gear(modul=1,
-				tooth_number=teeth,
-				starts=2,
-				width=gearboth,
-				length=wormlen,
-				worm_bore=wormbore,
-                gear_bore=gearbore,
-				pressure_angle=20,
-                lead_angle=10,
-				optimized=1,
-				together_built=0,
-                show_spur=1,
-				show_worm=0);
+		worm_gear(
+					modul=1,
+					tooth_number=teeth,
+					thread_starts=2,
+					width=gearboth,
+					length=wormlen,
+					worm_bore=wormbore,
+					gear_bore=gearbore,
+					pressure_angle=20,
+					lead_angle=10,
+					optimized=1,
+					together_built=0,
+					show_spur=1,
+					show_worm=0
+		);
     }
     // cylinder plugs into bearing and encloses
     // top of shaft, so outside radius is bearing
@@ -243,21 +245,23 @@ module gear(){
 
 wormwidth = 8;
 module wormy(){
-translate([0, -0.75, 0]){
-    worm_gear(modul=1,
-				tooth_number=teeth,
-				worm_starts=2,
-				width=wormwidth,
-				length=wormlen,
-				worm_bore=wormbore,
-				gear_bore=gearbore,
-				pressure_angle=20,
-				lead_angle=10,
-				optimized=1,
-				together_built=1,
-				show_spur=0,
-				show_worm=1);
-}
+	translate([0, -0.75, 0]){
+		worm_gear(
+					modul=1,
+					tooth_number=teeth,
+					thread_starts=2,
+					width=wormwidth,
+					length=wormlen,
+					worm_bore=wormbore,
+					gear_bore=gearbore,
+					pressure_angle=20,
+					lead_angle=10,
+					optimized=1,
+					together_built=1,
+					show_spur=0,
+					show_worm=1
+		);
+	}
     // effect the D-shape of the rotor (6.5 vs 7)
     translate([(wormbore - 2) / 2, 0, 0]){
         cube([0.5, wormlen, wormbore], true);
