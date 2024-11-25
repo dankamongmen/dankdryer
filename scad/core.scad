@@ -276,19 +276,10 @@ module motorholder(){
     ch = motorholderh;
     difference(){
         cylinder(ch, motorboxd / 2, motorboxd / 2, true);
-        translate([d, 0, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
         translate([-d, 0, 0]){
             cylinder(ch, 1.5, 1.5, true);
         }
         translate([cos(60) * -d, sin(60) * d, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([cos(60) * d, sin(60) * d, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([cos(60) * d, sin(60) * -d, 0]){
             cylinder(ch, 1.5, 1.5, true);
         }
         translate([cos(60) * -d, sin(60) * -d, 0]){

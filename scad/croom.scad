@@ -1,6 +1,6 @@
-// bottom chamber for a high-temperature (140C) filament dryer
-// intended to be printed in ASA
-// holds the MCU, motor, AC adapter, etc.
+// bottom chamber for a high-temperature (150C)
+// filament dryer, intended to be printed in PC
+// or PA. holds the MCU, motor, AC adapter, etc.
 include <core.scad>
 
 // thickness of croom xy walls (bottom is wallz)
@@ -29,14 +29,6 @@ module foursquare(){
         children();
     }
 }
-
-/*module bottommounts(dist, z){
-	foursquare(){
-		translate([dist, dist, 0]){
-			screw("M5", length = z);
-		}
-	}
-}*/
 
 // the fundamental structure
 module croomcore(){
@@ -95,29 +87,6 @@ module corners(){
 	}
 }
 
-// a corner to which the bottom is fastened
-module bottomcorner(){
-	h = 10;
-	s = 20;
-    translate([-totalxy / 2, -totalxy / 2, h / 2]){
-        difference(){
-            union(){
-                cube([s, s, h], true);
-            }
-			translate([6, 6, 0]){
-                screw("M5", length = 10);
-            }
-        }
-    }
-}
-
-// mounts for the bottom
-module bottomcorners(){
-	foursquare(){
-		bottomcorner();
-	}
-}
-
 module rot(deg){
     rotate([theta + deg, 0, 0]){
         children();
@@ -170,32 +139,6 @@ module mount(c, h){
 		}
 	}
 }
-
-// only has two mounting holes, on a 35mm diagonal
-/*module lmsmounts(){
-	c = 5;
-	h = 4;
-	translate([20, -30, 0]){
-		rotate([0, 0, 90 - -motortheta]){
-			// holes are 31.8 and 16.4 apart at center
-			// rotate it through motortheta
-			// upper (most negative) left (most positive)
-			mount(c, h);
-			// upper right ought be 16.4 away
-			translate([-16.4, 0, 0]){
-				fullmount(c, h);
-				// lower right ought be 31.8 away from UR
-				translate([0, -31.8, 0]){
-					mount(c, h);
-				}
-			}
-			// lower left ought be 31.8 from UL
-			translate([0, -31.8, 0]){
-				fullmount(c, h);
-			}
-		}
-	}
-}*/
 
 // width: mid2mid 65mm with 5mm holes
 // length: mid2mid 90mm with 5mm holes
@@ -253,42 +196,6 @@ module fancablehole(){
     }
 }
 
-// platform for the solid state relay on the wall
-// above the AC adapter. it mounts to two M5s,
-// 47mm from center to center. 25x62x45mm total.
-/*ssrh = 25;
-ssrw = 49;
-ssrl = 62;
-module ssrplatform(){
-	ssrholew = 47;
-	ssrplatformh = 3;
-	totalh = ssrh + ssrplatformh;
-	// platform emerges from wall
-	rotate([0, 0, 90])
-	translate([-45, topinalt - ssrw + 5, croomz - totalh - 5]){
-		rotate([180 - theta, 0, 0]){
-			rotate([0, 90, 0]){
-				difference(){
-					linear_extrude(ssrl){
-						polygon([[0, 0],
-								[0, ssrw],
-								[ssrh, ssrw]]);
-					}
-					translate([4, (ssrw - 5) / 2, (ssrl - ssrholew) / 2]){
-						rotate([0, 90, 0]){
-			
-							screw("M5", l = ssrh / 2, thread=true);
-							translate([-47, 0, 0]){
-								screw("M5", l = ssrh / 2, thread=true);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}*/
-
 // hole for four-prong rocker switch + receptacle.
 // https://www.amazon.com/dp/B0CW2XJ339
 // 45.7mm wide, 20mm high. if we can't print
@@ -303,24 +210,11 @@ module rockerhole(){
 	}
 }
 
-// space for a ILI9341 240x320 TFT LCD on the same
-// side as the AC adapter hole and on/off switch
-ledw = 69;
-ledh = 50;
-module ledhole(){
-	translate([-topinalt - croomwall, -20, croomz - ledh / 2 + 0.25]){
-		rotate([0, 180 - theta, 0]){
-			cube([croomwall + 2, ledw, ledh], true);
-		}
-	}
-}
-
 module croombottom(rad, z){
-	brad = rad - z;
     translate([0, 0, z / 2]){
 		difference(){
 			rotate([0, 0, 45]){
-				cylinder(z, brad, rad, $fn = 4, true);
+				cylinder(z, rad, rad, $fn = 4, true);
 			}
 			//bottommounts(totalxy / 2 - 6, z);
 		}
@@ -349,24 +243,15 @@ module croom(){
         }
         fancablehole();
 		rockerhole();
-	//	ledhole();
     }
 	croombottom(botrad, wallz);
-//	ssrplatform();
 }
 
-// translate it so it can be broken
-// into parts in the slicer
-translate([0, 0, -wallz]){
-	croom();
-}
-
-// testing + full assemblage
-/*
 multicolor("green"){
 	croom();
 }
-
+// testing + full assemblage
+/*
 multicolor("black"){
     assembly();
 }
