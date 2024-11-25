@@ -201,7 +201,7 @@ gearboth = 8; // width of gear (height in our context)
 // of the motor and coupling FIXME.
 gearh = gearboth + 12;
 gearbore = bearingh + 0.4;
-wormbore = 7;
+wormbore = 6.5;
 module gear(){
     translate([teeth, 0, -gearh / 2]){
 		worm_gear(
@@ -212,8 +212,7 @@ module gear(){
 					length=wormlen,
 					worm_bore=wormbore,
 					gear_bore=gearbore,
-					pressure_angle=20,
-					lead_angle=10,
+					lead_angle=0,
 					optimized=1,
 					together_built=0,
 					show_spur=1,
@@ -254,7 +253,6 @@ module wormy(){
 					length=wormlen,
 					worm_bore=wormbore,
 					gear_bore=gearbore,
-					pressure_angle=20,
 					lead_angle=10,
 					optimized=1,
 					together_built=1,
@@ -262,9 +260,9 @@ module wormy(){
 					show_worm=1
 		);
 	}
-    // effect the D-shape of the rotor (6.5 vs 7)
-    translate([(wormbore - 2) / 2, 0, 0]){
-        cube([0.5, wormlen, wormbore], true);
+    // effect the D-shape of the rotor (6.2 vs 6.5)
+    translate([wormbore / 2, 0, 0]){
+        cube([0.3, wormlen, wormbore], true);
     }
 }
 
