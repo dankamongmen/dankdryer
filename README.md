@@ -46,9 +46,8 @@ A network configuration file must be created and populated at
 * OpenSCAD 2024.10+
 
 I use
-[BOSL2](https://github.com/BelfrySCAD/BOSL2) and
-Jörg Janssen's [gears.scad](https://github.com/chrisspen/gears), but
-they are included as submodules.
+[BOSL2](https://github.com/BelfrySCAD/BOSL2), which
+is included as a submodule.
 
 # Construction
 

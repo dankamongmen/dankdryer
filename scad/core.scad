@@ -1,6 +1,6 @@
-include <gears.scad>
 include <BOSL2/std.scad>
 include <BOSL2/screws.scad>
+include <BOSL2/gears.scad>
 
 $fn = 128;
 
