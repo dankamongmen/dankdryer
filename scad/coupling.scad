@@ -42,7 +42,7 @@ translate([30, -80, 0]){
 // the worm gear, which is placed onto the rotor.
 // it must be tangent to the main gear.
 multicolor("white"){
-translate([35, -60, wormlen / 2]){
+translate([35, -60, 18]){
     rotate([90, 0, 0]){
         wormy();
     }
@@ -53,7 +53,7 @@ translate([35, -60, wormlen / 2]){
 // placed into the coupling. the gear needs be
 // at the same height as the worm gear.
 multicolor("lightblue"){
-translate([-20, -spoold / 4 - teeth / 2, gearh / 2]){
+translate([-35, -spoold / 4 - teeth / 2, gearh / 2]){
     gear();
 }
 }
