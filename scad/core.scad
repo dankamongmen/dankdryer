@@ -258,6 +258,16 @@ module wormy(){
     }
 }
 
+// check mating
+/*translate([0, 0, 5]){
+	gear();
+}
+translate([gear_dist(circ_pitch=wormcirc, teeth, 0, ) + 10, 0, 0]){
+	rotate([0, $t, 0]){
+		wormy();
+	}
+}*/
+
 // motor is 37x75mm diameter gearbox and 6x14mm shaft
 // (with arbitrarily large worm gear on the shaft)
 motorboxh = 70;
