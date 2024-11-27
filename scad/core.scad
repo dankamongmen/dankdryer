@@ -191,9 +191,8 @@ module drop(){
     }
 }
 
-// now try 53 and 17
-// 54 was too small; try 55
-teeth = 55;
+// new gear logic: teeth is radius, not diameter
+teeth = 23;
 gearboth = 8; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
 // remaining height ought be defined in terms
@@ -201,22 +200,19 @@ gearboth = 8; // width of gear (height in our context)
 gearh = gearboth + 12;
 gearbore = bearingh + 0.4;
 wormbore = 6.5;
+wormcirc = 5;
+wormstarts = 2;
 module gear(){
-    translate([teeth, 0, -gearh / 2]){
-		worm_gear(
-					modul=1,
-					tooth_number=teeth,
-					thread_starts=2,
-					width=gearboth,
-					length=wormlen,
-					worm_bore=wormbore,
-					gear_bore=gearbore,
-					lead_angle=0,
-					optimized=1,
-					together_built=0,
-					show_spur=1,
-					show_worm=0
-		);
+    translate([0, 0, -6]){
+		difference(){
+			worm_gear(
+				wormcirc,
+				teeth,
+				wormbore,
+				worm_starts=wormstarts
+			);
+			cylinder(9, gearbore / 2, gearbore / 2, true);
+		}
     }
     // cylinder plugs into bearing and encloses
     // top of shaft, so outside radius is bearing
@@ -244,24 +240,38 @@ module gear(){
 wormwidth = 8;
 module wormy(){
 	translate([0, -0.75, 0]){
-		worm_gear(
-					modul=1,
-					tooth_number=teeth,
-					thread_starts=2,
-					width=wormwidth,
-					length=wormlen,
-					worm_bore=wormbore,
-					gear_bore=gearbore,
-					lead_angle=10,
-					optimized=1,
-					together_built=1,
-					show_spur=0,
-					show_worm=1
-		);
+		rotate([90, 0, 0]){
+			difference(){
+				/*worm(
+					d=18,
+					l=wormlen,
+					circ_pitch=wormcirc,
+					starts=wormstarts
+				);*/
+				enveloping_worm(
+					wormcirc,
+					mate_teeth=wormlen * 1.5, // ???
+					d=18,
+					starts=wormstarts
+				);
+				cylinder(wormlen, wormbore / 2, wormbore / 2, true);
+				/*worm_gear(
+							modul=1,
+							tooth_number=teeth,
+							thread_starts=2,
+							width=wormwidth,
+							length=wormlen,
+							worm_bore=wormbore,
+							gear_bore=gearbore,
+							lead_angle=10,
+				);*/
+			}
+		}
 	}
     // effect the D-shape of the rotor (6.2 vs 6.5)
-    translate([wormbore / 2, 0, 0]){
-        cube([0.3, wormlen, wormbore], true);
+	dwidth = 0.3;
+    translate([(wormbore - dwidth) / 2, -0.5, 0]){
+        cube([dwidth, wormlen - 5, wormbore], true);
     }
 }
 
