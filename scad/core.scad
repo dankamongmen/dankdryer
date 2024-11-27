@@ -15,7 +15,6 @@ module multicolor(color) {
 	}
 }
 columnr = 25;
-wormlen = 40;
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
 spoold = 205;
@@ -192,8 +191,8 @@ module drop(){
 }
 
 // new gear logic: teeth is radius, not diameter
-teeth = 23;
-gearboth = 8; // width of gear (height in our context)
+teeth = 28;
+gearboth = 4; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
 // remaining height ought be defined in terms
 // of the motor and coupling FIXME.
@@ -201,14 +200,14 @@ gearh = gearboth + 12;
 gearbore = bearingh + 0.4;
 wormbore = 6.5;
 wormcirc = 5;
-wormstarts = 2;
+wormstarts = 1;
 module gear(){
-    translate([0, 0, -6]){
+    translate([0, 0, -5]){
 		difference(){
 			worm_gear(
 				wormcirc,
 				teeth,
-				wormbore,
+				worm_diam=wormbore,
 				worm_starts=wormstarts
 			);
 			cylinder(9, gearbore / 2, gearbore / 2, true);
@@ -242,36 +241,20 @@ module wormy(){
 	translate([0, -0.75, 0]){
 		rotate([90, 0, 0]){
 			difference(){
-				/*worm(
-					d=18,
-					l=wormlen,
-					circ_pitch=wormcirc,
-					starts=wormstarts
-				);*/
 				enveloping_worm(
 					wormcirc,
-					mate_teeth=wormlen * 1.5, // ???
-					d=18,
+					mate_teeth=60, // ???
+					d=18, // ???
 					starts=wormstarts
 				);
-				cylinder(wormlen, wormbore / 2, wormbore / 2, true);
-				/*worm_gear(
-							modul=1,
-							tooth_number=teeth,
-							thread_starts=2,
-							width=wormwidth,
-							length=wormlen,
-							worm_bore=wormbore,
-							gear_bore=gearbore,
-							lead_angle=10,
-				);*/
+				cylinder(40, wormbore / 2, wormbore / 2, true);
 			}
 		}
 	}
     // effect the D-shape of the rotor (6.2 vs 6.5)
 	dwidth = 0.3;
     translate([(wormbore - dwidth) / 2, -0.5, 0]){
-        cube([dwidth, wormlen - 5, wormbore], true);
+        cube([dwidth, 33, wormbore], true);
     }
 }
 
@@ -279,8 +262,7 @@ module wormy(){
 // (with arbitrarily large worm gear on the shaft)
 motorboxh = 70;
 motorboxd = 38;
-motorshafth = wormlen; // sans worm: 14
-motorshaftd = 13; // sans worm: 6
+motorshafth = 40; // sans worm: 14
 motortheta = -60;
 motormounth = 61;
 // the worm gear on the motor's rotor needs to be tangent to, and at the same
@@ -504,3 +486,4 @@ module spool(){
         }
     }
 }
+	
