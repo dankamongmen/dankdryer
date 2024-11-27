@@ -365,7 +365,7 @@ setup_adc_oneshot(adc_unit_t unit, adc_oneshot_unit_handle_t* handle,
 // the esp32-s3 has a built in temperature sensor, which we enable.
 // we furthermore set up the LM35 pin for input/ADC.
 static int
-setup_temp(gpio_num_t thermpin, adc_unit_t* const unit, adc_channel_t* channel){
+setup_temp(gpio_num_t thermpin, adc_unit_t unit, adc_channel_t* channel){
   temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
   if(temperature_sensor_install(&conf, &temp) != ESP_OK){
     fprintf(stderr, "failed to set up thermostat\n");
@@ -379,7 +379,7 @@ setup_temp(gpio_num_t thermpin, adc_unit_t* const unit, adc_channel_t* channel){
     return -1;
   }
   esp_err_t e;
-  if((e = adc_oneshot_io_to_channel(thermpin, unit, channel)) != ESP_OK){
+  if((e = adc_oneshot_io_to_channel(thermpin, &unit, channel)) != ESP_OK){
     fprintf(stderr, "error (%s) getting adc channel for %d\n", esp_err_to_name(e), thermpin);
     return -1;
   }
