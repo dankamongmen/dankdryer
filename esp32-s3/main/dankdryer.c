@@ -333,10 +333,39 @@ setup_neopixel(gpio_num_t pin){
   return 0;
 }
 
+// initialize and calibrate an ADC unit (ESP32-S3 has two, but ADC2 is
+// used by wifi). ADC1 supports 8 channels on pins 32--39.
+static int
+setup_adc_oneshot(adc_unit_t unit, adc_oneshot_unit_handle_t* handle,
+                  adc_cali_handle_t* cali, bool* calibrated){
+  esp_err_t e;
+  adc_oneshot_unit_init_cfg_t acfg = {
+    .unit_id = unit,
+    .ulp_mode = ADC_ULP_MODE_DISABLE,
+  };
+  if((e = adc_oneshot_new_unit(&acfg, handle)) != ESP_OK){
+    fprintf(stderr, "error (%s) getting adc unit\n", esp_err_to_name(e));
+    return -1;
+  }
+  adc_cali_curve_fitting_config_t caliconf = {
+    .bitwidth = ADC_BITWIDTH_DEFAULT,
+    .atten = ADC_ATTEN_DB_2_5,
+    .unit_id = unit,
+  };
+  if((e = adc_cali_create_scheme_curve_fitting(&caliconf, cali)) != ESP_OK){
+    fprintf(stderr, "error (%s) creating adc calibration\n", esp_err_to_name(e));
+    *calibrated = false;
+  }else{
+    printf("using curve fitting adc calibration\n");
+    *calibrated = true;
+  }
+  return 0;
+}
+
 // the esp32-s3 has a built in temperature sensor, which we enable.
 // we furthermore set up the LM35 pin for input/ADC.
 static int
-setup_temp(gpio_num_t thermpin, adc_channel_t* channel){
+setup_temp(gpio_num_t thermpin, adc_unit_t* const unit, adc_channel_t* channel){
   temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
   if(temperature_sensor_install(&conf, &temp) != ESP_OK){
     fprintf(stderr, "failed to set up thermostat\n");
@@ -350,28 +379,9 @@ setup_temp(gpio_num_t thermpin, adc_channel_t* channel){
     return -1;
   }
   esp_err_t e;
-  adc_oneshot_unit_init_cfg_t acfg = {
-    .unit_id = ADC_UNIT_1,
-    .ulp_mode = ADC_ULP_MODE_DISABLE,
-  };
-  if((e = adc_oneshot_new_unit(&acfg, &ADC1)) != ESP_OK){
-    fprintf(stderr, "error (%s) getting adc unit\n", esp_err_to_name(e));
-    return -1;
-  }
-  if((e = adc_oneshot_io_to_channel(thermpin, &acfg.unit_id, channel)) != ESP_OK){
+  if((e = adc_oneshot_io_to_channel(thermpin, unit, channel)) != ESP_OK){
     fprintf(stderr, "error (%s) getting adc channel for %d\n", esp_err_to_name(e), thermpin);
     return -1;
-  }
-  adc_cali_curve_fitting_config_t caliconf = {
-    .bitwidth = ADC_BITWIDTH_DEFAULT,
-    .atten = ADC_ATTEN_DB_2_5,
-    .unit_id = ADC_UNIT_1,
-  };
-  if((e = adc_cali_create_scheme_curve_fitting(&caliconf, &ADC1Calibration)) != ESP_OK){
-    fprintf(stderr, "error (%s) creating ADC1 calibration\n", esp_err_to_name(e));
-  }else{
-    printf("using curve fitting ADC1 calibration\n");
-    ADC1Calibrated = true;
   }
   return 0;
 }
@@ -1204,7 +1214,10 @@ setup(adc_channel_t* thermchan){
     fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
     set_failure(&SystemError);
   }
-  if(setup_temp(THERM_DATAPIN, thermchan)){
+  if(setup_adc_oneshot(ADC_UNIT_1, &ADC1, &ADC1Calibration, &ADC1Calibrated)){
+    set_failure(&SystemError);
+  }
+  if(setup_temp(THERM_DATAPIN, ADC_UNIT_1, thermchan)){
     set_failure(&SystemError);
   }
   if(hx711_init(&hx711, HX711_DATAPIN, HX711_CLOCKPIN)){
