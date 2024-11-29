@@ -1,14 +1,6 @@
 include <core.scad>
 use <croom.scad>
 
-// you should probably use a metal bearing, but
-// if you don't have any available, try this.
-multicolor("silver"){
-translate([50, -60, 0]){
-	import("Bearing_Ball_6200_2RS.STL");
-}
-}
-
 // these are fastened with M4 screws, in order:
 //  croom's mount
 //  load cell
@@ -36,25 +28,6 @@ translate([spoold / 4 + 30, 0, 0]){
 multicolor("lightgreen"){
 translate([30, -80, 0]){
 	loadcellmount(loadcellsupph);
-}
-}
-
-// the worm gear, which is placed onto the rotor.
-// it must be tangent to the main gear.
-multicolor("white"){
-translate([35, -60, 18]){
-    rotate([90, 0, 0]){
-        wormy();
-    }
-}
-}
-
-// the main gear. plugs into the bearing, and is
-// placed into the coupling. the gear needs be
-// at the same height as the worm gear.
-multicolor("lightblue"){
-translate([-35, -spoold / 4 - teeth / 2, gearh / 2]){
-    gear();
 }
 }
 

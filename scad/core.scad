@@ -1,6 +1,5 @@
 include <BOSL2/std.scad>
 include <BOSL2/screws.scad>
-include <BOSL2/gears.scad>
 
 $fn = 128;
 
@@ -190,86 +189,7 @@ module drop(){
     }
 }
 
-// new gear logic: teeth is radius, not diameter
-teeth = 30;
-gearboth = 4; // width of gear (height in our context)
-// fat cylinder on top so the bearing can be pushed up all the way
-// remaining height ought be defined in terms
-// of the motor and coupling FIXME.
-gearh = gearboth + 12;
-gearbore = bearingh + 0.4;
-wormbore = 6.5;
-wormcirc = 5;
-wormstarts = 1;
-module gear(){
-    translate([0, 0, -5]){
-		difference(){
-			worm_gear(
-				wormcirc,
-				teeth,
-				worm_diam=wormbore,
-				worm_starts=wormstarts
-			);
-			cylinder(9, gearbore / 2, gearbore / 2, true);
-		}
-    }
-    // cylinder plugs into bearing and encloses
-    // top of shaft, so outside radius is bearing
-    // inner radius, and inside radius is shaft
-    // radius. this should only be as tall as the
-    // bearing itself, and locked off beneath.
-	bigh = gearh - gearboth - bearingh;
-    translate([0, 0, -gearh / 2 + gearboth]){
-        // this should be bigger than the bearing
-        translate([0, 0, bigh / 2]){
-          difference(){
-            cylinder(bigh, bearinginnerr + bearingwall, bearinginnerr + bearingwall, true);
-            cylinder(bigh, shaftr, shaftr, true);
-          }
-        }
-        translate([0, 0, bigh + bearingh / 2]){
-            difference(){
-                cylinder(bearingh, bearinginnerr, bearinginnerr, true);
-                cylinder(bearingh, shaftr, shaftr, true);
-            }
-        }
-    }
-}
-
-wormwidth = 8;
-module wormy(){
-	translate([0, -0.75, 0]){
-		rotate([90, 0, 0]){
-			difference(){
-				enveloping_worm(
-					wormcirc,
-					mate_teeth=60, // ???
-					d=18, // ???
-					starts=wormstarts
-				);
-				cylinder(40, wormbore / 2, wormbore / 2, true);
-			}
-		}
-	}
-    // effect the D-shape of the rotor (6.2 vs 6.5)
-	dwidth = 0.3;
-    translate([(wormbore - dwidth) / 2, -0.5, 0]){
-        cube([dwidth, 33, wormbore], true);
-    }
-}
-
-// check mating
-/*translate([0, 0, 5]){
-	gear();
-}
-translate([gear_dist(circ_pitch=wormcirc, teeth, 0, ) + 10, 3, 0]){
-	rotate([0, $t, 0]){
-		wormy();
-	}
-}*/
-
 // motor is 37x75mm diameter gearbox and 6x14mm shaft
-// (with arbitrarily large worm gear on the shaft)
 motorboxh = 70;
 motorboxd = 38;
 motorshafth = 40; // sans worm: 14
@@ -420,17 +340,19 @@ module platform(inr, outr){
     }
 }
 
-// platform for the top of the shaft. it expands into the
-// hotbox and supports the spool. locks down onto top of shaft.
+// platform for the top of the shaft. it expands
+// into the hotbox and supports the spool, locking
+// down onto the rotor.
 // shaft radius is bearingh / 2
 // central column radius is columnr
-// to calculate the shaft height, we add the amount in the hotbox
-// to the amount in the croom.
+// to calculate the shaft height, add the amount
+// in the hotbox to the amount in the croom.
 shafth = platformh + 35;
 module shaft(){
     platforminnerr = columnr - 0.5;
     platformouterd = spoold / 2;
     cylinder(shafth, shaftr, shaftr, true);
+	/*
     // fatten the shaft so that gear can be pushed
 	// only up to this point
 	unfath = gearh - bearingh;
@@ -442,6 +364,7 @@ module shaft(){
 			cylinder(fath, platforminnerr - 2, platforminnerr - 2, true);
 		}
     }
+	*/
     // this should fill most of the central hole, so it can't
     // fall over.
     translate([0, 0, shafth / 2 - platformh]){
@@ -462,11 +385,6 @@ module assembly(){
 			translate([0, 0, shafth / 2]){
 				shaft();
 			}
-			translate([0, 0, couplingh + bearingh]){
-				translate([0, 0, 4 + gearh / 2]){
-					gear();
-				}
-			}
 		}
 	}
 }
@@ -477,12 +395,6 @@ module dropmotor(){
         rotate([0, 270, motortheta]){
             motor();
         }
-    }
-}
-
-module dropgear(){
-    translate([0, 0, wallz + motormounth]){
-        dogear();
     }
 }
 
