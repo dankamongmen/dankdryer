@@ -191,7 +191,7 @@ module drop(){
 }
 
 // new gear logic: teeth is radius, not diameter
-teeth = 28;
+teeth = 30;
 gearboth = 4; // width of gear (height in our context)
 // fat cylinder on top so the bearing can be pushed up all the way
 // remaining height ought be defined in terms
@@ -262,7 +262,7 @@ module wormy(){
 /*translate([0, 0, 5]){
 	gear();
 }
-translate([gear_dist(circ_pitch=wormcirc, teeth, 0, ) + 10, 0, 0]){
+translate([gear_dist(circ_pitch=wormcirc, teeth, 0, ) + 10, 3, 0]){
 	rotate([0, $t, 0]){
 		wormy();
 	}

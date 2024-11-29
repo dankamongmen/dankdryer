@@ -1,6 +1,6 @@
 // bottom chamber for a high-temperature (150C)
 // filament dryer, intended to be printed in PC
-// or PA. holds the MCU, motor, AC adapter, etc.
+// or PA. holds the PCB, scale, AC adapter, etc.
 include <core.scad>
 
 // thickness of croom xy walls (bottom is wallz)
@@ -224,7 +224,6 @@ module croombottom(rad, z){
     }
 	perfmounts();
     wirechannels();
-    dropmotormount();
 }
 
 // hollow frustrum
@@ -253,9 +252,6 @@ multicolor("green"){
 /*
 multicolor("black"){
     assembly();
-}
-
-multicolor("pink"){
-    dropmotor();
+	acadapter();
 }
 */
