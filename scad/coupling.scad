@@ -25,22 +25,6 @@ translate([spoold / 4 + 30, 0, -mlength / 2]){
 }
 }
 
-multicolor("lightgreen"){
-translate([30, -80, 0]){
-	loadcellmount(loadcellsupph);
-}
-}
-
-// the platter upon which the spool rests. plugs
-// into the main gear through the center shaft.
-multicolor("green"){
-translate([10, 0, shafth / 2]){
-    mirror([0, 0, 1]){
-        shaft();
-    }
-}
-}
-
 translate([100, -100, rotorh / 2]){
 	cupola();
 }

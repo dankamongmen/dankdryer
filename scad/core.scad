@@ -301,9 +301,9 @@ module platform(inr, outr){
 // to calculate the shaft height, add the amount
 // in the hotbox to the amount in the croom.
 shafth = platformh + 35;
+platforminnerr = columnr - 0.5;
+platformouterd = spoold / 2;
 module shaft(){
-    platforminnerr = columnr - 0.5;
-    platformouterd = spoold / 2;
     cylinder(shafth, shaftr, shaftr, true);
 	/*
     // fatten the shaft so that gear can be pushed
@@ -359,10 +359,10 @@ cupolaw = motorboxd + cupolat;
 cupolarimh = 2;
 module cupola(){
 	difference(){
-		cylinder(cupolah, (cupolaw + 1) / 2, (cupolaw + 1) / 2, true);
+		cylinder(cupolah, (cupolaw + 2) / 2, (cupolaw + 2) / 2, true);
 		// cut out the core, representing the motor
 		translate([0, 0, -cupolarimh / 2]){
-			cylinder(cupolah - cupolarimh, (motorboxd + 1) / 2, (motorboxd + 1) / 2, true);
+			cylinder(cupolah - cupolarimh, (motorboxd + 2) / 2, (motorboxd + 2) / 2, true);
 		}
 		// cut out a smaller section on the top rim
 		translate([0, 0, (cupolah - cupolarimh) / 2]){
@@ -370,9 +370,22 @@ module cupola(){
 		         (motorboxd - 8) / 2, true);
 		}
 	}
+	// bottom platter
+	translate([0, 0, -cupolah / 2]){
+		difference(){
+			cylinder(platformtoph,
+					platformouterd / 2,
+					platformouterd / 2,
+					true);
+			cylinder(platformtoph,
+					 (motorboxd + 1) / 2,
+					 (motorboxd + 1) / 2,
+					true);
+		}
+	}
 }
 
-//cupola();
+cupola();
 //rotor();
 
 // put together for testing / visualization, never printed
