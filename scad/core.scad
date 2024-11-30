@@ -235,64 +235,110 @@ module lowercoupling(){
 		}
 	}
 }
+
+// this partially sheathes the motor, and provides
+// the platform. it sits atop the rotor sheathe's
+// base, and can thus rotate.
+cupolah = 30;
+cupolat = 2;
+cupolaw = motorboxd + cupolat;
+cupolarimh = 2;
+
+module cupolacylinder(){
+	cylinder(cupolah, (cupolaw + 2) / 2, (cupolaw + 2) / 2, true);
+}
+
+module cupola(){
+	difference(){
+		cupolacylinder();
+		// cut out the core, representing the motor
+		translate([0, 0, -cupolarimh / 2]){
+			cylinder(cupolah - cupolarimh, (motorboxd + 2) / 2, (motorboxd + 2) / 2, true);
+		}
+		// cut out a smaller section on the top rim
+		translate([0, 0, (cupolah - cupolarimh) / 2]){
+			cylinder(cupolarimh, (motorboxd - 8) / 2,
+		         (motorboxd - 8) / 2, true);
+		}
+	}
+	bottoml = 4;
+	translate([0, 0, -cupolah / 2]){
+		rotate_extrude(){
+			translate([(cupolaw + 2) / 2, 0, 0]){
+				polygon([
+					[0, 0], [bottoml, 0], [0, bottoml]
+				]);
+			}
+		}
+	}
+}
+
+//cupola();
 		
 // the actual platform should cover a good chunk of area.
 // cuts both allow heat to flow, and reduce weight.
 platformtoph = 2;
 platformh = elevation + wallz + platformtoph;
 module platform(inr, outr){
-    difference(){
-        union(){
-            translate([0, 0, wallz / 2]){
-                cylinder(wallz, inr, inr, true);
-            }
-			// platform blossoms out to full width
-            translate([0, 0, wallz + elevation / 2]){
-                cylinder(elevation, inr, outr, true);
-            }
-			// now a fixed-radius plate at the top
-			translate([0, 0, wallz + elevation + platformtoph / 2]){
-				cylinder(platformtoph, outr, outr, true);
-			}
-        }
-		// cut rings out from the platform as stands
-        translate([0, 0, platformh / 2]){
-            step = outr / 5;
-            istep = inr / 2;
-            for(i = [0 : istep : inr]){
-                difference(){
-                    cylinder(platformh, i + step - 2, i + step - 2, true);
-                    cylinder(platformh, i, i, true);
-                }
-            }
-            ostep = (outr - inr) / 3;
-            for(i = [inr : ostep : outr]){
-                difference(){
-                    cylinder(elevation, i + step - 2, i + step - 2, true);
-                    cylinder(elevation, i, i, true);
-                }
-            }
-        }
-    }
-    intersection(){
-        for(i = [0 : 60 : 360]){
-			translate([0, 0, (wallz + elevation + platformtoph) / 2]){
-				rotate([0, 0, i]){
-					cube([5, outr * 2, elevation + wallz + platformtoph], true);
+	difference(){
+		union(){
+			difference(){
+				union(){
+					translate([0, 0, wallz / 2]){
+						cylinder(wallz, inr, inr, true);
+					}
+					// platform blossoms out to full width
+					translate([0, 0, wallz + elevation / 2]){
+						cylinder(elevation, inr, outr, true);
+					}
+					// now a fixed-radius plate at the top
+					translate([0, 0, wallz + elevation + platformtoph / 2]){
+						cylinder(platformtoph, outr, outr, true);
+					}
+				}	
+				// cut rings out from the platform as stands
+				translate([0, 0, platformh / 2]){
+					step = outr / 5;
+					istep = inr / 2;
+					for(i = [0 : istep : inr]){
+						difference(){
+							cylinder(platformh, i + step - 2, i + step - 2, true);
+							cylinder(platformh, i, i, true);
+						}
+					}
+					ostep = (outr - inr) / 3;
+					for(i = [inr : ostep : outr]){
+						difference(){
+							cylinder(elevation, i + step - 2, i + step - 2, true);
+							cylinder(elevation, i, i, true);
+						}
+					}
 				}
 			}
-        }
-		union(){
-            translate([0, 0, wallz + elevation / 2]){
-                cylinder(elevation, inr, outr, true);
-            }
-            translate([0, 0, wallz + elevation + platformtoph / 2]){
-                cylinder(platformtoph, outr, outr, true);
-            }
-        }
-    }
+			intersection(){
+				for(i = [0 : 60 : 360]){
+					translate([0, 0, (wallz + elevation + platformtoph) / 2]){
+						rotate([0, 0, i]){
+							cube([5, outr * 2, elevation + wallz + platformtoph], true);
+						}
+					}
+				}
+				union(){
+					translate([0, 0, wallz + elevation / 2]){
+						cylinder(elevation, inr, outr, true);
+					}
+					translate([0, 0, wallz + elevation + platformtoph / 2]){
+						cylinder(platformtoph, outr, outr, true);
+					}
+				}
+			}
+		}
+		cupolacylinder();
+	}
 }
 
+//platform(platforminnerr, platformouterd / 2);
+	
 // platform for the top of the shaft. it expands
 // into the hotbox and supports the spool, locking
 // down onto the rotor.
@@ -350,42 +396,6 @@ module rotor(){
 	}
 }
 
-// this partially sheathes the motor, and provides
-// the platform. it sits atop the rotor sheathe's
-// base, and can thus rotate.
-cupolah = 30;
-cupolat = 2;
-cupolaw = motorboxd + cupolat;
-cupolarimh = 2;
-module cupola(){
-	difference(){
-		cylinder(cupolah, (cupolaw + 2) / 2, (cupolaw + 2) / 2, true);
-		// cut out the core, representing the motor
-		translate([0, 0, -cupolarimh / 2]){
-			cylinder(cupolah - cupolarimh, (motorboxd + 2) / 2, (motorboxd + 2) / 2, true);
-		}
-		// cut out a smaller section on the top rim
-		translate([0, 0, (cupolah - cupolarimh) / 2]){
-			cylinder(cupolarimh, (motorboxd - 8) / 2,
-		         (motorboxd - 8) / 2, true);
-		}
-	}
-	// bottom platter
-	translate([0, 0, -cupolah / 2]){
-		difference(){
-			cylinder(platformtoph,
-					platformouterd / 2,
-					platformouterd / 2,
-					true);
-			cylinder(platformtoph,
-					 (motorboxd + 1) / 2,
-					 (motorboxd + 1) / 2,
-					true);
-		}
-	}
-}
-
-cupola();
 //rotor();
 
 // put together for testing / visualization, never printed

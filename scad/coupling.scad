@@ -25,13 +25,21 @@ translate([spoold / 4 + 30, 0, -mlength / 2]){
 }
 }
 
-translate([100, -100, rotorh / 2]){
-	cupola();
+translate([30, -50, rotorh / 2]){
+	mirror([0, 0, 1]){
+		cupola();
+	}
 }
 
 // sheathes the rotor. the platform rests atop it.
-translate([-100, -100, rotorh / 2]){
+translate([-30, -50, rotorh / 2]){
 	rotor();
+}
+
+translate([0, 30, platformh]){
+	mirror([0, 0, 1]){
+		platform(platforminnerr, platformouterd / 2);
+	}
 }
 
 /*
