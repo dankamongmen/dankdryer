@@ -156,32 +156,6 @@ bearingr = 30 / 2; // bearing outer radius
 bearinginnerr = 10 / 2; // bearing inner radius
 bearingwall = 2;
 shaftr = bearinginnerr - 1;
-module lowercoupling(){
-    // the brace comes out to the center of the load cell.
-    // the bearing holder rises from the center--the shaft
-    // must be in the dead center of the structure.
-    bracel = loadcelll / 2 - loadcellmountl;
-    translate([-bracel / 2, 0, loadcellsupph / 2]){
-        cube([bracel, loadcellmountw, loadcellsupph], true);
-    }
-    translate([-bracel - loadcellmountl / 2, 0, 0]){
-        loadcellmount(loadcellsupph);
-    }
-    // recessed area for 30mm 6200-2RS bearing
-    translate([0, 0, couplingh / 2]){
-        coupr = bearingr + 0.2; // a bit of skoosh
-        // floor and support for bearing
-        bearwallr = 2;
-        // go from slab width to bearing diameter
-        cylinder(couplingh, loadcellmountw / 2, coupr + bearwallr, true);
-        translate([0, 0, couplingh / 2 + bearingh / 2]){
-            difference(){
-                cylinder(bearingh, coupr + bearwallr, coupr + bearwallr, true);
-                cylinder(bearingh, coupr, coupr, true);
-            }
-        }
-    }
-}
 
 module drop(){
     translate([0, 0, -croomz]){
@@ -228,43 +202,62 @@ module motorholder(){
         translate([cos(60) * -d, sin(60) * -d, 0]){
             cylinder(ch, 1.5, 1.5, true);
         }
+		translate([d, 0, 0]){
+            cylinder(ch, 1.5, 1.5, true);
+        }
+        translate([cos(60) * d, sin(60) * d, 0]){
+            cylinder(ch, 1.5, 1.5, true);
+        }
+        translate([cos(60) * d, sin(60) * -d, 0]){
+            cylinder(ch, 1.5, 1.5, true);
+        }
         cylinder(ch, 7, 7, true);
     }
 }
 
+mlength = motorboxh + motorholderh;
+
+module lowercoupling(){
+	translate([mlength / 2, -30, 0]){
+		rotate([90, 0, 0]){
+			rotate([0, 90, 0]){
+				// the brace comes out to the center
+				// of the load cell. the bearing
+				// holder rises from the center--the
+				// shaft must be in the dead center
+				// of the structure.
+				bracel = loadcelll / 2 - loadcellmountl;
+				translate([-bracel / 2 + 15, 0, loadcellsupph / 2]){
+					cube([bracel, loadcellmountw, loadcellsupph], true);
+				}
+				translate([-bracel / 2, 0, 0]){
+					loadcellmount(loadcellsupph);
+				}
+			}
+		}
+	}
+}
+		
 // mount for motor. runs horizontal approximately
 // a gear radius away from the center.
 module motormount(){
-    mlength = motorboxh + motorholderh;
-    // the bottom is in a 'v' shape to save material.
-	translate([-mlength / 2, 0, 0]){
-        rotate([90, 0, 90]){
-            linear_extrude(mlength){
-				h = motormounth - motorboxd / 2;
-				sh = motormounth - 11 * motorboxd / 20;
-				s2h = sh - (motorboxd / 8);
-                polygon([[-motorboxd / 2, 0],
-						 [-5 * motorboxd / 12, 0],
-						 [-motorboxd / 3, s2h],
-						 [0, sh],
-						 [motorboxd / 3, s2h],
-						 [5 * motorboxd / 12, 0],
-                         [motorboxd / 2, 0],
-                         [motorboxd / 2, h],
-                         [-motorboxd / 2, h]]);
-            }
-        }
-    }
     translate([0, 0, motormounth]){
-        difference(){
-            translate([0, 0, -motorboxd / 4]){
-                cube([mlength, motorboxd, motorboxd / 2], true);
-            }
-            // now cut a cylinder out of its top
-            rotate([0, 90, 0]){
-                cylinder(mlength, motorboxd / 2, motorboxd / 2, true);
-            }
-        }
+		// vertical support structure
+		rotate([0, 90, 0]){
+			difference(){
+				cylinder(mlength, (motorboxd + 2) / 2, (motorboxd + 2) / 2, true);
+				cylinder(mlength, motorboxd / 2, motorboxd / 2, true);
+				translate([0, 0, motorholderh / 2]){
+					cube([motorboxd + 2, motorboxd / 3, mlength - motorholderh], true);
+					rotate([0, 0, 60]){
+						cube([motorboxd + 2, motorboxd / 4 - 3, mlength - motorholderh], true);
+					}
+					rotate([0, 0, -60]){
+						cube([motorboxd + 2, motorboxd / 4 - 3, mlength - motorholderh], true);
+					}
+				}	
+			}
+		}
         // circular front mount.
         translate([-35, 0, 0]){
             rotate([0, 90, 0]){

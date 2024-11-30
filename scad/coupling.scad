@@ -16,8 +16,8 @@ use <croom.scad>
 // bearing above the center of the load cell. the
 // bearing will freely rotate within the coupling.
 multicolor("purple"){
-translate([spoold / 4 + 30, 0, 0]){
-    rotate([0, 0, 90]){
+translate([spoold / 4 + 30, 0, -mlength / 2]){
+    rotate([0, 90, ]){
         mirror([1, 0, 0]){
             lowercoupling();
         }
@@ -39,6 +39,12 @@ translate([10, 0, shafth / 2]){
         shaft();
     }
 }
+}
+
+translate([0, 80, mlength / 2]){
+	rotate([0, 270, 0]){
+		motormount();
+	}
 }
 
 /*
