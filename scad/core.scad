@@ -169,8 +169,6 @@ motorboxd = 38;
 motorshafth = 40; // sans worm: 14
 motortheta = -60;
 motormounth = 61;
-// the worm gear on the motor's rotor needs to be tangent to, and at the same
-// elevation as, some point on the central gear.
 module motor(){
     cylinder(motorboxh, motorboxd / 2, motorboxd / 2, true);
     translate([0, 0, motorboxd]){
@@ -238,44 +236,6 @@ module lowercoupling(){
 	}
 }
 		
-// mount for motor. runs horizontal approximately
-// a gear radius away from the center.
-module motormount(){
-    translate([0, 0, motormounth]){
-		// vertical support structure
-		rotate([0, 90, 0]){
-			difference(){
-				cylinder(mlength, (motorboxd + 2) / 2, (motorboxd + 2) / 2, true);
-				cylinder(mlength, motorboxd / 2, motorboxd / 2, true);
-				translate([0, 0, motorholderh / 2]){
-					cube([motorboxd + 2, motorboxd / 3, mlength - motorholderh], true);
-					rotate([0, 0, 60]){
-						cube([motorboxd + 2, motorboxd / 4 - 3, mlength - motorholderh], true);
-					}
-					rotate([0, 0, -60]){
-						cube([motorboxd + 2, motorboxd / 4 - 3, mlength - motorholderh], true);
-					}
-				}	
-			}
-		}
-        // circular front mount.
-        translate([-35, 0, 0]){
-            rotate([0, 90, 0]){
-                motorholder();
-            }
-        }
-
-    }
-}
-
-module dropmotormount(){
-    translate([60, -41, wallz]){
-        rotate([0, 0, motortheta]){
-            motormount();
-        }
-    }
-}
-
 // the actual platform should cover a good chunk of area.
 // cuts both allow heat to flow, and reduce weight.
 platformtoph = 2;
@@ -370,6 +330,7 @@ module shaft(){
 wormbore = 6.8;
 wormlen = 15;
 wormthick = 2;
+rotorh = wormlen + 2;
 module rotor(){
     difference(){
         cylinder(wormlen, (wormbore + wormthick) / 2, (wormbore + wormthick) / 2, true);
@@ -377,7 +338,7 @@ module rotor(){
     }
     // effect the D-shape of the rotor (6.2 vs 6.5)
 	ddiff = 0.3;
-	ch = 2;
+	ch = rotorh - wormlen;
     translate([(wormbore - ddiff) / 2, 0, -ch / 2]){
         cube([ddiff, wormbore * 0.8, wormlen], true);
     }
@@ -389,7 +350,30 @@ module rotor(){
 	}
 }
 
-rotor();
+// this partially sheathes the motor, and provides
+// the platform. it sits atop the rotor sheathe's
+// base, and can thus rotate.
+cupolah = 30;
+cupolat = 2;
+cupolaw = motorboxd + cupolat;
+cupolarimh = 2;
+module cupola(){
+	difference(){
+		cylinder(cupolah, (cupolaw + 1) / 2, (cupolaw + 1) / 2, true);
+		// cut out the core, representing the motor
+		translate([0, 0, -cupolarimh / 2]){
+			cylinder(cupolah - cupolarimh, (motorboxd + 1) / 2, (motorboxd + 1) / 2, true);
+		}
+		// cut out a smaller section on the top rim
+		translate([0, 0, (cupolah - cupolarimh) / 2]){
+			cylinder(cupolarimh, (motorboxd - 8) / 2,
+		         (motorboxd - 8) / 2, true);
+		}
+	}
+}
+
+//cupola();
+//rotor();
 
 // put together for testing / visualization, never printed
 module assembly(){

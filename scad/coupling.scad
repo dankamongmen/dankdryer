@@ -41,10 +41,13 @@ translate([10, 0, shafth / 2]){
 }
 }
 
-translate([0, 80, mlength / 2]){
-	rotate([0, 270, 0]){
-		motormount();
-	}
+translate([100, -100, rotorh / 2]){
+	cupola();
+}
+
+// sheathes the rotor. the platform rests atop it.
+translate([-100, -100, rotorh / 2]){
+	rotor();
 }
 
 /*
