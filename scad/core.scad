@@ -365,6 +365,32 @@ module shaft(){
     }
 }
 
+// the platform sheathes the rotor, then descends to
+// the hotbox floor, and expands.
+wormbore = 6.8;
+wormlen = 15;
+wormthick = 2;
+module rotor(){
+    difference(){
+        cylinder(wormlen, (wormbore + wormthick) / 2, (wormbore + wormthick) / 2, true);
+        cylinder(wormlen, wormbore / 2, wormbore / 2, true);
+    }
+    // effect the D-shape of the rotor (6.2 vs 6.5)
+	ddiff = 0.3;
+	ch = 2;
+    translate([(wormbore - ddiff) / 2, 0, -ch / 2]){
+        cube([ddiff, wormbore * 0.8, wormlen], true);
+    }
+	translate([0, 0, -wormlen / 2]){
+		difference(){
+			cylinder(ch, motorboxd / 2, motorboxd / 2, true);
+			cylinder(ch, wormbore / 2, wormbore / 2, true);
+		}
+	}
+}
+
+rotor();
+
 // put together for testing / visualization, never printed
 module assembly(){
 	translate([0, 0, loadcellmounth + wallz]){
@@ -401,4 +427,3 @@ module spool(){
         }
     }
 }
-	
