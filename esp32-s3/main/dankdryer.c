@@ -16,18 +16,29 @@
 #include <esp_timer.h>
 #include <lwip/netif.h>
 #include <esp_system.h>
+#include <nimble/ble.h>
 #include <mqtt_client.h>
 #include <driver/ledc.h>
+#include <host/ble_hs.h>
 #include <esp_app_desc.h>
+#include <host/ble_gatt.h>
+#include <host/ble_hs_id.h>
+#include <esp_nimble_hci.h>
 #include <esp_netif_sntp.h>
 #include <hal/ledc_types.h>
 #include <esp_idf_version.h>
 #include <soc/adc_channel.h>
 #include <esp_http_server.h>
+#include <host/ble_hs_mbuf.h>
 #include <esp_adc/adc_cali.h>
+#include <nimble/nimble_port.h>
 #include <esp_adc/adc_oneshot.h>
+#include <services/gap/ble_svc_gap.h>
 #include <driver/temperature_sensor.h>
+#include <services/gatt/ble_svc_gatt.h>
+#include <nimble/nimble_port_freertos.h>
 
+#define UUIDLEN 16
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
 #define RPMMAX (1u << 14u)
 #define MIN_TEMP -80
@@ -141,6 +152,55 @@ static const failure_indication PostFailure = { 0, 0, 0 };
   { 0, 64, 0 },   // MQTT_CONNECTING
   { 0, 0, 0 }     // MQTT_ESTABLISHED
 };*/
+
+// FIXME regenerate these
+static const ble_uuid128_t gatt_svr_svc_uuid =
+    BLE_UUID128_INIT(0x02, 0x00, 0x12, 0xac, 0x42, 0x02, 0x78, 0xb8, 0xed, 0x11, 0xda, 0x46, 0x42, 0xc6, 0xbb, 0xb2);
+
+//!! c9af9c76-46de-11ed-b878-0242ac120002
+static const ble_uuid128_t gatt_svr_chr_uuid =
+    BLE_UUID128_INIT(0x02, 0x00, 0x12, 0xac, 0x42, 0x02, 0x78, 0xb8, 0xed, 0x11, 0xde, 0x46, 0x76, 0x9c, 0xaf, 0xc9);
+
+static int gatt_svr_chr_access(uint16_t conn_handle, uint16_t attr_handle,
+                               struct ble_gatt_access_ctxt *ctxt,
+                               void *arg)  //!! Callback function. When ever characrstic will be accessed by user, this function will execute
+{
+
+  switch (ctxt->op)
+  {
+  case BLE_GATT_ACCESS_OP_READ_CHR: //!! In case user accessed this characterstic to read its value, bellow lines will execute
+    fprintf(stderr, "BLE read attempted\n");
+    break;
+
+  case BLE_GATT_ACCESS_OP_WRITE_CHR: //!! In case user accessed this characterstic to write, bellow lines will executed.
+    fprintf(stderr, "BLE write attempted\n");
+    break;
+  default:
+    return BLE_ATT_ERR_UNLIKELY;
+  }
+  return 0;
+}
+
+static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
+    {
+
+        .type = BLE_GATT_SVC_TYPE_PRIMARY,
+        .uuid = &gatt_svr_svc_uuid.u,
+        .characteristics = (struct ble_gatt_chr_def[]){{
+          .uuid = &gatt_svr_chr_uuid.u,     //!! UUID as given above
+          .access_cb = gatt_svr_chr_access, //!! Callback function. When ever this characrstic will be accessed by user, this function will execute
+          .val_handle = NULL,
+          .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_NOTIFY, //!! flags set permissions. In this case User can read this characterstic, can write to it,and get notified.
+        },
+        {
+          0, /* No more characteristics in this service. This is necessary */
+        }},
+    },
+
+    {
+        0, /* No more services. This is necessary */
+    },
+};
 
 static const esp_mqtt_client_config_t MQTTConfig = {
   .broker = {
@@ -1103,11 +1163,86 @@ setup_sntp(void){
   return 0;
 }
 
+static void
+bletask(void* v){
+  nimble_port_run();
+  printf("NimBLE stack exited, deinitializing task\n");
+  nimble_port_freertos_deinit();
+}
+
+static void
+ble_app_on_sync(void){
+  printf("got BLE sync, enabling advertisements\n");
+  ble_addr_t addr;
+  esp_err_t e;
+  if((e = ble_hs_id_gen_rnd(1, &addr)) != ESP_OK){
+    fprintf(stderr, "failure (%s) generating address\n", esp_err_to_name(e));
+  }else{
+    if((e = ble_hs_id_set_rnd(addr.val)) != ESP_OK){
+      fprintf(stderr, "failure (%s) setting address\n", esp_err_to_name(e));
+    }
+  }
+  struct ble_hs_adv_fields fields;
+  memset(&fields, 0, sizeof(fields));
+  fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP; 
+  fields.tx_pwr_lvl_is_present = 1;
+  fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
+  fields.name = (const uint8_t*)ble_svc_gap_device_name();
+  printf("got gap device name [%s]\n", fields.name);
+  fields.name_len = strlen((const char*)fields.name);
+  fields.name_is_complete = 1;
+  memset(&fields.uuids16, 0, sizeof(ble_uuid16_t));
+  fields.num_uuids16 = 1;
+  fields.uuids16_is_complete = 1;
+  if((e = ble_gap_adv_set_fields(&fields)) != ESP_OK){
+    fprintf(stderr, "failure (%s) enabling ibeacon\n", esp_err_to_name(e));
+  }
+  struct ble_gap_adv_params advcfg = { 0 };
+  advcfg.conn_mode = BLE_GAP_CONN_MODE_UND;
+  advcfg.disc_mode = BLE_GAP_DISC_MODE_GEN;
+  if((e = ble_gap_adv_start(BLE_OWN_ADDR_RANDOM, NULL, BLE_HS_FOREVER, &advcfg, NULL, NULL)) != ESP_OK){
+    fprintf(stderr, "failure (%s) enabling advertisements\n", esp_err_to_name(e));
+  }
+}
+
+static int
+setup_ble(void){
+  esp_err_t err;
+  if((err = nimble_port_init()) != ESP_OK){
+    fprintf(stderr, "error (%s) initializing NimBLE\n", esp_err_to_name(err));
+    return -1;
+  }
+  if((err = esp_nimble_hci_init()) != ESP_OK){
+    fprintf(stderr, "error (%s) initializing HCI\n", esp_err_to_name(err));
+    return -1;
+  }
+  ble_hs_cfg.sync_cb = ble_app_on_sync;
+  ble_svc_gap_init();
+  ble_svc_gatt_init();
+  if((err = ble_gatts_count_cfg(gatt_svr_svcs)) != ESP_OK){
+    return -1;
+  }
+  if((err = ble_gatts_add_svcs(gatt_svr_svcs)) != ESP_OK){
+    return -1;
+  }
+  if((err = ble_svc_gap_device_name_set(CLIENTID)) != ESP_OK){
+    fprintf(stderr, "error (%s) setting BLE name\n", esp_err_to_name(err));
+    return -1;
+  }
+  nimble_port_freertos_init(bletask);
+  printf("successfully initialized BLE\n");
+  return 0;
+}
+
 static int
 setup_network(void){
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
     fprintf(stderr, "couldn't create mqtt client\n");
     return -1;
+  }
+  // FIXME only want to run bluetooth if WiFi is not configured?
+  if(setup_ble()){
+    return -1; // FIXME continue?
   }
   esp_err_t err;
   const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
