@@ -21,7 +21,7 @@ translate([spoold / 4 + 30, 0, 0]){
 }
 
 multicolor("blue"){
-translate([30, -50, rotorh / 2]){
+translate([30, -50, cupolah / 2]){
 	mirror([0, 0, 1]){
 		cupola();
 	}

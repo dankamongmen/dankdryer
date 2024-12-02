@@ -129,7 +129,7 @@ module loadcell(){
 
 loadcellmountx = -76 / 2 + 21.05 / 2;
 loadcellmountw = 13.5;
-loadcellmountl = 21.05;
+loadcellmountl = 23;
 loadcellmounth = 17;
 loadcellsupph = 4;
 
@@ -219,7 +219,7 @@ module lowercouplingtri(){
 	linear_extrude(loadcellsupph){
 		polygon([
 			[motorboxd / 2, loadcellmountw / 2],
-			[motorboxd / 2, motorboxd / 2],
+			[motorboxd / 2, (motorboxd - loadcellsupph) / 2],
 			[-loadcellmountl, loadcellmountw / 2]
 		]);
 	}
@@ -234,37 +234,40 @@ module lowercoupling(){
 	difference(){
 		union(){
 			bracel = loadcelll / 2 - loadcellmountl;
-			translate([-bracel + 6, 0, 0]){
+			translate([-bracel + 3, 0, 0]){
 				loadcellmount(loadcellsupph);
 			}
 			lowercouplingtri();
 			mirror([0, 1, 0]){
 				lowercouplingtri();
 			}
-			couplingh = 30;
+			couplingh = 40;
 			// primary motor holder
 			translate([bracel, 0, 0]){
 				difference(){
-					translate([0, 0, (couplingh + loadcellsupph) / 2]){
-						cylinder(couplingh + loadcellsupph, (motorboxd + 3) / 2, (motorboxd + 3) / 2, true);
+					translate([0, 0, couplingh / 2 + loadcellsupph]){
+						cylinder(couplingh, (motorboxd + 1) / 2, (motorboxd + 1) / 2, true);
 					}
 					translate([0, 0, loadcellsupph + couplingh / 2]){
 						cylinder(couplingh, (motorboxd- 1) / 2, (motorboxd - 1) / 2, true);
 					}
 				}
+				cylinder(loadcellsupph,
+						(motorboxd - loadcellsupph) / 2,
+						(motorboxd + 1) / 2);
 			}
 		}
-		// holes in the bottom for wires
+		// holes in the bottom for wires+legend
 		translate([motorboxd / 2 - 2, motorboxd / 2 - 6, loadcellsupph / 2]){
 			cylinder(loadcellsupph, 3, 3, true);
 		}
 		translate([motorboxd / 2 - 2, -motorboxd / 2 + 6, loadcellsupph / 2]){
 			cylinder(loadcellsupph, 3, 3, true);
 		}
-		translate([motorboxd / 2, -4, 0]){
+		translate([motorboxd / 2, -7, 0]){
 			rotate([0, 0, 90]){
 				linear_extrude(loadcellsupph){
-					text("+/-", size=5, font="Prosto One");
+					text("+/-", size=7, font="Prosto One");
 				}
 			}
 		}
@@ -276,7 +279,7 @@ module lowercoupling(){
 // this partially sheathes the motor, and provides
 // the platform. it sits atop the rotor sheathe's
 // base, and can thus rotate.
-cupolah = 30;
+cupolah = 25;
 cupolat = 2;
 cupolaw = motorboxd + cupolat;
 cupolarimh = 2;
