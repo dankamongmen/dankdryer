@@ -176,35 +176,7 @@ module motor(){
     }
 }
 
-// circular mount screwed into the front of the motor through six holes
 motorholderh = 3;
-module motorholder(){
-    d = 31 / 2;
-    ch = motorholderh;
-    difference(){
-        cylinder(ch, motorboxd / 2, motorboxd / 2, true);
-        translate([-d, 0, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([cos(60) * -d, sin(60) * d, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([cos(60) * -d, sin(60) * -d, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-		translate([d, 0, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([cos(60) * d, sin(60) * d, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        translate([cos(60) * d, sin(60) * -d, 0]){
-            cylinder(ch, 1.5, 1.5, true);
-        }
-        cylinder(ch, 7, 7, true);
-    }
-}
-
 mlength = motorboxh + motorholderh;
 
 module lowercouplingtri(){
@@ -275,36 +247,27 @@ module lowercoupling(){
 // this partially sheathes the motor, and provides
 // the platform. it sits atop the rotor sheathe's
 // base, and can thus rotate.
-cupolah = 25;
-cupolat = 2;
+cupolah = 20;
+cupolat = 4;
 cupolaw = motorboxd + cupolat;
-cupolarimh = 2;
-
-module cupolacylinder(){
-	cylinder(cupolah, (cupolaw + 2) / 2, (cupolaw + 2) / 2, true);
-}
+cupolarimh = 6;
 
 module cupola(){
 	difference(){
-		cupolacylinder();
+		cylinder(cupolah, (cupolaw + cupolat) / 2, (cupolaw + cupolat) / 2, true);
 		// cut out the core, representing the motor
-		translate([0, 0, -cupolarimh / 2]){
-			cylinder(cupolah - cupolarimh, (motorboxd + 2) / 2, (motorboxd + 2) / 2, true);
-		}
-		// cut out a smaller section on the top rim
-		translate([0, 0, (cupolah - cupolarimh) / 2]){
-			cylinder(cupolarimh, (motorboxd - 8) / 2,
-		         (motorboxd - 8) / 2, true);
+		translate([0, 0, 0]){
+			cylinder(cupolah, (motorboxd + 2) / 2, (motorboxd + 2) / 2, true);
 		}
 	}
 	// add triangular supports for upper rim
-	translate([0, 0, 5]){
+	translate([0, 0, cupolah / 2 - 1]){
 		rotate_extrude(){
-			translate([15, 0, 0]){
+			translate([cupolaw / 2 - cupolarimh + 2, 0, 0]){
 				polygon([
-					[6, 6],
-					[0, 6],
-					[6, 0]
+					[cupolarimh, cupolarimh],
+					[0, cupolarimh],
+					[cupolarimh, 0]
 				]);
 			}
 		}
@@ -313,7 +276,7 @@ module cupola(){
 	bottoml = 4;
 	translate([0, 0, -cupolah / 2]){
 		rotate_extrude(){
-			translate([(cupolaw + 2) / 2, 0, 0]){
+			translate([(cupolaw + cupolat) / 2, 0, 0]){
 				polygon([
 					[0, 0], [bottoml, 0], [0, bottoml]
 				]);
@@ -382,43 +345,20 @@ module platform(inr, outr){
 				}
 			}
 		}
-		cupolacylinder();
+		cylinder(cupolah, (cupolaw + cupolat) / 2, (cupolaw + cupolat) / 2, true);
 	}
 }
 
-//platform(platforminnerr, platformouterd / 2);
-	
-// platform for the top of the shaft. it expands
-// into the hotbox and supports the spool, locking
-// down onto the rotor.
-// shaft radius is bearingh / 2
-// central column radius is columnr
-// to calculate the shaft height, add the amount
-// in the hotbox to the amount in the croom.
 shafth = platformh + 35;
 platforminnerr = columnr - 0.5;
 platformouterd = spoold / 2;
 module shaft(){
-	/*
-    cylinder(shafth, shaftr, shaftr, true);
-    // fatten the shaft so that gear can be pushed
-	// only up to this point
-	unfath = gearh - bearingh;
-	fath = shafth - unfath;
-    translate([0, 0, (shafth - fath) / 2]){
-        cylinder(fath, shaftr + 2, shaftr + 2, true);
-		difference(){
-			cylinder(fath, platforminnerr, platforminnerr, true);
-			cylinder(fath, platforminnerr - 2, platforminnerr - 2, true);
-		}
-    }
-	*/
-    // this should fill most of the central hole, so it can't
-    // fall over.
     translate([0, 0, platformh / 2]){
         platform(platforminnerr, platformouterd / 2);
     }
 }
+
+// shaft();
 
 // the platform sheathes the rotor, then descends to
 // the hotbox floor, and expands.
