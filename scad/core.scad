@@ -234,33 +234,39 @@ module lowercoupling(){
 	difference(){
 		union(){
 			bracel = loadcelll / 2 - loadcellmountl;
-			translate([-bracel + 15, 0, loadcellsupph / 2]){
-				cube([bracel, loadcellmountw, loadcellsupph], true);
-			}
-			translate([-bracel, 0, 0]){
+			translate([-bracel + 6, 0, 0]){
 				loadcellmount(loadcellsupph);
 			}
 			lowercouplingtri();
 			mirror([0, 1, 0]){
 				lowercouplingtri();
 			}
-			couplingh = 20;
+			couplingh = 30;
+			// primary motor holder
 			translate([bracel, 0, 0]){
 				difference(){
 					translate([0, 0, (couplingh + loadcellsupph) / 2]){
-						cylinder(couplingh + loadcellsupph, (motorboxd + 4) / 2, (motorboxd + 4) / 2, true);
+						cylinder(couplingh + loadcellsupph, (motorboxd + 3) / 2, (motorboxd + 3) / 2, true);
 					}
 					translate([0, 0, loadcellsupph + couplingh / 2]){
-						cylinder(couplingh, motorboxd / 2, motorboxd / 2, true);
+						cylinder(couplingh, (motorboxd- 1) / 2, (motorboxd - 1) / 2, true);
 					}
 				}
 			}
 		}
-		translate([motorboxd - 4, 0, loadcellsupph / 2]){
-			cylinder(loadcellsupph, 2, 2, true);
+		// holes in the bottom for wires
+		translate([motorboxd / 2 - 2, motorboxd / 2 - 6, loadcellsupph / 2]){
+			cylinder(loadcellsupph, 3, 3, true);
 		}
-		translate([0, 0, loadcellsupph / 2]){
-			cylinder(loadcellsupph, 2, 2, true);
+		translate([motorboxd / 2 - 2, -motorboxd / 2 + 6, loadcellsupph / 2]){
+			cylinder(loadcellsupph, 3, 3, true);
+		}
+		translate([motorboxd / 2, -4, 0]){
+			rotate([0, 0, 90]){
+				linear_extrude(loadcellsupph){
+					text("+/-", size=5, font="Prosto One");
+				}
+			}
 		}
 	}
 }
