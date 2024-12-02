@@ -215,26 +215,57 @@ module motorholder(){
 
 mlength = motorboxh + motorholderh;
 
+module lowercouplingtri(){
+	linear_extrude(loadcellsupph){
+		polygon([
+			[motorboxd / 2, loadcellmountw / 2],
+			[motorboxd / 2, motorboxd / 2],
+			[-loadcellmountl, loadcellmountw / 2]
+		]);
+	}
+}
+
 module lowercoupling(){
-	translate([mlength / 2, -30, 0]){
-		rotate([90, 0, 0]){
-			rotate([0, 90, 0]){
-				// the brace comes out to the center
-				// of the load cell. the bearing
-				// holder rises from the center--the
-				// shaft must be in the dead center
-				// of the structure.
-				bracel = loadcelll / 2 - loadcellmountl;
-				translate([-bracel / 2 + 15, 0, loadcellsupph / 2]){
-					cube([bracel, loadcellmountw, loadcellsupph], true);
-				}
-				translate([-bracel / 2, 0, 0]){
-					loadcellmount(loadcellsupph);
+	// the brace comes out to the center
+	// of the load cell. the bearing
+	// holder rises from the center--the
+	// shaft must be in the dead center
+	// of the structure.
+	difference(){
+		union(){
+			bracel = loadcelll / 2 - loadcellmountl;
+			translate([-bracel + 15, 0, loadcellsupph / 2]){
+				cube([bracel, loadcellmountw, loadcellsupph], true);
+			}
+			translate([-bracel, 0, 0]){
+				loadcellmount(loadcellsupph);
+			}
+			lowercouplingtri();
+			mirror([0, 1, 0]){
+				lowercouplingtri();
+			}
+			couplingh = 20;
+			translate([bracel, 0, 0]){
+				difference(){
+					translate([0, 0, (couplingh + loadcellsupph) / 2]){
+						cylinder(couplingh + loadcellsupph, (motorboxd + 4) / 2, (motorboxd + 4) / 2, true);
+					}
+					translate([0, 0, loadcellsupph + couplingh / 2]){
+						cylinder(couplingh, motorboxd / 2, motorboxd / 2, true);
+					}
 				}
 			}
 		}
+		translate([motorboxd - 4, 0, loadcellsupph / 2]){
+			cylinder(loadcellsupph, 2, 2, true);
+		}
+		translate([0, 0, loadcellsupph / 2]){
+			cylinder(loadcellsupph, 2, 2, true);
+		}
 	}
 }
+
+//lowercoupling();
 
 // this partially sheathes the motor, and provides
 // the platform. it sits atop the rotor sheathe's

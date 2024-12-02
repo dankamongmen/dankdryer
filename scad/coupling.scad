@@ -16,12 +16,8 @@ use <croom.scad>
 // bearing above the center of the load cell. the
 // bearing will freely rotate within the coupling.
 multicolor("purple"){
-translate([spoold / 4 + 30, 0, -mlength / 2]){
-    rotate([0, 90, ]){
-        mirror([1, 0, 0]){
-            lowercoupling();
-        }
-    }
+translate([spoold / 4 + 30, 0, 0]){
+    lowercoupling();
 }
 }
 
