@@ -28,12 +28,6 @@ multicolor("grey"){
     }
 }
 
-multicolor("pink"){
-    drop(){
-        dropmotor();
-    }
-}
-
 multicolor("silver"){
     drop(){
         translate([0, 60, wallz + acadapterh / 2]){
@@ -45,11 +39,5 @@ multicolor("silver"){
 multicolor("black"){
     drop(){
         assembly();
-    }
-}
-
-multicolor("green"){
-    drop(){
-        dropworm();
     }
 }

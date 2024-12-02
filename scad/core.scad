@@ -176,14 +176,6 @@ module motor(){
     }
 }
 
-module dropworm(){
-    translate([motorboxd - 15, 12, motorboxh / 2 + motorboxd + wormwidth / 2]){
-        rotate([0, 0, 90 + motortheta]){
-            wormy();
-        }
-    }
-}
-
 // circular mount screwed into the front of the motor through six holes
 motorholderh = 3;
 module motorholder(){
@@ -257,17 +249,21 @@ module lowercoupling(){
 						(motorboxd + 1) / 2);
 			}
 		}
-		// holes in the bottom for wires+legend
-		translate([motorboxd / 2 - 2, motorboxd / 2 - 6, loadcellsupph / 2]){
+		// holes in the bottom for wires, polarity
+		// legend, and center for load cell bump
+		translate([15, 0, loadcellsupph / 2]){
+			cube([loadcellh, loadcellh, loadcellsupph], true);
+		}
+		translate([motorboxd / 2 - 2, motorboxd / 2 - 7, loadcellsupph / 2]){
 			cylinder(loadcellsupph, 3, 3, true);
 		}
-		translate([motorboxd / 2 - 2, -motorboxd / 2 + 6, loadcellsupph / 2]){
+		translate([motorboxd / 2 - 2, -motorboxd / 2 + 7, loadcellsupph / 2]){
 			cylinder(loadcellsupph, 3, 3, true);
 		}
-		translate([motorboxd / 2, -7, 0]){
+		translate([motorboxd / 2 - 5, -13, 0]){
 			rotate([0, 0, 90]){
 				linear_extrude(loadcellsupph){
-					text("+/-", size=7, font="Prosto One");
+					text("+", size=7, font="Prosto One");
 				}
 			}
 		}
@@ -301,6 +297,19 @@ module cupola(){
 		         (motorboxd - 8) / 2, true);
 		}
 	}
+	// add triangular supports for upper rim
+	translate([0, 0, 5]){
+		rotate_extrude(){
+			translate([15, 0, 0]){
+				polygon([
+					[6, 6],
+					[0, 6],
+					[6, 0]
+				]);
+			}
+		}
+	}
+	// lower rim, with triangular supports
 	bottoml = 4;
 	translate([0, 0, -cupolah / 2]){
 		rotate_extrude(){
@@ -390,8 +399,8 @@ shafth = platformh + 35;
 platforminnerr = columnr - 0.5;
 platformouterd = spoold / 2;
 module shaft(){
-    cylinder(shafth, shaftr, shaftr, true);
 	/*
+    cylinder(shafth, shaftr, shaftr, true);
     // fatten the shaft so that gear can be pushed
 	// only up to this point
 	unfath = gearh - bearingh;
@@ -406,7 +415,7 @@ module shaft(){
 	*/
     // this should fill most of the central hole, so it can't
     // fall over.
-    translate([0, 0, shafth / 2 - platformh]){
+    translate([0, 0, platformh / 2]){
         platform(platforminnerr, platformouterd / 2);
     }
 }
@@ -422,18 +431,21 @@ module rotor(){
         cylinder(wormlen, (wormbore + wormthick) / 2, (wormbore + wormthick) / 2, true);
         cylinder(wormlen, wormbore / 2, wormbore / 2, true);
     }
-    // effect the D-shape of the rotor (6.2 vs 6.5)
-	ddiff = 0.3;
-	ch = rotorh - wormlen;
-    translate([(wormbore - ddiff) / 2, 0, -ch / 2]){
-        cube([ddiff, wormbore * 0.8, wormlen], true);
-    }
+	// now the platter at the bottom, which
+	// covers the face of the motor, and upon
+	// which the second stage rests
 	translate([0, 0, -wormlen / 2]){
 		difference(){
 			cylinder(ch, motorboxd / 2, motorboxd / 2, true);
 			cylinder(ch, wormbore / 2, wormbore / 2, true);
 		}
 	}
+    // effect the D-shape of the rotor (6.2 vs 6.5)
+	ddiff = 0.3;
+	ch = rotorh - wormlen;
+    translate([(wormbore - ddiff) / 2, 0, -ch / 2 + 0.5]){
+        cube([ddiff, wormbore * 0.8, wormlen + ch - 1], true);
+    }
 }
 
 //rotor();
@@ -444,25 +456,25 @@ module assembly(){
 		translate([0, 0, loadcellh / 2]){
 			loadcell();
 		}
-		translate([0, 0, loadcellh]){
-			mirror([1, 0, 0]){
+		translate([-14.5, 0, loadcellh]){
+			mirror([0, 1, 0]){
 				lowercoupling();
 			}
-			translate([0, 0, shafth / 2]){
+			translate([15, 0, cupolah + loadcellh + 21]){
 				shaft();
+			}
+		}
+		translate([0, 0, motorboxh]){
+			motor();
+			translate([0, 0, 25]){
+				cupola();
+				rotor();
 			}
 		}
 	}
 }
 
-// the motor object, rotated and placed as it exists in the croom
-module dropmotor(){
-    translate([59, -40, wallz + motormounth]){
-        rotate([0, 270, motortheta]){
-            motor();
-        }
-    }
-}
+//assembly();
 
 module spool(){
     translate([0, 0, wallz + elevation]){
