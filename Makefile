@@ -2,7 +2,7 @@
 
 OUT:=out
 STL:=$(addsuffix .stl, \
- $(addprefix $(OUT)/scad/, coupling croom hotbox top))
+ $(addprefix $(OUT)/scad/, complete coupling croom hotbox top))
 
 SCADFLAGS=--hardwarnings --backend Manifold --summary all
 
