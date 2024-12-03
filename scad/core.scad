@@ -345,7 +345,7 @@ module platform(inr, outr){
 				}
 			}
 		}
-		cylinder(cupolah, (cupolaw + cupolat) / 2, (cupolaw + cupolat) / 2, true);
+		cylinder(cupolah, (cupolaw + cupolat + 1) / 2, (cupolaw + cupolat + 1) / 2, true);
 	}
 }
 
@@ -371,18 +371,29 @@ module rotor(){
         cylinder(wormlen, (wormbore + wormthick) / 2, (wormbore + wormthick) / 2, true);
         cylinder(wormlen, wormbore / 2, wormbore / 2, true);
     }
+	ch = rotorh - wormlen;
 	// now the platter at the bottom, which
 	// covers the face of the motor, and upon
 	// which the second stage rests
 	translate([0, 0, -wormlen / 2]){
+		r = motorboxd / 2 - ch;
+		translate([0, 0, -ch / 2]){
+			rotate_extrude(){
+				polygon([
+					[r, 0],
+					[r, ch],
+					[r + ch, 0]
+				]);
+			}
+		}
+		// beveled rim to match second stage top
 		difference(){
-			cylinder(ch, motorboxd / 2, motorboxd / 2, true);
+			cylinder(ch, r, r, true);
 			cylinder(ch, wormbore / 2, wormbore / 2, true);
 		}
 	}
     // effect the D-shape of the rotor (6.2 vs 6.5)
 	ddiff = 0.3;
-	ch = rotorh - wormlen;
     translate([(wormbore - ddiff) / 2, 0, -ch / 2 + 0.5]){
         cube([ddiff, wormbore * 0.8, wormlen + ch - 1], true);
     }
