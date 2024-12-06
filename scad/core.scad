@@ -256,7 +256,7 @@ module cupola(){
 	difference(){
 		cylinder(cupolah, cupolaw / 2, cupolaw / 2, true);
 		// cut out the core, representing the motor
-		cylinder(cupolah, (motorboxd + 1) / 2, (motorboxd + 1) / 2, true);
+		cylinder(cupolah, motorboxd / 2, motorboxd / 2, true);
 	}
 	// add triangular supports for upper rim
 	translate([0, 0, cupolah / 2 - 1]){
