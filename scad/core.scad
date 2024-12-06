@@ -426,13 +426,31 @@ module assembly(){
 
 //assembly();
 
+module spoolcut(){
+	polygon([
+		[10, 40],
+		[30, 80],
+		[-30, 80],
+		[-10, 40]
+	]);
+}
+
 module spool(){
     translate([0, 0, wallz + elevation]){
         linear_extrude(spoolh){
             difference(){
                 circle(spoold / 2);
                 circle(spoolholed / 2);
+				spoolcut();
+				rotate([0, 0, 120]){
+					spoolcut();
+				}
+				rotate([0, 0, 240]){
+					spoolcut();
+				}
             }
         }
     }
 }
+
+//spool();

@@ -248,9 +248,12 @@ module hotbox(){
 hotbox();
 
 // testing
+
 /*
 multicolor("green"){
-  spool();
+	rotate([0, 0, $t]){
+		spool();
+	}
 }
 
 multicolor("orange"){
