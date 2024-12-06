@@ -41,10 +41,10 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
-// 11-20 are connected to ADC2, which is used by wifi
-// (they can still be used as digital pins)
 #define LOWER_TACHPIN GPIO_NUM_8   // lower chamber fan tachometer
 #define UPPER_TACHPIN GPIO_NUM_10  // upper chamber fan tachometer
+// 11-20 are connected to ADC2, which is used by wifi
+// (they can still be used as GPIOs; they cannot be used for adc)
 #define UPPER_PWMPIN GPIO_NUM_11   // upper chamber fan speed
 #define HX711_DATAPIN GPIO_NUM_12  // hx711 data (input)
 #define HX711_CLOCKPIN GPIO_NUM_13 // hx711 clock (output)
@@ -1012,9 +1012,9 @@ int setup_mdns(void){
     fprintf(stderr, "failure %d (%s) initializing mDNS\n", err, esp_err_to_name(err));
     return -1;
   }
-  mdns_instance_name_set("Dire Dryer");
+  mdns_instance_name_set("Dankdryer");
   mdns_service_add(NULL, "_http", "_tcp", 80, NULL, 0);
-  mdns_service_instance_name_set("_http", "_tcp", "Dire Dryer webserver");
+  mdns_service_instance_name_set("_http", "_tcp", "Dankdryer webserver");
   return 0;
 }
 
