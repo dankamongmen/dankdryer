@@ -43,18 +43,19 @@
 // 0 and 3 are strapping pins
 // 11-20 are connected to ADC2, which is used by wifi
 // (they can still be used as digital pins)
-#define UPPER_PWMPIN GPIO_NUM_4    // upper chamber fan speed
-#define LOWER_PWMPIN GPIO_NUM_7    // lower chamber fan speed
-#define SSR_GPIN GPIO_NUM_8        // heater solid state relay
+#define LOWER_TACHPIN GPIO_NUM_8   // lower chamber fan tachometer
+#define UPPER_TACHPIN GPIO_NUM_10  // upper chamber fan tachometer
+#define UPPER_PWMPIN GPIO_NUM_11   // upper chamber fan speed
 #define HX711_DATAPIN GPIO_NUM_12  // hx711 data (input)
 #define HX711_CLOCKPIN GPIO_NUM_13 // hx711 clock (output)
-#define MOTOR_RELAY GPIO_NUM_17    // enable relay for motor
-#define THERM_DATAPIN GPIO_NUM_18  // analog thermometer (ADC1)
+#define LOWER_PWMPIN GPIO_NUM_18   // lower chamber fan speed
+#define MOTOR_RELAY GPIO_NUM_35    // enable relay for motor
+#define THERM_DATAPIN GPIO_NUM_36  // analog thermometer (ADC1)
+#define HALL_DATAPIN GPIO_NUM_37   // hall sensor
 // 19--20 are used for JTAG (not strictly needed)
 // 26--32 are used for pstore qspi flash
-#define LOWER_TACHPIN GPIO_NUM_36  // lower chamber fan tachometer
-#define UPPER_TACHPIN GPIO_NUM_42  // upper chamber fan tachometer
 // 45 and 46 are strapping pins
+#define SSR_GPIN GPIO_NUM_47        // heater solid state relay
 #define RGB_PIN GPIO_NUM_48        // onboard RGB neopixel
 
 #define NVS_HANDLE_NAME "pstore"
