@@ -245,12 +245,12 @@ module croom(){
 	croombottom(botrad, wallz);
 }
 
-// testing + full assemblage
-/*
 multicolor("green"){
 	croom();
 }
 
+// testing + full assemblage
+/*
 multicolor("black"){
     assembly();
 	acadapter();
