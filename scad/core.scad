@@ -254,16 +254,14 @@ cupolarimh = 6;
 
 module cupola(){
 	difference(){
-		cylinder(cupolah, (cupolaw + cupolat) / 2, (cupolaw + cupolat) / 2, true);
+		cylinder(cupolah, cupolaw / 2, cupolaw / 2, true);
 		// cut out the core, representing the motor
-		translate([0, 0, 0]){
-			cylinder(cupolah, (motorboxd + 2) / 2, (motorboxd + 2) / 2, true);
-		}
+		cylinder(cupolah, (motorboxd + 1) / 2, (motorboxd + 1) / 2, true);
 	}
 	// add triangular supports for upper rim
 	translate([0, 0, cupolah / 2 - 1]){
 		rotate_extrude(){
-			translate([cupolaw / 2 - cupolarimh + 2, 0, 0]){
+			translate([cupolaw / 2 - cupolarimh, 0, 0]){
 				polygon([
 					[cupolarimh, cupolarimh],
 					[0, cupolarimh],
@@ -276,7 +274,7 @@ module cupola(){
 	bottoml = 4;
 	translate([0, 0, -cupolah / 2]){
 		rotate_extrude(){
-			translate([(cupolaw + cupolat) / 2, 0, 0]){
+			translate([cupolaw / 2, 0, 0]){
 				polygon([
 					[0, 0], [bottoml, 0], [0, bottoml]
 				]);
@@ -287,8 +285,9 @@ module cupola(){
 
 //cupola();
 		
-// the actual platform should cover a good chunk of area.
-// cuts both allow heat to flow, and reduce weight.
+// the actual platform should cover a good chunk
+// of area, to keep the spool steady. cuts both
+// allow heat to flow, and reduce weight.
 platformtoph = 2;
 platformh = elevation + wallz + platformtoph;
 module platform(inr, outr){
@@ -345,7 +344,7 @@ module platform(inr, outr){
 				}
 			}
 		}
-		cylinder(cupolah, (cupolaw + cupolat + 1) / 2, (cupolaw + cupolat + 1) / 2, true);
+		cylinder(cupolah, (cupolaw + 1) / 2, (cupolaw + 1) / 2, true);
 	}
 }
 
