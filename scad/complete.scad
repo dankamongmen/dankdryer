@@ -4,15 +4,28 @@ include <croom.scad>
 use <coupling.scad>
 use <top.scad>
 
+translate([-115, 6, -65]){
+	rotate([0, 180 - theta, 0]){
+		intersection(){
+			rotate([270, 0, 0]){
+				rotate([0, 0, 270]){
+					import("iec.stl");
+				}
+			}
+			cube([40, 120, 30], true);
+		}
+	}
+}
+
 multicolor("lightgreen"){
-	translate([0, 109, 45]){
+	translate([0, 109, 43]){
 		rotate([0, 90, 90]){
 			scale(17){
 				import("noctua_nf-a12_fan.stl");
 			}
 		}
 	}
-	translate([0, -112, -40]){
+	translate([0, -113, -41]){
 		rotate([theta, 0, 0]){
 			rotate([0, 90, 90]){
 				scale(17){
