@@ -244,15 +244,20 @@ module croom(){
     }
 	croombottom(botrad, wallz);
 }
-
 /*
 multicolor("green"){
 	croom();
 }
 
 // testing + full assemblage
-multicolor("black"){
+
+multicolor("white"){
     assembly();
-	acadapter();
+}
+
+multicolor("grey"){
+	translate([0, 50, acadapterh / 2 + wallz]){
+		acadapter();
+	}
 }
 */

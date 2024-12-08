@@ -141,13 +141,14 @@ MQTT is used to report status and to accept commands.
 
 # Renderings
 
-View from the top with spool present, top not present.
+View from the top:
 
 <p align="center">
-<img alt="Top view, cutaway" src="images/topview-cutaway.png"/>
+<img alt="Top view" src="images/topview.png"/>
 </p>
 
-View from the top of the lower chamber by itself, with nothing mounted.
+View from the top of the lower chamber by itself, with the AC
+adapter and motor assembly present.
 
 <p align="center">
 <img alt="Top view, lower chamber" src="images/topview-croom.png"/>
