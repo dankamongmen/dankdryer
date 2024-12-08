@@ -49,20 +49,77 @@ I use
 [BOSL2](https://github.com/BelfrySCAD/BOSL2), which
 is included as a submodule.
 
-# Construction
+# Construction / BOM
 
-The following pieces are printed:
- * lower (cool) chamber
- * upper (hot) chamber
- * top
- * worm gear
- * lower coupling (load cell to bearing)
- * platform
- * gear
+The device requires approximately 500g of high-temperature filament (PC,
+PAHT-CF, etc.) to print. The exact amount of filament will depend on
+material and print settings. Six pieces are printed:
 
-Use heat-resistant filaments. My lower chamber is polycarbonate, and my upper
-chamber is Bambu PAHT-CF. You obviously don't want to use a target temperature
-within 10% of your material's heat deformation temperature.
+ * Hot chamber
+ * Cool chamber
+ * Motor sheath
+ * Sheath coupling
+ * Spool platform
+ * Top
+
+The hot and cool chamber dominate filament consumption, though
+the top is non-negligible. At consumer prices, bought in half-kilogram
+and kilogram units, this represents anywhere from roughly $15 (Polymaker
+PolyLite polycarbonate) to $40 (Polymaker Fiberon PA6-CF20).
+
+### Hot chamber
+
+* [230C 110V ceramic heating element](https://www.amazon.com/dp/B0BXNPXXYW)
+* High-temperature thermal sensor (was using LM35 but will probably switch)
+* [KSD301 150C NC thermal control](https://www.amazon.com/Rebower-Thermostat-Temperature-Microwave-Refrigerators/dp/B0BLL75326)
+* [Hall sensor](https://www.digikey.com/en/products/detail/diodes-incorporated/AH3712Q-P-B/19920700)
+* 1µF unpolarized capacitor
+* 68Ω resistor
+* 1x4 screw terminal
+* Small perf board
+
+I'll probably make a dinky little PCB to replace the perf board here.
+We need a temperature sensor and hall effect sensor (and obviously the
+heating circuit) in the hot box; nothing else ought be there.
+
+### Cool chamber
+
+* [Greartisan 5RPM 12V DC motor](https://www.amazon.com/dp/B072N867G3/)
+* [NEMA plug + rocker switch](https://www.amazon.com/ASHATA-Rocker-Switch-Adapter-Printer/dp/B085VSS1F2)
+* [160W 12V AC adapter](https://www.amazon.com/gp/product/B0D7GMVK2F)
+* 2-to-4 cable splitter
+* Custom PCB (fabrication cost is negligible; see components below)
+
+Of these, we don't need nearly so powerful an AC adapter, and we ought
+be able to use a cheapter motor.
+
+#### PCB components
+
+Generated via Kicad:
+
+|Id |Designator |Footprint                         |Quantity|Designation     |
+|---|-----------|----------------------------------|--------|----------------|
+|1  |U1         |ESP32-S3-DevKitC                  |1       |ESP32-S3-DevKitC|
+|2  |C7,C3      |C_0805_2012Metric                 |2       |.1n             |
+|3  |R8,R5      |R_0805_2012Metric                 |2       |3.3k            |
+|4  |U3         |SOT-89-3                          |1       |HT7550-1-SOT89  |
+|5  |J3         |FanPinHeader_1x04_P2.54mm_Vertical|1       |lower fan       |
+|6  |J1         |BarrelJack_Wuerth_6941xx301002    |1       |Barreljack      |
+|7  |OC1        |SMDIP-6_W9.53mm                   |1       |MOC3063SM       |
+|8  |J5         |TerminalBlock_bornier-5_P5.08mm   |1       |To microboard   |
+|9  |R14        |R_0805_2012Metric                 |1       |330             |
+|10 |J4         |FanPinHeader_1x04_P2.54mm_Vertical|1       |upper fan       |
+|11 |L1         |L_0805_2012Metric                 |1       |2.2u            |
+|12 |C1,C5,C2,C4|C_0805_2012Metric                 |4       |10u             |
+|13 |UHX1       |Sparkfun HX711 SEN-13879          |1       |SEN13879        |
+|14 |R6,R4      |R_0805_2012Metric                 |2       |680             |
+|15 |R15        |R_0805_2012Metric                 |1       |100             |
+|16 |R3         |R_0805_2012Metric                 |1       |360             |
+|17 |J2         |TerminalBlock_bornier-2_P5.08mm   |1       |heater          |
+|18 |U2         |TPS62162                          |1       |TPS62162DSG     |
+|19 |R10        |R_0805_2012Metric                 |1       |220             |
+|20 |Q2         |TO-252-2                          |1       |BT136S-800E     |
+|21 |Q1         |SOT-323_SC-70                     |1       |SSM3K127TU      |
 
 # MQTT
 
@@ -105,8 +162,5 @@ Combined OpenSCAD render for mating testing.
 # Questions
 
 * How does air flow? Let's get some visible air and test it.
-* The ESP32-S3 has a MCPWM, a motor controller. Can we eliminate the TB6612FNG?
 * Would we benefit from thermal insulation material in the hotbox?
-* Ought we change our circuits to add protection or eliminate noise?
-* Ought we replace the perfboard and its various breakouts with a custom PCB?
 * Can we use a smaller (cheaper) motor / AC adapter?
