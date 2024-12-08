@@ -49,11 +49,12 @@
 #define HX711_DATAPIN GPIO_NUM_12  // hx711 data (input)
 #define HX711_CLOCKPIN GPIO_NUM_13 // hx711 clock (output)
 #define LOWER_PWMPIN GPIO_NUM_18   // lower chamber fan speed
+// 19--20 are used for JTAG (not strictly needed)
+// 26--32 are used for pstore qspi flash
 #define MOTOR_RELAY GPIO_NUM_35    // enable relay for motor
 #define THERM_DATAPIN GPIO_NUM_36  // analog thermometer (ADC1)
 #define HALL_DATAPIN GPIO_NUM_37   // hall sensor
-// 19--20 are used for JTAG (not strictly needed)
-// 26--32 are used for pstore qspi flash
+// 38 is sometimes the RGB neopixel
 // 45 and 46 are strapping pins
 #define SSR_GPIN GPIO_NUM_47        // heater solid state relay
 #define RGB_PIN GPIO_NUM_48        // onboard RGB neopixel
