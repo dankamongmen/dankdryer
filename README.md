@@ -20,10 +20,6 @@ ESP32-S3 firmware and SCAD sources for the Dankdryer, the world's best filament 
 * Humidity sensing and temperature sensing in both chambers.
 * Entirely open source.
 
-<p align="center">
-<img alt="ESP32-S3-DevKitC-1 pinout" src="ESP32-S3_DevKitC-1_pinlayout_v1.1.jpg"/>
-</p>
-
 More info at [dankwiki](https://nick-black.com/dankwiki/index.php/Dankdryer).
 
 # Dependencies
