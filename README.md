@@ -87,6 +87,7 @@ heating circuit) in the hot box; nothing else ought be there.
 * [Greartisan 5RPM 12V DC motor](https://www.amazon.com/dp/B072N867G3/)
 * [NEMA plug + rocker switch](https://www.amazon.com/ASHATA-Rocker-Switch-Adapter-Printer/dp/B085VSS1F2)
 * [160W 12V AC adapter](https://www.amazon.com/gp/product/B0D7GMVK2F)
+* 5kg bar strain load cell
 * 2-to-4 cable splitter
 * Custom PCB (fabrication cost is negligible; see components below)
 
