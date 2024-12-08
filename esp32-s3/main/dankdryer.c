@@ -41,6 +41,7 @@
 
 // GPIO numbers (https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html)
 // 0 and 3 are strapping pins
+#define SSR_GPIN GPIO_NUM_1        // heater solid state relay
 #define LOWER_TACHPIN GPIO_NUM_8   // lower chamber fan tachometer
 #define UPPER_TACHPIN GPIO_NUM_10  // upper chamber fan tachometer
 // 11-20 are connected to ADC2, which is used by wifi
@@ -56,7 +57,6 @@
 #define HALL_DATAPIN GPIO_NUM_37   // hall sensor
 // 38 is sometimes the RGB neopixel
 // 45 and 46 are strapping pins
-#define SSR_GPIN GPIO_NUM_47        // heater solid state relay
 #define RGB_PIN GPIO_NUM_48        // onboard RGB neopixel
 
 #define NVS_HANDLE_NAME "pstore"
