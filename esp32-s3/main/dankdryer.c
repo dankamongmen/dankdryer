@@ -211,10 +211,11 @@ int read_wifi_config(unsigned char* essid, size_t essidlen,
     return -1;
   }
   // FIXME get essid/psk
-  uint32_t rawstate;
+  uint32_t rawstate = 0;
   if(nvs_get_opt_u32(nvsh, SETUPSTATE_RECNAME, &rawstate) == 0){
-    if(rawstate <= 2){ // FIXME export 2 or call to check it
+    if(rawstate <= 2 && rawstate > 0){ // FIXME export semantics or call to check it
       *setupstate = rawstate;
+      printf("read setup state %d, applied\n", *setupstate);
     }else{
       fprintf(stderr, "read invalid setup state %lu\n", rawstate);
       goto err;
