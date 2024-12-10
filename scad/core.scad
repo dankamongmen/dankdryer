@@ -432,24 +432,74 @@ module spoolcut(){
 		[-30, 80],
 		[-10, 40]
 	]);
+	rotate([0, 0, -60])
+	for(y = [1 : 1 : 11]){
+		for(x = [-y / 2: 1 : y / 2]){
+			translate([x * 6, 25 + y * 6, 0]){
+				circle(3);
+			}
+		}
+	}
+}
+
+// do a single layer of filament all the way through
+module fullspoollayer(h, fild){
+	for(d = [spoolholed : 3.5 : fild]){
+		translate([0, 0, h]){
+			rotate_extrude(){
+				translate([d / 2, 0, 0]){
+					circle(1.75 / 2);
+				}
+			}
+		}
+	}	
+}
+
+module tracespoollayer(h, fild){
+	translate([0, 0, h]){
+		rotate_extrude(){
+			translate([fild / 2, 0, 0]){
+				circle(1.75 / 2);
+			}
+		}
+	}
 }
 
 module spool(){
-    translate([0, 0, wallz + elevation]){
-        linear_extrude(spoolh){
-            difference(){
-                circle(spoold / 2);
-                circle(spoolholed / 2);
-				spoolcut();
-				rotate([0, 0, 120]){
-					spoolcut();
+	fild = spoolholed + 1.75 * 55;
+	filh = 1.75 * 35;
+	reelh = (spoolh - filh) / 2;
+    translate([0, 0, wallz + elevation + platformtoph]){
+		color([1, 1, 1]){
+			difference(){
+				linear_extrude(spoolh){
+					difference(){
+						circle(spoold / 2);
+						circle(spoolholed / 2);
+						spoolcut();
+						rotate([0, 0, 120]){
+							spoolcut();
+						}
+						rotate([0, 0, 240]){
+							spoolcut();
+						}
+					}
 				}
-				rotate([0, 0, 240]){
-					spoolcut();
+				translate([0, 0, reelh]){
+					linear_extrude(spoolh - reelh * 2){
+						circle(spoold);
+					}
 				}
-            }
-        }
-    }
+			}
+		}
+		color("indigo"){
+			fullspoollayer(reelh + 1.75 / 2, fild);
+			for(h = [reelh + 3 * 1.75 / 2 : 1.75 : spoolh - reelh]){
+				tracespoollayer(h, fild);
+			}
+			fullspoollayer(spoolh - reelh - 1.75 / 2, fild);
+		}
+	}
 }
 
 //spool();
