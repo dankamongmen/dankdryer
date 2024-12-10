@@ -4,7 +4,7 @@ OUT:=out
 STL:=$(addsuffix .stl, \
  $(addprefix $(OUT)/scad/, complete coupling hotbox top))
 
-SCADFLAGS=--hardwarnings --backend Manifold --summary all
+SCADFLAGS=--hardwarnings --backend Manifold --summary all -D "\$$topalpha=1;"
 
 # allow OSCAD (openscad binary) to be set externally
 OSCAD?=openscad
