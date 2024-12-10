@@ -407,6 +407,10 @@ ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }
   if(id == IP_EVENT_STA_GOT_IP || id == IP_EVENT_GOT_IP6){
     printf("got network address, connecting to mqtt/sntp\n");
+    if(SetupState != SETUP_STATE_CONFIGURED){
+      SetupState = SETUP_STATE_CONFIGURED;
+      write_wifi_config(WifiEssid, WifiPSK, SetupState);
+    }
     if((err = esp_netif_sntp_start()) != ESP_OK){
       fprintf(stderr, "error (%s) starting SNTP\n", esp_err_to_name(err));
     }
@@ -435,7 +439,6 @@ setup_wifi(void){
         .sae_h2e_identifier = "",
     },
   };
-  // FIXME ought copy these out while locked
   strcpy((char *)stacfg.sta.ssid, (const char*)WifiEssid);
   strcpy((char *)stacfg.sta.password, (const char*)WifiPSK);
   if((err = esp_netif_init()) != ESP_OK){
@@ -513,11 +516,10 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
     if(r){
       r = BLE_ATT_ERR_INSUFFICIENT_RES;
     }
-    printf("essid] r=%d\n", r);
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
     if(SetupState == SETUP_STATE_NEEDWIFI){
       ble_hs_mbuf_to_flat(ctxt->om, WifiEssid, sizeof(WifiEssid), NULL);
-      if(strlen((const char*)WifiPSK)){
+      if(strlen((const char*)WifiEssid) && strlen((const char*)WifiPsk)){
         connect_wifi();
       }
       r = 0;
@@ -534,9 +536,10 @@ gatt_psk(uint16_t conn_handle, uint16_t attr_handle,
   if(SetupState == SETUP_STATE_NEEDWIFI){
     if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
       ble_hs_mbuf_to_flat(ctxt->om, WifiPSK, sizeof(WifiPSK), NULL);
-      if(strlen((const char*)WifiEssid)){
+      if(strlen((const char*)WifiEssid) && strlen((const char*)WifiPsk)){
         connect_wifi();
       }
+      r = 0;
     }
   }
   return r;
@@ -694,7 +697,9 @@ int setup_network(void){
   }
   int sstate;
   if(!read_wifi_config(WifiEssid, sizeof(WifiEssid), WifiPSK, sizeof(WifiPSK), &sstate)){
-    SetupState = sstate;
+    if((SetupState = sstate) != SETUP_STATE_NEEDWIFI){
+      setup_wifi();
+    }
   }
   if(setup_ble()){
     return -1;
