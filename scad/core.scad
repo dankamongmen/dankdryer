@@ -452,13 +452,16 @@ module fullspoollayer(h, fild){
 				}
 			}
 		}
-	}	
+	}
 }
 
 module tracespoollayer(h, fild){
 	translate([0, 0, h]){
 		rotate_extrude(){
 			translate([fild / 2, 0, 0]){
+				circle(1.75 / 2);
+			}
+			translate([spoolholed / 2, 0, 0]){
 				circle(1.75 / 2);
 			}
 		}
