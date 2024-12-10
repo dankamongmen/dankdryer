@@ -510,11 +510,13 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
     r = os_mbuf_append(ctxt->om, WifiEssid, strlen((const char*)WifiEssid));
+    printf("essid] r=%d\n", r);
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
     if(SetupState == SETUP_STATE_NEEDWIFI){
       memcpy(ctxt->om, WifiEssid, sizeof(WifiEssid));
       if(strlen((const char*)WifiPSK)){
         connect_wifi();
+        r = 0;
       }
     }
   }
