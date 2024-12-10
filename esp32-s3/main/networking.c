@@ -498,8 +498,8 @@ setup_wifi(void){
 
 static void
 connect_wifi(void){
-  // FIXME write out ESSID/PSK to NVS, then write state of 1
   SetupState = SETUP_STATE_WIFIATTEMPT;
+  write_wifi_config(WifiEssid, WifiPSK, SetupState);
   setup_wifi();
 }
 
@@ -692,8 +692,10 @@ int setup_network(void){
     fprintf(stderr, "couldn't create mqtt client\n");
     return -1;
   }
-  // FIXME check NVS for wifi info. if it is there, start in SETUP_STATE_CONFIGURED,
-  // and launch wifi immediately (in addition to bluetooth)
+  int sstate;
+  if(!read_wifi_config(WifiEssid, sizeof(WifiEssid), WifiPSK, sizeof(WifiPSK), &sstate)){
+    SetupState = sstate;
+  }
   if(setup_ble()){
     return -1;
   }

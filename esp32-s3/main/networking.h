@@ -3,6 +3,7 @@
 
 #include <nvs.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdbool.h>
 
 #define VERSION "0.0.9"
@@ -32,5 +33,10 @@ void set_tare(void);
 void factory_reset(void);
 void mqtt_publish(const char *s);
 int nvs_get_opt_u32(nvs_handle_t nh, const char* recname, uint32_t* val);
+int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
+                      uint32_t state);
+int read_wifi_config(unsigned char* essid, size_t essidlen,
+                     unsigned char* psk, size_t psklen,
+                     int* setupstate);
 
 #endif

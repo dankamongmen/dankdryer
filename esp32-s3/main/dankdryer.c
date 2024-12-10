@@ -59,6 +59,9 @@
 #define TAREOFFSET_RECNAME "tare"
 #define LOWERPWM_RECNAME "lpwm"
 #define UPPERPWM_RECNAME "upwm"
+#define ESSID_RECNAME "essid"
+#define PSK_RECNAME "psk"
+#define SETUPSTATE_RECNAME "sstate"
 
 #define LOAD_CELL_MAX 5000 // 5kg capable
 
@@ -73,7 +76,6 @@ static uint32_t UpperPWM = 128;
 static float LastWeight = -1.0;
 static float TareWeight = -1.0;
 static adc_channel_t Thermchan;
-static bool UsePersistentStore; // set true upon successful initialization
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static unsigned LastLowerRPM, LastUpperRPM;
@@ -186,6 +188,70 @@ write_pwm(const char* recname, uint32_t pwm){
   err = nvs_set_u32(nvsh, recname, pwm);
   if(err){
     fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), recname);
+    nvs_close(nvsh);
+    return -1;
+  }
+  err = nvs_commit(nvsh);
+  if(err){
+    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    nvs_close(nvsh);
+    return -1;
+  }
+  nvs_close(nvsh);
+  return 0;
+}
+
+int read_wifi_config(unsigned char* essid, size_t essidlen,
+                     unsigned char* psk, size_t psklen,
+                     int* setupstate){
+  nvs_handle_t nvsh;
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  if(err){
+    fprintf(stderr, "failure (%d) opening nvs:" NVS_HANDLE_NAME "\n", err);
+    return -1;
+  }
+  // FIXME get essid/psk
+  uint32_t rawstate;
+  if(nvs_get_opt_u32(nvsh, SETUPSTATE_RECNAME, &rawstate) == 0){
+    if(rawstate <= 2){ // FIXME export 2 or call to check it
+      *setupstate = rawstate;
+    }else{
+      fprintf(stderr, "read invalid setup state %lu\n", rawstate);
+      goto err;
+    }
+  }
+  return 0;
+
+err:
+  nvs_close(nvsh);
+  memset(essid, 0, essidlen);
+  memset(psk, 0, psklen);
+  return -1;
+}
+
+int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
+                      uint32_t state){
+  nvs_handle_t nvsh;
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  if(err){
+    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    return -1;
+  }
+  err = nvs_set_str(nvsh, ESSID_RECNAME, (const char*)essid);
+  if(err){
+    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), ESSID_RECNAME);
+    nvs_close(nvsh);
+    return -1;
+  }
+  err = nvs_set_str(nvsh, PSK_RECNAME, (const char*)psk);
+  if(err){
+    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), PSK_RECNAME);
+    nvs_close(nvsh);
+    return -1;
+  }
+  err = nvs_set_u32(nvsh, SETUPSTATE_RECNAME, state);
+  if(err){
+    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), SETUPSTATE_RECNAME);
     nvs_close(nvsh);
     return -1;
   }
@@ -816,9 +882,7 @@ setup(adc_channel_t* thermchan){
   setup_neopixel(RGB_PIN);
   printf(DEVICE " v" VERSION "\n");
   if(!init_pstore()){
-    if(!read_pstore()){
-      UsePersistentStore = true;
-    }
+    read_pstore();
   }
   if(ota_init()){
     set_failure(&SystemError);
