@@ -283,8 +283,6 @@ module cupola(){
 	}
 }
 
-//cupola();
-		
 // the actual platform should cover a good chunk
 // of area, to keep the spool steady. cuts both
 // allow heat to flow, and reduce weight.
@@ -357,7 +355,7 @@ module shaft(){
     }
 }
 
-// shaft();
+//shaft();
 
 // the platform sheathes the rotor, then descends to
 // the hotbox floor, and expands.
@@ -375,13 +373,13 @@ module rotor(){
 	// covers the face of the motor, and upon
 	// which the second stage rests
 	translate([0, 0, -wormlen / 2]){
-		r = motorboxd / 2 - ch;
+		r = motorboxd / 2 - cupolarimh;
 		translate([0, 0, -ch / 2]){
 			rotate_extrude(){
 				polygon([
 					[r, 0],
-					[r, ch],
-					[r + ch, 0]
+					[r, cupolarimh],
+					[r + cupolarimh, 0]
 				]);
 			}
 		}
@@ -398,6 +396,7 @@ module rotor(){
     }
 }
 
+//cupola();
 //rotor();
 
 // put together for testing / visualization, never printed
