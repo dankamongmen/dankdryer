@@ -4,6 +4,7 @@ include <croom.scad>
 use <coupling.scad>
 use <top.scad>
 
+multicolor("lightgrey"){
 translate([-115, 6, -65]){
 	rotate([0, 180 - theta, 0]){
 		intersection(){
@@ -15,6 +16,7 @@ translate([-115, 6, -65]){
 			cube([40, 120, 30], true);
 		}
 	}
+}
 }
 
 multicolor("lightgreen"){
@@ -36,7 +38,7 @@ multicolor("lightgreen"){
 	}
 }
 
-multicolor("grey"){
+multicolor("darkslategrey"){
     rotate([0, 0, 180]){
         hotbox();
     }
@@ -45,11 +47,11 @@ multicolor("grey"){
     }
 }
 
-multicolor("cornsilk"){
+//multicolor("cornsilk"){
     rotate([0, 0, $t]){
         spool();
     }
-}
+//}
 
 multicolor("black"){
     drop(){
@@ -65,7 +67,7 @@ multicolor("lightblue"){
     }
 }
 
-multicolor("orange"){
+color("darkslategrey", $topalpha){
     translate([0, 0, totalz + 4]){
         mirror([0, 0, 1]){
             top();
