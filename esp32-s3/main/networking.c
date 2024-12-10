@@ -509,15 +509,18 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
   fprintf(stderr, "essid] access op %d conn %hu attr %hu\n", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
-    r = os_mbuf_append(ctxt->om, WifiEssid, strlen((const char*)WifiEssid));
+    r = os_mbuf_append(ctxt->om, WifiEssid, strlen((const char*)WifiEssid) + 1);
+    if(r){
+      r = BLE_ATT_ERR_INSUFFICIENT_RES;
+    }
     printf("essid] r=%d\n", r);
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
     if(SetupState == SETUP_STATE_NEEDWIFI){
-      memcpy(ctxt->om, WifiEssid, sizeof(WifiEssid));
+      ble_hs_mbuf_to_flat(ctxt->om, WifiEssid, sizeof(WifiEssid), NULL);
       if(strlen((const char*)WifiPSK)){
         connect_wifi();
-        r = 0;
       }
+      r = 0;
     }
   }
   return r;
@@ -530,7 +533,7 @@ gatt_psk(uint16_t conn_handle, uint16_t attr_handle,
   int r = BLE_ATT_ERR_UNLIKELY;
   if(SetupState == SETUP_STATE_NEEDWIFI){
     if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-      memcpy(ctxt->om, WifiPSK, sizeof(WifiPSK) - 1);
+      ble_hs_mbuf_to_flat(ctxt->om, WifiPSK, sizeof(WifiPSK), NULL);
       if(strlen((const char*)WifiEssid)){
         connect_wifi();
       }
