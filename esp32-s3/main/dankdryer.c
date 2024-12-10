@@ -1,27 +1,22 @@
 // intended for use on an ESP32-S3-WROOM-1
-#include "ble.h"
-#include "dryer-network.h"
+#include "networking.h"
 #include "hx711.h"
 #include "ota.h"
 #include <nvs.h>
+#include <time.h>
 #include <math.h>
-#include <mdns.h>
+#include <ctype.h>
 #include <cJSON.h>
-#include <esp_wifi.h>
-#include <esp_netif.h>
+#include <string.h>
 #include <led_strip.h>
 #include <nvs_flash.h>
 #include <esp_timer.h>
-#include <lwip/netif.h>
 #include <esp_system.h>
-#include <mqtt_client.h>
 #include <driver/ledc.h>
 #include <esp_app_desc.h>
-#include <esp_netif_sntp.h>
 #include <hal/ledc_types.h>
 #include <esp_idf_version.h>
 #include <soc/adc_channel.h>
-#include <esp_http_server.h>
 #include <esp_adc/adc_cali.h>
 #include <esp_adc/adc_oneshot.h>
 #include <driver/temperature_sensor.h>
@@ -89,12 +84,10 @@ static uint32_t LowerPulses, UpperPulses; // tach signals recorded
 
 // ESP-IDF objects
 static bool ADC1Calibrated;
-static httpd_handle_t HTTPServ;
 static led_strip_handle_t Neopixel;
 static adc_oneshot_unit_handle_t ADC1;
 static temperature_sensor_handle_t temp;
 static adc_cali_handle_t ADC1Calibration;
-static esp_mqtt_client_handle_t MQTTHandle;
 
 static inline bool
 rpm_valid_p(unsigned rpm){
@@ -120,41 +113,10 @@ typedef struct failure_indication {
   int r, g, b;
 } failure_indication;
 
-static enum {
-  WIFI_INVALID,
-  WIFI_CONNECTING,
-  NET_CONNECTING,
-  MQTT_CONNECTING,
-  MQTT_ESTABLISHED,
-  NETWORK_STATE_COUNT
-} NetworkState;
-
 static bool StartupFailure;
 static const failure_indication SystemError = { 32, 0, 0 };
 static const failure_indication NetworkError = { 32, 0, 32 };
 static const failure_indication PostFailure = { 0, 0, 0 };
-/*static const failure_indication NetworkIndications[NETWORK_STATE_COUNT] = {
-  { 0, 255, 0 },  // WIFI_INVALID
-  { 0, 192, 0 },  // WIFI_CONNECTING
-  { 0, 128, 0 },  // NET_CONNECTING
-  { 0, 64, 0 },   // MQTT_CONNECTING
-  { 0, 0, 0 }     // MQTT_ESTABLISHED
-};*/
-
-static const esp_mqtt_client_config_t MQTTConfig = {
-  .broker = {
-    .address = {
-      .uri = MQTTURI,
-    },
-  },
-  .credentials = {
-    .username = MQTTUSER,
-    // FIXME set client id, but stir in some per-device data
-    .authentication = {
-      .password = MQTTPASS,
-    },
-  },
-};
 
 static void
 tach_isr(void* pulsecount){
@@ -172,6 +134,135 @@ get_hex(char c){
   return c - 'a' + 10;
 }
 
+float get_tare(void){
+  return TareWeight;
+}
+
+float get_upper_temp(void){
+  return LastUpperTemp;
+}
+
+float get_lower_temp(void){
+  return LastLowerTemp;
+}
+
+unsigned long long get_dry_ends_at(void){
+  return DryEndsAt;
+}
+
+unsigned long get_target_temp(void){
+  return TargetTemp;
+}
+
+float get_weight(void){
+  return LastWeight;
+}
+
+unsigned get_lower_pwm(void){
+  return LowerPWM;
+}
+
+unsigned get_upper_pwm(void){
+  return UpperPWM;
+}
+
+unsigned get_lower_rpm(void){
+  return LastLowerRPM;
+}
+
+unsigned get_upper_rpm(void){
+  return LastUpperRPM;
+}
+
+static int
+write_pwm(const char* recname, uint32_t pwm){
+  nvs_handle_t nvsh;
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  if(err){
+    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    return -1;
+  }
+  err = nvs_set_u32(nvsh, recname, pwm);
+  if(err){
+    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), recname);
+    nvs_close(nvsh);
+    return -1;
+  }
+  err = nvs_commit(nvsh);
+  if(err){
+    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    nvs_close(nvsh);
+    return -1;
+  }
+  nvs_close(nvsh);
+  return 0;
+}
+
+// set the desired PWM value
+static int
+set_pwm(const ledc_channel_t channel, unsigned pwm){
+  if(ledc_set_duty(LEDCMODE, channel, pwm) != ESP_OK){
+    fprintf(stderr, "error setting pwm!\n");
+    return -1;
+  }else if(ledc_update_duty(LEDCMODE, channel) != ESP_OK){
+    fprintf(stderr, "error committing pwm!\n");
+    return -1;
+  }
+  printf("set pwm to %u on channel %d\n", pwm, channel);
+  return 0;
+}
+
+void set_lower_pwm(unsigned pwm){
+  LowerPWM = pwm;
+  write_pwm(LOWERPWM_RECNAME, pwm);
+  set_pwm(LOWER_FANCHAN, LowerPWM);
+}
+
+void set_upper_pwm(unsigned pwm){
+  UpperPWM = pwm;
+  write_pwm(UPPERPWM_RECNAME, pwm);
+  set_pwm(UPPER_FANCHAN, UpperPWM);
+}
+
+// update NVS with tare offset
+static int
+write_tare_offset(float tare){
+  nvs_handle_t nvsh;
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  if(err){
+    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    return -1;
+  }
+  char buf[20];
+  if(snprintf(buf, sizeof(buf), "%.8f", tare) > sizeof(buf)){
+    fprintf(stderr, "warning: couldn't store tare offset %f in buf\n", tare);
+  }
+  err = nvs_set_str(nvsh, TAREOFFSET_RECNAME, buf);
+  if(err){
+    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":" TAREOFFSET_RECNAME "\n", esp_err_to_name(err));
+    nvs_close(nvsh);
+    return -1;
+  }
+  err = nvs_commit(nvsh);
+  if(err){
+    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    nvs_close(nvsh);
+    return -1;
+  }
+  nvs_close(nvsh);
+  return 0;
+}
+
+void set_tare(void){
+  if(weight_valid_p(LastWeight)){
+    TareWeight = LastWeight;
+    write_tare_offset(TareWeight);
+    printf("tared at %f\n", TareWeight);
+  }else{
+    fprintf(stderr, "requested tare, but no valid measurements yet\n");
+  }
+}
+
 // FIXME ignore whitespace
 // check if data (dlen bytes, no terminator) equals n, returning true
 // if it does, and false otherwise.
@@ -183,8 +274,7 @@ strarg_match_p(const char* data, size_t dlen, const char* n){
   return strncasecmp(data, n, dlen) ? false : true;
 }
 
-static int
-extract_bool(const char* data, size_t dlen, bool* val){
+int extract_bool(const char* data, size_t dlen, bool* val){
   if(strarg_match_p(data, dlen, "on") || strarg_match_p(data, dlen, "yes") ||
       strarg_match_p(data, dlen, "true") || strarg_match_p(data, dlen, "1")){
     *val = true;
@@ -200,8 +290,7 @@ extract_bool(const char* data, size_t dlen, bool* val){
 }
 
 // FIXME handle base 10 numbers as well (can we use strtoul?)
-static int
-extract_pwm(const char* data, size_t dlen){
+int extract_pwm(const char* data, size_t dlen){
   if(dlen != 2){
     printf("pwm wasn't 2 characters\n");
     return -1;
@@ -218,20 +307,6 @@ extract_pwm(const char* data, size_t dlen){
   int pwm = hb * 16 + lb;
   printf("got pwm value: %d\n", pwm);
   return pwm;
-}
-
-// set the desired PWM value
-static int
-set_pwm(const ledc_channel_t channel, unsigned pwm){
-  if(ledc_set_duty(LEDCMODE, channel, pwm) != ESP_OK){
-    fprintf(stderr, "error setting pwm!\n");
-    return -1;
-  }else if(ledc_update_duty(LEDCMODE, channel) != ESP_OK){
-    fprintf(stderr, "error committing pwm!\n");
-    return -1;
-  }
-  printf("set pwm to %u on channel %d\n", pwm, channel);
-  return 0;
 }
 
 // on error, returns MIN_TEMP - 1
@@ -424,7 +499,8 @@ int nvs_get_opt_u32(nvs_handle_t nh, const char* recname, uint32_t* val){
 }
 
 // NVS can't use floats directly. we instead write/read them as strings.
-int nvs_get_opt_float(nvs_handle_t nh, const char* recname, float* val){
+static int
+nvs_get_opt_float(nvs_handle_t nh, const char* recname, float* val){
   char buf[32];
   unsigned blen = sizeof(buf);
   esp_err_t err = nvs_get_str(nh, recname, buf, &blen);
@@ -448,7 +524,8 @@ int nvs_get_opt_float(nvs_handle_t nh, const char* recname, float* val){
 // read and update boot count, read configurable defaults from pstore if they
 // are present (we do not write defaults to pstore, so we can differentiate
 // between defaults and a configured value).
-int read_pstore(void){
+static int
+read_pstore(void){
   nvs_handle_t nvsh;
   esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
   if(err){
@@ -594,67 +671,6 @@ set_failure(const struct failure_indication *fin){
   set_led(fin);
 }
 
-static void
-set_network_state(int state){
-  // FIXME lock
-  NetworkState = state;
-  if(state != WIFI_INVALID){ // if invalid, leave any initial failure status up
-    if(state < NETWORK_STATE_COUNT){
-      //set_led(&NetworkIndications[state]);
-    }
-  }
-}
-
-static void
-wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
-  esp_err_t err;
-  if(strcmp(base, WIFI_EVENT)){
-    fprintf(stderr, "non-wifi event %s in wifi handler\n", base);
-    return;
-  }
-  if(id == WIFI_EVENT_STA_START || id == WIFI_EVENT_STA_DISCONNECTED){
-    set_network_state(WIFI_CONNECTING);
-    if((err = esp_wifi_connect()) != ESP_OK){
-      fprintf(stderr, "error (%s) connecting to wifi\n", esp_err_to_name(err));
-    }else{
-      printf("attempting to connect to wifi\n");
-    }
-  }else if(id == WIFI_EVENT_STA_CONNECTED){
-    set_network_state(NET_CONNECTING);
-    printf("connected to wifi, looking for ip\n");
-    uint16_t aid = 65535u;
-    esp_wifi_sta_get_aid(&aid);
-    printf("association id: %u\n", aid);
-  }else if(id == WIFI_EVENT_HOME_CHANNEL_CHANGE){
-    printf("wifi channel changed\n");
-  }else{
-    fprintf(stderr, "unknown wifi event %ld\n", id);
-  }
-}
-
-static void
-ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
-  esp_err_t err;
-  if(strcmp(base, IP_EVENT)){
-    fprintf(stderr, "non-ip event %s in ip handler\n", base);
-    return;
-  }
-  if(id == IP_EVENT_STA_GOT_IP || id == IP_EVENT_GOT_IP6){
-    printf("got network address, connecting to mqtt/sntp\n");
-    if((err = esp_netif_sntp_start()) != ESP_OK){
-      fprintf(stderr, "error (%s) starting SNTP\n", esp_err_to_name(err));
-    }
-    set_network_state(MQTT_CONNECTING);
-    if((err = esp_mqtt_client_start(MQTTHandle)) != ESP_OK){
-      fprintf(stderr, "error (%s) connecting to mqtt\n", esp_err_to_name(err));
-    }
-  }else if(id == IP_EVENT_STA_LOST_IP){
-    fprintf(stderr, "lost ip address\n");
-  }else{
-    fprintf(stderr, "unknown ip event %ld\n", id);
-  }
-}
-
 static int
 gpio_level(gpio_num_t pin, bool level){
   esp_err_t e = gpio_set_level(pin, level);
@@ -671,18 +687,8 @@ bool_as_onoff(bool b){
 }
 
 static inline const char*
-bool_as_onoff_http(bool b){
-  return b ? "<font color=\"green\">on</font>" : "off";
-}
-
-static inline const char*
 motor_state(void){
   return bool_as_onoff(MotorState);
-}
-
-static inline const char*
-motor_state_http(void){
-  return bool_as_onoff_http(MotorState);
 }
 
 static inline const char*
@@ -690,20 +696,21 @@ heater_state(void){
   return bool_as_onoff(HeaterState);
 }
 
-static inline const char*
-heater_state_http(void){
-  return bool_as_onoff_http(HeaterState);
+bool get_motor_state(void){
+  return MotorState;
 }
 
-static void
-set_motor(bool enabled){
+bool get_heater_state(void){
+  return HeaterState;
+}
+
+void set_motor(bool enabled){
   MotorState = enabled;
   gpio_level(MOTOR_RELAY, enabled);
   printf("set motor %s\n", motor_state());
 }
 
-static void
-set_heater(bool enabled){
+void set_heater(bool enabled){
   HeaterState = enabled;
   gpio_level(SSR_GPIN, enabled);
   printf("set heater %s\n", heater_state());
@@ -760,163 +767,20 @@ update_upper_temp(void){
   return utemp;
 }
 
-#define CCHAN "control/"
-#define MOTOR_CHANNEL CCHAN DEVICE "/motor"
-#define HEATER_CHANNEL CCHAN DEVICE "/heater"
-#define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
-#define UPWM_CHANNEL CCHAN DEVICE "/upwm"
-#define DRY_CHANNEL CCHAN DEVICE "/dry"
-#define TARE_CHANNEL CCHAN DEVICE "/tare"
-#define CALIBRATE_CHANNEL CCHAN DEVICE "/calibrate"
-#define FACTORYRESET_CHANNEL CCHAN DEVICE "/factoryreset"
-
-static inline bool
-topic_matches(const esp_mqtt_event_t* e, const char* chan){
-  if(strncmp(e->topic, chan, e->topic_len) == 0 && e->topic_len == strlen(chan)){
-    return true;
-  }
-  return false;
-}
-
-// arguments to dry are a target temp and number of seconds in the form
-// TEMP/SECONDS. a well-formed request replaces any existing one, including
-// cancelling it if SECONDS is 0. we allow leading and trailing space.
-static int
-handle_dry(const char* payload, size_t plen){
-  unsigned seconds = 0;
-  unsigned temp = 0;
-  size_t idx = 0;
-  enum {
-    PRESPACE,
-    TEMP,
-    SLASH,
-    SECONDS,
-    POSTSPACE
-  } state = PRESPACE;
-  // FIXME need address wrapping of temp and/or seconds
-  while(idx < plen){
-    printf("payload[%zu] = 0x%02x state: %d temp: %u\n", idx, payload[idx], state, temp);
-    if(payload[idx] >= 0x80 || payload[idx] <= 0){ // invalid character
-      goto err;
-    }
-    unsigned char c = payload[idx];
-    switch(state){
-      case PRESPACE:
-        if(!isspace(c)){
-          if(isdigit(c)){
-            state = TEMP;
-            temp = c - '0';
-          }else{
-            goto err;
-          }
-        }
-        break;
-      case TEMP:
-        if(isdigit(c)){
-          temp *= 10;
-          temp += c - '0';
-        }else if(c == '/'){
-          state = SLASH;
-        }else{
-          goto err;
-        }
-        break;
-      case SLASH:
-        if(isdigit(c)){
-          seconds = c - '0';
-          state = SECONDS;
-        }else{
-          goto err;
-        }
-        break;
-      case SECONDS:
-        if(isdigit(c)){
-          seconds *= 10;
-          seconds += c - '0';
-        }else if(isspace(c)){
-          state = POSTSPACE;
-        }else{
-          goto err;
-        }
-        break;
-      case POSTSPACE:
-        if(!isspace(c)){
-          goto err;
-        }
-        break;
-    }
-    ++idx;
-  }
-  if(temp > MAX_DRYREQ_TMP || temp < MIN_DRYREQ_TMP){
-    goto err;
-  }
+int handle_dry(unsigned seconds, unsigned temp){
   printf("dry request for %us at %uC\n", seconds, temp);
+  if(temp > MAX_DRYREQ_TMP || temp < MIN_DRYREQ_TMP){
+    fprintf(stderr, "invalid temp request (%u)\n", temp);
+    return -1;
+  }
   DryEndsAt = esp_timer_get_time() + seconds * 1000000ull;
   set_motor(seconds != 0);
   TargetTemp = temp;
   update_upper_temp();
   return 0;
-
-err:
-  fprintf(stderr, "invalid dry payload [%.*s]\n", plen, payload);
-  return -1;
 }
 
-// update NVS with tare offset
-static int
-write_tare_offset(float tare){
-  nvs_handle_t nvsh;
-  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
-  if(err){
-    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
-    return -1;
-  }
-  char buf[20];
-  if(snprintf(buf, sizeof(buf), "%.8f", tare) > sizeof(buf)){
-    fprintf(stderr, "warning: couldn't store tare offset %f in buf\n", tare);
-  }
-  err = nvs_set_str(nvsh, TAREOFFSET_RECNAME, buf);
-  if(err){
-    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":" TAREOFFSET_RECNAME "\n", esp_err_to_name(err));
-    nvs_close(nvsh);
-    return -1;
-  }
-  err = nvs_commit(nvsh);
-  if(err){
-    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
-    nvs_close(nvsh);
-    return -1;
-  }
-  nvs_close(nvsh);
-  return 0;
-}
-
-static int
-write_pwm(const char* recname, uint32_t pwm){
-  nvs_handle_t nvsh;
-  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
-  if(err){
-    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
-    return -1;
-  }
-  err = nvs_set_u32(nvsh, recname, pwm);
-  if(err){
-    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), recname);
-    nvs_close(nvsh);
-    return -1;
-  }
-  err = nvs_commit(nvsh);
-  if(err){
-    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
-    nvs_close(nvsh);
-    return -1;
-  }
-  nvs_close(nvsh);
-  return 0;
-}
-
-static void
-factory_reset(void){
+void factory_reset(void){
   printf("requested factory reset, erasing nvs...\n");
   set_motor(false);
   set_heater(false);
@@ -926,274 +790,6 @@ factory_reset(void){
   }
   printf("rebooting\n");
   esp_restart();
-}
-
-void handle_mqtt_msg(const esp_mqtt_event_t* e){
-  printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
-  if(topic_matches(e, DRY_CHANNEL)){
-    handle_dry(e->data, e->data_len);
-  }else if(topic_matches(e, MOTOR_CHANNEL)){
-    bool motor;
-    int ret = extract_bool(e->data, e->data_len, &motor);
-    if(ret == 0){
-      set_motor(motor);
-    }
-  }else if(topic_matches(e, HEATER_CHANNEL)){
-    bool heater;
-    int ret = extract_bool(e->data, e->data_len, &heater);
-    if(ret == 0){
-      set_heater(heater);
-    }
-  }else if(topic_matches(e, LPWM_CHANNEL)){
-    int pwm = extract_pwm(e->data, e->data_len);
-    if(pwm >= 0){
-      LowerPWM = pwm;
-      write_pwm(LOWERPWM_RECNAME, pwm);
-      set_pwm(LOWER_FANCHAN, LowerPWM);
-    }
-  }else if(topic_matches(e, UPWM_CHANNEL)){
-    int pwm = extract_pwm(e->data, e->data_len);
-    if(pwm >= 0){
-      UpperPWM = pwm;
-      write_pwm(UPPERPWM_RECNAME, pwm);
-      set_pwm(UPPER_FANCHAN, UpperPWM);
-    }
-  }else if(topic_matches(e, TARE_CHANNEL)){
-    if(weight_valid_p(LastWeight)){
-      TareWeight = LastWeight;
-      write_tare_offset(TareWeight);
-      printf("tared at %f\n", TareWeight);
-    }else{
-      fprintf(stderr, "requested tare, but no valid measurements yet\n");
-    }
-  }else if(topic_matches(e, CALIBRATE_CHANNEL)){
-    // FIXME get value, match against LastWeight - TareWeight
-  }else if(topic_matches(e, FACTORYRESET_CHANNEL)){
-    factory_reset();
-    // ought not reach here
-  }else{
-    fprintf(stderr, "unknown topic [%.*s], ignoring message\n", e->topic_len, e->topic);
-  }
-}
-
-static void
-subscribe(esp_mqtt_client_handle_t handle, const char* chan){
-  int er;
-  if((er = esp_mqtt_client_subscribe(handle, chan, 0)) < 0){
-    fprintf(stderr, "failure %d subscribing to %s\n", er, chan);
-  }
-}
-
-void mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
-  if(id == MQTT_EVENT_CONNECTED){
-    printf("connected to mqtt\n");
-    set_network_state(MQTT_ESTABLISHED);
-    subscribe(MQTTHandle, MOTOR_CHANNEL);
-    subscribe(MQTTHandle, LPWM_CHANNEL);
-    subscribe(MQTTHandle, UPWM_CHANNEL);
-    subscribe(MQTTHandle, DRY_CHANNEL);
-    subscribe(MQTTHandle, TARE_CHANNEL);
-    subscribe(MQTTHandle, CALIBRATE_CHANNEL);
-    subscribe(MQTTHandle, FACTORYRESET_CHANNEL);
-  }else if(id == MQTT_EVENT_DATA){
-    handle_mqtt_msg(data);
-  }else{
-    printf("unhandled mqtt event %ld\n", id);
-  }
-}
-
-int setup_mdns(void){
-  esp_err_t err;
-  if((err = mdns_init()) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) initializing mDNS\n", err, esp_err_to_name(err));
-    return -1;
-  }
-  if((err = mdns_hostname_set(CLIENTID)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) initializing mDNS\n", err, esp_err_to_name(err));
-    return -1;
-  }
-  mdns_instance_name_set("Dankdryer");
-  mdns_service_add(NULL, "_http", "_tcp", 80, NULL, 0);
-  mdns_service_instance_name_set("_http", "_tcp", "Dankdryer webserver");
-  return 0;
-}
-
-static esp_err_t
-httpd_get_handler(httpd_req_t *req){
-#define RESPBYTES 1024
-  char* resp = malloc(RESPBYTES);
-  if(!resp){
-    fprintf(stderr, "couldn't allocate httpd response\n");
-    return ESP_FAIL;
-  }
-  time_t now = time(NULL);
-  // FIXME need locking or atomics now
-  int slen = snprintf(resp, RESPBYTES, "<!DOCTYPE html><html><head><title>" DEVICE "</title></head>"
-            "<body><h2>a drying comes across the sky</h2><br/>"
-            "lpwm: %lu upwm: %lu<br/>"
-            "lrpm: %u urpm: %u<br/>"
-            "motor: %s heater: %s<br/>"
-            "mass: %f tare: %f<br/>"
-            "lm35: %f esp32s3: %f<br/>"
-            "dryends: %llu<br/>"
-            "target temp: %lu<br/>"
-            "<hr/>%s<br/>"
-            "</body></html>",
-            LowerPWM, UpperPWM,
-            LastLowerRPM, LastUpperRPM,
-            motor_state_http(),
-            heater_state_http(),
-            LastWeight, TareWeight,
-            LastUpperTemp, LastLowerTemp,
-            DryEndsAt,
-            TargetTemp,
-            asctime(localtime(&now))
-            );
-  esp_err_t ret = ESP_FAIL;
-  if(slen < 0 || slen >= RESPBYTES){
-    fprintf(stderr, "httpd response too large (%d)\n", slen);
-  }else{
-    esp_err_t e = httpd_resp_send(req, resp, slen);
-    if(e != ESP_OK){
-      fprintf(stderr, "failure (%s) sending http response\n", esp_err_to_name(e));
-    }else{
-      ret = ESP_OK;
-    }
-  }
-  free(resp);
-  return ret;
-}
-
-static int
-setup_httpd(void){
-  httpd_config_t hconf = HTTPD_DEFAULT_CONFIG();
-  esp_err_t err;
-  if((err = httpd_start(&HTTPServ, &hconf)) != ESP_OK){
-    fprintf(stderr, "failure (%s) initializing httpd\n", esp_err_to_name(err));
-    return -1;
-  }
-  const httpd_uri_t httpd_get = {
-    .uri = "/",
-    .method = HTTP_GET,
-    .handler = httpd_get_handler,
-    .user_ctx = NULL,
-  };
-  if((err = httpd_register_uri_handler(HTTPServ, &httpd_get)) != ESP_OK){
-    fprintf(stderr, "failure (%s) preparing URI %s\n", esp_err_to_name(err), httpd_get.uri);
-    return -1;
-  }
-  return 0;
-}
-
-// we want to use the NTP servers provided by DHCP, so don't provide any
-// static ones
-static int
-setup_sntp(void){
-  esp_sntp_config_t sconf = ESP_NETIF_SNTP_DEFAULT_CONFIG_MULTIPLE(0, {});
-  sconf.start = false;
-  sconf.server_from_dhcp = true;
-  sconf.renew_servers_after_new_IP = true;
-  sconf.ip_event_to_renew = IP_EVENT_STA_GOT_IP;
-  esp_err_t e = esp_netif_sntp_init(&sconf);
-  if(e != ESP_OK){
-    fprintf(stderr, "error (%s) initializing SNTP\n", esp_err_to_name(e));
-    return -1;
-  }
-  return 0;
-}
-
-static int
-setup_wifi(bool run){
-  if(!run){ // FIXME
-    return 0;
-  }
-  esp_err_t err;
-  const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
-  wifi_config_t stacfg = {
-    .sta = {
-        .ssid = WIFIESSID,
-        .password = WIFIPASS,
-        .sort_method = WIFI_CONNECT_AP_BY_SECURITY,
-        .threshold = {
-            .authmode = WIFI_AUTH_WPA2_PSK,
-        },
-        .sae_pwe_h2e = WPA3_SAE_PWE_HUNT_AND_PECK,
-        .sae_h2e_identifier = "",
-    },
-  };
-  if((err = esp_netif_init()) != ESP_OK){
-    fprintf(stderr, "failure (%s) initializing tcp/ip\n", esp_err_to_name(err));
-    return -1;
-  }
-  if((err = esp_event_loop_create_default()) != ESP_OK){
-    fprintf(stderr, "failure (%s) creating loop\n", esp_err_to_name(err));
-    return -1;
-  }
-  if(!esp_netif_create_default_wifi_sta()){
-    fprintf(stderr, "failure creating default STA\n");
-    return -1;
-  }
-  if((err = esp_wifi_init(&wificfg)) != ESP_OK){
-    fprintf(stderr, "failure (%s) initializing wifi\n", esp_err_to_name(err));
-    return -1;
-  }
-  esp_event_handler_instance_t wid;
-  if((err = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, wifi_event_handler, NULL, &wid)) != ESP_OK){
-    fprintf(stderr, "failure (%s) registering wifi events\n", esp_err_to_name(err));
-    return -1;
-  }
-  esp_event_handler_instance_t ipd;
-  if((err = esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, ip_event_handler, NULL, &ipd)) != ESP_OK){
-    fprintf(stderr, "failure (%s) registering ip events\n", esp_err_to_name(err));
-    return -1;
-  }
-  if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_CONNECTED, mqtt_event_handler, NULL)) != ESP_OK){
-    fprintf(stderr, "failure (%s) registering mqtt events\n", esp_err_to_name(err));
-    return -1;
-  }
-  if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_DATA, mqtt_event_handler, NULL)) != ESP_OK){
-    fprintf(stderr, "failure (%s) registering mqtt events\n", esp_err_to_name(err));
-    return -1;
-  }
-  if((err = esp_wifi_set_mode(WIFI_MODE_STA)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting STA mode\n", esp_err_to_name(err));
-    return -1;
-  }
-  if((err = esp_wifi_set_config(WIFI_IF_STA, &stacfg)) != ESP_OK){
-    fprintf(stderr, "failure (%s) configuring wifi\n", esp_err_to_name(err));
-    return -1;
-  }
-  if((err = esp_wifi_start()) != ESP_OK){
-    fprintf(stderr, "failure (%s) starting wifi\n", esp_err_to_name(err));
-    return -1;
-  }
-  const int8_t txpower = 84;
-  if((err = esp_wifi_set_max_tx_power(txpower)) != ESP_OK){
-    fprintf(stderr, "warning: error (%s) setting tx power to %hd\n", esp_err_to_name(err), txpower);
-  }
-  setup_sntp(); // allow a failure
-  setup_mdns(); // allow a failure
-  if(setup_httpd()){
-    return -1;
-  }
-  return 0;
-}
-
-static int
-setup_network(void){
-  if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
-    fprintf(stderr, "couldn't create mqtt client\n");
-    return -1;
-  }
-  // FIXME only want to run bluetooth if WiFi is not configured?
-  if(setup_ble()){
-    return -1; // FIXME continue?
-  }
-  // FIXME only want to run wifi if it is configured?
-  if(setup_wifi(false)){
-    return -1;
-  }
-  return 0;
 }
 
 static int
@@ -1217,7 +813,7 @@ setup_heater(gpio_num_t hrelaypin){
 static void
 setup(adc_channel_t* thermchan){
   setup_neopixel(RGB_PIN);
-  printf("dankdryer v" VERSION "\n");
+  printf(DEVICE " v" VERSION "\n");
   if(!init_pstore()){
     if(!read_pstore()){
       UsePersistentStore = true;
@@ -1317,11 +913,7 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
   cJSON_AddNumberToObject(root, "dryends", DryEndsAt);
   char* s = cJSON_Print(root);
   if(s){
-    size_t slen = strlen(s);
-    printf("MQTT: %s\n", s);
-    if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, s, slen, 0, 0)){
-      fprintf(stderr, "couldn't publish %zuB mqtt message\n", slen);
-    }
+    mqtt_publish(s);
     cJSON_free(s);
   }else{
     fprintf(stderr, "couldn't stringize JSON object\n");
