@@ -2,5 +2,3 @@
 #define MQTTUSER "an mqtt username"
 #define MQTTPASS "an mqtt password"
 #define MQTTTOPIC "an mqtt topic to publish"
-#define WIFIESSID "a wifi essid"
-#define WIFIPASS "a valid wpa2+ psk"
