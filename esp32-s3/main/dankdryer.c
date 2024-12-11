@@ -210,7 +210,15 @@ int read_wifi_config(unsigned char* essid, size_t essidlen,
     fprintf(stderr, "failure (%d) opening nvs:" NVS_HANDLE_NAME "\n", err);
     return -1;
   }
-  // FIXME get essid/psk
+  if(nvs_get_str(nvsh, ESSID_RECNAME, (char*)essid, &essidlen) != ESP_OK){
+    fprintf(stderr, "failure (%s) reading essid\n", esp_err_to_name(err));
+    goto err;
+  }
+  if(nvs_get_str(nvsh, PSK_RECNAME, (char*)psk, &psklen) != ESP_OK){
+    fprintf(stderr, "failure (%s) reading psk\n", esp_err_to_name(err));
+    goto err;
+  }
+  printf("read configured %zuB essid %s\n", essidlen, essid);
   uint32_t rawstate = 0;
   if(nvs_get_opt_u32(nvsh, SETUPSTATE_RECNAME, &rawstate) == 0){
     if(rawstate <= 2 && rawstate > 0){ // FIXME export semantics or call to check it

@@ -519,7 +519,7 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
     if(SetupState == SETUP_STATE_NEEDWIFI){
       ble_hs_mbuf_to_flat(ctxt->om, WifiEssid, sizeof(WifiEssid), NULL);
-      if(strlen((const char*)WifiEssid) && strlen((const char*)WifiPsk)){
+      if(strlen((const char*)WifiEssid) && strlen((const char*)WifiPSK)){
         connect_wifi();
       }
       r = 0;
@@ -536,7 +536,7 @@ gatt_psk(uint16_t conn_handle, uint16_t attr_handle,
   if(SetupState == SETUP_STATE_NEEDWIFI){
     if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
       ble_hs_mbuf_to_flat(ctxt->om, WifiPSK, sizeof(WifiPSK), NULL);
-      if(strlen((const char*)WifiEssid) && strlen((const char*)WifiPsk)){
+      if(strlen((const char*)WifiEssid) && strlen((const char*)WifiPSK)){
         connect_wifi();
       }
       r = 0;
