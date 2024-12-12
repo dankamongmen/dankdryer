@@ -67,7 +67,7 @@ multicolor("lightblue"){
     }
 }
 
-color("darkslategrey", $topalpha){
+color("darkslategrey"){
     translate([0, 0, totalz + 4]){
         mirror([0, 0, 1]){
             top();
