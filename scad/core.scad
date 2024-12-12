@@ -164,7 +164,7 @@ module drop(){
 
 // motor is 37x75mm diameter gearbox and 6x14mm shaft
 motorboxh = 70;
-motorboxd = 38;
+motorboxd = 37;
 motorshafth = 40; // sans worm: 14
 motortheta = -60;
 motormounth = 61;
@@ -209,15 +209,15 @@ module lowercoupling(){
 			translate([bracel, 0, 0]){
 				difference(){
 					translate([0, 0, couplingh / 2 + loadcellsupph]){
-						cylinder(couplingh, (motorboxd + 1) / 2, (motorboxd + 1) / 2, true);
+						cylinder(couplingh, (motorboxd + 2) / 2, (motorboxd + 2) / 2, true);
 					}
 					translate([0, 0, loadcellsupph + couplingh / 2]){
-						cylinder(couplingh, (motorboxd- 1) / 2, (motorboxd - 1) / 2, true);
+						cylinder(couplingh, motorboxd / 2, motorboxd / 2, true);
 					}
 				}
 				cylinder(loadcellsupph,
 						(motorboxd - loadcellsupph) / 2,
-						(motorboxd + 1) / 2);
+						(motorboxd + 2) / 2);
 			}
 		}
 		// holes in the bottom for wires, polarity
@@ -316,7 +316,7 @@ cupolat = 4;
 cupolaw = motorboxd + cupolat;
 columnr = 25;
 platforminnerr = columnr - 0.5;
-wormbore = 6.8;
+wormbore = 6; // taken from specsheet
 wormlen = 15;
 wormthick = 2;
 bottoml = 4;
