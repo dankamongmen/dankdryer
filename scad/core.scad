@@ -13,7 +13,6 @@ module multicolor(color) {
 		children();
 	}
 }
-columnr = 25;
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
 spoold = 205;
@@ -244,45 +243,6 @@ module lowercoupling(){
 
 //lowercoupling();
 
-// this partially sheathes the motor, and provides
-// the platform. it sits atop the rotor sheathe's
-// base, and can thus rotate.
-cupolah = 20;
-cupolat = 4;
-cupolaw = motorboxd + cupolat;
-cupolarimh = 6;
-
-module cupola(){
-	difference(){
-		cylinder(cupolah, cupolaw / 2, cupolaw / 2, true);
-		// cut out the core, representing the motor
-		cylinder(cupolah, motorboxd / 2, motorboxd / 2, true);
-	}
-	// add triangular supports for upper rim
-	translate([0, 0, cupolah / 2 - 1]){
-		rotate_extrude(){
-			translate([cupolaw / 2 - cupolarimh, 0, 0]){
-				polygon([
-					[cupolarimh, cupolarimh],
-					[0, cupolarimh],
-					[cupolarimh, 0]
-				]);
-			}
-		}
-	}
-	// lower rim, with triangular supports
-	bottoml = 4;
-	translate([0, 0, -cupolah / 2]){
-		rotate_extrude(){
-			translate([cupolaw / 2, 0, 0]){
-				polygon([
-					[0, 0], [bottoml, 0], [0, bottoml]
-				]);
-			}
-		}
-	}
-}
-
 // the actual platform should cover a good chunk
 // of area, to keep the spool steady. cuts both
 // allow heat to flow, and reduce weight.
@@ -342,64 +302,73 @@ module platform(inr, outr){
 				}
 			}
 		}
-		cylinder(cupolah, (cupolaw + 1) / 2, (cupolaw + 1) / 2, true);
+		cylinder(cupolah, cupolaw / 2, cupolaw / 2, true);
 	}
 }
 
 shafth = platformh + 35;
-platforminnerr = columnr - 0.5;
 platformouterd = spoold / 2;
-module shaft(){
-    translate([0, 0, platformh / 2]){
-        platform(platforminnerr, platformouterd / 2);
-    }
-}
-
-//shaft();
 
 // the platform sheathes the rotor, then descends to
 // the hotbox floor, and expands.
+cupolah = 24;
+cupolat = 4;
+cupolaw = motorboxd + cupolat;
+platforminnerr = 24.5;
 wormbore = 6.8;
 wormlen = 15;
 wormthick = 2;
-rotorh = wormlen + 2;
+bottoml = 4;
+ch = (cupolaw - motorboxd) / 2;
+rotorh = cupolah + ch;
 module rotor(){
-    difference(){
-        cylinder(wormlen, (wormbore + wormthick) / 2, (wormbore + wormthick) / 2, true);
-        cylinder(wormlen, wormbore / 2, wormbore / 2, true);
-    }
-	ch = rotorh - wormlen;
-	// now the platter at the bottom, which
-	// covers the face of the motor, and upon
-	// which the second stage rests
-	translate([0, 0, -wormlen / 2]){
-		r = motorboxd / 2 - cupolarimh;
-		translate([0, 0, -ch / 2]){
+	translate([0, 0, -1]){ // center it properly
+		difference(){
+			cylinder(cupolah, cupolaw / 2, cupolaw / 2, true);
+			// cut out the core, representing the motor
+			cylinder(cupolah, motorboxd / 2, motorboxd / 2, true);
+		}
+			
+		// lower rim, with triangular supports
+		translate([0, 0, -cupolah / 2]){
 			rotate_extrude(){
-				polygon([
-					[r, 0],
-					[r, cupolarimh],
-					[r + cupolarimh, 0]
-				]);
+				translate([cupolaw / 2, 0, 0]){
+					polygon([
+						[0, 0], [bottoml, 0], [0, bottoml]
+					]);
+				}
 			}
 		}
-		// beveled rim to match second stage top
-		difference(){
-			cylinder(ch, r, r, true);
-			cylinder(ch, wormbore / 2, wormbore / 2, true);
+		// motor-wide cylinder transfixed by the rotor.
+		// it is this to which torque is imparted.
+		translate([0, 0, (cupolah + ch) / 2]){
+			translate([0, 0, -ch / 2]){
+				rotate_extrude(){
+					translate([motorboxd / 2, 0, 0]){
+						polygon([
+							[0, 0], [ch, 0], [0, ch]
+						]);
+					}
+				}
+			}
+			r = motorboxd / 2;
+			difference(){
+				cylinder(ch, r, r, true);
+				cylinder(ch, wormbore / 2, wormbore / 2, true);
+			}
+			// effect the D-shape of the rotor (6.2 vs 6.5)
+			ddiff = 0.6;
+			translate([(wormbore - ddiff) / 2, 0, 0]){
+				cube([ddiff, wormbore * 0.8, ch], true);
+			}
 		}
 	}
-    // effect the D-shape of the rotor (6.2 vs 6.5)
-	ddiff = 0.3;
-    translate([(wormbore - ddiff) / 2, 0, -ch / 2 + 0.5]){
-        cube([ddiff, wormbore * 0.8, wormlen + ch - 1], true);
-    }
 }
 
-//cupola();
 //rotor();
+//cube([1, 1, rotorh], true);
 
-// put together for testing / visualization, never printed
+// testing / visualization, never printed
 module assembly(){
 	translate([0, 0, loadcellmounth + wallz]){
 		translate([0, 0, loadcellh / 2]){
@@ -409,14 +378,13 @@ module assembly(){
 			mirror([0, 1, 0]){
 				lowercoupling();
 			}
-			translate([15, 0, cupolah + loadcellh + 21]){
-				shaft();
+			translate([15, 0, platformh / 2 + cupolah + loadcellh + 30]){
+			    platform(platforminnerr, platformouterd / 2);
 			}
 		}
 		translate([0, 0, motorboxh]){
 			motor();
 			translate([0, 0, 25]){
-				cupola();
 				rotor();
 			}
 		}
@@ -472,7 +440,7 @@ module spool(){
 	fild = spoolholed + 1.75 * 55;
 	filh = 1.75 * 35;
 	reelh = (spoolh - filh) / 2;
-    translate([0, 0, wallz + elevation + platformtoph]){
+    translate([0, 0, wallz + elevation + platformtoph + 5]){
 		color([1, 1, 1]){
 			difference(){
 				linear_extrude(spoolh){
