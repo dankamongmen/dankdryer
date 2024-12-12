@@ -5,7 +5,7 @@ on:
   pull_request:
 
 env:
-  OSCAD: OpenSCAD-2024.10.14.ai20927-x86_64.AppImage
+  OSCAD: OpenSCAD-2024.12.11.ai20927-x86_64.AppImage
 
 jobs:
   tests:
@@ -16,6 +16,7 @@ jobs:
 
       - name: install deps
         run: |
+          sudo apt-get update -y
           sudo apt-get install -y libfuse2 make libopengl0 libegl1
           mkdir -p $HOME/bin
           curl -OfsSL https://files.openscad.org/snapshots/$OSCAD --output-dir $HOME/bin
