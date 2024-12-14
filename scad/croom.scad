@@ -142,10 +142,10 @@ module mount(c, h){
 
 // width: mid2mid 65mm with 5mm holes
 // length: mid2mid 90mm with 5mm holes
-module perfmounts(){
+module pcbmounts(){
 	c = 5;
 	h = 4;
-    translate([-mh - 15, -0.95 * totalxy / 2 + mh + 10, 0]){
+    translate([45, -0.95 * totalxy / 2 + mh + 10, 0]){
         mount(c, h);
         translate([-90, 0, 0]){
             mount(c, h);
@@ -155,6 +155,19 @@ module perfmounts(){
             translate([-90, 0, 0]){
                 mount(c, h);
             }
+        }
+    }
+}
+
+// RP-SMA antenna will be glued in
+module antennahole(){
+	rpsmar = 6.35 / 2;
+	rpsmal = 25;
+	translate([-topalt / 2, -botalt + 10, croomz - 10]){
+        rotate([theta, 0, 0]){
+            rotate([90, 0, 0]){
+				cylinder(rpsmal, rpsmar + 1, rpsmar + 1, true);
+			}
         }
     }
 }
@@ -222,7 +235,7 @@ module croombottom(rad, z){
     translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
     }
-	perfmounts();
+	pcbmounts();
     wirechannels();
 }
 
@@ -241,16 +254,17 @@ module croom(){
         }
         fancablehole();
 		rockerhole();
+		antennahole();
     }
 	croombottom(botrad, wallz);
 }
-/*
+
 multicolor("green"){
 	croom();
 }
 
+/*
 // testing + full assemblage
-
 multicolor("white"){
     assembly();
 }
