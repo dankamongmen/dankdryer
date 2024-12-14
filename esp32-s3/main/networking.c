@@ -431,6 +431,7 @@ setup_wifi(void){
   const wifi_init_config_t wificfg = WIFI_INIT_CONFIG_DEFAULT();
   wifi_config_t stacfg = {
     .sta = {
+        // FIXME what if the network is unprotected (0 byte PSK)?
         .sort_method = WIFI_CONNECT_AP_BY_SECURITY,
         .threshold = {
             .authmode = WIFI_AUTH_WPA2_PSK,
@@ -441,6 +442,7 @@ setup_wifi(void){
   };
   strcpy((char *)stacfg.sta.ssid, (const char*)WifiEssid);
   strcpy((char *)stacfg.sta.password, (const char*)WifiPSK);
+  //printf("[%s][%s]\n", stacfg.sta.ssid, stacfg.sta.password);
   if((err = esp_netif_init()) != ESP_OK){
     fprintf(stderr, "failure (%s) initializing tcp/ip\n", esp_err_to_name(err));
     return -1;
@@ -519,6 +521,7 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
     if(SetupState == SETUP_STATE_NEEDWIFI){
       ble_hs_mbuf_to_flat(ctxt->om, WifiEssid, sizeof(WifiEssid), NULL);
+      printf("essid] [%s]\n", WifiEssid);
       if(strlen((const char*)WifiEssid) && strlen((const char*)WifiPSK)){
         connect_wifi();
       }

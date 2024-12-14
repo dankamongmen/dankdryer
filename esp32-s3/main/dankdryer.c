@@ -218,7 +218,10 @@ int read_wifi_config(unsigned char* essid, size_t essidlen,
     fprintf(stderr, "failure (%s) reading psk\n", esp_err_to_name(err));
     goto err;
   }
-  printf("read configured %zuB essid %s\n", essidlen, essid);
+  printf("read configured %zuB essid [%s] %zuB psk\n", essidlen - 1, essid, psklen - 1);
+  if(psklen <= 1 || essidlen <= 1){
+    goto err;
+  }
   uint32_t rawstate = 0;
   if(nvs_get_opt_u32(nvsh, SETUPSTATE_RECNAME, &rawstate) == 0){
     if(rawstate <= 2 && rawstate > 0){ // FIXME export semantics or call to check it
