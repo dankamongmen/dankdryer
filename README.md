@@ -67,7 +67,7 @@ PolyLite polycarbonate) to $40 (Polymaker Fiberon PA6-CF20).
 
 * [230C 110V ceramic heating element](https://www.amazon.com/dp/B0BXNPXXYW)
 * High-temperature thermal sensor (was using LM35 but will probably switch)
-* [KSD301 175C NC thermal control](https://www.amazon.com/Rebower-Thermostat-Temperature-Microwave-Refrigerators/dp/B0BLL75326)
+* [KSD301 175C NC thermal control](https://www.aliexpress.us/item/2251832675942217.html)
 * [Hall sensor](https://www.digikey.com/en/products/detail/diodes-incorporated/AH3712Q-P-B/19920700)
 * 1µF unpolarized capacitor
 * 68Ω resistor
@@ -83,6 +83,7 @@ heating circuit) in the hot box; nothing else ought be there.
 * [Greartisan 5RPM 12V DC motor](https://www.amazon.com/dp/B072N867G3/)
 * [NEMA plug + rocker switch](https://www.amazon.com/ASHATA-Rocker-Switch-Adapter-Printer/dp/B085VSS1F2)
 * [160W 12V AC adapter](https://www.amazon.com/gp/product/B0D7GMVK2F)
+* [8dBi antenna](https://www.aliexpress.us/item/3256807262687553.html)
 * 5kg bar strain load cell
 * 2-to-4 cable splitter
 * Custom PCB (fabrication cost is negligible; see components below)
