@@ -316,18 +316,20 @@ cupolat = 4;
 cupolaw = motorboxd + cupolat;
 columnr = 25;
 platforminnerr = columnr - 0.5;
-wormbore = 6; // taken from specsheet
+wormbore = 6.5; // taken from specsheet + 0.5 skoosh
 wormlen = 15;
 wormthick = 2;
 bottoml = 4;
 ch = (cupolaw - motorboxd) / 2;
 rotorh = cupolah + ch;
 module rotor(){
-	translate([0, 0, -1]){ // center it properly
+	translate([0, 0, -1]){ // z-center it properly
 		difference(){
 			cylinder(cupolah, cupolaw / 2, cupolaw / 2, true);
 			// cut out the core, representing the motor
-			cylinder(cupolah, motorboxd / 2, motorboxd / 2, true);
+			// plus a small amount of skoosh (radius)
+			innersk = (motorboxd + 1) / 2;
+			cylinder(cupolah, innersk, innersk, true);
 		}
 			
 		// lower rim, with triangular supports

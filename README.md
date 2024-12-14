@@ -67,7 +67,7 @@ PolyLite polycarbonate) to $40 (Polymaker Fiberon PA6-CF20).
 
 * [230C 110V ceramic heating element](https://www.amazon.com/dp/B0BXNPXXYW)
 * High-temperature thermal sensor (was using LM35 but will probably switch)
-* [KSD301 150C NC thermal control](https://www.amazon.com/Rebower-Thermostat-Temperature-Microwave-Refrigerators/dp/B0BLL75326)
+* [KSD301 175C NC thermal control](https://www.amazon.com/Rebower-Thermostat-Temperature-Microwave-Refrigerators/dp/B0BLL75326)
 * [Hall sensor](https://www.digikey.com/en/products/detail/diodes-incorporated/AH3712Q-P-B/19920700)
 * 1µF unpolarized capacitor
 * 68Ω resistor
