@@ -441,6 +441,7 @@ rgbset(unsigned r, unsigned g, unsigned b){
   return 0;
 }
 
+#ifdef RGB_PIN
 static int
 setup_neopixel(gpio_num_t pin){
   if(gpio_set_output(pin)){
@@ -467,6 +468,7 @@ setup_neopixel(gpio_num_t pin){
   }
   return 0;
 }
+#endif
 
 // initialize and calibrate an ADC unit (ESP32-S3 has two, but ADC2 is
 // used by wifi). ADC1 supports 8 channels on pins 32--39.
@@ -871,7 +873,9 @@ setup_heater(gpio_num_t hrelaypin){
 
 static void
 setup(adc_channel_t* thermchan){
+#ifdef RGB_PIN
   setup_neopixel(RGB_PIN);
+#endif
   printf(DEVICE " v" VERSION "\n");
   if(!init_pstore()){
     read_pstore();
