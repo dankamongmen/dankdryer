@@ -696,6 +696,12 @@ int initialize_tach(gpio_num_t pin, uint32_t* arg){
   return 0;
 }
 
+int setup_emc2302(void){
+  // FIXME set up i2c
+  return 0;
+}
+
+/*
 int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
                gpio_num_t lowertpin, gpio_num_t uppertpin){
   if(initialize_tach(lowertpin, &LowerPulses)){
@@ -718,6 +724,7 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
   }
   return 0;
 }
+*/
 
 static void
 set_led(const struct failure_indication *nin){
@@ -897,7 +904,7 @@ setup(adc_channel_t* thermchan){
   if(hx711_init(&hx711, HX711_DATAPIN, HX711_CLOCKPIN)){
     set_failure(&SystemError);
   }
-  if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
+  if(setup_emc2302()){
     set_failure(&SystemError);
   }
   if(setup_heater(SSR_GPIN)){
