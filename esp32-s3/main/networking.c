@@ -9,7 +9,6 @@
 #include <host/ble_hs.h>
 #include <host/ble_gatt.h>
 #include <host/ble_hs_id.h>
-#include <esp_nimble_hci.h>
 #include <esp_netif_sntp.h>
 #include <esp_http_server.h>
 #include <host/ble_hs_mbuf.h>

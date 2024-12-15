@@ -14,6 +14,7 @@ all: firmware $(STL)
 # add actual esp-idf CMake output
 firmware:
 	@cd esp32-s3 && idf.py build
+	@cd esp32-c6 && idf.py build
 
 $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
 	@mkdir -p $(@D)
