@@ -1,4 +1,4 @@
-.PHONY: all firmware clean
+.PHONY: all images firmware clean
 
 OUT:=out
 SCADBASE:=$(addprefix scad/, coupling croom hotbox top)
@@ -11,7 +11,9 @@ SCADFLAGS=--hardwarnings --viewall --autocenter --imgsize=1920,1080 \
 # allow OSCAD (openscad binary) to be set externally
 OSCAD?=openscad
 
-all: firmware $(STL) $(IMAGES)
+all: firmware $(STL)
+
+images: $(IMAGES)
 
 # add actual esp-idf CMake output
 firmware:
