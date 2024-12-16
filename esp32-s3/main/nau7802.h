@@ -15,8 +15,8 @@ int nau7802_reset(i2c_master_dev_handle_t i2c);
 // send the poweron command w/ timeout. returns non-zero on error.
 // it would not be unwise to call nau7802_reset() first.
 // this sets PUA+PUD+CS, verifies PUR after a short delay,
-// sets REG_CHPS, and sets PGA_CAP_EN, all as recommended
-// by the datasheet.
+// sets REG_CHPS, sets PGA_CAP_EN, and runs an internal offset
+// calibration (as recommended by the datasheet).
 int nau7802_poweron(i2c_master_dev_handle_t i2c);
 
 // set the gain (default 1). can be any power of 2 from 1 to 128.
@@ -34,12 +34,12 @@ typedef enum {
   NAU7802_LDO_45V
 } nau7802_ldo_mode;
 
-// configure the LDO voltage and disable AVDD source.
+// configure the LDO voltage and disable AVDD.
 int nau7802_setldo(i2c_master_dev_handle_t i2c, nau7802_ldo_mode mode);
 
 // read the 24-bit ADC into val. returns non-zero on error, in which case
 // *val is undefined. this is the raw ADC value.
-int nau7802_read(i2c_master_dev_handle_t i2c, uint32_t* val);
+int nau7802_read(i2c_master_dev_handle_t i2c, int32_t* val);
 
 // read the 24-bit ADC, interpreting it using some maximum value scale.
 // i.e. if scale is 5000 (representing e.g. a small bar load cell of 5kg),
