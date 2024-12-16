@@ -10,6 +10,7 @@
   </script>
  </head>
  <body>
+   <h1>the dankdryer, a 150℃ filament dryer</h1>
    <div class="warning">AVAILABLE 2025-01-01</div>
    <h2><div class="product">Dankdryer</div></h2>
    <div class="proddesc">A fully assembled and tested Dankdryer suitable for
@@ -25,5 +26,100 @@
      filament using recommended settings. Assembly does not involve soldering,
      and will require approximately half an hour.</div>
    <div class="buy"><a href="https://buy.stripe.com/dR67u1ay8bdI7xS3cp">$150 + tax</a></div>
+   <hr/>
+   <h2><div class="product">Instructions</div></h2>
+   <h3>Initial setup</h3>
+   <div class="proddesc">
+   For the assembled dryer, simply remove the top, and remove the packing
+   material inside the upper chamber. There is no packing material in the
+   lower chamber. Once the packing material is removed, put the top back
+   on the upper chamber.<br/>
+   <br/>
+   Plug the supplied power cord into the side of the dryer, and into a
+   120V AC outlet. Turn the dryer on using the switch on the side of the lower
+   chamber. If power is flowing, it will light up. Both fans ought also
+   start spinning.<br/>
+   <br/>
+   Bluetooth Low Energy GATT is used to configure networking. The device
+   will appear as a BLE peripheral having the name "dankdryer" followed by
+   some string. Connect, and write to the ESSID and PSK characteristics.
+   Once they've been populated, the dryer will begin attempting to associate
+   with the specified WiFi network (note: only 2.4GHz channels are supported).
+   Once it successfully associates, these parameters are locked in, and
+   can only be changed following a factory reset.<br/>
+   </div>
+   <h3>Reporting</h3>
+   <div class="proddesc">
+   Upon pulling a DHCP lease, the dryer will serve HTTP on port 80, and
+   will publish to an MQTT broker. The same information is available
+   via both interfaces:<br/>
+   <ul>
+     <li>Uptime in seconds</li>
+     <li>Temperature of the controller in degrees Celsius</li>
+     <li>Temperature of the upper chamber in degrees Celsius</li>
+     <li>Measured weight (tared) in grams</li>
+     <li>Tare base in grams</li>
+     <li>Upper (exhaust) fan speed in rotations per minute</li>
+     <li>Lower (intake) fan speed in rotations per minute</li>
+     <li>Upper fan duty cycle [0..255]</li>
+     <li>Lower fan duty cycle [0..255]</li>
+     <li>(*) Spool speed in rotations per minute</li>
+     <li>(*) Target temperature in degrees Celsius</li>
+     <li>(*) Heater status (on/off)</li>
+     <li>(*) Motor status (on/off)</li>
+     <li>(*) Time remaining in dry in seconds</li>
+   </ul>
+   Items marked with an asterisk are only expected to be non-zero during
+   active drying. The heater will not necessarily run constantly during
+   drying. The spool ought rotate at about 5 RPM when the motor is on.<br/>
+   </div>
+   <h3>Drying</h3>
+   <div class="proddesc">
+     Drying can be initiated via the HTTP server, or via MQTT. It is necessary
+     to specify the target temperature (in degrees Celsius) and the length of
+     the dry (in seconds).
+   </div>
+   <div class="proddesc">
+   </div>
+   <h2><div class="product">Components/assembly</div></h2>
+   <div class="proddesc">
+   Six objects are printed:
+     <ul>
+       <li>Top</li>
+       <li>Upper (hot) chamber</li>
+       <li>Lower (cool) chamber</li>
+       <li>Load cell coupling (internal)</li>
+       <li>Motor coupling (internal)</li>
+       <li>Spool platform (internal)</li>
+     </ul>
+     The OpenSCAD files can be found <a href="https://github.com/dankamongmen/dankdryer/tree/master/scad">on Github</a>.
+     I print them with the Arachne perimeter generator and infill combination
+     using cross hatch for the sparse infill. Using Polymaker Fiberon PA6-CF20
+     (nylon-6 + carbon fiber) with these settings, the six components require
+     about 600g. I typically use Bambu Clear Black PC (polycarbonate) for the
+     internal components.<br/>
+     <br/>
+     Avoiding warping is essential. Warping of the internal components or
+     the lower chamber can result in the spool not sitting level. Warping 
+     of the upper chamber can result in it failing to mate to the lower
+     chamber. If you order the assembled printer, this is assured.<br/>
+     <br/>
+     <ol>
+       <li>Push the 175℃ thermostat through the bottom of the upper chamber.</li>
+       <li>Use four M4 screws to mount the ceramic heating element to the floor
+         of the upper chamber.</li>
+       <li>Use four M5 screws to mount one of the 80mm fans to the outside of
+         the upper chamber. The logo ought be facing out; this fan is an exhaust.</li>
+       <li>Insert the power plug/rocker switch unit into the rectangular
+         hole on the side of the lower chamber. It ought not move once
+         inserted.</li>
+       <li>Use two M5 screws to mount the AC adapter to the floor of the lower chamber,
+         on the side opposite the intake fan.</li>
+     </ol>
+
+   </div>
+     <hr/>
+     <div class="copyright">copyright © nick black 2024</div>
+
  </body>
 </html>
