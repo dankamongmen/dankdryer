@@ -1,15 +1,17 @@
 .PHONY: all firmware clean
 
 OUT:=out
-STL:=$(addsuffix .stl, \
- $(addprefix $(OUT)/scad/, complete coupling hotbox top))
+SCADBASE:=$(addprefix scad/, coupling croom hotbox top)
+STL:=$(addsuffix .stl, $(addprefix $(OUT)/, $(SCADBASE)))
+IMAGES:=$(addsuffix .png, $(addprefix $(OUT)/, $(SCADBASE)))
 
-SCADFLAGS=--hardwarnings --backend Manifold --summary all
+SCADFLAGS=--hardwarnings --viewall --autocenter --imgsize=1920,1080 \
+					--render --backend Manifold --summary all --colorscheme=Starnight
 
 # allow OSCAD (openscad binary) to be set externally
 OSCAD?=openscad
 
-all: firmware $(STL)
+all: firmware $(STL) $(IMAGES)
 
 # add actual esp-idf CMake output
 firmware:
@@ -20,6 +22,11 @@ $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
 	@mkdir -p $(@D)
 	time $(OSCAD) $(SCADFLAGS) -o $@ $<
 
+$(OUT)/scad/%.png: scad/%.scad scad/core.scad
+	@mkdir -p $(@D)
+	time $(OSCAD) $(SCADFLAGS) -o $@ $<
+
 clean:
 	rm -rf $(OUT)
 	@cd esp32-s3 && idf.py clean
+	@cd esp32-c6 && idf.py clean
