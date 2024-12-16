@@ -35,5 +35,6 @@ jobs:
           python tools/idf_tools.py install
           source export.sh
           cd -
-          mv dryer-network-sample.h esp32-s3/main/dryer-network.h
+          cp -a dryer-network-sample.h esp32-s3/main/dryer-network.h
+          cp -a dryer-network-sample.h esp32-c6/main/dryer-network.h
           PATH=$PATH:$HOME/bin make
