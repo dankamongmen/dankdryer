@@ -259,11 +259,11 @@ module croom(){
 	croombottom(botrad, wallz);
 }
 
-/*
 multicolor("green"){
 	croom();
 }
 
+/*
 // testing + full assemblage
 multicolor("white"){
     assembly();
