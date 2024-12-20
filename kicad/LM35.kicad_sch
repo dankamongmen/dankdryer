@@ -714,7 +714,7 @@
 		)
 		(uuid "23b38304-a89c-4f7a-8b13-d4c050d65a6a")
 	)
-	(text_box "The LM35 pokes through the ceiling of the cool chamber, and is accepted by the three screw terminals on this board, which exports three wires in turn.\nThis allows us to easily have our capacitors near the LM35, where we want them."
+	(text_box "The LM35 pokes through the ceiling of the cool chamber, and is accepted by the screw terminals on this board, which export four wires in turn.\nThis allows us to easily have our capacitors near the LM35, where we want them."
 		(exclude_from_sim no)
 		(at 45.72 38.1 0)
 		(size 170.18 111.76)
