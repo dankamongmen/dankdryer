@@ -3228,7 +3228,7 @@
 		)
 		(uuid "79e1a005-350a-4a11-8af1-08d14b66e3b0")
 	)
-	(text "12V fans support a max of 5mA on tachs.\n3.3V / 0.005 = 660Ω (0.0165W).\n3.3V / 680Ω = 0.00485A (0.0160W)."
+	(text "12V fans support a max of 5mA on tachs.\n3.3V / 0.005A = 660Ω (0.0165W).\n3.3V / 680Ω = 0.00485A (0.0160W)."
 		(exclude_from_sim no)
 		(at 16.51 97.282 0)
 		(effects
@@ -3239,9 +3239,9 @@
 		)
 		(uuid "89a2def1-962d-406e-b8ef-57fbb7300ca0")
 	)
-	(text "3.3V / 0.005A = 660Ω (0.0165W)\nHeater neutral returns from 150C thermostat.\nHeater is resistive load, no need for snubber circuit."
+	(text "0.005A minimum to drive MOC3063SM.\n3.3V / 620Ω = 0.0053A (0.0176W)\nHeater neutral returns from 150C thermostat.\nHeater is resistive load, no need for snubber circuit."
 		(exclude_from_sim no)
-		(at 16.51 156.464 0)
+		(at 16.51 154.94 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3264,7 +3264,7 @@
 	)
 	(text "AC—Danger!"
 		(exclude_from_sim no)
-		(at 42.672 150.876 0)
+		(at 66.294 110.744 0)
 		(effects
 			(font
 				(size 2.54 2.54)
@@ -3989,7 +3989,7 @@
 				)
 			)
 		)
-		(property "Value" "660"
+		(property "Value" "620"
 			(at 35.56 119.38 90)
 			(effects
 				(font

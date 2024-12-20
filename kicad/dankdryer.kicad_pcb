@@ -117,7 +117,7 @@
 			(plotinvisibletext no)
 			(sketchpadsonfab no)
 			(subtractmaskfromsilk no)
-			(outputformat 4)
+			(outputformat 1)
 			(mirror no)
 			(drillshape 0)
 			(scaleselection 1)
@@ -651,7 +651,7 @@
 				)
 			)
 		)
-		(property "Value" "660"
+		(property "Value" "620"
 			(at 0 2 90)
 			(layer "F.Fab")
 			(uuid "5a871f17-3141-4c0a-a789-bad073c45468")
@@ -1653,8 +1653,8 @@
 				)
 			)
 		)
-		(property "Value" "HT7550-1-SOT89"
-			(at 3.228125 -8 180)
+		(property "Value" "HT7550"
+			(at 3.728125 -4 180)
 			(layer "F.SilkS")
 			(uuid "f73111f1-3bc9-4009-b9ac-8749e7819ecf")
 			(effects
@@ -6853,7 +6853,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C10"
-			(at 1.0375 -3 0)
+			(at 3.5375 0 0)
 			(layer "F.SilkS")
 			(uuid "7207f6dc-da57-40c5-aaf9-6fe1340294e3")
 			(effects
@@ -15969,28 +15969,6 @@
 		(layer "F.Cu")
 		(net 54)
 		(uuid "fadf2a14-eadc-4ae1-9812-a6874e1d7215")
-	)
-	(zone
-		(net 1)
-		(net_name "GND")
-		(layer "B.Cu")
-		(uuid "70e2eff1-7489-497f-9a92-66d3e394d5f7")
-		(hatch edge 0.5)
-		(priority 1)
-		(connect_pads
-			(clearance 0.5)
-		)
-		(min_thickness 0.25)
-		(filled_areas_thickness no)
-		(fill yes
-			(thermal_gap 0.5)
-			(thermal_bridge_width 0.5)
-		)
-		(polygon
-			(pts
-				(xy 50 50) (xy 50 -50) (xy 125 -50) (xy 125 50)
-			)
-		)
 	)
 	(zone
 		(net 1)

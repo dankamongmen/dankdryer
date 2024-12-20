@@ -15,5 +15,6 @@ kicad/*.gbrjob
 kicad/*.kicad_prl
 kicad/*.pdf
 kicad/*.png
+kicad/*.zip
 kicad/fp-info-cache
 out
