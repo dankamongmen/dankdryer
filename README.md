@@ -94,29 +94,38 @@ be able to use a cheapter motor.
 
 Generated via Kicad:
 
-|Id |Designator |Footprint                         |Quantity|Designation     |
-|---|-----------|----------------------------------|--------|----------------|
-|1  |U1         |ESP32-S3-DevKitC                  |1       |ESP32-S3-DevKitC|
-|2  |C7,C3      |C_0805_2012Metric                 |2       |.1n             |
-|3  |R8,R5      |R_0805_2012Metric                 |2       |3.3k            |
-|4  |U3         |SOT-89-3                          |1       |HT7550-1-SOT89  |
-|5  |J3         |FanPinHeader_1x04_P2.54mm_Vertical|1       |lower fan       |
-|6  |J1         |BarrelJack_Wuerth_6941xx301002    |1       |Barreljack      |
-|7  |OC1        |SMDIP-6_W9.53mm                   |1       |MOC3063SM       |
-|8  |J5         |TerminalBlock_bornier-5_P5.08mm   |1       |To microboard   |
-|9  |R14        |R_0805_2012Metric                 |1       |330             |
-|10 |J4         |FanPinHeader_1x04_P2.54mm_Vertical|1       |upper fan       |
-|11 |L1         |L_0805_2012Metric                 |1       |2.2u            |
-|12 |C1,C5,C2,C4|C_0805_2012Metric                 |4       |10u             |
-|13 |UHX1       |Sparkfun HX711 SEN-13879          |1       |SEN13879        |
-|14 |R6,R4      |R_0805_2012Metric                 |2       |680             |
-|15 |R15        |R_0805_2012Metric                 |1       |100             |
-|16 |R3         |R_0805_2012Metric                 |1       |360             |
-|17 |J2         |TerminalBlock_bornier-2_P5.08mm   |1       |heater          |
-|18 |U2         |TPS62162                          |1       |TPS62162DSG     |
-|19 |R10        |R_0805_2012Metric                 |1       |220             |
-|20 |Q2         |TO-252-2                          |1       |BT136S-800E     |
-|21 |Q1         |SOT-323_SC-70                     |1       |SSM3K127TU      |
+|Id |Designator |Footprint                         |Quantity|Designation|
+|---|-----------|----------------------------------|--------|-----------
+|  1|OC1|MOC306XS_LTO|1|MOC3063S|
+|  2|R4|R_0805_2012Metric_Pad1.20x1.40mm_HandSolder|1|360|
+|  3|R11|R10|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|2|47|
+|  4|R2|R_0805_2012Metric_Pad1.20x1.40mm_HandSolder|1|620|
+|  5|U2|WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm_ThermalVias|1|TPS62162DSG|
+|  6|R5|R1|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|2|680|
+|  7|U3|SOT-89-3|1|HT7550-1-SOT89|
+|  8|J8|TerminalBlock_bornier-2_P5.08mm|1|motor|
+|  9|J2|FanPinHeader_1x04_P2.54mm_Vertical|1|upper fan|
+| 10|C6|C4|C2|C5|C1|C_0805_2012Metric_Pad1.18x1.45mm_HandSolder|5|10u|
+| 11|J5|TerminalBlock_bornier-4_P5.08mm|1|Screw_Terminal_01x04|
+| 12|C9|C3|C8|C_0805_2012Metric_Pad1.18x1.45mm_HandSolder|3|0.1u|
+| 13|R6|R8|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|2|4.7k|
+| 14|J4|TerminalBlock_bornier-2_P5.08mm|1|heater|
+| 15|U6|XCVR_ESP32-C6-MINI-1U-H4|1|ESP32-C6-MINI-1U-H4|
+| 16|J3|FanPinHeader_1x04_P2.54mm_Vertical|1|lower fan|
+| 17|R13|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|1|10k|
+| 18|R12|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|1|330|
+| 19|R3|R_0805_2012Metric_Pad1.20x1.40mm_HandSolder|1|100|
+| 20|C10|C_0805_2012Metric_Pad1.18x1.45mm_HandSolder|1|1u|
+| 21|J1|BarrelJack_Wuerth_6941xx301002|1|Barreljack|
+| 22|U4|SOI16_NAU7802SGI_NUV|1|NAU7802SGI|
+| 23|R14|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|1|3.3k|
+| 24|J7|TerminalBlock_bornier-4_P5.08mm|1|5kg load cell|
+| 25|Q2|SOT-323_SC-70|1|SSM3K127TU|
+| 26|Q1|TO-252-2|1|BT136S-800E|
+| 27|J9|PinHeader_1x04_P2.54mm_Vertical|1|Conn_01x04|
+| 28|U5|MSOP10_MC_MCH|1|EMC2302|
+| 29|R7|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|1|1.62k|
+| 30|L1|L_0805_2012Metric_Pad1.05x1.20mm_HandSolder|1|2.2u|
 
 # MQTT
 
