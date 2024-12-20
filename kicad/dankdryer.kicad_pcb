@@ -117,7 +117,7 @@
 			(plotinvisibletext no)
 			(sketchpadsonfab no)
 			(subtractmaskfromsilk no)
-			(outputformat 4)
+			(outputformat 1)
 			(mirror no)
 			(drillshape 0)
 			(scaleselection 1)
@@ -1653,7 +1653,7 @@
 				)
 			)
 		)
-		(property "Value" "HT7550-1-SOT89"
+		(property "Value" "HT7550"
 			(at 3.728125 -4 180)
 			(layer "F.SilkS")
 			(uuid "f73111f1-3bc9-4009-b9ac-8749e7819ecf")

@@ -6425,7 +6425,7 @@
 				)
 			)
 		)
-		(property "Value" "HT7550-1-SOT89"
+		(property "Value" "HT7550"
 			(at 120.65 36.83 0)
 			(effects
 				(font
