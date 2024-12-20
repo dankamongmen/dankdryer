@@ -98,17 +98,17 @@ Generated via Kicad:
 |---|-----------|----------------------------------|--------|-----------
 |  1|OC1|MOC306XS_LTO|1|MOC3063S|
 |  2|R4|R_0805_2012Metric_Pad1.20x1.40mm_HandSolder|1|360|
-|  3|R11|R10|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|2|47|
+|  3|R11;R10|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|2|47|
 |  4|R2|R_0805_2012Metric_Pad1.20x1.40mm_HandSolder|1|620|
 |  5|U2|WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm_ThermalVias|1|TPS62162DSG|
-|  6|R5|R1|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|2|680|
+|  6|R5;R1|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|2|680|
 |  7|U3|SOT-89-3|1|HT7550-1-SOT89|
 |  8|J8|TerminalBlock_bornier-2_P5.08mm|1|motor|
 |  9|J2|FanPinHeader_1x04_P2.54mm_Vertical|1|upper fan|
-| 10|C6|C4|C2|C5|C1|C_0805_2012Metric_Pad1.18x1.45mm_HandSolder|5|10u|
+| 10|C6;C4;C2;C5;C1|C_0805_2012Metric_Pad1.18x1.45mm_HandSolder|5|10u|
 | 11|J5|TerminalBlock_bornier-4_P5.08mm|1|Screw_Terminal_01x04|
-| 12|C9|C3|C8|C_0805_2012Metric_Pad1.18x1.45mm_HandSolder|3|0.1u|
-| 13|R6|R8|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|2|4.7k|
+| 12|C9;C3;C8|C_0805_2012Metric_Pad1.18x1.45mm_HandSolder|3|0.1u|
+| 13|R6;R8|R_0805_2012Metric_Pad1.15x1.40mm_HandSolder|2|4.7k|
 | 14|J4|TerminalBlock_bornier-2_P5.08mm|1|heater|
 | 15|U6|XCVR_ESP32-C6-MINI-1U-H4|1|ESP32-C6-MINI-1U-H4|
 | 16|J3|FanPinHeader_1x04_P2.54mm_Vertical|1|lower fan|
