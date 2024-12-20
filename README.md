@@ -45,6 +45,9 @@ I use
 [BOSL2](https://github.com/BelfrySCAD/BOSL2), which
 is included as a submodule.
 
+## PCB
+* KiCad 8+
+
 # Construction / BOM
 
 The device requires approximately 500g of high-temperature filament (PC,
@@ -91,6 +94,8 @@ Of these, we don't need nearly so powerful an AC adapter, and we ought
 be able to use a cheapter motor.
 
 #### PCB components
+
+<img alt="Custom PCB" src="images/pcb.png"/>
 
 Generated via Kicad:
 
