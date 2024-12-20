@@ -1,5 +1,5 @@
 <p align="center">
-ESP32-S3 firmware and SCAD sources for the Dankdryer, the world's best filament dryer.
+ESP32, OpenSCAD, and KiCad sources for the Dankdryer, the world's best filament dryer.
  <img alt="Side view" src="images/render.png"/>
  a nick black joint
 </p>
@@ -74,7 +74,6 @@ PolyLite polycarbonate) to $40 (Polymaker Fiberon PA6-CF20).
 * 1x4 screw terminal
 * Small perf board
 
-I'll probably make a dinky little PCB to replace the perf board here.
 We need a temperature sensor and hall effect sensor (and obviously the
 heating circuit) in the hot box; nothing else ought be there.
 
