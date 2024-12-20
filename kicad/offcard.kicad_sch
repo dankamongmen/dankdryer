@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "Dankdryer")
-		(date "2024-12-19")
-		(rev "0.94")
+		(date "2024-12-20")
+		(rev "0.95")
 		(company "Dirty South Supercomputing")
 		(comment 1 "nick black")
 	)
@@ -3895,7 +3895,7 @@
 				)
 			)
 		)
-		(property "Value" "EMC2302-2-AIZL-TR"
+		(property "Value" "EMC2302"
 			(at 54.61 31.75 0)
 			(effects
 				(font
@@ -4403,7 +4403,7 @@
 				)
 			)
 		)
-		(property "Value" "NAU7802SGI-dank"
+		(property "Value" "NAU7802SGI"
 			(at 226.06 45.72 0)
 			(effects
 				(font
@@ -5205,8 +5205,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MOC3063SM"
-			(at 27.94 129.032 0)
+		(property "Value" "MOC3063S"
+			(at 28.956 129.032 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5214,7 +5214,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_Package_DIP_AKL:SMDIP-6_W9.53mm"
+		(property "Footprint" "dank:MOC306XS_LTO"
 			(at 39.37 118.11 0)
 			(effects
 				(font
