@@ -14,13 +14,6 @@ iframe {
   display: block;
 }
 
-.warning {
-  color: darkred;
-  font-size: 2em;
-  text-align: center;
-  margin: 2em;
-}
-
 h2 {
   text-align: center;
   margin-top: 2em;
