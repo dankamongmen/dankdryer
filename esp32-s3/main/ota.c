@@ -2,19 +2,25 @@
 #include <esp_ota_ops.h>
 
 // name is functional name, not partition label (which is discovered)
-static int
+static void
 part_info(const char* name, const esp_partition_t* p){
   printf("%s: %s 0x%lx:0x%lx size 0x%lx type %d:%d\n", name,
          p->label, p->address, p->address + p->size - 1,
          p->size, p->type, p->subtype);
-  esp_app_desc_t pi;
-  esp_err_t e = esp_ota_get_partition_description(p, &pi);
-  if(e != ESP_OK){
-    fprintf(stderr, "error (%s) getting %s info\n", esp_err_to_name(e), name);
-    return -1;
+  esp_ota_img_states_t state;
+  esp_err_t e = esp_ota_get_state_partition(p, &state);
+  if(e == ESP_OK){
+    printf("\treported ota state %d\n", state);
+  }else{
+    fprintf(stderr, "error (%s) getting %s state\n", esp_err_to_name(e), name);
   }
-  // FIXME print pi
-  return 0;
+  esp_app_desc_t pi;
+  e = esp_ota_get_partition_description(p, &pi);
+  if(e == ESP_OK){
+    printf("\treported app %s version %s\n", pi.project_name, pi.version);
+  }else{
+    fprintf(stderr, "error (%s) getting %s info\n", esp_err_to_name(e), name);
+  }
 }
 
 int ota_init(void){

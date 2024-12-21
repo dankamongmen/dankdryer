@@ -991,10 +991,11 @@ void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
 
 static void
 info(void){
+  // version recorded by the compiler, not necessarily OTA
   const char *espv = esp_get_idf_version();
   printf("espidf version: %s\n", espv);
   const esp_app_desc_t *appdesc = esp_app_get_description();
-  printf("esp reported app %s version %s\n", appdesc->project_name, appdesc->version);
+  printf("\treported app %s version %s\n", appdesc->project_name, appdesc->version);
 }
 
 void app_main(void){
