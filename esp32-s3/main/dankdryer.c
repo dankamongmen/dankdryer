@@ -1,6 +1,6 @@
 // intended for use on an ESP32-S3-WROOM-1
 #include "networking.h"
-#include "hx711.h"
+#include "nau7802.h"
 #include "pins.h"
 #include "ota.h"
 #include <nvs.h>
@@ -19,6 +19,7 @@
 #include <esp_idf_version.h>
 #include <soc/adc_channel.h>
 #include <esp_adc/adc_cali.h>
+#include <driver/i2c_master.h>
 #include <esp_adc/adc_oneshot.h>
 #include <driver/temperature_sensor.h>
 
@@ -60,7 +61,8 @@ static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static unsigned LastLowerRPM, LastUpperRPM;
 static float LastLowerTemp, LastUpperTemp;
-static HX711 hx711;
+static i2c_master_bus_handle_t I2CMaster;
+static i2c_master_dev_handle_t NAU7802;
 
 // ISR counters
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
@@ -100,12 +102,6 @@ static bool StartupFailure;
 static const failure_indication SystemError = { 32, 0, 0 };
 static const failure_indication NetworkError = { 32, 0, 32 };
 static const failure_indication PostFailure = { 0, 0, 0 };
-
-static void
-tach_isr(void* pulsecount){
-  uint32_t* pc = pulsecount;
-  ++*pc;
-}
 
 // precondition: isxdigit(c) is true
 static inline char
@@ -381,8 +377,8 @@ getAmbient(void){
 
 float getWeight(void){
   int32_t v;
-  if(hx711_read(&hx711, &v) || v < 0){
-    fprintf(stderr, "bad hx711 read %ld\n", v);
+  if(nau7802_read(NAU7802, &v) || v < 0){
+    fprintf(stderr, "bad nau7802 read %ld\n", v);
     return -1.0;
   }
   float tare = 0;
@@ -642,68 +638,8 @@ read_pstore(void){
   return 0;
 }
 
-int initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_t timer){
-  if(gpio_set_output(pin)){
-    return -1;
-  }
-  ledc_timer_config_t ledc_timer;
-  memset(&ledc_timer, 0, sizeof(ledc_timer));
-  ledc_timer.speed_mode = LEDCMODE;
-  ledc_timer.duty_resolution = FANPWM_BIT_NUM;
-  ledc_timer.timer_num = timer;
-  ledc_timer.freq_hz = freq;
-  if(ledc_timer_config(&ledc_timer) != ESP_OK){
-    fprintf(stderr, "error (timer config)!\n");
-    return -1;
-  }
-  ledc_channel_config_t conf;
-  memset(&conf, 0, sizeof(conf));
-  conf.gpio_num = pin;
-  conf.speed_mode = LEDCMODE;
-  conf.intr_type = LEDC_INTR_DISABLE;
-  conf.timer_sel = timer;
-  conf.duty = FANPWM_BIT_NUM;
-  conf.channel = channel;
-  printf("setting up pin %d for %dHz PWM\n", pin, freq);
-  if(ledc_channel_config(&conf) != ESP_OK){
-    fprintf(stderr, "error (channel config)!\n");
-    return -1;
-  }
-  return 0;
-}
-
-int initialize_25k_pwm(ledc_channel_t channel, gpio_num_t pin, ledc_timer_t timer){
-  return initialize_pwm(channel, pin, 25000, timer);
-}
-
-int initialize_tach(gpio_num_t pin, uint32_t* arg){
-  if(gpio_set_input(pin)){
-    return -1;
-  }
-  esp_err_t e = gpio_set_intr_type(pin, GPIO_INTR_NEGEDGE);
-  if(e != ESP_OK){
-    fprintf(stderr, "failure (%s) installing %d interrupt\n", esp_err_to_name(e), pin);
-    return -1;
-  }
-  if((e = gpio_isr_handler_add(pin, tach_isr, arg)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting %d isr\n", esp_err_to_name(e), pin);
-    return -1;
-  }
-  if((e = gpio_intr_enable(pin)) != ESP_OK){
-    fprintf(stderr, "failure (%s) enabling %d interrupt\n", esp_err_to_name(e), pin);
-    return -1;
-  }
-  return 0;
-}
-
 int setup_emc2302(void){
-  // FIXME set up i2c
-  return 0;
-}
-
-/*
-int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
-               gpio_num_t lowertpin, gpio_num_t uppertpin){
+  /*
   if(initialize_tach(lowertpin, &LowerPulses)){
     return -1;
   }
@@ -722,9 +658,10 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
   if(set_pwm(UPPER_FANCHAN, UpperPWM)){
     return -1;
   }
+*/
   return 0;
 }
-*/
+
 
 static void
 set_led(const struct failure_indication *nin){
@@ -774,7 +711,7 @@ bool get_heater_state(void){
 
 void set_motor(bool enabled){
   MotorState = enabled;
-  gpio_level(MOTOR_RELAY, enabled);
+  gpio_level(MOTOR_GATEPIN, enabled);
   printf("set motor %s\n", motor_state());
 }
 
@@ -878,6 +815,26 @@ setup_heater(gpio_num_t hrelaypin){
   return 0;
 }
 
+static int
+setup_i2c(i2c_master_bus_handle_t *master, gpio_num_t sda, gpio_num_t scl){
+  i2c_master_bus_config_t i2ccnf = {
+    .clk_source = I2C_CLK_SRC_DEFAULT,
+    .i2c_port = -1,
+    .scl_io_num = scl,
+    .sda_io_num = sda,
+    .glitch_ignore_cnt = 7, // recommended value from esp-idf docs
+  };
+  if(gpio_set_inputoutput_opendrain(sda) || gpio_set_inputoutput_opendrain(scl)){
+    return -1;
+  }
+  esp_err_t e = i2c_new_master_bus(&i2ccnf, master);
+  if(e != ESP_OK){
+    fprintf(stderr, "failure (%s) initializing i2c master\n", esp_err_to_name(e));
+    return -1;
+  }
+  return 0;
+}
+
 static void
 setup(adc_channel_t* thermchan){
 #ifdef RGB_PIN
@@ -898,10 +855,10 @@ setup(adc_channel_t* thermchan){
   if(setup_adc_oneshot(ADC_UNIT_1, &ADC1, &ADC1Calibration, &ADC1Calibrated)){
     set_failure(&SystemError);
   }
-  if(setup_temp(THERM_DATAPIN, ADC_UNIT_1, thermchan)){
+  if(setup_i2c(&I2CMaster, SDA_PIN, SCL_PIN)){
     set_failure(&SystemError);
   }
-  if(hx711_init(&hx711, HX711_DATAPIN, HX711_CLOCKPIN)){
+  if(setup_temp(THERM_DATAPIN, ADC_UNIT_1, thermchan)){
     set_failure(&SystemError);
   }
   if(setup_emc2302()){
@@ -910,7 +867,7 @@ setup(adc_channel_t* thermchan){
   if(setup_heater(SSR_GPIN)){
     set_failure(&SystemError);
   }
-  if(setup_motor(MOTOR_RELAY)){
+  if(setup_motor(MOTOR_GATEPIN)){
     set_failure(&SystemError);
   }
   if(setup_network()){
