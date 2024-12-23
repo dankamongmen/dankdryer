@@ -6,7 +6,7 @@
 	(paper "USLetter")
 	(title_block
 		(title "Dankdryer")
-		(date "2024-12-20")
+		(date "2024-12-23")
 		(rev "0.95")
 		(company "Dirty South Supercomputing")
 		(comment 1 "nick black")

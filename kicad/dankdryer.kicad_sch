@@ -6,7 +6,7 @@
 	(paper "USLetter")
 	(title_block
 		(title "Dankdryer")
-		(date "2024-12-20")
+		(date "2024-12-23")
 		(rev "0.95")
 		(company "Dirty South Supercomputing")
 		(comment 1 "nick black")
@@ -9373,7 +9373,7 @@
 			)
 			(uuid "4b370d26-12c1-4909-b8aa-17d928fbea56")
 		)
-		(pin "AH3712QAnalog" input
+		(pin "HallAnalog" input
 			(at 43.18 135.89 0)
 			(effects
 				(font
