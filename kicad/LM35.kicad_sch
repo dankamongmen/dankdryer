@@ -812,7 +812,7 @@
 		)
 		(uuid "3cb0a608-4673-44cd-b5d1-04cc1b101c6a")
 	)
-	(hierarchical_label "LM35Analog"
+	(hierarchical_label "ThermAnalog"
 		(shape input)
 		(at 124.46 100.33 270)
 		(fields_autoplaced yes)
