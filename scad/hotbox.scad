@@ -28,12 +28,25 @@ module ceramheat230(height){
 
 // three small holes for the thermometer's leads
 module thermholes(h){
-	translate([-40, 10, -h / 2]){
-		cylinder(h * 10, 1, 1);
+	translate([-40, 10, h / 2]){
+		cylinder(h, 1, 1, true);
 		translate([2, -2, 0]){
-			cylinder(h * 10, 1, 1);
+			cylinder(h, 1, 1, true);
 			translate([2, -2, 0]){
-				cylinder(h * 10, 1, 1);
+				cylinder(h, 1, 1, true);
+			}
+		}
+	}
+}
+
+// three small holes for the hall sensor's leads
+module hallholes(h){
+	translate([-35, 15, h / 2]){
+		cylinder(h, 1, 1, true);
+		translate([2, -2, 0]){
+			cylinder(h, 1, 1, true);
+			translate([2, -2, 0]){
+				cylinder(h, 1, 1, true);
 			}
 		}
 	}
@@ -201,6 +214,7 @@ module hotbox(){
             rc522holes(wallz);
 	    }
 		thermholes(wallz);
+		hallholes(wallz);
         // we want to clear everything in the central
         // cylinder from the floor up.
         cheight = totalz - wallz;
