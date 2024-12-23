@@ -161,9 +161,9 @@ module pcbmounts(){
 
 // RP-SMA antenna will be glued in
 module antennahole(){
-	rpsmar = 6.35 / 2;
+	rpsmar = 12.6 / 2;
 	rpsmal = 25;
-	translate([-topalt / 2, -botalt + 10, croomz - 10]){
+	translate([-topalt / 2, -botalt + 10, croomz - 30]){
         rotate([theta, 0, 0]){
             rotate([90, 0, 0]){
 				cylinder(rpsmal, rpsmar + 1, rpsmar + 1, true);
