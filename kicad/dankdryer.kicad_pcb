@@ -4848,7 +4848,7 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), Alternate KiCad Library")
 		(tags "resistor handsolder")
 		(property "Reference" "R17"
-			(at 3 1.5 360)
+			(at 3 1.5 0)
 			(layer "F.SilkS")
 			(uuid "eb8a9116-e742-4852-aeec-4be2afb43b8e")
 			(effects
@@ -4859,7 +4859,7 @@
 			)
 		)
 		(property "Value" "680"
-			(at 0 1.65 360)
+			(at 0 1.65 0)
 			(layer "F.Fab")
 			(uuid "8e654df3-b653-4172-adcb-e66700bb8dc2")
 			(effects
@@ -4870,7 +4870,7 @@
 			)
 		)
 		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "96bcec3a-b476-4d61-9f8d-b0043744d163")
@@ -4882,7 +4882,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "62cc7dfb-fb73-407d-bdd3-75f152948d71")
@@ -4894,7 +4894,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "1d7acee7-048f-49d8-bc1c-48cbfc071596")
@@ -5031,7 +5031,7 @@
 			(uuid "58bba9bb-f53e-41d9-8672-5e2edf87b378")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "0c118811-de45-4c46-9043-8737b6be0667")
 			(effects
