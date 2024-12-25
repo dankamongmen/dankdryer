@@ -13,7 +13,6 @@ ESP32, OpenSCAD, and KiCad sources for the Dankdryer, the world's best filament 
   * Post contextless deltas to reddit in the heat of dumbass arguments! DATA, bitch!
 * Slow rotation like delicious savory meat.
 * Equal heating of all the spool's filament.
-* Reads RFID tags and applies correct config.
 * Control and reporting over MQTT via WiFi.
 * OTA firmware upgrades.
 * Isolated hot and cool chambers, with most active equipment in the cool chamber.
@@ -69,13 +68,9 @@ PolyLite polycarbonate) to $40 (Polymaker Fiberon PA6-CF20).
 ### Hot chamber
 
 * [230C 110V ceramic heating element](https://www.amazon.com/dp/B0BXNPXXYW)
-* High-temperature thermal sensor (was using LM35 but will probably switch)
 * [KSD301 175C NC thermal control](https://www.aliexpress.us/item/2251832675942217.html)
 * [Hall sensor](https://www.digikey.com/en/products/detail/diodes-incorporated/AH3712Q-P-B/19920700)
-* 1µF unpolarized capacitor
-* 68Ω resistor
-* 1x4 screw terminal
-* Small perf board
+* Custom PCB (fabrication cost is negligible; see components below)
 
 We need a temperature sensor and hall effect sensor (and obviously the
 heating circuit) in the hot box; nothing else ought be there.
@@ -175,4 +170,4 @@ Combined OpenSCAD render for mating testing.
 
 * How does air flow? Let's get some visible air and test it.
 * Would we benefit from thermal insulation material in the hotbox?
-* Can we use a smaller (cheaper) motor / AC adapter?
+* What all could we accomplish by reading RFID?
