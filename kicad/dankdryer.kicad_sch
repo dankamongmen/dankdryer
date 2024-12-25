@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "Dankdryer")
-		(date "2024-12-23")
-		(rev "0.95")
+		(date "2024-12-25")
+		(rev "0.98")
 		(company "Dirty South Supercomputing")
 		(comment 1 "nick black")
 	)
@@ -4936,7 +4936,7 @@
 		)
 		(uuid "b5e41a2c-cc13-4039-b4f9-5122ba8564b9")
 	)
-	(text "Unicore 160MHz RISC-V. 4MB QSPI flash, 40–105C.\nGPIOs 0-6 are connected to 12-bit ADC.\nGPIOs 4, 5, 8, 9, and 15 are strapping pins.\nGPIOs 12 and 13 are used for JTAG.\nGPIOs 24-30 are used for QSPI flash."
+	(text "Unicore 160MHz RISC-V. 4MB QSPI flash, 40–105C.\nGPIOs 0-6 are connected to 12-bit ADC.\nGPIOs 4, 5, 8, 9, and 15 are strapping pins.\nGPIOs 12 and 13 are used for JTAG.\nGPIOs 24-30 are used for QSPI flash.\nModule has a U.FL antenna connector."
 		(exclude_from_sim no)
 		(at 171.704 108.204 0)
 		(effects
