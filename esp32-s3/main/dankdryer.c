@@ -1,5 +1,6 @@
 // intended for use on an ESP32-S3-WROOM-1
 #include "networking.h"
+#include "emc230x.h"
 #include "nau7802.h"
 #include "pins.h"
 #include "ota.h"
@@ -63,6 +64,7 @@ static unsigned LastLowerRPM, LastUpperRPM;
 static float LastLowerTemp, LastUpperTemp;
 static i2c_master_bus_handle_t I2CMaster;
 static i2c_master_dev_handle_t NAU7802;
+static i2c_master_dev_handle_t EMC2302;
 
 // ISR counters
 static uint32_t LowerPulses, UpperPulses; // tach signals recorded
@@ -638,7 +640,10 @@ read_pstore(void){
   return 0;
 }
 
-int setup_emc2302(void){
+int setup_emc2302(i2c_master_bus_handle_t master){
+  if(emc230x_detect(master, &EMC2302, EMC2302_MODEL_UNSPEC)){
+    return -1;
+  }
   /*
   if(initialize_tach(lowertpin, &LowerPulses)){
     return -1;
@@ -861,7 +866,7 @@ setup(adc_channel_t* thermchan){
   if(setup_temp(THERM_DATAPIN, ADC_UNIT_1, thermchan)){
     set_failure(&SystemError);
   }
-  if(setup_emc2302()){
+  if(setup_emc2302(I2CMaster)){
     set_failure(&SystemError);
   }
   if(setup_heater(SSR_GPIN)){
