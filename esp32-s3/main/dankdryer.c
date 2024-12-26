@@ -65,9 +65,6 @@ static i2c_master_bus_handle_t I2CMaster;
 static i2c_master_dev_handle_t NAU7802;
 static i2c_master_dev_handle_t EMC2302;
 
-// ISR counters
-static uint32_t LowerPulses, UpperPulses; // tach signals recorded
-
 // ESP-IDF objects
 static bool ADC1Calibrated;
 static led_strip_handle_t Neopixel;
@@ -833,11 +830,6 @@ setup(adc_channel_t* thermchan){
   if(ota_init()){
     set_failure(&SystemError);
   }
-  esp_err_t e = gpio_install_isr_service(0);
-  if(e != ESP_OK){
-    fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
-    set_failure(&SystemError);
-  }
   if(setup_adc_oneshot(ADC_UNIT_1, &ADC1, &ADC1Calibration, &ADC1Calibrated)){
     set_failure(&SystemError);
   }
@@ -872,8 +864,8 @@ setup(adc_channel_t* thermchan){
 static void
 getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
   const float diffu = curtime - lasttime;
-  *lrpm = LowerPulses;
-  *urpm = UpperPulses;
+  emc230x_gettach(EMC2302, LOWER_FANCHAN, lrpm);
+  emc230x_gettach(EMC2302, UPPER_FANCHAN, urpm);
   printf("tach raw: %u %u\n", *lrpm, *urpm);
   *lrpm /= 2; // two pulses for each rotation
   *urpm /= 2;
@@ -887,8 +879,6 @@ getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
   if(rpm_valid_p(*urpm)){
     LastUpperRPM = *urpm;
   }
-  LowerPulses = 0;
-  UpperPulses = 0;
 }
 
 void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
