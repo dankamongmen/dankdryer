@@ -4045,7 +4045,7 @@
 	)
 	(wire
 		(pts
-			(xy 134.62 41.91) (xy 142.24 41.91)
+			(xy 134.62 41.91) (xy 148.59 41.91)
 		)
 		(stroke
 			(width 0)
@@ -4924,6 +4924,17 @@
 		)
 		(uuid "17e312c8-b6ef-4a60-82a9-8e2e464f1bec")
 	)
+	(text "Motor is 12VDC at 0.7A (8.4W), stall 1.6A (19.2W)."
+		(exclude_from_sim no)
+		(at 89.916 168.402 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "94866fe3-9d42-4962-9d0d-5998314b5f3f")
+	)
 	(text "AC-\nHeater heutral"
 		(exclude_from_sim no)
 		(at 119.38 133.35 0)
@@ -5423,7 +5434,7 @@
 	)
 	(symbol
 		(lib_id "power:+5VA")
-		(at 142.24 41.91 0)
+		(at 148.59 41.91 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5432,7 +5443,7 @@
 		(fields_autoplaced yes)
 		(uuid "02663e7d-91ac-4966-be8a-eef984a2e8f9")
 		(property "Reference" "#PWR015"
-			(at 142.24 45.72 0)
+			(at 148.59 45.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5441,7 +5452,7 @@
 			)
 		)
 		(property "Value" "+5VA"
-			(at 142.24 36.83 0)
+			(at 148.59 36.83 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5449,7 +5460,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 142.24 41.91 0)
+			(at 148.59 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5458,7 +5469,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 142.24 41.91 0)
+			(at 148.59 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5467,7 +5478,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+5VA\""
-			(at 142.24 41.91 0)
+			(at 148.59 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)

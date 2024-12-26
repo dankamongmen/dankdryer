@@ -3142,7 +3142,7 @@
 	)
 	(text "2A/4A max continuous/pulse drain current.\n10mA max current to MOSFET: 3.3V / 0.01A = 330Ω (0.033W).\nSchottky diode across motor +/- for EMP protection."
 		(exclude_from_sim no)
-		(at 98.552 95.758 0)
+		(at 97.79 97.79 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3187,9 +3187,9 @@
 		)
 		(uuid "aac3a372-0554-454b-9baf-ec8d8fa66655")
 	)
-	(text "2.7-5.5V input.\nAVDD must not exceed DVDD."
+	(text "2.7-5.5V input.\nAVDD must not exceed DVDD.\nOur AVDD is 5, and our DVDD 3.3, so we don't use AVDD."
 		(exclude_from_sim no)
-		(at 179.07 98.806 0)
+		(at 179.07 98.044 0)
 		(effects
 			(font
 				(size 1.27 1.27)
