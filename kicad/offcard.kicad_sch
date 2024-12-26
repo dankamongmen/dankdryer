@@ -2468,16 +2468,8 @@
 		(uuid "f1e0cc26-8265-483e-a2ab-43e66c6ad435")
 	)
 	(no_connect
-		(at 200.66 60.96)
-		(uuid "21950530-1417-4fdd-8126-b0b29439ccaa")
-	)
-	(no_connect
 		(at 82.55 52.07)
 		(uuid "52aa5493-73f7-4b1a-8678-453002b10297")
-	)
-	(no_connect
-		(at 200.66 58.42)
-		(uuid "8eacdbe9-242a-42d7-80d8-93db030b17c8")
 	)
 	(no_connect
 		(at 82.55 54.61)
@@ -2542,6 +2534,16 @@
 			(type default)
 		)
 		(uuid "1ff40a6b-645b-41ad-a0eb-9e62a2cdd672")
+	)
+	(wire
+		(pts
+			(xy 200.66 57.15) (xy 193.04 57.15)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "20669c77-deb6-45c8-a9bb-052a3fe7bbe5")
 	)
 	(wire
 		(pts
@@ -2622,6 +2624,16 @@
 			(type default)
 		)
 		(uuid "44e9d711-e1d6-4f28-98c6-d09b89de3592")
+	)
+	(wire
+		(pts
+			(xy 200.66 59.69) (xy 200.66 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4a39a992-f5e8-465b-a789-a6b8d4ea05ad")
 	)
 	(wire
 		(pts
@@ -2795,6 +2807,16 @@
 	)
 	(wire
 		(pts
+			(xy 193.04 57.15) (xy 193.04 59.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8632b45d-56ef-4a53-a850-366190870d59")
+	)
+	(wire
+		(pts
 			(xy 48.26 88.9) (xy 82.55 88.9)
 		)
 		(stroke
@@ -2802,6 +2824,16 @@
 			(type default)
 		)
 		(uuid "870f2eb4-a5f7-4cf7-bd34-fa31c5a3f7ba")
+	)
+	(wire
+		(pts
+			(xy 200.66 58.42) (xy 200.66 57.15)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8877fec0-7b3f-447a-b368-5c33607465d6")
 	)
 	(wire
 		(pts
@@ -4037,6 +4069,73 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "#PWR08")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 196.85 59.69 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5feee078-1550-4431-aaa0-d9d71af512f8")
+		(property "Reference" "C11"
+			(at 187.198 60.96 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "470pf"
+			(at 192.278 60.96 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 200.66 58.7248 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 196.85 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 196.85 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "aea40baa-ebd0-4da8-8845-8200f18b488e")
+		)
+		(pin "2"
+			(uuid "292c46ff-3729-4662-bded-52ea003df165")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
+					(reference "C11")
 					(unit 1)
 				)
 			)
