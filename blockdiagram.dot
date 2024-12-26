@@ -25,8 +25,8 @@ digraph blockdiagram {
       Buck [ shape=cylinder label="Buck\n(12VDC->3.3VDC)" ]
       SSR [ shape=box3d fillcolor=orange style=filled ]
       ESP32S3 -> SSR
-      Relay [ shape=box3d fillcolor=orange style=filled ]
-      ESP32S3 -> Relay
+      MOSFET [ shape=box3d fillcolor=orange style=filled ]
+      ESP32S3 -> MOSFET
     }
 
     Motor [ shape=doubleoctagon label="Motor\n(12VDC)" ]
@@ -38,7 +38,7 @@ digraph blockdiagram {
     ACAdapter -> Motor
     ACAdapter -> Molex1
     ACAdapter -> Molex2
-    Relay -> Motor
+    MOSFET -> Motor
     LoadCell [ shape=rectangle fillcolor=grey label="5KG\nload cell" ]
     NAU7802 -> LoadCell
 
