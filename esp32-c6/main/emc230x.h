@@ -1,0 +1,1 @@
+../../esp32-s3/main/emc230x.h
