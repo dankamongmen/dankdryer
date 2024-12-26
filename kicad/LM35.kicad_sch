@@ -12,21 +12,21 @@
 		(comment 1 "nick black")
 	)
 	(lib_symbols
-		(symbol "Connector:Screw_Terminal_01x04"
+		(symbol "Connector:Screw_Terminal_01x05"
 			(pin_names
 				(offset 1.016) hide)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
 			(property "Reference" "J"
-				(at 0 5.08 0)
+				(at 0 7.62 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Value" "Screw_Terminal_01x04"
+			(property "Value" "Screw_Terminal_01x05"
 				(at 0 -7.62 0)
 				(effects
 					(font
@@ -52,7 +52,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Generic screw terminal, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(property "Description" "Generic screw terminal, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)"
 				(at 0 0 0)
 				(effects
 					(font
@@ -79,9 +79,9 @@
 					(hide yes)
 				)
 			)
-			(symbol "Screw_Terminal_01x04_1_1"
+			(symbol "Screw_Terminal_01x05_1_1"
 				(rectangle
-					(start -1.27 3.81)
+					(start -1.27 6.35)
 					(end 1.27 -6.35)
 					(stroke
 						(width 0.254)
@@ -163,6 +163,18 @@
 				)
 				(polyline
 					(pts
+						(xy -0.5334 5.4102) (xy 0.3302 4.572)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
 						(xy -0.3556 -4.572) (xy 0.508 -5.4102)
 					)
 					(stroke
@@ -209,6 +221,18 @@
 						(type none)
 					)
 				)
+				(polyline
+					(pts
+						(xy -0.3556 5.588) (xy 0.508 4.7498)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
 				(circle
 					(center 0 0)
 					(radius 0.635)
@@ -231,8 +255,19 @@
 						(type none)
 					)
 				)
+				(circle
+					(center 0 5.08)
+					(radius 0.635)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
 				(pin passive line
-					(at -5.08 2.54 0)
+					(at -5.08 5.08 0)
 					(length 3.81)
 					(name "Pin_1"
 						(effects
@@ -250,7 +285,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 0 0)
+					(at -5.08 2.54 0)
 					(length 3.81)
 					(name "Pin_2"
 						(effects
@@ -268,7 +303,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -2.54 0)
+					(at -5.08 0 0)
 					(length 3.81)
 					(name "Pin_3"
 						(effects
@@ -286,7 +321,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -5.08 0)
+					(at -5.08 -2.54 0)
 					(length 3.81)
 					(name "Pin_4"
 						(effects
@@ -296,6 +331,24 @@
 						)
 					)
 					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -5.08 0)
+					(length 3.81)
+					(name "Pin_5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1335,6 +1388,16 @@
 	)
 	(wire
 		(pts
+			(xy 187.96 73.66) (xy 191.77 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "79f6b859-c2a0-42d4-8e08-f0fa5cd9d594")
+	)
+	(wire
+		(pts
 			(xy 82.55 64.77) (xy 85.09 64.77)
 		)
 		(stroke
@@ -1552,7 +1615,7 @@
 	)
 	(text "To onboard terminals"
 		(exclude_from_sim no)
-		(at 186.944 75.184 0)
+		(at 185.674 77.47 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1576,9 +1639,9 @@
 		)
 		(uuid "e410048f-7138-41d0-9032-c56913934634")
 	)
-	(hierarchical_label "HallAnalog"
-		(shape output)
-		(at 187.96 71.12 180)
+	(hierarchical_label "+3.3V"
+		(shape passive)
+		(at 187.96 66.04 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1588,7 +1651,7 @@
 			)
 			(justify right)
 		)
-		(uuid "15eb2f43-6ef1-4d76-ab4f-b40934d82e61")
+		(uuid "1a09aaf0-eea4-4ae2-8408-44841e61d560")
 	)
 	(hierarchical_label "ThermAnalog"
 		(shape input)
@@ -1603,6 +1666,20 @@
 			(justify right)
 		)
 		(uuid "2afe5b93-09c7-4b06-a746-3a2b9b0ac6bc")
+	)
+	(hierarchical_label "Hall"
+		(shape output)
+		(at 187.96 73.66 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify right)
+		)
+		(uuid "3549afb3-21b6-4c6c-953a-3f72f5c2a695")
 	)
 	(hierarchical_label "GND"
 		(shape passive)
@@ -1632,7 +1709,7 @@
 		)
 		(uuid "3cb0a608-4673-44cd-b5d1-04cc1b101c6a")
 	)
-	(hierarchical_label "HallAnalog"
+	(hierarchical_label "Hall"
 		(shape input)
 		(at 86.36 57.15 0)
 		(fields_autoplaced yes)
@@ -1646,21 +1723,7 @@
 		)
 		(uuid "7858af69-bbc3-41f2-8a02-66678f1b5841")
 	)
-	(hierarchical_label "ThermAnalog"
-		(shape output)
-		(at 187.96 66.04 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-			(justify right)
-		)
-		(uuid "b1bc4a02-eac6-47a3-aead-79186550451f")
-	)
-	(hierarchical_label "+5VA"
+	(hierarchical_label "+3.3V"
 		(shape passive)
 		(at 85.09 64.77 0)
 		(fields_autoplaced yes)
@@ -1673,6 +1736,20 @@
 			(justify left)
 		)
 		(uuid "ee752d5d-47c3-4218-83af-f5c999cf2814")
+	)
+	(hierarchical_label "ThermAnalog"
+		(shape output)
+		(at 187.96 71.12 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify right)
+		)
+		(uuid "f300f7f6-7efe-47ba-b2ca-3b734ce11bcf")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -1872,82 +1949,6 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/7565128f-4bdc-4cc8-b00b-bbda48a41b13"
 					(reference "R9")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:Screw_Terminal_01x04")
-		(at 196.85 66.04 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board no)
-		(dnp no)
-		(uuid "2e64f84a-cc68-437d-841e-fab742b98e96")
-		(property "Reference" "J6"
-			(at 196.088 60.198 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "Microboard terminal"
-			(at 201.422 75.946 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Footprint" ""
-			(at 196.85 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 196.85 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic screw terminal, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 196.85 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "6446f79d-d260-42c4-b5c3-0dea7e434f4f")
-		)
-		(pin "1"
-			(uuid "ab361d0d-adb0-4041-89e6-56767aa56662")
-		)
-		(pin "4"
-			(uuid "1672aee3-aa4c-4c25-a261-890d62d2ef4e")
-		)
-		(pin "3"
-			(uuid "70f306be-016b-4aa8-a86a-8022a8c395ef")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/7565128f-4bdc-4cc8-b00b-bbda48a41b13"
-					(reference "J6")
 					(unit 1)
 				)
 			)
@@ -2158,6 +2159,84 @@
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/7565128f-4bdc-4cc8-b00b-bbda48a41b13"
 					(reference "C12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Screw_Terminal_01x05")
+		(at 196.85 68.58 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board no)
+		(dnp no)
+		(uuid "5f929e95-d473-4897-bb29-848a8d4162ed")
+		(property "Reference" "J10"
+			(at 195.326 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Screw_Terminal_01x05"
+			(at 186.182 58.928 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "dank:TerminalBlock_bornier-5_P5.08mm"
+			(at 196.85 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 196.85 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Generic screw terminal, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 196.85 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "94ad5c28-b06d-42c0-9f81-503800a666d7")
+		)
+		(pin "2"
+			(uuid "9b39a783-45e6-4792-9870-9ca68774587e")
+		)
+		(pin "3"
+			(uuid "3279d334-4360-4d56-a6bc-bab820f759f1")
+		)
+		(pin "5"
+			(uuid "a44042e3-08de-42d5-b23f-576cb0fae53d")
+		)
+		(pin "4"
+			(uuid "04c348cf-b832-483d-8cff-a2bf37dc6504")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/7565128f-4bdc-4cc8-b00b-bbda48a41b13"
+					(reference "J10")
 					(unit 1)
 				)
 			)
