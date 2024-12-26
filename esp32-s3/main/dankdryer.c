@@ -47,9 +47,8 @@
 
 #define LOAD_CELL_MAX 5000 // 5kg capable
 
-static const ledc_channel_t LOWER_FANCHAN = LEDC_CHANNEL_0;
-static const ledc_channel_t UPPER_FANCHAN = LEDC_CHANNEL_1;
-static const ledc_mode_t LEDCMODE = LEDC_LOW_SPEED_MODE; // no high-speed on S3
+static const unsigned LOWER_FANCHAN = 0;
+static const unsigned UPPER_FANCHAN = 1;
 
 static bool MotorState;
 static bool HeaterState;
@@ -255,17 +254,13 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
   return 0;
 }
 
-// set the desired PWM value
 static int
-set_pwm(const ledc_channel_t channel, unsigned pwm){
-  if(ledc_set_duty(LEDCMODE, channel, pwm) != ESP_OK){
-    fprintf(stderr, "error setting pwm!\n");
-    return -1;
-  }else if(ledc_update_duty(LEDCMODE, channel) != ESP_OK){
-    fprintf(stderr, "error committing pwm!\n");
+set_pwm(unsigned fanidx, unsigned pwm){
+  if(emc230x_setpwm(EMC2302, fanidx, pwm)){
+    fprintf(stderr, "error setting pwm %u for fan %u!\n", pwm, fanidx);
     return -1;
   }
-  printf("set pwm to %u on channel %d\n", pwm, channel);
+  printf("set pwm to %u on fan %d\n", pwm, fanidx);
   return 0;
 }
 
@@ -644,26 +639,12 @@ int setup_emc2302(i2c_master_bus_handle_t master){
   if(emc230x_detect(master, &EMC2302, EMC2302_MODEL_UNSPEC)){
     return -1;
   }
-  /*
-  if(initialize_tach(lowertpin, &LowerPulses)){
-    return -1;
-  }
-  if(initialize_tach(uppertpin, &UpperPulses)){
-    return -1;
-  }
-  if(initialize_25k_pwm(LOWER_FANCHAN, lowerppin, LEDC_TIMER_1)){
-    return -1;
-  }
-  if(initialize_25k_pwm(UPPER_FANCHAN, upperppin, LEDC_TIMER_2)){
-    return -1;
-  }
   if(set_pwm(LOWER_FANCHAN, LowerPWM)){
     return -1;
   }
   if(set_pwm(UPPER_FANCHAN, UpperPWM)){
     return -1;
   }
-*/
   return 0;
 }
 
