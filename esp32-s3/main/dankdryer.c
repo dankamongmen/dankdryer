@@ -864,7 +864,7 @@ setup(adc_channel_t* thermchan){
 static void
 getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
   const float diffu = curtime - lasttime;
-  *lprm = *urpm = 0;
+  *lrpm = *urpm = 0;
   emc230x_gettach(EMC2302, LOWER_FANCHAN, lrpm);
   emc230x_gettach(EMC2302, UPPER_FANCHAN, urpm);
   printf("tach raw: %u %u\n", *lrpm, *urpm);
