@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "Dankdryer")
-		(date "2024-12-25")
-		(rev "0.98")
+		(date "2024-12-26")
+		(rev "0.99")
 		(company "Dirty South Supercomputing")
 		(comment 1 "nick black")
 	)
@@ -466,10 +466,9 @@
 				)
 			)
 		)
-		(symbol "PCM_Triac_AKL:BT136S-800E"
+		(symbol "PCM_Triac_AKL:T1210-800G"
 			(pin_names
-				(offset 0.002)
-			)
+				(offset 0.002) hide)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -482,7 +481,7 @@
 					(justify left)
 				)
 			)
-			(property "Value" "BT136S-800E"
+			(property "Value" "T1210-800G"
 				(at 3.175 -1.27 0)
 				(effects
 					(font
@@ -491,7 +490,7 @@
 					(justify left)
 				)
 			)
-			(property "Footprint" "PCM_Package_TO_SOT_SMD_AKL:TO-252-2"
+			(property "Footprint" "PCM_Package_TO_SOT_SMD_AKL:TO-263-2"
 				(at 0 0 0)
 				(effects
 					(font
@@ -500,7 +499,7 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "https://www.tme.eu/Document/31b2632fb77e4981cb47199759061399/BT136S-800E.pdf"
+			(property "Datasheet" "https://www.tme.eu/Document/76a9cc135e61671358387fc748b5f228/BTA12_BTB12_T12xx.pdf"
 				(at 0 0 0)
 				(effects
 					(font
@@ -509,7 +508,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "TO-252 Triac, 800V, 4A, Alternate KiCAD Library"
+			(property "Description" "TO-263 Triac, 800V, 12A, Alternate KiCAD Library"
 				(at 0 0 0)
 				(effects
 					(font
@@ -518,7 +517,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "triac BT136S-800E"
+			(property "ki_keywords" "triac T1210-800G"
 				(at 0 0 0)
 				(effects
 					(font
@@ -527,7 +526,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "BT136S-800E_0_1"
+			(symbol "T1210-800G_0_1"
 				(polyline
 					(pts
 						(xy -2.54 -2.54) (xy -1.27 -2.54)
@@ -625,7 +624,7 @@
 					)
 				)
 			)
-			(symbol "BT136S-800E_1_1"
+			(symbol "T1210-800G_1_1"
 				(pin passive line
 					(at 0 -5.08 90)
 					(length 2.54)
@@ -3086,7 +3085,7 @@
 	(text_box "120VAC heater"
 		(exclude_from_sim no)
 		(at 15.24 106.68 0)
-		(size 76.2 53.34)
+		(size 76.2 66.04)
 		(stroke
 			(width 0)
 			(type default)
@@ -3140,6 +3139,18 @@
 		)
 		(uuid "e13bfe6c-eaf7-47a6-8ece-ba412b6e072d")
 	)
+	(text "0.005A minimum to drive MOC3063SM.\n3.3V / 620Ω = 0.0053A (0.0176W)\nHeater neutral returns from 150C thermostat.\nHeater is resistive load, no need for snubber circuit.\n450W±20% max draw -> 540W / 120VAC -> 4.5A max switched in triac."
+		(exclude_from_sim no)
+		(at 15.748 167.132 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.1588)
+			)
+			(justify left)
+		)
+		(uuid "417f3b45-e6e9-4c35-b54b-d089db38e905")
+	)
 	(text "2A/4A max continuous/pulse drain current.\n10mA max current to MOSFET: 3.3V / 0.01A = 330Ω (0.033W).\nSchottky diode across motor +/- for EMP protection."
 		(exclude_from_sim no)
 		(at 97.79 97.79 0)
@@ -3174,18 +3185,6 @@
 			(justify left)
 		)
 		(uuid "89a2def1-962d-406e-b8ef-57fbb7300ca0")
-	)
-	(text "0.005A minimum to drive MOC3063SM.\n3.3V / 620Ω = 0.0053A (0.0176W)\nHeater neutral returns from 150C thermostat.\nHeater is resistive load, no need for snubber circuit."
-		(exclude_from_sim no)
-		(at 16.51 154.94 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.1588)
-			)
-			(justify left)
-		)
-		(uuid "aac3a372-0554-454b-9baf-ec8d8fa66655")
 	)
 	(text "2.7-5.5V input.\nAVDD must not exceed DVDD.\nOur AVDD is 5, and our DVDD 3.3, so we don't use AVDD."
 		(exclude_from_sim no)
@@ -3973,79 +3972,6 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "#PWR032")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "PCM_Triac_AKL:BT136S-800E")
-		(at 62.23 134.62 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "5948ce05-c5da-4b53-bebc-e1e05d17b324")
-		(property "Reference" "Q1"
-			(at 66.04 133.3499 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "BT136S-800E"
-			(at 66.04 135.8899 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "PCM_Package_TO_SOT_SMD_AKL:TO-252-2"
-			(at 62.23 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://www.tme.eu/Document/31b2632fb77e4981cb47199759061399/BT136S-800E.pdf"
-			(at 62.23 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "TO-252 Triac, 800V, 4A, Alternate KiCAD Library"
-			(at 62.23 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "2fd16cc9-3c79-47fb-bf02-cc2c00a69503")
-		)
-		(pin "1"
-			(uuid "3f0618e8-b153-4c5d-b78a-a58198f3aa82")
-		)
-		(pin "3"
-			(uuid "4ce633b1-16f0-4660-b2eb-3af57ced0c5f")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "Q1")
 					(unit 1)
 				)
 			)
@@ -5527,6 +5453,79 @@
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "R12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_Triac_AKL:T1210-800G")
+		(at 62.23 134.62 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f86b88bf-05d1-4525-80ef-c1fa721f1449")
+		(property "Reference" "Q3"
+			(at 66.04 133.3499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "T1210-800G"
+			(at 66.04 135.8899 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "PCM_Package_TO_SOT_SMD_AKL:TO-263-2"
+			(at 62.23 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.tme.eu/Document/76a9cc135e61671358387fc748b5f228/BTA12_BTB12_T12xx.pdf"
+			(at 62.23 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "TO-263 Triac, 800V, 12A, Alternate KiCAD Library"
+			(at 62.23 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "fcf98cb3-d230-448e-979a-c4cec42b9135")
+		)
+		(pin "1"
+			(uuid "7e6d5199-db7b-47f9-9bbc-30f59da2e265")
+		)
+		(pin "2"
+			(uuid "8efb2769-30bc-4e33-b152-fae93cc78af3")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
+					(reference "Q3")
 					(unit 1)
 				)
 			)

@@ -1199,7 +1199,7 @@
 		)
 		(uuid "41052809-a4b2-4ce7-abb2-7075f46097ab")
 	)
-	(text "2.5-5.5V, 3mA, max out 30mA@VDD±0.3 (0.159W),\n op to 135C."
+	(text "2.5-5.5V, 3mA, max out 30mA@VDD±0.3 (0.159W),\n operational to 135C."
 		(exclude_from_sim no)
 		(at 71.882 101.092 0)
 		(effects
@@ -1210,7 +1210,7 @@
 		)
 		(uuid "fef82f84-0cd4-4930-8ace-979988e291c9")
 	)
-	(text "2.3-5.5V, 9µA, max out 30mA@VDD±0.3 (0.159W),\n op to 150C."
+	(text "2.3-5.5V, 9µA, max out 30mA@VDD±0.3 (0.159W),\n operational to 150C."
 		(exclude_from_sim no)
 		(at 135.128 100.838 0)
 		(effects
