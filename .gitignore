@@ -13,6 +13,7 @@ kicad/*.gbrjob
 kicad/*.kicad_prl
 kicad/*.pdf
 kicad/*.png
+kicad/*.rpt
 kicad/*.zip
 kicad/fp-info-cache
 kicad/microboard/microboard-backups/
@@ -23,6 +24,7 @@ kicad/microboard/*.gbrjob
 kicad/microboard/*.kicad_prl
 kicad/microboard/*.pdf
 kicad/microboard/*.png
+kicad/microboard/*.rpt
 kicad/microboard/*.zip
 kicad/microboard/fp-info-cache
 out
