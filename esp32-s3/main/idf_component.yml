@@ -1,4 +1,5 @@
 dependencies:
+  dankamongmen/emc230x: "*"
   dankamongmen/nau7802: "*"
   espressif/led_strip: "*"
   espressif/mdns: "*"

@@ -1,4 +1,14 @@
 dependencies:
+  dankamongmen/emc230x:
+    component_hash: c0b54aae2650d3395dc7dd453159f6f9636e44d919f932b137299b9a3b2c4562
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 0.0.1
   dankamongmen/nau7802:
     component_hash: e9e9213725d3a64be667c83bf488aefa1d2c0cb87cc8e4dc8c705980c648b3fc
     dependencies:
@@ -34,10 +44,11 @@ dependencies:
       type: idf
     version: 5.5.0
 direct_dependencies:
+- dankamongmen/emc230x
 - dankamongmen/nau7802
 - espressif/led_strip
 - espressif/mdns
 - idf
-manifest_hash: 42a12dbe7df99657100fc3a2820d559767a4f6498d13050315ff8187b948e573
+manifest_hash: d1060af4930eab55cdaba91391f83ee7466c7f26cc58c221bff152e1a69c01d1
 target: esp32c6
 version: 2.0.0

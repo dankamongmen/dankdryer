@@ -3164,7 +3164,7 @@
 		)
 		(uuid "79e1a005-350a-4a11-8af1-08d14b66e3b0")
 	)
-	(text "12V fans support a max of 5mA on tachs.\n3.3V / 0.005A = 660Ω (0.0165W).\n3.3V / 680Ω = 0.00485A (0.0160W)."
+	(text "12V fans support a max of 5mA on tachs.\n3.3V / 0.005A = 660Ω (0.0165W).\n3.3V / 680Ω = 0.00485A (0.0160W).\n400 pF capacitive load per bus line."
 		(exclude_from_sim no)
 		(at 16.51 97.282 0)
 		(effects
