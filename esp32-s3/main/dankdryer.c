@@ -632,7 +632,8 @@ read_pstore(void){
   return 0;
 }
 
-int setup_emc2302(i2c_master_bus_handle_t master){
+static int
+setup_emc2302(i2c_master_bus_handle_t master){
   if(emc230x_detect(master, &EMC2302, EMC2302_MODEL_UNSPEC)){
     return -1;
   }
@@ -645,6 +646,17 @@ int setup_emc2302(i2c_master_bus_handle_t master){
   return 0;
 }
 
+static int
+setup_nau7802(i2c_master_bus_handle_t master){
+  if(nau7802_detect(master, &NAU7802)){
+    return -1;
+  }
+  if(nau7802_poweron(NAU7802)){
+    return -1;
+  }
+  // FIXME set gain / LDO?
+  return 0;
+}
 
 static void
 set_led(const struct failure_indication *nin){
@@ -840,6 +852,9 @@ setup(adc_channel_t* thermchan){
     set_failure(&SystemError);
   }
   if(setup_emc2302(I2CMaster)){
+    set_failure(&SystemError);
+  }
+  if(setup_nau7802(I2CMaster)){
     set_failure(&SystemError);
   }
   if(setup_heater(SSR_GPIN)){
