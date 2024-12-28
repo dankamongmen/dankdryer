@@ -29,4 +29,4 @@ $(OUT)/scad/%.png: scad/%.scad scad/core.scad
 
 clean:
 	rm -rf $(OUT)
-	@cd esp32-c6 && idf.py clean && rm -rf build
+	rm -rf esp32-c6/build
