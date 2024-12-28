@@ -17,7 +17,6 @@ images: $(IMAGES)
 
 # add actual esp-idf CMake output
 firmware:
-	@cd esp32-s3 && idf.py build
 	@cd esp32-c6 && idf.py build
 
 $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
@@ -30,5 +29,4 @@ $(OUT)/scad/%.png: scad/%.scad scad/core.scad
 
 clean:
 	rm -rf $(OUT)
-	@cd esp32-s3 && idf.py clean && rm -rf build
 	@cd esp32-c6 && idf.py clean && rm -rf build

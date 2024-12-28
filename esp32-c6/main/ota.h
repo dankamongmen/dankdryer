@@ -1,1 +1,6 @@
-../../esp32-s3/main/ota.h
+#ifndef DANKDRYER_OTA
+#define DANKDRYER_OTA
+
+int ota_init(void);
+
+#endif
