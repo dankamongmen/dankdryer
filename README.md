@@ -49,21 +49,23 @@ is included as a submodule.
 
 # Construction / BOM
 
-The device requires approximately 500g of high-temperature filament (PC,
-PAHT-CF, etc.) to print. The exact amount of filament will depend on
-material and print settings. Six pieces are printed:
+The device as designed requires approximately 600g of high-temperature filament
+(PC, PAHT-CF, etc.) to print, as well as about 20g of polycarbonate and 20g of
+TPU 95A. The exact amount of filament will depend on material and print
+settings. Seven pieces are printed:
 
- * Hot chamber
- * Cool chamber
- * Motor sheath
- * Sheath coupling
- * Spool platform
- * Top
+ * Hot chamber (pa6-cf)
+ * Interlayer (tpu 95a)
+ * Cool chamber (pa6-cf)
+ * Motor sheath (polycarbonate)
+ * Sheath coupling (polycarbonate)
+ * Spool platform (polycarbonate)
+ * Top (pa6-cf)
 
-The hot and cool chamber dominate filament consumption, though
-the top is non-negligible. At consumer prices, bought in half-kilogram
-and kilogram units, this represents anywhere from roughly $15 (Polymaker
-PolyLite polycarbonate) to $40 (Polymaker Fiberon PA6-CF20).
+The hot and cool chamber dominate filament consumption, though the top is
+non-negligible. At consumer prices, bought in kilogram and half-kilogram units
+respectively, this represents anywhere from roughly $15 (Polymaker PolyLite
+polycarbonate) to $40 (Polymaker Fiberon PA6-CF20).
 
 ### Hot chamber
 
@@ -163,5 +165,4 @@ Combined OpenSCAD render for mating testing.
 # Questions
 
 * How does air flow? Let's get some visible air and test it.
-* Would we benefit from thermal insulation material in the hotbox?
 * What all could we accomplish by reading RFID?
