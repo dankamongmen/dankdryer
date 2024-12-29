@@ -285,6 +285,7 @@ httpd_get_handler(httpd_req_t *req){
             "<b>upwm:</b> %u<br/>"
             "<b>lrpm</b>: %u<br/>"
             "<b>urpm</b>: %u<br/>"
+            "<b>srpm</b>: %" PRIu32 "<br/>"
             "<b>motor</b>: %s<br/>"
             "<b>heater</b>: %s<br/>"
             "<b>mass</b>: %.2f<br/>"
@@ -297,6 +298,7 @@ httpd_get_handler(httpd_req_t *req){
             "</body></html>",
             get_lower_pwm(), get_upper_pwm(),
             get_lower_rpm(), get_upper_rpm(),
+            get_spool_rpm(),
             motor_state_http(),
             heater_state_http(),
             get_weight(), get_tare(),

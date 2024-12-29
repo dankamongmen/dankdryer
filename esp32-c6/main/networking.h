@@ -21,6 +21,7 @@ unsigned get_lower_pwm(void);
 unsigned get_upper_pwm(void);
 unsigned get_lower_rpm(void);
 unsigned get_upper_rpm(void);
+uint32_t get_spool_rpm(void);
 float get_weight(void);
 float get_tare(void);
 float get_upper_temp(void);

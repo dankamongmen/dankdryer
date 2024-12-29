@@ -151,6 +151,10 @@ unsigned get_upper_pwm(void){
   return UpperPWM;
 }
 
+uint32_t get_spool_rpm(void){
+  return LastSpoolRPM;
+}
+
 unsigned get_lower_rpm(void){
   return LastLowerRPM;
 }
@@ -968,6 +972,9 @@ void send_mqtt(int64_t curtime){
   }
   if(rpm_valid_p(LastUpperRPM)){
     cJSON_AddNumberToObject(root, "urpm", LastUpperRPM);
+  }
+  if(rpm_valid_p(LastSpoolRPM)){
+    cJSON_AddNumberToObject(root, "srpm", LastSpoolRPM);
   }
   cJSON_AddNumberToObject(root, "lpwm", LowerPWM);
   cJSON_AddNumberToObject(root, "upwm", UpperPWM);
