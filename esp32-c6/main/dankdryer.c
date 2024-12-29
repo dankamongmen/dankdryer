@@ -60,6 +60,7 @@ static adc_channel_t Thermchan;
 static uint32_t HallPulses;
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
+static uint32_t LastSpoolRPM;
 static unsigned LastLowerRPM, LastUpperRPM;
 static float LastLowerTemp, LastUpperTemp;
 static i2c_master_bus_handle_t I2CMaster;
@@ -933,7 +934,24 @@ getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
   }
 }
 
-void send_mqtt(int64_t curtime, unsigned lrpm, unsigned urpm){
+// we don't try to measure the first iteration, as we don't yet have a
+// timestamp (and the fans are spinning up, anyway).
+static void
+getHallCount(unsigned *rpm, int64_t curtime, int64_t lasttime){
+  const float diffu = curtime - lasttime;
+  *rpm = HallPulses;
+  printf("spool count raw: %u\n", *rpm);
+  *rpm /= 2; // two pulses for each rotation
+  const float scale = 60.0 * 1000000u / diffu;
+  *rpm *= scale;
+  printf("scale: %f diffu: %f rpm: %u\n", scale, diffu, *rpm);
+  if(rpm_valid_p(*rpm)){
+    LastSpoolRPM = *rpm;
+  }
+  HallPulses = 0;
+}
+
+void send_mqtt(int64_t curtime){
   cJSON* root = cJSON_CreateObject();
   if(root == NULL){
     fprintf(stderr, "couldn't create JSON object\n");
@@ -1000,12 +1018,13 @@ void app_main(void){
     }
     printf("esp32 temp: %f weight: %f (%svalid)\n", ambient, weight,
             weight_valid_p(weight) ? "" : "in");
-    unsigned lrpm, urpm;
+    unsigned lrpm, urpm, srpm;
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
     printf("motor: %s heater: %s\n", motor_state(), heater_state());
     int64_t curtime = esp_timer_get_time();
     if(curtime - lasttachs > TACH_SAMPLE_QUANTUM_USEC){
       getFanTachs(&lrpm, &urpm, curtime, lasttachs);
+			getHallCount(&srpm, curtime, lasttachs);
       lasttachs = curtime;
     }
     //printf("dryends: %lld cursec: %lld\n", DryEndsAt, curtime);
@@ -1016,7 +1035,7 @@ void app_main(void){
     }
     update_upper_temp();
     if(curtime - lastpub > MQTT_PUBLISH_QUANTUM_USEC){
-      send_mqtt(curtime, lrpm, urpm);
+      send_mqtt(curtime);
       lastpub = curtime;
     }
   }
