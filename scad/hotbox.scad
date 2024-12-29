@@ -166,7 +166,8 @@ module core(){
     }
 }
 
-// hole and mounts for 150C thermocouple and heating element wires
+// hole and mounts for 175C thermocouple
+// and heating element wires
 module thermohole(){
     r = 8;
     l = 34;
@@ -241,7 +242,7 @@ module hotbox(){
         translate([0, totalxy / 4 + 8, wallz / 2]){
             ceramheat230(wallz);
         }
-        // hole and mounts for 150C thermocouple and
+        // hole and mounts for 175C thermocouple and
 		// heating element wires
         translate([50, -15, wallz / 2]){
             rotate([0, 0, 45]){
@@ -250,12 +251,20 @@ module hotbox(){
         }
     }
     translate([0, 0, totalz - topz]){
-        linear_extrude(topz){
-            difference(){
-                circle(totalxy / 2 - 3);
-                circle(innerr);
-            }
-        }
+		difference(){
+			linear_extrude(topz){
+				difference(){
+					circle(innerr + 5);
+					circle(innerr);
+				}
+			}
+			// cut away top to get threading
+			translate([0, 0, 8]){
+				mirror([0, 0, 1]){
+					top();
+				}
+			}
+		}
     }
 }
 

@@ -7,8 +7,9 @@ module top(){
     // a tight fit.
     translate([0, 0, inh]){
         difference(){
-            cylinder(inh, innerr - 0.5, innerr - 0.5, true);
-            cylinder(inh, innerr - 4, innerr - 4, true);
+			threaded_rod(innerr * 2 + 4, inh, 2);
+            //cylinder(inh, innerr - 0.5, innerr - 0.5, true);
+            cylinder(inh, innerr - 2, innerr - 2, true);
         }
     }
     linear_extrude(inh / 2){
@@ -16,6 +17,6 @@ module top(){
     }
 }
 
-multicolor("white"){
+multicolor("lightyellow"){
     top();
 }
