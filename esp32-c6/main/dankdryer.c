@@ -57,6 +57,7 @@ static uint32_t UpperPWM = 128;
 static float LastWeight = -1.0;
 static float TareWeight = -1.0;
 static adc_channel_t Thermchan;
+static uint32_t HallPulses;
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static unsigned LastLowerRPM, LastUpperRPM;
@@ -71,6 +72,12 @@ static led_strip_handle_t Neopixel;
 static adc_oneshot_unit_handle_t ADC1;
 static temperature_sensor_handle_t temp;
 static adc_cali_handle_t ADC1Calibration;
+
+static void
+hall_isr(void* pulsecount){
+  uint32_t* pc = pulsecount;
+  ++*pc;
+}
 
 static inline bool
 rpm_valid_p(unsigned rpm){
@@ -830,6 +837,27 @@ setup_i2c(i2c_master_bus_handle_t *master, gpio_num_t sda, gpio_num_t scl){
   return 0;
 }
 
+static int
+setup_hall(gpio_num_t pin, uint32_t* arg){
+  if(gpio_set_input(pin)){
+    return -1;
+  }
+  esp_err_t e = gpio_set_intr_type(pin, GPIO_INTR_NEGEDGE);
+  if(e != ESP_OK){
+    fprintf(stderr, "failure (%s) installing %d interrupt\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_isr_handler_add(pin, hall_isr, arg)) != ESP_OK){
+    fprintf(stderr, "failure (%s) setting %d isr\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_intr_enable(pin)) != ESP_OK){
+    fprintf(stderr, "failure (%s) enabling %d interrupt\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  return 0;
+}
+
 static void
 setup(adc_channel_t* thermchan){
 #ifdef RGB_PIN
@@ -840,6 +868,14 @@ setup(adc_channel_t* thermchan){
     read_pstore();
   }
   if(ota_init()){
+    set_failure(&SystemError);
+  }
+  esp_err_t e = gpio_install_isr_service(0);
+  if(e != ESP_OK){
+    fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
+    set_failure(&SystemError);
+  }
+  if(setup_hall(HALL_DATAPIN, &HallPulses)){
     set_failure(&SystemError);
   }
   if(setup_adc_oneshot(ADC_UNIT_1, &ADC1, &ADC1Calibration, &ADC1Calibrated)){
