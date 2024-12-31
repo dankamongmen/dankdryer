@@ -109,18 +109,18 @@
    </div>
    <h2 id="assembly">Components/assembly</h2>
    <div class="proddesc">
-   Seven objects are printed using four generated STL files.
-   They ought be printed in the generated orientations.<br/>
+   Seven (or possibly eight) objects are printed using four generated STL
+   files. They ought be printed in the generated orientations.<br/>
      <ul>
        <li><a href="top.png">Top</a>
        </li>
        <li><a href="hotbox.png">Upper (hot) chamber</a>
        </li>
-       <li><a href="interlayer.png">Interlayer</a> (print using suitable TPU 95A!)
-       </li>
        <li><a href="croom.png">Lower (cool) chamber</a>
        </li>
-       <li><a href="coupling.png">Internal components</a> (load cell coupling, motor coupling, spool platform)
+       <li><a href="coupling.png">Internal components</a> (load cell coupling, motor coupling, spool platform, AC shield)
+       </li>
+       <li>Optional <a href="interlayer.png">Interlayer</a> (print using suitable TPU 95A!)
        </li>
      </ul>
      The OpenSCAD files can be found on <a href="https://github.com/dankamongmen/dankdryer/tree/master/scad">Github</a>.
@@ -146,9 +146,12 @@
          the upper chamber. The logo ought be facing out; this fan is an exhaust.</li>
        <li>Insert the power plug/rocker switch unit into the rectangular
          hole on the side of the lower chamber. It ought not move once
-         inserted.</li>
+         inserted. Secure it with hot glue.</li>
        <li>Use two M5 screws to mount the AC adapter to the floor of the lower chamber,
          on the side opposite the intake fan.</li>
+       <li>Wire the plug/switch to the AC adapter.</li>
+       <li>Place the AC shield atop the AC wiring, and push it down. Secure it
+           with hot glue.</li>
        <li>Use four M5 screws to mount the PCB to the floor of the lower chamber,
          next to the intake fan.</li>
        <li>Insert the antenna into the antenna hole to the left of the lower chamber's
@@ -166,8 +169,8 @@
        <li>Wire the heating element to the 175℃ thermostat.</li>
        <li>Wire the heating element to the PCB.</li>
        <li>Wire the 175℃ thermostat to the PCB.</li>
-       <li>Place the interlayer atop the lower chamber.</li>
-       <li>Place the upper chamber atop the interlayer, matching the four holes.</li>
+       <li>Optional: place the interlayer atop the lower chamber.</li>
+       <li>Place the upper chamber atop the bottom chamber/interlayer, matching the four holes.</li>
        <li>Use four M5x35 bolts to securely mate the two chambers.</li>
        <li>Push the spool platform down around the motor coupling.</li>
        <li>Push the motor coupling down around the rotor and the top of the motor.
