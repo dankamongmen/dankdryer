@@ -50,22 +50,27 @@ is included as a submodule.
 # Construction / BOM
 
 The device as designed requires approximately 600g of high-temperature filament
-(PC, PAHT-CF, etc.) to print, as well as about 20g of polycarbonate and 20g of
-TPU 95A. The exact amount of filament will depend on material and print
-settings. Seven pieces are printed:
+(PC, PAHT-CF, etc.) to print, as well as about 20g of polycarbonate. The exact
+amount of filament will depend on material and print settings. Six pieces must
+be printed:
 
  * Hot chamber (pa6-cf)
- * Interlayer (tpu 95a)
  * Cool chamber (pa6-cf)
  * Motor sheath (polycarbonate)
  * Sheath coupling (polycarbonate)
  * Spool platform (polycarbonate)
  * Top (pa6-cf)
 
+and it is possible that you'll need a seventh:
+
+ * Optional: Interlayer (tpu 95a)
+
 The hot and cool chamber dominate filament consumption, though the top is
-non-negligible. At consumer prices, bought in kilogram and half-kilogram units
-respectively, this represents anywhere from roughly $15 (Polymaker PolyLite
-polycarbonate) to $40 (Polymaker Fiberon PA6-CF20).
+non-negligible.
+
+If you print your top and bottom chambers from different materials, or
+otherwise end up with chambers which don't precisely mate, print the
+interlayer and put it between the two chambers to get an airtight seal.
 
 ### Hot chamber
 
