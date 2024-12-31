@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "Dankdryer")
-		(date "2024-12-26")
-		(rev "0.99")
+		(date "2024-12-31")
+		(rev "1.0")
 		(company "Dirty South Supercomputing")
 		(comment 1 "nick black")
 	)
@@ -4074,12 +4074,12 @@
 		(uuid "f39ebf6d-8b00-4949-beaa-27c9a5fa478b")
 	)
 	(no_connect
-		(at 219.71 57.15)
-		(uuid "0eb758f5-a1b3-4401-92e1-c69ba91f7452")
+		(at 189.23 69.85)
+		(uuid "00149071-bcf5-4158-aaa7-5a3052f8bb13")
 	)
 	(no_connect
-		(at 189.23 62.23)
-		(uuid "0f8fa71a-d18b-4146-b930-8cf0ba3606ef")
+		(at 219.71 57.15)
+		(uuid "0eb758f5-a1b3-4401-92e1-c69ba91f7452")
 	)
 	(no_connect
 		(at 219.71 77.47)
@@ -4114,20 +4114,20 @@
 		(uuid "80cd77ff-5e18-48bd-bcad-845dd5d46847")
 	)
 	(no_connect
-		(at 189.23 64.77)
-		(uuid "9247e4b9-08ee-4e04-b762-f65add31ff7e")
-	)
-	(no_connect
 		(at 125.73 93.98)
 		(uuid "99dba896-2ee9-418e-b8e8-bf0875d90805")
 	)
 	(no_connect
-		(at 219.71 62.23)
-		(uuid "a6e25def-2378-4327-9d31-f3dfacb8f2ba")
+		(at 189.23 67.31)
+		(uuid "a1f76026-52ff-42eb-a3b0-88f7ad793b19")
 	)
 	(no_connect
 		(at 44.45 45.72)
 		(uuid "dec5e54b-43d4-4958-aef7-ac466d764f86")
+	)
+	(no_connect
+		(at 219.71 64.77)
+		(uuid "e4ace61f-5757-4002-9d0a-879c4460478c")
 	)
 	(no_connect
 		(at 189.23 74.93)
@@ -5272,7 +5272,7 @@
 	)
 	(hierarchical_label "Hall"
 		(shape bidirectional)
-		(at 189.23 67.31 180)
+		(at 189.23 62.23 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5280,19 +5280,7 @@
 			)
 			(justify right)
 		)
-		(uuid "17f37fd2-2331-4b7c-bc30-11dd0b6416fa")
-	)
-	(hierarchical_label "SSRControl"
-		(shape bidirectional)
-		(at 219.71 64.77 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "1e378a41-ddae-4442-8035-1f3bbba14bbe")
+		(uuid "186a53b8-a7dd-42c7-8abe-2aa96a10a0f7")
 	)
 	(hierarchical_label "SDA"
 		(shape bidirectional)
@@ -5367,18 +5355,6 @@
 		)
 		(uuid "4356c3f8-fcd8-4e3a-8710-2a1cc81eacf9")
 	)
-	(hierarchical_label "Therm"
-		(shape bidirectional)
-		(at 189.23 69.85 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "495ffb49-61d0-400b-be08-8034c07020ad")
-	)
 	(hierarchical_label "HeaterNeutral"
 		(shape input)
 		(at 67.31 184.15 0)
@@ -5414,6 +5390,30 @@
 			(justify right)
 		)
 		(uuid "7400a02b-a783-4def-8380-6a9f4b736ab5")
+	)
+	(hierarchical_label "Therm"
+		(shape bidirectional)
+		(at 189.23 64.77 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "760c8e9f-5beb-42a7-b32e-704c7c3109bb")
+	)
+	(hierarchical_label "SSRControl"
+		(shape bidirectional)
+		(at 219.71 62.23 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "85359ba6-b41b-4839-9185-73502c0acb89")
 	)
 	(hierarchical_label "TXD0"
 		(shape input)
