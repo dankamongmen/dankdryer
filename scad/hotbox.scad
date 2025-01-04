@@ -259,9 +259,11 @@ module hotbox(){
 				}
 			}
 			// cut away top to get threading
-			translate([0, 0, 8]){
+			translate([0, 0, 9]){
 				mirror([0, 0, 1]){
-					top();
+					scale(1.01){
+						top();
+					}
 				}
 			}
 		}

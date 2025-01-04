@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "Dankdryer")
-		(date "2024-12-31")
-		(rev "1.0")
+		(date "2025-01-02")
+		(rev "1.0.1")
 		(company "Dirty South Supercomputing")
 		(comment 1 "nick black")
 	)
@@ -3936,6 +3936,12 @@
 		(uuid "06776824-3176-4099-927c-85c46d13ca15")
 	)
 	(junction
+		(at 58.42 138.43)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0957a4ce-5d1b-4567-baab-139f586644d3")
+	)
+	(junction
 		(at 106.68 41.91)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4014,16 +4020,10 @@
 		(uuid "55f3b7b3-ef26-4a75-9b17-9b3fc35b999d")
 	)
 	(junction
-		(at 53.34 138.43)
+		(at 58.42 135.89)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "570d2446-b669-44e5-b329-da85315ce56b")
-	)
-	(junction
-		(at 53.34 128.27)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "6a647bf1-ca0a-4aae-97b2-7538f5d9a71f")
+		(uuid "615a5e0c-0d38-4fbe-85b5-b0e0504abf67")
 	)
 	(junction
 		(at 97.79 83.82)
@@ -4032,10 +4032,16 @@
 		(uuid "6e2351b0-8946-4f4c-bc7c-67607aa61fba")
 	)
 	(junction
-		(at 53.34 133.35)
+		(at 58.42 128.27)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "97d753f1-d62a-41b4-84f0-fdc63020c4d3")
+		(uuid "7aae7e92-d672-4886-b5b1-a2af3f3c4ef5")
+	)
+	(junction
+		(at 58.42 130.81)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "80877844-3dfd-4966-97d0-4c5078c3d466")
 	)
 	(junction
 		(at 233.68 44.45)
@@ -4056,16 +4062,10 @@
 		(uuid "b8419840-8986-40da-8c62-562be8ed5d56")
 	)
 	(junction
-		(at 53.34 130.81)
+		(at 58.42 133.35)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "cd313ba6-f77a-4d05-90e3-a43e5331f78c")
-	)
-	(junction
-		(at 53.34 135.89)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "eb237a82-8b3b-4959-a35f-03746b1255bd")
+		(uuid "c0033b98-bf9d-4e23-8ca9-fb86cfda8500")
 	)
 	(junction
 		(at 241.3 55.88)
@@ -4145,13 +4145,13 @@
 	)
 	(wire
 		(pts
-			(xy 127 161.29) (xy 134.62 161.29)
+			(xy 58.42 133.35) (xy 82.55 133.35)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "09181b00-9a4b-4866-876a-7c92bb833b11")
+		(uuid "044c28c4-0cbb-457d-9970-ec208da742d3")
 	)
 	(wire
 		(pts
@@ -4185,23 +4185,13 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 130.81) (xy 53.34 130.81)
+			(xy 43.18 130.81) (xy 58.42 130.81)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "0fc1c85f-e5da-4ad7-9158-3950e6baba9d")
-	)
-	(wire
-		(pts
-			(xy 53.34 135.89) (xy 71.12 135.89)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "10ce85b3-d203-41d7-8a57-1353054c01f1")
 	)
 	(wire
 		(pts
@@ -4215,7 +4205,7 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 133.35) (xy 53.34 133.35)
+			(xy 43.18 133.35) (xy 58.42 133.35)
 		)
 		(stroke
 			(width 0)
@@ -4235,13 +4225,13 @@
 	)
 	(wire
 		(pts
-			(xy 53.34 138.43) (xy 62.23 138.43)
+			(xy 58.42 138.43) (xy 59.69 138.43)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "1817cc38-71be-4127-8f12-bcbb137e5459")
+		(uuid "16c1c1ff-3f64-421d-8a71-f54c3986d381")
 	)
 	(wire
 		(pts
@@ -4305,6 +4295,16 @@
 	)
 	(wire
 		(pts
+			(xy 58.42 130.81) (xy 82.55 130.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "29f67751-3f35-41c1-9725-a70a8df025d3")
+	)
+	(wire
+		(pts
 			(xy 241.3 44.45) (xy 241.3 55.88)
 		)
 		(stroke
@@ -4322,6 +4322,16 @@
 			(type default)
 		)
 		(uuid "303ea54a-d9e2-498a-9b74-0c03bf340cfb")
+	)
+	(wire
+		(pts
+			(xy 127 157.48) (xy 127 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "32ed1411-c228-47d6-a8da-64330b9a8502")
 	)
 	(wire
 		(pts
@@ -4385,16 +4395,6 @@
 	)
 	(wire
 		(pts
-			(xy 82.55 133.35) (xy 53.34 133.35)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3e048b9c-6a28-4c1c-ace7-46c457254c1f")
-	)
-	(wire
-		(pts
 			(xy 134.62 41.91) (xy 148.59 41.91)
 		)
 		(stroke
@@ -4435,7 +4435,7 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 128.27) (xy 53.34 128.27)
+			(xy 43.18 128.27) (xy 58.42 128.27)
 		)
 		(stroke
 			(width 0)
@@ -4452,6 +4452,16 @@
 			(type default)
 		)
 		(uuid "4749852c-7c9d-48d0-970a-986ec0baaddd")
+	)
+	(wire
+		(pts
+			(xy 58.42 135.89) (xy 71.12 135.89)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4942bcef-6d8d-418e-ba5c-136f49a6c923")
 	)
 	(wire
 		(pts
@@ -4485,7 +4495,7 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 138.43) (xy 53.34 138.43)
+			(xy 43.18 138.43) (xy 58.42 138.43)
 		)
 		(stroke
 			(width 0)
@@ -4565,26 +4575,6 @@
 	)
 	(wire
 		(pts
-			(xy 82.55 130.81) (xy 53.34 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "747300b6-303a-4c26-9829-04f393de1def")
-	)
-	(wire
-		(pts
-			(xy 53.34 128.27) (xy 76.2 128.27)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "74fdaca8-da11-4568-9347-c615d86cb039")
-	)
-	(wire
-		(pts
 			(xy 132.08 185.42) (xy 127 185.42)
 		)
 		(stroke
@@ -4592,16 +4582,6 @@
 			(type default)
 		)
 		(uuid "7bb3e866-0a7d-4776-99ea-ef96abd7478a")
-	)
-	(wire
-		(pts
-			(xy 127 161.29) (xy 127 158.75)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7e573538-ec1a-48c2-ac09-1a45557aa96a")
 	)
 	(wire
 		(pts
@@ -4692,6 +4672,16 @@
 			(type default)
 		)
 		(uuid "9e77e215-9d23-44b7-9f33-30225445ae6f")
+	)
+	(wire
+		(pts
+			(xy 120.65 160.02) (xy 129.54 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a8d6dc64-d2c1-4b48-b13d-675e0c981cd1")
 	)
 	(wire
 		(pts
@@ -4835,6 +4825,16 @@
 	)
 	(wire
 		(pts
+			(xy 120.65 157.48) (xy 127 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d932c9cd-a795-40f9-939a-8bb3ed18c5ea")
+	)
+	(wire
+		(pts
 			(xy 67.31 186.69) (xy 63.5 186.69)
 		)
 		(stroke
@@ -4842,16 +4842,6 @@
 			(type default)
 		)
 		(uuid "db425096-19cb-42ab-94f6-e31a9317d5a7")
-	)
-	(wire
-		(pts
-			(xy 130.81 163.83) (xy 134.62 163.83)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "dc61dcef-77b2-45a6-85eb-47374eb9375a")
 	)
 	(wire
 		(pts
@@ -4885,13 +4875,23 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 135.89) (xy 53.34 135.89)
+			(xy 43.18 135.89) (xy 58.42 135.89)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "f767fcb9-11b0-4b28-8115-2daa9917f888")
+	)
+	(wire
+		(pts
+			(xy 58.42 128.27) (xy 76.2 128.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fb0f7a03-c178-41e3-8988-bcb5ef14cbd0")
 	)
 	(wire
 		(pts
@@ -5187,7 +5187,7 @@
 		)
 		(uuid "b5e41a2c-cc13-4039-b4f9-5122ba8564b9")
 	)
-	(text "Unicore 160MHz RISC-V. 4MB QSPI flash, 40–105C.\nGPIOs 0-6 are connected to 12-bit ADC.\nGPIOs 4, 5, 8, 9, and 15 are strapping pins.\nGPIOs 12 and 13 are used for JTAG.\nGPIOs 24-30 are used for QSPI flash.\nModule has a U.FL antenna connector."
+	(text "ESP32-C6-MINI-1U: unicore 160MHz RISC-V. 4MB QSPI flash, 40–105C.\nGPIOs 0-6 are connected to 12-bit ADC.\nGPIOs 4, 5, 8, 9, and 15 are strapping pins.\nGPIOs 12 and 13 are used for JTAG.\nGPIOs 24-30 are used for QSPI flash.\nModule has a U.FL antenna connector."
 		(exclude_from_sim no)
 		(at 171.704 108.204 0)
 		(effects
@@ -5320,7 +5320,7 @@
 	)
 	(hierarchical_label "Hall"
 		(shape input)
-		(at 62.23 138.43 0)
+		(at 59.69 138.43 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5429,13 +5429,13 @@
 	)
 	(hierarchical_label "Motor-"
 		(shape input)
-		(at 130.81 163.83 180)
+		(at 129.54 160.02 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right)
+			(justify left)
 		)
 		(uuid "a27f5ae5-8525-46a3-b697-190b2bb7b9a8")
 	)
@@ -7248,7 +7248,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Screw_Terminal_01x02")
-		(at 139.7 161.29 0)
+		(at 115.57 160.02 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7256,7 +7256,7 @@
 		(dnp no)
 		(uuid "76e258bd-5bbf-4658-b5b3-dc8cef2b21c6")
 		(property "Reference" "J8"
-			(at 138.43 155.956 0)
+			(at 116.84 165.354 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7265,7 +7265,7 @@
 			)
 		)
 		(property "Value" "motor"
-			(at 136.906 158.242 0)
+			(at 118.364 163.068 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7274,7 +7274,7 @@
 			)
 		)
 		(property "Footprint" "dank:TerminalBlock_bornier-2_P5.08mm"
-			(at 139.7 161.29 0)
+			(at 115.57 160.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7283,7 +7283,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 139.7 161.29 0)
+			(at 115.57 160.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7292,7 +7292,7 @@
 			)
 		)
 		(property "Description" "Generic screw terminal, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 139.7 161.29 0)
+			(at 115.57 160.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7858,16 +7858,15 @@
 	)
 	(symbol
 		(lib_id "power:+12V")
-		(at 127 158.75 0)
+		(at 127 154.94 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "a89883bb-8714-4c5d-bfd8-153baf9e6d42")
 		(property "Reference" "#PWR033"
-			(at 127 162.56 0)
+			(at 127 158.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7876,7 +7875,7 @@
 			)
 		)
 		(property "Value" "+12V"
-			(at 127 153.67 0)
+			(at 127 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7884,7 +7883,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 127 158.75 0)
+			(at 127 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7893,7 +7892,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 127 158.75 0)
+			(at 127 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7902,7 +7901,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+12V\""
-			(at 127 158.75 0)
+			(at 127 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7990,7 +7989,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Screw_Terminal_01x05")
-		(at 58.42 133.35 0)
+		(at 53.34 133.35 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7998,7 +7997,7 @@
 		(dnp no)
 		(uuid "be0b74ee-8311-4b15-914a-99e96e4fb127")
 		(property "Reference" "J6"
-			(at 57.15 124.46 0)
+			(at 54.61 142.24 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8007,7 +8006,7 @@
 			)
 		)
 		(property "Value" "Screw_Terminal_01x05"
-			(at 41.148 149.098 0)
+			(at 70.612 117.602 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8017,7 +8016,7 @@
 			)
 		)
 		(property "Footprint" "dank:TerminalBlock_bornier-5_P5.08mm"
-			(at 58.42 133.35 0)
+			(at 53.34 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8026,7 +8025,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 58.42 133.35 0)
+			(at 53.34 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8035,7 +8034,7 @@
 			)
 		)
 		(property "Description" "Generic screw terminal, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 58.42 133.35 0)
+			(at 53.34 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8895,7 +8894,7 @@
 				)
 			)
 		)
-		(property "Value" "ESP32-C6-MINI-1U-H4"
+		(property "Value" "ESP32-C6-MINI-1U"
 			(at 204.47 39.37 0)
 			(effects
 				(font
