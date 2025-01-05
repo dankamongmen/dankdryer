@@ -5,10 +5,10 @@
 	(uuid "815452e5-31b0-4dc9-8a96-e8ee8fccb70f")
 	(paper "USLetter")
 	(title_block
-		(title "Dankdryer")
-		(date "2025-01-02")
-		(rev "1.0.1")
-		(company "Dirty South Supercomputing")
+		(title "dankdryer")
+		(date "2025-01-05")
+		(rev "1.1.0")
+		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
 	(lib_symbols
@@ -1431,59 +1431,49 @@
 				)
 			)
 		)
-		(symbol "dank:NAU7802SGI-dank"
-			(pin_names
-				(offset 0.254)
-			)
+		(symbol "dank:NAU7802KGI"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "U4"
-				(at 25.4 7.62 0)
-				(effects
-					(font
-						(size 1.524 1.524)
-					)
-				)
-			)
-			(property "Value" "NAU7802SGI-dank"
-				(at 25.4 5.08 0)
-				(effects
-					(font
-						(size 1.524 1.524)
-					)
-				)
-			)
-			(property "Footprint" "dank:SOI16_NAU7802SGI_NUV"
-				(at 25.4 -9.398 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-						(italic yes)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "NAU7802SGI"
-				(at 25.654 -6.604 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-						(italic yes)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "24-bit ADC"
-				(at 25.4 -12.446 0)
+			(property "Reference" "IC"
+				(at 31.75 7.62 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left top)
+				)
+			)
+			(property "Value" "NAU7802KGI"
+				(at 31.75 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+				)
+			)
+			(property "Footprint" "dank:DIP792W51P254L1905H53Q16N"
+				(at 31.75 -94.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "NAU7802SGI"
+			(property "Datasheet" "http://www.nuvoton.com/hq/resource-download.jsp?tp_GUID=DA00-NAU7802"
+				(at 31.75 -194.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Description" "IC ADC 24BIT I2C/SRL 16DIP"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1492,19 +1482,199 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "SOI16_NAU7802SGI_NUV SOI16_NAU7802SGI_NUV-M SOI16_NAU7802SGI_NUV-L"
-				(at 0 0 0)
+			(property "Height" "0.533"
+				(at 31.75 -394.92 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left top)
 					(hide yes)
 				)
 			)
-			(symbol "NAU7802SGI-dank_0_1"
-				(pin power_in line
-					(at 50.8 -2.54 180)
-					(length 7.62)
+			(property "Manufacturer_Name" "Nuvoton"
+				(at 31.75 -494.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Manufacturer_Part_Number" "NAU7802KGI"
+				(at 31.75 -594.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Mouser Part Number" ""
+				(at 31.75 -694.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Mouser Price/Stock" ""
+				(at 31.75 -794.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Arrow Part Number" "NAU7802KGI"
+				(at 31.75 -894.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Arrow Price/Stock" "https://www.arrow.com/en/products/nau7802kgi/nuvoton-technology"
+				(at 31.75 -994.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(symbol "NAU7802KGI_1_1"
+				(rectangle
+					(start 5.08 2.54)
+					(end 30.48 -20.32)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin passive line
+					(at 0 0 0)
+					(length 5.08)
+					(name "REFP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 35.56 -15.24 180)
+					(length 5.08)
+					(name "XIN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 35.56 -12.7 180)
+					(length 5.08)
+					(name "XOUT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "11"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 35.56 -10.16 180)
+					(length 5.08)
+					(name "DRDY"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 35.56 -7.62 180)
+					(length 5.08)
+					(name "SCLK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "13"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 35.56 -5.08 180)
+					(length 5.08)
+					(name "SDIO"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "14"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 35.56 -2.54 180)
+					(length 5.08)
 					(name "DVDD"
 						(effects
 							(font
@@ -1520,9 +1690,9 @@
 						)
 					)
 				)
-				(pin power_in line
-					(at 50.8 0 180)
-					(length 7.62)
+				(pin passive line
+					(at 35.56 0 180)
+					(length 5.08)
 					(name "AVDD/LDO"
 						(effects
 							(font
@@ -1538,9 +1708,9 @@
 						)
 					)
 				)
-				(pin input line
+				(pin passive line
 					(at 0 -2.54 0)
-					(length 7.62)
+					(length 5.08)
 					(name "VIN1N"
 						(effects
 							(font
@@ -1556,9 +1726,9 @@
 						)
 					)
 				)
-				(pin input line
+				(pin passive line
 					(at 0 -5.08 0)
-					(length 7.62)
+					(length 5.08)
 					(name "VIN1P"
 						(effects
 							(font
@@ -1574,9 +1744,9 @@
 						)
 					)
 				)
-				(pin input line
+				(pin passive line
 					(at 0 -7.62 0)
-					(length 7.62)
+					(length 5.08)
 					(name "VIN2N"
 						(effects
 							(font
@@ -1592,9 +1762,9 @@
 						)
 					)
 				)
-				(pin input line
+				(pin passive line
 					(at 0 -10.16 0)
-					(length 7.62)
+					(length 5.08)
 					(name "VIN2P"
 						(effects
 							(font
@@ -1612,7 +1782,7 @@
 				)
 				(pin passive line
 					(at 0 -12.7 0)
-					(length 7.62)
+					(length 5.08)
 					(name "VBG"
 						(effects
 							(font
@@ -1628,130 +1798,9 @@
 						)
 					)
 				)
-			)
-			(symbol "NAU7802SGI-dank_1_1"
-				(rectangle
-					(start 7.62 2.54)
-					(end 43.18 -19.05)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(pin input line
-					(at 0 0 0)
-					(length 7.62)
-					(name "REFP"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin no_connect line
-					(at 50.8 -15.24 180)
-					(length 7.62)
-					(name "XIN"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "10"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin no_connect line
-					(at 50.8 -12.7 180)
-					(length 7.62)
-					(name "XOUT"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "11"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin no_connect line
-					(at 50.8 -10.16 180)
-					(length 7.62)
-					(name "DRDY"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "12"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at 50.8 -7.62 180)
-					(length 7.62)
-					(name "SCLK"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "13"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 50.8 -5.08 180)
-					(length 7.62)
-					(name "SDIO"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "14"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
+				(pin passive line
 					(at 0 -15.24 0)
-					(length 7.62)
+					(length 5.08)
 					(name "REFN"
 						(effects
 							(font
@@ -1767,9 +1816,9 @@
 						)
 					)
 				)
-				(pin power_in line
+				(pin passive line
 					(at 0 -17.78 0)
-					(length 7.62)
+					(length 5.08)
 					(name "AVSS"
 						(effects
 							(font
@@ -1785,9 +1834,9 @@
 						)
 					)
 				)
-				(pin power_in line
-					(at 50.8 -17.78 180)
-					(length 7.62)
+				(pin passive line
+					(at 35.56 -17.78 180)
+					(length 5.08)
 					(name "DVSS"
 						(effects
 							(font
@@ -2402,10 +2451,10 @@
 		)
 	)
 	(junction
-		(at 251.46 39.37)
+		(at 245.11 45.72)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "139c7842-74bd-4d0e-9846-8d2ee98cc4c6")
+		(uuid "27ab34be-c449-4fc5-b3af-a8770bcc894e")
 	)
 	(junction
 		(at 195.58 43.18)
@@ -2418,12 +2467,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "4bb723bc-7855-4f34-9e76-ac777c6f86dc")
-	)
-	(junction
-		(at 200.66 68.58)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "539089de-f013-4cce-a31c-24af575f0597")
 	)
 	(junction
 		(at 85.09 57.15)
@@ -2462,18 +2505,40 @@
 		(uuid "c0f2d740-b2dd-44b3-af90-85f6684ee01c")
 	)
 	(junction
+		(at 245.11 50.8)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e89511cf-9c95-4ee4-84e9-4103938657e4")
+	)
+	(junction
 		(at 195.58 52.07)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "f1e0cc26-8265-483e-a2ab-43e66c6ad435")
 	)
 	(no_connect
+		(at 236.22 63.5)
+		(uuid "42a00d5f-8602-4653-b780-8819442ab1cb")
+	)
+	(no_connect
 		(at 82.55 52.07)
 		(uuid "52aa5493-73f7-4b1a-8678-453002b10297")
 	)
 	(no_connect
+		(at 200.66 66.04)
+		(uuid "5e28aeab-34b5-4699-bb03-e9e7c644267e")
+	)
+	(no_connect
 		(at 82.55 54.61)
 		(uuid "a1dee348-75cb-44fc-893a-84b89689419d")
+	)
+	(no_connect
+		(at 236.22 66.04)
+		(uuid "c3f19c22-7e19-4d03-b954-c5cd556087bd")
+	)
+	(no_connect
+		(at 236.22 60.96)
+		(uuid "ea89bbba-fa3d-4e0c-bce7-20bcead3bc42")
 	)
 	(wire
 		(pts
@@ -2487,16 +2552,6 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 68.58) (xy 200.66 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "046185aa-adf8-4f29-a242-90181954d137")
-	)
-	(wire
-		(pts
 			(xy 82.55 62.23) (xy 82.55 88.9)
 		)
 		(stroke
@@ -2504,6 +2559,16 @@
 			(type default)
 		)
 		(uuid "04e63462-9193-4bd9-b6f8-73d66a17dc4a")
+	)
+	(wire
+		(pts
+			(xy 236.22 58.42) (xy 243.84 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0c21a480-77a8-4bf9-b00a-8c5956fb227e")
 	)
 	(wire
 		(pts
@@ -2547,7 +2612,7 @@
 	)
 	(wire
 		(pts
-			(xy 251.46 68.58) (xy 251.46 76.2)
+			(xy 241.3 68.58) (xy 241.3 76.2)
 		)
 		(stroke
 			(width 0)
@@ -2614,6 +2679,26 @@
 			(type default)
 		)
 		(uuid "388c924b-3acf-405f-bcec-1e6ea5e254dc")
+	)
+	(wire
+		(pts
+			(xy 200.66 50.8) (xy 200.66 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3c8ad149-5e52-44d8-93e3-2b8440a7e457")
+	)
+	(wire
+		(pts
+			(xy 236.22 53.34) (xy 245.11 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "431b89a2-c1b5-45ac-b685-78e0e66fcceb")
 	)
 	(wire
 		(pts
@@ -2697,16 +2782,6 @@
 	)
 	(wire
 		(pts
-			(xy 251.46 39.37) (xy 251.46 50.8)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5ba48640-af99-4232-b4ab-79eb93810321")
-	)
-	(wire
-		(pts
 			(xy 199.39 43.18) (xy 195.58 43.18)
 		)
 		(stroke
@@ -2717,16 +2792,6 @@
 	)
 	(wire
 		(pts
-			(xy 254 55.88) (xy 251.46 55.88)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "62f94d54-b09e-4112-87ad-bd68005afd16")
-	)
-	(wire
-		(pts
 			(xy 31.75 54.61) (xy 29.21 54.61)
 		)
 		(stroke
@@ -2734,6 +2799,16 @@
 			(type default)
 		)
 		(uuid "649aed27-8687-49b6-be61-37d9d0fbab25")
+	)
+	(wire
+		(pts
+			(xy 236.22 55.88) (xy 243.84 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6c770d8d-885d-4f93-9df5-ee09a3050cd9")
 	)
 	(wire
 		(pts
@@ -2774,6 +2849,16 @@
 			(type default)
 		)
 		(uuid "78a021c4-a0d9-414f-91fb-ea6c88b30338")
+	)
+	(wire
+		(pts
+			(xy 200.66 68.58) (xy 200.66 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "797c2f6f-d414-43a0-b086-dd1251dc308f")
 	)
 	(wire
 		(pts
@@ -2847,26 +2932,6 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 66.04) (xy 200.66 68.58)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "912f4d4c-907a-4ac0-bc55-7934d9f090a9")
-	)
-	(wire
-		(pts
-			(xy 254 58.42) (xy 251.46 58.42)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9137b784-ba46-44cc-91b5-65257672c221")
-	)
-	(wire
-		(pts
 			(xy 52.07 137.16) (xy 52.07 138.43)
 		)
 		(stroke
@@ -2874,16 +2939,6 @@
 			(type default)
 		)
 		(uuid "a22724f9-7489-49df-a7bc-7873399a7ddf")
-	)
-	(wire
-		(pts
-			(xy 200.66 39.37) (xy 251.46 39.37)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a75e03e8-1922-4b64-999f-7e22ec41194b")
 	)
 	(wire
 		(pts
@@ -2957,13 +3012,13 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 50.8) (xy 200.66 39.37)
+			(xy 245.11 50.8) (xy 245.11 53.34)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "c15d189f-9597-46d1-ae83-e0ce9280bf56")
+		(uuid "c052405d-5a05-4cd8-a14d-1c73f9bcc618")
 	)
 	(wire
 		(pts
@@ -3017,13 +3072,13 @@
 	)
 	(wire
 		(pts
-			(xy 251.46 53.34) (xy 257.81 53.34)
+			(xy 245.11 38.1) (xy 245.11 45.72)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "daf0bd7f-23e4-4b45-813c-10945f4e4cdc")
+		(uuid "d8acdca9-a4c6-47f1-af25-85131ab3d8a8")
 	)
 	(wire
 		(pts
@@ -3057,6 +3112,16 @@
 	)
 	(wire
 		(pts
+			(xy 236.22 50.8) (xy 245.11 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e4908175-3a3a-49dd-b8c4-a7027b62aaba")
+	)
+	(wire
+		(pts
 			(xy 62.23 123.19) (xy 62.23 129.54)
 		)
 		(stroke
@@ -3067,13 +3132,13 @@
 	)
 	(wire
 		(pts
-			(xy 257.81 38.1) (xy 257.81 53.34)
+			(xy 245.11 45.72) (xy 245.11 50.8)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "e9e8802b-62dc-4eef-b9aa-30ccf3f38d56")
+		(uuid "f1d34d08-487f-4d62-8216-221c2f711ab3")
 	)
 	(wire
 		(pts
@@ -3087,13 +3152,23 @@
 	)
 	(wire
 		(pts
-			(xy 251.46 38.1) (xy 251.46 39.37)
+			(xy 236.22 68.58) (xy 241.3 68.58)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "fda025c6-fd3c-4aac-900e-7877cb764ea6")
+		(uuid "f874bece-40ae-4704-9a0a-022f65c1d7d5")
+	)
+	(wire
+		(pts
+			(xy 200.66 45.72) (xy 245.11 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fa233a95-84b8-43ac-be63-00d2d8c8a1b0")
 	)
 	(text_box "Fans (2x12VDC + EMC2302)\n"
 		(exclude_from_sim no)
@@ -3148,7 +3223,7 @@
 			(font
 				(size 2.54 2.54)
 			)
-			(justify left top)
+			(justify right top)
 		)
 		(uuid "c8eafd80-5b72-415f-96f1-e38a5806af8e")
 	)
@@ -3218,9 +3293,9 @@
 		)
 		(uuid "89a2def1-962d-406e-b8ef-57fbb7300ca0")
 	)
-	(text "2.7-5.5V input.\nAVDD must not exceed DVDD.\nOur AVDD is 5, and our DVDD 3.3, so we don't use AVDD."
+	(text "2.7-5.5V input.\nAVDD must not exceed DVDD.\nOur AVDD is 5, and our DVDD 3.3, so we don't use AVDD.\nKGI is the through-hole model, which I accidentally ordered."
 		(exclude_from_sim no)
-		(at 179.07 98.044 0)
+		(at 179.578 96.52 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3256,7 +3331,7 @@
 	)
 	(hierarchical_label "SCL"
 		(shape input)
-		(at 254 58.42 0)
+		(at 243.84 58.42 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3280,7 +3355,7 @@
 	)
 	(hierarchical_label "SDA"
 		(shape bidirectional)
-		(at 254 55.88 0)
+		(at 243.84 55.88 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3374,71 +3449,6 @@
 			(justify right)
 		)
 		(uuid "ef277581-27b7-4614-8b85-010682ff15d4")
-	)
-	(symbol
-		(lib_id "power:+3.3V")
-		(at 251.46 38.1 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "0071dfe8-95eb-453d-8af2-dc52e79e38e2")
-		(property "Reference" "#PWR021"
-			(at 251.46 41.91 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3.3V"
-			(at 251.206 33.02 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 251.46 38.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 251.46 38.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 251.46 38.1 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e56d805d-6745-435c-bf94-b39d9f3d96fd")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "#PWR021")
-					(unit 1)
-				)
-			)
-		)
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -4091,7 +4101,7 @@
 				)
 			)
 		)
-		(property "Value" "470pf"
+		(property "Value" "470p"
 			(at 192.278 60.96 90)
 			(effects
 				(font
@@ -4268,118 +4278,6 @@
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "#PWR03")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "dank:NAU7802SGI-dank")
-		(at 200.66 50.8 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "7609ad66-97d0-4ba8-b025-41451d72272f")
-		(property "Reference" "U4"
-			(at 226.06 43.18 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Value" "NAU7802SGI"
-			(at 226.06 45.72 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Footprint" "dank:SOI16_NAU7802SGI_NUV"
-			(at 226.06 60.198 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "NAU7802SGI"
-			(at 226.314 57.404 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "24-bit ADC"
-			(at 226.06 63.246 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "10"
-			(uuid "55fad00d-15ea-472d-bc69-43ffc1d02e6a")
-		)
-		(pin "13"
-			(uuid "707d7357-cee5-499e-9311-9a510fa20ec5")
-		)
-		(pin "8"
-			(uuid "c8cc37ee-1e8a-4ff7-af6a-dcae21c0dc90")
-		)
-		(pin "3"
-			(uuid "47864a6d-a685-49d8-973e-24c78d1072a5")
-		)
-		(pin "4"
-			(uuid "f148b7a7-c7db-4219-8977-00fb5ad52411")
-		)
-		(pin "9"
-			(uuid "0036b259-34fd-40cd-9678-f14f818f5f7e")
-		)
-		(pin "5"
-			(uuid "5cf9dfae-9364-4e90-84d3-40c69a361d8d")
-		)
-		(pin "14"
-			(uuid "b975bbdd-bf23-4a7f-a88a-2b616da472b5")
-		)
-		(pin "12"
-			(uuid "4109e192-2a32-4ac4-9d05-95bc10f65ee9")
-		)
-		(pin "7"
-			(uuid "ad2d9be8-a8d6-4fab-9bee-b15d2c52722e")
-		)
-		(pin "2"
-			(uuid "4ad97ba1-2017-4802-ac10-11eec35d3324")
-		)
-		(pin "11"
-			(uuid "a1778680-bf2b-443e-a00b-39b308650399")
-		)
-		(pin "15"
-			(uuid "dcfca8ac-88ce-4ea0-85b4-eec49106925a")
-		)
-		(pin "1"
-			(uuid "def60d48-fcb0-44f3-b04c-37984b5b2403")
-		)
-		(pin "6"
-			(uuid "77974867-cab1-48d7-9976-1b4023cab93c")
-		)
-		(pin "16"
-			(uuid "b7745980-4333-4a81-81e4-1575a1c749d4")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "U4")
 					(unit 1)
 				)
 			)
@@ -5220,6 +5118,187 @@
 		)
 	)
 	(symbol
+		(lib_id "dank:NAU7802KGI")
+		(at 200.66 50.8 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cfd83d68-5a26-42e8-ae31-ee7393498720")
+		(property "Reference" "IC1"
+			(at 219.202 72.898 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "NAU7802KGI"
+			(at 219.202 75.438 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "dank:DIP792W51P254L1905H53Q16N"
+			(at 232.41 145.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.nuvoton.com/hq/resource-download.jsp?tp_GUID=DA00-NAU7802"
+			(at 232.41 245.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Description" "IC ADC 24BIT I2C/SRL 16DIP"
+			(at 200.66 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Height" "0.533"
+			(at 232.41 445.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer_Name" "Nuvoton"
+			(at 232.41 545.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer_Part_Number" "NAU7802KGI"
+			(at 232.41 645.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Mouser Part Number" ""
+			(at 232.41 745.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Mouser Price/Stock" ""
+			(at 232.41 845.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Arrow Part Number" "NAU7802KGI"
+			(at 232.41 945.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Arrow Price/Stock" "https://www.arrow.com/en/products/nau7802kgi/nuvoton-technology"
+			(at 232.41 1045.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(pin "16"
+			(uuid "261a0e68-8670-449d-993e-dd88e4b360ef")
+		)
+		(pin "8"
+			(uuid "96d63d40-27ce-41ca-89c6-389033e828df")
+		)
+		(pin "10"
+			(uuid "daa469d0-e7a0-4500-9f07-874dd3f48bdf")
+		)
+		(pin "5"
+			(uuid "ca0f467e-d1a3-48e3-b0e0-6cea09143ba0")
+		)
+		(pin "6"
+			(uuid "62d857b9-4db7-4111-9297-1cfcbfdca66b")
+		)
+		(pin "7"
+			(uuid "d4ba5c6c-6b41-4403-b1ff-766beba52c1b")
+		)
+		(pin "9"
+			(uuid "f452d98b-ec8b-4378-9821-dc43507edf91")
+		)
+		(pin "4"
+			(uuid "8d8a6b0a-8e01-4e68-ba58-2e1c9ce927af")
+		)
+		(pin "12"
+			(uuid "194aeb19-0487-42b9-bd23-b0c979e5b449")
+		)
+		(pin "11"
+			(uuid "e7c001d5-6435-47b9-bd8d-9b65a46dd6c1")
+		)
+		(pin "3"
+			(uuid "aaccc0b3-3d01-45db-8055-42743efecffc")
+		)
+		(pin "1"
+			(uuid "4d863147-d6f1-44be-8e74-25f15329ad39")
+		)
+		(pin "14"
+			(uuid "966b6998-da6d-4e2f-8058-9fea4575437c")
+		)
+		(pin "15"
+			(uuid "4566e9f6-f97b-40ee-b184-cd9c706d5fd8")
+		)
+		(pin "2"
+			(uuid "738437a4-1b09-4ddc-bfc7-454f9902e0b6")
+		)
+		(pin "13"
+			(uuid "248a967f-dc4a-46ee-9076-eff35a06b00d")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
+					(reference "IC1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R")
 		(at 48.26 85.09 0)
 		(unit 1)
@@ -5290,7 +5369,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 251.46 76.2 0)
+		(at 241.3 76.2 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5299,7 +5378,7 @@
 		(fields_autoplaced yes)
 		(uuid "ecd7ab59-ef1e-418d-8a64-5496886c8626")
 		(property "Reference" "#PWR026"
-			(at 251.46 82.55 0)
+			(at 241.3 82.55 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5308,7 +5387,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 251.46 81.28 0)
+			(at 241.3 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5316,7 +5395,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 251.46 76.2 0)
+			(at 241.3 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5325,7 +5404,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 251.46 76.2 0)
+			(at 241.3 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5334,7 +5413,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 251.46 76.2 0)
+			(at 241.3 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5702,7 +5781,7 @@
 	)
 	(symbol
 		(lib_id "power:+3.3V")
-		(at 257.81 38.1 0)
+		(at 245.11 38.1 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5710,7 +5789,7 @@
 		(dnp no)
 		(uuid "fcd0932d-52a8-47bb-a33e-314eb74a6244")
 		(property "Reference" "#PWR027"
-			(at 257.81 41.91 0)
+			(at 245.11 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5719,7 +5798,7 @@
 			)
 		)
 		(property "Value" "+3.3V"
-			(at 257.556 33.02 0)
+			(at 244.856 33.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5727,7 +5806,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 257.81 38.1 0)
+			(at 245.11 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5736,7 +5815,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 257.81 38.1 0)
+			(at 245.11 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5745,7 +5824,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 257.81 38.1 0)
+			(at 245.11 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
