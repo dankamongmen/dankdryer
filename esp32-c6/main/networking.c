@@ -347,10 +347,11 @@ setup_httpd(void){
 // static ones
 static int
 setup_sntp(void){
-  esp_sntp_config_t sconf = ESP_NETIF_SNTP_DEFAULT_CONFIG_MULTIPLE(0, {});
+  esp_sntp_config_t sconf = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
   sconf.start = false;
   sconf.server_from_dhcp = true;
   sconf.renew_servers_after_new_IP = true;
+  sconf.index_of_first_server = 1;
   sconf.ip_event_to_renew = IP_EVENT_STA_GOT_IP;
   esp_err_t e = esp_netif_sntp_init(&sconf);
   if(e != ESP_OK){
