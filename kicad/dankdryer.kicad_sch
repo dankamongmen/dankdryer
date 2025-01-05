@@ -3948,12 +3948,6 @@
 		(uuid "0a2e1857-6a3b-4fef-8fab-810e0bdf98de")
 	)
 	(junction
-		(at 187.96 64.77)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "14fe54b3-e431-4e20-aa49-5dcbec415c60")
-	)
-	(junction
 		(at 52.07 43.18)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4118,10 +4112,6 @@
 		(uuid "47ededb9-a75d-4b72-b2b5-7170643344da")
 	)
 	(no_connect
-		(at 189.23 80.01)
-		(uuid "64f39084-22b4-42a4-bcee-80826ed70998")
-	)
-	(no_connect
 		(at 219.71 74.93)
 		(uuid "80cd77ff-5e18-48bd-bcad-845dd5d46847")
 	)
@@ -4132,6 +4122,10 @@
 	(no_connect
 		(at 189.23 67.31)
 		(uuid "a1f76026-52ff-42eb-a3b0-88f7ad793b19")
+	)
+	(no_connect
+		(at 189.23 77.47)
+		(uuid "db002a84-e2d0-4e12-b74d-b4a167ab5c1b")
 	)
 	(no_connect
 		(at 44.45 45.72)
@@ -4457,16 +4451,6 @@
 	)
 	(wire
 		(pts
-			(xy 175.26 77.47) (xy 189.23 77.47)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4749852c-7c9d-48d0-970a-986ec0baaddd")
-	)
-	(wire
-		(pts
 			(xy 58.42 135.89) (xy 66.04 135.89)
 		)
 		(stroke
@@ -4587,16 +4571,6 @@
 	)
 	(wire
 		(pts
-			(xy 187.96 64.77) (xy 189.23 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "75242f06-e8aa-4b45-a3c2-158adc5d6dbd")
-	)
-	(wire
-		(pts
 			(xy 132.08 185.42) (xy 127 185.42)
 		)
 		(stroke
@@ -4684,6 +4658,16 @@
 			(type default)
 		)
 		(uuid "9c8c474e-3e4f-4090-bdf0-7191628c66b8")
+	)
+	(wire
+		(pts
+			(xy 175.26 80.01) (xy 189.23 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9e146a5f-9676-485e-9db3-4afede5f7a51")
 	)
 	(wire
 		(pts
@@ -4837,16 +4821,6 @@
 	)
 	(wire
 		(pts
-			(xy 185.42 64.77) (xy 187.96 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cf5fe4b6-545f-4304-8ce9-d15e3f76f029")
-	)
-	(wire
-		(pts
 			(xy 219.71 85.09) (xy 223.52 85.09)
 		)
 		(stroke
@@ -4877,16 +4851,6 @@
 	)
 	(wire
 		(pts
-			(xy 187.96 68.58) (xy 187.96 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "daf8059a-64c0-40ae-b46e-87db92b09314")
-	)
-	(wire
-		(pts
 			(xy 67.31 186.69) (xy 63.5 186.69)
 		)
 		(stroke
@@ -4904,6 +4868,16 @@
 			(type default)
 		)
 		(uuid "e27bc557-dfc6-43a6-b4b2-f9c5e5b80e81")
+	)
+	(wire
+		(pts
+			(xy 175.26 80.01) (xy 175.26 77.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eb7838d2-3bbb-4876-bda9-6f8972f762f3")
 	)
 	(wire
 		(pts
@@ -5239,9 +5213,9 @@
 		)
 		(uuid "b5e41a2c-cc13-4039-b4f9-5122ba8564b9")
 	)
-	(text "ESP32-C6-MINI-1U: unicore 160MHz RISC-V. 4MB QSPI flash, 40–105C.\nGPIOs 0-6 are connected to 12-bit ADC.\nGPIOs 4, 5, 8, 9, and 15 are strapping pins.\nGPIOs 12 and 13 are used for JTAG.\nGPIOs 24-30 are used for QSPI flash.\nModule has a U.FL antenna connector."
+	(text "ESP32-C6-MINI-1U: unicore 160MHz RISC-V. 4MB QSPI flash, 40–105C.\nGPIOs 0-6 are connected to 12-bit ADC.\nGPIOs 4, 5, 8, 9, and 15 are strapping pins.\nPulling 9 high ensures a boot from SPI.\nGPIOs 12 and 13 are used for JTAG.\nGPIOs 24-30 are used for QSPI flash.\nModule has a U.FL antenna connector."
 		(exclude_from_sim no)
-		(at 171.704 108.204 0)
+		(at 171.45 106.426 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5445,7 +5419,7 @@
 	)
 	(hierarchical_label "Therm"
 		(shape bidirectional)
-		(at 185.42 64.77 180)
+		(at 189.23 64.77 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
