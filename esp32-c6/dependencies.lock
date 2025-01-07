@@ -1,6 +1,6 @@
 dependencies:
   dankamongmen/emc230x:
-    component_hash: 2a03ec2916ce29625c6144b0361b5cd9007f9bc01651136fbab28d3b5151aa99
+    component_hash: c741b9df46f02738d4ec055166c3ee3a504047b11e57905bad38008c197d7d5f
     dependencies:
     - name: idf
       require: private
@@ -8,7 +8,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 0.0.4
+    version: 1.0.2
   dankamongmen/nau7802:
     component_hash: e9e9213725d3a64be667c83bf488aefa1d2c0cb87cc8e4dc8c705980c648b3fc
     dependencies:

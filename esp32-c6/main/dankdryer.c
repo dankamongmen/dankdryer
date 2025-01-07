@@ -50,6 +50,7 @@
 static const unsigned LOWER_FANCHAN = 0;
 static const unsigned UPPER_FANCHAN = 1;
 
+static emc230x EMC2302;
 static bool MotorState;
 static bool HeaterState;
 static uint32_t LowerPWM = 128;
@@ -65,7 +66,6 @@ static unsigned LastLowerRPM, LastUpperRPM;
 static float LastLowerTemp, LastUpperTemp;
 static i2c_master_bus_handle_t I2CMaster;
 static i2c_master_dev_handle_t NAU7802;
-static i2c_master_dev_handle_t EMC2302;
 
 // ESP-IDF objects
 static bool ADC1Calibrated;
@@ -265,7 +265,7 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
 
 static int
 set_pwm(unsigned fanidx, unsigned pwm){
-  if(emc230x_setpwm(EMC2302, fanidx, pwm)){
+  if(emc230x_setpwm(&EMC2302, fanidx, pwm)){
     fprintf(stderr, "error setting pwm %u for fan %u!\n", pwm, fanidx);
     return -1;
   }
@@ -646,7 +646,7 @@ read_pstore(void){
 
 static int
 setup_emc2302(i2c_master_bus_handle_t master){
-  if(emc230x_detect(master, &EMC2302, EMC2302_MODEL_UNSPEC)){
+  if(emc230x_detect(master, EMC2302_MODEL_UNSPEC, &EMC2302)){
     return -1;
   }
   if(set_pwm(LOWER_FANCHAN, LowerPWM)){
@@ -921,8 +921,8 @@ static void
 getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
   const float diffu = curtime - lasttime;
   *lrpm = *urpm = 0;
-  emc230x_gettach(EMC2302, LOWER_FANCHAN, lrpm);
-  emc230x_gettach(EMC2302, UPPER_FANCHAN, urpm);
+  emc230x_gettach(&EMC2302, LOWER_FANCHAN, lrpm);
+  emc230x_gettach(&EMC2302, UPPER_FANCHAN, urpm);
   printf("tach raw: %u %u\n", *lrpm, *urpm);
   *lrpm /= 2; // two pulses for each rotation
   *urpm /= 2;
