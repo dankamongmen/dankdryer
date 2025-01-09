@@ -5,10 +5,10 @@
 	(uuid "bbb7ce5b-0fa5-4e85-8deb-41700187e0be")
 	(paper "USLetter")
 	(title_block
-		(title "Dankdryer microboard")
-		(date "2024-12-29")
-		(rev "v0.99")
-		(company "Dirty South Supercomputing")
+		(title "dankdryer microboard")
+		(date "2025-01-09")
+		(rev "v1.2.0")
+		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
 	(lib_symbols
@@ -300,42 +300,52 @@
 				)
 			)
 		)
-		(symbol "Device:C"
-			(pin_numbers hide)
+		(symbol "dank:CGA5L2NP01H104J160AA"
 			(pin_names
 				(offset 0.254)
 			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "C"
-				(at 0.635 2.54 0)
+			(property "Reference" "C3"
+				(at 5.0801 -3.81 90)
 				(effects
 					(font
-						(size 1.27 1.27)
+						(size 1.524 1.524)
 					)
-					(justify left)
+					(justify right)
 				)
 			)
-			(property "Value" "C"
-				(at 0.635 -2.54 0)
+			(property "Value" ".1u"
+				(at 2.5401 -3.81 90)
 				(effects
 					(font
-						(size 1.27 1.27)
+						(size 1.524 1.524)
 					)
-					(justify left)
+					(justify right)
 				)
 			)
-			(property "Footprint" ""
-				(at 0.9652 -3.81 0)
+			(property "Footprint" "dank:CAP_3216_TDK"
+				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
+						(italic yes)
 					)
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "~"
+			(property "Datasheet" "CGA5L2NP01H104J160AA"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "High-temperature 1206 ceramic capacitor"
 				(at 0 0 0)
 				(effects
 					(font
@@ -344,7 +354,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Unpolarized capacitor"
+			(property "ki_keywords" "CGA5L2NP01H104J160AA"
 				(at 0 0 0)
 				(effects
 					(font
@@ -353,7 +363,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "cap capacitor"
+			(property "ki_fp_filters" "CAP_3216_TDK CAP_3216_TDK-M CAP_3216_TDK-L"
 				(at 0 0 0)
 				(effects
 					(font
@@ -362,22 +372,13 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "C_*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "C_0_1"
+			(symbol "CGA5L2NP01H104J160AA_1_1"
 				(polyline
 					(pts
-						(xy -2.032 -0.762) (xy 2.032 -0.762)
+						(xy 2.54 0) (xy 3.4798 0)
 					)
 					(stroke
-						(width 0.508)
+						(width 0.2032)
 						(type default)
 					)
 					(fill
@@ -386,22 +387,44 @@
 				)
 				(polyline
 					(pts
-						(xy -2.032 0.762) (xy 2.032 0.762)
+						(xy 3.4798 -1.905) (xy 3.4798 1.905)
 					)
 					(stroke
-						(width 0.508)
+						(width 0.2032)
 						(type default)
 					)
 					(fill
 						(type none)
 					)
 				)
-			)
-			(symbol "C_1_1"
+				(polyline
+					(pts
+						(xy 4.1148 -1.905) (xy 4.1148 1.905)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.1148 0) (xy 5.08 0)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
 				(pin passive line
-					(at 0 3.81 270)
-					(length 2.794)
-					(name "~"
+					(at 0 0 0)
+					(length 2.54)
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -417,9 +440,95 @@
 					)
 				)
 				(pin passive line
-					(at 0 -3.81 90)
-					(length 2.794)
-					(name "~"
+					(at 7.62 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "CGA5L2NP01H104J160AA_1_2"
+				(polyline
+					(pts
+						(xy -1.905 -4.1148) (xy 1.905 -4.1148)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.905 -3.4798) (xy 1.905 -3.4798)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -4.1148) (xy 0 -5.08)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -2.54) (xy 0 -3.4798)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at 0 0 270)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1240,16 +1349,16 @@
 			(font
 				(size 2.54 2.54)
 			)
-			(justify right top)
+			(justify left top)
 		)
 		(uuid "778f595d-9362-4134-a973-e60778ffca5c")
 	)
-	(text "Supplies: 5V analog, 3.3V digital.\n"
+	(text "Supplies: 5V analog, 3.3V digital.\nUse high-temperature capacitors (TDK CGA)."
 		(exclude_from_sim no)
-		(at 68.58 154.94 0)
+		(at 68.58 152.908 0)
 		(effects
 			(font
-				(size 1.27 1.27)
+				(size 2.54 2.54)
 			)
 			(justify left)
 		)
@@ -1534,76 +1643,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 182.88 74.93 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "2fc5d42c-f0d6-4d71-959c-373ceebc0891")
-		(property "Reference" "C2"
-			(at 186.69 73.6599 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" ".1u"
-			(at 186.69 76.1999 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 183.8452 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 182.88 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 182.88 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "d6074a4c-8444-4791-a8e5-796993d1a302")
-		)
-		(pin "1"
-			(uuid "55903b4f-d08c-4c1b-a1e1-117011fa732d")
-		)
-		(instances
-			(project ""
-				(path "/bbb7ce5b-0fa5-4e85-8deb-41700187e0be"
-					(reference "C2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 107.95 132.08 0)
 		(mirror y)
@@ -1868,71 +1907,71 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 80.01 86.36 0)
-		(mirror y)
+		(lib_id "dank:CGA5L2NP01H104J160AA")
+		(at 80.01 90.17 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "908ced7d-6eaa-492c-9cdf-d27f42c10eef")
-		(property "Reference" "C1"
-			(at 76.2 85.0899 0)
+		(uuid "a50e7762-e358-4063-a9f3-fbbd8c4ab16b")
+		(property "Reference" "C2"
+			(at 74.422 84.074 90)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1.524 1.524)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
 		(property "Value" ".01u"
-			(at 76.2 87.6299 0)
+			(at 72.644 87.122 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "dank:CAP_3216_TDK"
+			(at 80.01 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
-				(justify left)
+				(hide yes)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 79.0448 90.17 0)
+		(property "Datasheet" "CGA5L2NP01H104J160AA"
+			(at 80.01 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "High-temperature 1206 ceramic capacitor"
+			(at 80.01 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
-		)
-		(property "Datasheet" "~"
-			(at 80.01 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 80.01 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "623a3669-c50a-48b7-a5f0-b6009ad58eb9")
 		)
 		(pin "1"
-			(uuid "cb0c45bb-2513-465e-9cd4-6254e28a2d05")
+			(uuid "d122e707-a66f-4eef-b051-1f95e8b1fcf2")
+		)
+		(pin "2"
+			(uuid "1cf7f201-e096-48b4-bf3c-57731e7714b2")
 		)
 		(instances
 			(project ""
 				(path "/bbb7ce5b-0fa5-4e85-8deb-41700187e0be"
-					(reference "C1")
+					(reference "C2")
 					(unit 1)
 				)
 			)
@@ -2084,6 +2123,78 @@
 			(project ""
 				(path "/bbb7ce5b-0fa5-4e85-8deb-41700187e0be"
 					(reference "U2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "dank:CGA5L2NP01H104J160AA")
+		(at 182.88 78.74 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e3642156-80be-4cf7-b6be-b8916ea687fa")
+		(property "Reference" "C3"
+			(at 186.69 73.6599 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" ".1u"
+			(at 186.69 76.1999 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "dank:CAP_3216_TDK"
+			(at 182.88 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "CGA5L2NP01H104J160AA"
+			(at 182.88 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "High-temperature 1206 ceramic capacitor"
+			(at 182.88 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "442bf98e-19f3-4621-85d9-ca9fd918d047")
+		)
+		(pin "1"
+			(uuid "51f150ac-99d5-432e-8100-31534234aab2")
+		)
+		(instances
+			(project ""
+				(path "/bbb7ce5b-0fa5-4e85-8deb-41700187e0be"
+					(reference "C3")
 					(unit 1)
 				)
 			)
