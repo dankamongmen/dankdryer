@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-01-09")
-		(rev "1.2.0")
+		(date "2025-01-14")
+		(rev "1.2.1")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -5027,7 +5027,6 @@
 	(hierarchical_label "ACNeutral"
 		(shape input)
 		(at 67.31 179.07 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5039,7 +5038,6 @@
 	(hierarchical_label "SDA"
 		(shape bidirectional)
 		(at 34.29 179.07 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5051,7 +5049,6 @@
 	(hierarchical_label "Hall"
 		(shape bidirectional)
 		(at 189.23 62.23 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5063,7 +5060,6 @@
 	(hierarchical_label "SDA"
 		(shape bidirectional)
 		(at 226.06 132.08 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5075,7 +5071,6 @@
 	(hierarchical_label "IO8"
 		(shape bidirectional)
 		(at 189.23 77.47 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5087,7 +5082,6 @@
 	(hierarchical_label "IO9"
 		(shape bidirectional)
 		(at 189.23 80.01 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5096,22 +5090,9 @@
 		)
 		(uuid "27727487-bffd-408e-b574-6bfbcbf04997")
 	)
-	(hierarchical_label "SCL"
-		(shape output)
-		(at 189.23 57.15 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "294b9a38-f059-4785-ae51-04280668bd79")
-	)
 	(hierarchical_label "Hall"
 		(shape input)
 		(at 45.72 148.59 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5124,7 +5105,6 @@
 	(hierarchical_label "A-"
 		(shape input)
 		(at 34.29 184.15 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5133,10 +5113,20 @@
 		)
 		(uuid "31868cd4-7ee0-4f7a-acdf-e350bb46d051")
 	)
+	(hierarchical_label "SCL"
+		(shape output)
+		(at 189.23 57.15 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "3d146be3-0ed5-4066-9c9d-4ccf95f33769")
+	)
 	(hierarchical_label "Motor"
 		(shape bidirectional)
 		(at 189.23 72.39 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5148,7 +5138,6 @@
 	(hierarchical_label "HeaterNeutral"
 		(shape input)
 		(at 67.31 181.61 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5160,7 +5149,6 @@
 	(hierarchical_label "SCL"
 		(shape input)
 		(at 34.29 181.61 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5172,7 +5160,6 @@
 	(hierarchical_label "Therm"
 		(shape bidirectional)
 		(at 189.23 64.77 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5184,7 +5171,6 @@
 	(hierarchical_label "SSRControl"
 		(shape bidirectional)
 		(at 219.71 62.23 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5193,10 +5179,20 @@
 		)
 		(uuid "85359ba6-b41b-4839-9185-73502c0acb89")
 	)
+	(hierarchical_label "SDA"
+		(shape bidirectional)
+		(at 189.23 59.69 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "876acfae-7ecc-4b68-ba70-43e0be5b69b5")
+	)
 	(hierarchical_label "TXD0"
 		(shape input)
 		(at 201.93 152.4 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5208,7 +5204,6 @@
 	(hierarchical_label "Motor-"
 		(shape input)
 		(at 129.54 185.42 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5220,7 +5215,6 @@
 	(hierarchical_label "RXD0"
 		(shape input)
 		(at 201.93 154.94 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5229,22 +5223,9 @@
 		)
 		(uuid "a291d70d-91e6-44ac-ab72-5967128bcab3")
 	)
-	(hierarchical_label "SDA"
-		(shape bidirectional)
-		(at 189.23 59.69 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "a4b377d5-2d05-4c7a-88ce-4cc26330b6f6")
-	)
 	(hierarchical_label "SCL"
 		(shape output)
 		(at 196.85 132.08 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5256,7 +5237,6 @@
 	(hierarchical_label "RXD0"
 		(shape bidirectional)
 		(at 219.71 52.07 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5268,7 +5248,6 @@
 	(hierarchical_label "TXD0"
 		(shape bidirectional)
 		(at 219.71 49.53 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5280,7 +5259,6 @@
 	(hierarchical_label "SSRControl"
 		(shape input)
 		(at 67.31 184.15 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5292,7 +5270,6 @@
 	(hierarchical_label "SCL"
 		(shape input)
 		(at 186.69 132.08 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5304,7 +5281,6 @@
 	(hierarchical_label "Motor"
 		(shape input)
 		(at 67.31 186.69 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5316,7 +5292,6 @@
 	(hierarchical_label "SDA"
 		(shape bidirectional)
 		(at 213.36 132.08 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5328,7 +5303,6 @@
 	(hierarchical_label "Motor-"
 		(shape input)
 		(at 67.31 189.23 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5340,7 +5314,6 @@
 	(hierarchical_label "A+"
 		(shape input)
 		(at 34.29 186.69 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5352,7 +5325,6 @@
 	(hierarchical_label "Therm"
 		(shape input)
 		(at 62.23 144.78 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
