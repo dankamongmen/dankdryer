@@ -5,8 +5,8 @@
 
 // https://docs.espressif.com/projects/esp-idf/en/stable/esp32c6/api-reference/peripherals/gpio.html
 // 0--6 are connected to ADC1
-#define SCL_PIN       GPIO_NUM_0   // I2C clock
-#define SDA_PIN       GPIO_NUM_1   // I2C data
+#define SDA_PIN       GPIO_NUM_0   // I2C data
+#define SCL_PIN       GPIO_NUM_1   // I2C clock
 #define HALL_DATAPIN  GPIO_NUM_2   // hall sensor
 #define THERM_DATAPIN GPIO_NUM_3   // analog thermometer (ADC1)
 // 4 and 5 are strapping pins
