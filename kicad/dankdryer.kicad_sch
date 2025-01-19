@@ -3912,10 +3912,6 @@
 		(uuid "00149071-bcf5-4158-aaa7-5a3052f8bb13")
 	)
 	(no_connect
-		(at 219.71 57.15)
-		(uuid "0eb758f5-a1b3-4401-92e1-c69ba91f7452")
-	)
-	(no_connect
 		(at 219.71 77.47)
 		(uuid "14955d5b-574c-4906-8339-4129c14ce422")
 	)
@@ -3942,6 +3938,10 @@
 	(no_connect
 		(at 219.71 74.93)
 		(uuid "80cd77ff-5e18-48bd-bcad-845dd5d46847")
+	)
+	(no_connect
+		(at 219.71 62.23)
+		(uuid "91c823c7-5fea-4d41-992f-e1a6e03657b8")
 	)
 	(no_connect
 		(at 125.73 91.44)
@@ -5168,17 +5168,6 @@
 		)
 		(uuid "760c8e9f-5beb-42a7-b32e-704c7c3109bb")
 	)
-	(hierarchical_label "SSRControl"
-		(shape bidirectional)
-		(at 219.71 62.23 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "85359ba6-b41b-4839-9185-73502c0acb89")
-	)
 	(hierarchical_label "SDA"
 		(shape bidirectional)
 		(at 189.23 59.69 180)
@@ -5189,6 +5178,17 @@
 			(justify right)
 		)
 		(uuid "876acfae-7ecc-4b68-ba70-43e0be5b69b5")
+	)
+	(hierarchical_label "SSRControl"
+		(shape bidirectional)
+		(at 219.71 57.15 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "8b7e8eb6-e3a8-445b-a8b6-ee5d41e85fbe")
 	)
 	(hierarchical_label "TXD0"
 		(shape input)
