@@ -284,21 +284,18 @@ module platform(inr, outr){
 					}
 				}
 			}
+			// add the six spokes
 			intersection(){
+				// chunky spokes
 				for(i = [0 : 60 : 360]){
 					translate([0, 0, (wallz + elevation + platformtoph) / 2]){
 						rotate([0, 0, i]){
 							cube([5, outr * 2, elevation + wallz + platformtoph], true);
 						}
 					}
-				}
-				union(){
-					translate([0, 0, wallz + elevation / 2]){
-						cylinder(elevation, inr, outr, true);
-					}
-					translate([0, 0, wallz + elevation + platformtoph / 2]){
-						cylinder(platformtoph, outr, outr, true);
-					}
+				} // cylinder to thin spokes
+				translate([0, 0, wallz + elevation / 2]){
+					cylinder(elevation, inr, outr, true);
 				}
 			}
 		}
