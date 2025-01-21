@@ -19,6 +19,7 @@
 #include <hal/ledc_types.h>
 #include <esp_idf_version.h>
 #include <soc/adc_channel.h>
+#include <esp32c6/rom/rtc.h>
 #include <esp_adc/adc_cali.h>
 #include <driver/i2c_master.h>
 #include <esp_adc/adc_oneshot.h>
@@ -864,11 +865,22 @@ setup_hall(gpio_num_t pin, uint32_t* arg){
 }
 
 static void
+print_reset_reason(void){
+  esp_reset_reason_t r = esp_reset_reason();
+  const char* s = r == ESP_RST_POWERON ?
+    "power on" : r == ESP_RST_SW ?
+    "esp_restart()" : r == ESP_RST_PANIC ?
+    "panic" : "unknown"; // FIXME there are more
+  printf("reset code %d (%s)\n", r, s);
+}
+
+static void
 setup(adc_channel_t* thermchan){
 #ifdef RGB_PIN
   setup_neopixel(RGB_PIN);
 #endif
   printf(DEVICE " v" VERSION "\n");
+  print_reset_reason();
   if(!init_pstore()){
     read_pstore();
   }
