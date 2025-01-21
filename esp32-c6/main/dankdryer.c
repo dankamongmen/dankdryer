@@ -924,7 +924,6 @@ setup(adc_channel_t* thermchan){
     set_failure(&PostFailure);
   }
   printf("initialization %ssuccessful v" VERSION "\n", StartupFailure ? "un" : "");
-  //gpio_dump_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
 }
 
 // we don't try to measure the first iteration, as we don't yet have a
