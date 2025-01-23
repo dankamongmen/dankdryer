@@ -15,6 +15,7 @@
 #include <esp_timer.h>
 #include <esp_system.h>
 #include <driver/ledc.h>
+#include <driver/gpio.h>
 #include <esp_app_desc.h>
 #include <hal/ledc_types.h>
 #include <esp_idf_version.h>
@@ -45,11 +46,17 @@
 #define ESSID_RECNAME "essid"
 #define PSK_RECNAME "psk"
 #define SETUPSTATE_RECNAME "sstate"
-
+#ifdef LEDC_HIGH_SPEED_MODE
+#define LEDCMODE LEDC_HIGH_SPEED_MODE
+#else
+#define LEDCMODE LEDC_LOW_SPEED_MODE
+#endif
 #define LOAD_CELL_MAX 5000 // 5kg capable
 
-static const unsigned LOWER_FANCHAN = 0;
-static const unsigned UPPER_FANCHAN = 1;
+#define LOWER_FANCHAN 0
+#define UPPER_FANCHAN 1
+#define LOWER_FANTIMER LEDC_TIMER_0
+#define UPPER_FANTIMER LEDC_TIMER_1
 
 static emc230x EMC2302;
 static bool MotorState;
@@ -58,15 +65,15 @@ static uint32_t LowerPWM = 128;
 static uint32_t UpperPWM = 128;
 static float LastWeight = -1.0;
 static float TareWeight = -1.0;
-static adc_channel_t Thermchan;
-static uint32_t HallPulses;
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static uint32_t LastSpoolRPM;
-static unsigned LastLowerRPM, LastUpperRPM;
-static float LastLowerTemp, LastUpperTemp;
-static i2c_master_bus_handle_t I2CMaster;
+static adc_channel_t Thermchan;
 static i2c_master_dev_handle_t NAU7802;
+static i2c_master_bus_handle_t I2CMaster;
+static float LastLowerTemp, LastUpperTemp;
+static uint32_t LastLowerRPM, LastUpperRPM;
+static uint32_t HallPulses, LowerFanPulses, UpperFanPulses;
 
 // ESP-IDF objects
 static bool ADC1Calibrated;
@@ -76,7 +83,7 @@ static temperature_sensor_handle_t temp;
 static adc_cali_handle_t ADC1Calibration;
 
 static void
-hall_isr(void* pulsecount){
+pulse_isr(void* pulsecount){
   uint32_t* pc = pulsecount;
   ++*pc;
 }
@@ -109,6 +116,133 @@ static bool StartupFailure;
 static const failure_indication SystemError = { 32, 0, 0 };
 static const failure_indication NetworkError = { 32, 0, 32 };
 static const failure_indication PostFailure = { 0, 0, 0 };
+
+// gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
+static int
+gpio_setup(gpio_num_t pin, gpio_mode_t mode, const char *mstr){
+  gpio_reset_pin(pin);
+  esp_err_t err;
+  if((err = gpio_set_direction(pin, mode)) != ESP_OK){
+    fprintf(stderr, "failure (%s) setting %d to %s\n", esp_err_to_name(err), pin, mstr);
+    return -1;
+  }
+  return 0;
+}
+
+static inline int
+gpio_set_inputoutput_opendrain(gpio_num_t pin){
+  return gpio_setup(pin, GPIO_MODE_INPUT_OUTPUT_OD, "input+output(od)");
+}
+
+static inline int
+gpio_set_inputoutput(gpio_num_t pin){
+  return gpio_setup(pin, GPIO_MODE_INPUT_OUTPUT, "input+output");
+}
+
+static inline int
+gpio_set_input(gpio_num_t pin){
+  return gpio_setup(pin, GPIO_MODE_INPUT, "input");
+}
+
+static inline int
+gpio_set_output(gpio_num_t pin){
+  return gpio_setup(pin, GPIO_MODE_OUTPUT, "output");
+}
+
+static int
+initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_t timer){
+  if(gpio_set_output(pin)){
+    return -1;
+  }
+  ledc_timer_config_t ledc_timer;
+  memset(&ledc_timer, 0, sizeof(ledc_timer));
+  ledc_timer.speed_mode = LEDCMODE;
+  ledc_timer.duty_resolution = FANPWM_BIT_NUM;
+  ledc_timer.timer_num = timer;
+  ledc_timer.freq_hz = freq;
+  if(ledc_timer_config(&ledc_timer) != ESP_OK){
+    fprintf(stderr, "error (timer config)!\n");
+    return -1;
+  }
+  ledc_channel_config_t conf;
+  memset(&conf, 0, sizeof(conf));
+  conf.gpio_num = pin;
+  conf.speed_mode = LEDCMODE;
+  conf.intr_type = LEDC_INTR_DISABLE;
+  conf.timer_sel = timer;
+  conf.duty = FANPWM_BIT_NUM;
+  conf.channel = channel;
+  printf("setting up pin %d for %dHz PWM\n", pin, freq);
+  if(ledc_channel_config(&conf) != ESP_OK){
+    fprintf(stderr, "error (channel config)!\n");
+    return -1;
+  }
+  return 0;
+}
+
+static int
+initialize_25k_pwm(ledc_channel_t channel, gpio_num_t pin, ledc_timer_t timer){
+  return initialize_pwm(channel, pin, 25000, timer);
+}
+
+static int
+setup_intr(gpio_num_t pin, uint32_t* arg){
+  if(gpio_set_input(pin)){
+    return -1;
+  }
+  esp_err_t e = gpio_set_intr_type(pin, GPIO_INTR_NEGEDGE);
+  if(e != ESP_OK){
+    fprintf(stderr, "failure (%s) installing %d interrupt\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_isr_handler_add(pin, pulse_isr, arg)) != ESP_OK){
+    fprintf(stderr, "failure (%s) setting %d isr\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_intr_enable(pin)) != ESP_OK){
+    fprintf(stderr, "failure (%s) enabling %d interrupt\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  return 0;
+}
+
+static int
+set_pwm(const ledc_channel_t channel, unsigned pwm){
+  if(ledc_set_duty(LEDCMODE, channel, pwm) != ESP_OK){
+    fprintf(stderr, "error setting pwm!\n");
+    return -1;
+  }else if(ledc_update_duty(LEDCMODE, channel) != ESP_OK){
+    fprintf(stderr, "error committing pwm!\n");
+    return -1;
+  }
+  printf("set pwm to %u on channel %d\n", pwm, channel);
+  return 0;
+}
+
+static int
+setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
+           gpio_num_t lowertpin, gpio_num_t uppertpin){
+  int ret = 0;
+  if(setup_intr(lowertpin, &LowerFanPulses)){
+    ret = -1;
+  }
+  if(setup_intr(uppertpin, &UpperFanPulses)){
+    ret = -1;
+  }
+  if(initialize_25k_pwm(LOWER_FANCHAN, lowerppin, LOWER_FANTIMER)){
+    ret = -1;
+  }
+  if(initialize_25k_pwm(UPPER_FANCHAN, upperppin, UPPER_FANTIMER)){
+    ret = -1;
+  }
+  if(set_pwm(UPPER_FANCHAN, UpperPWM)){
+    ret = -1;
+  }
+  if(set_pwm(LOWER_FANCHAN, LowerPWM)){
+    ret = -1;
+  }
+  return ret;
+}
 
 // precondition: isxdigit(c) is true
 static inline char
@@ -264,16 +398,6 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
   return 0;
 }
 
-static int
-set_pwm(unsigned fanidx, unsigned pwm){
-  if(emc230x_setpwm(&EMC2302, fanidx, pwm)){
-    fprintf(stderr, "error setting pwm %u for fan %u!\n", pwm, fanidx);
-    return -1;
-  }
-  printf("set pwm to %u on fan %d\n", pwm, fanidx);
-  return 0;
-}
-
 void set_lower_pwm(unsigned pwm){
   LowerPWM = pwm;
   write_pwm(LOWERPWM_RECNAME, pwm);
@@ -396,38 +520,6 @@ float getWeight(void){
   printf("scaling ADC of %ld to %f, tare (%f) to %f\n", v, newv, tare, newv - tare);
   newv -= tare;
   return newv;
-}
-
-// gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
-static int
-gpio_setup(gpio_num_t pin, gpio_mode_t mode, const char *mstr){
-  gpio_reset_pin(pin);
-  esp_err_t err;
-  if((err = gpio_set_direction(pin, mode)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting %d to %s\n", esp_err_to_name(err), pin, mstr);
-    return -1;
-  }
-  return 0;
-}
-
-static inline int
-gpio_set_inputoutput_opendrain(gpio_num_t pin){
-  return gpio_setup(pin, GPIO_MODE_INPUT_OUTPUT_OD, "input+output(od)");
-}
-
-static inline int
-gpio_set_inputoutput(gpio_num_t pin){
-  return gpio_setup(pin, GPIO_MODE_INPUT_OUTPUT, "input+output");
-}
-
-static inline int
-gpio_set_input(gpio_num_t pin){
-  return gpio_setup(pin, GPIO_MODE_INPUT, "input");
-}
-
-static inline int
-gpio_set_output(gpio_num_t pin){
-  return gpio_setup(pin, GPIO_MODE_OUTPUT, "output");
 }
 
 static int
@@ -843,27 +935,6 @@ setup_i2c(i2c_master_bus_handle_t *master, gpio_num_t sda, gpio_num_t scl){
   return 0;
 }
 
-static int
-setup_hall(gpio_num_t pin, uint32_t* arg){
-  if(gpio_set_input(pin)){
-    return -1;
-  }
-  esp_err_t e = gpio_set_intr_type(pin, GPIO_INTR_NEGEDGE);
-  if(e != ESP_OK){
-    fprintf(stderr, "failure (%s) installing %d interrupt\n", esp_err_to_name(e), pin);
-    return -1;
-  }
-  if((e = gpio_isr_handler_add(pin, hall_isr, arg)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting %d isr\n", esp_err_to_name(e), pin);
-    return -1;
-  }
-  if((e = gpio_intr_enable(pin)) != ESP_OK){
-    fprintf(stderr, "failure (%s) enabling %d interrupt\n", esp_err_to_name(e), pin);
-    return -1;
-  }
-  return 0;
-}
-
 static void
 print_reset_reason(void){
   esp_reset_reason_t r = esp_reset_reason();
@@ -892,7 +963,10 @@ setup(adc_channel_t* thermchan){
     fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
     set_failure(&SystemError);
   }
-  if(setup_hall(HALL_DATAPIN, &HallPulses)){
+  if(setup_intr(HALL_DATAPIN, &HallPulses)){
+    set_failure(&SystemError);
+  }
+  if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
     set_failure(&SystemError);
   }
   if(setup_adc_oneshot(ADC_UNIT_1, &ADC1, &ADC1Calibration, &ADC1Calibrated)){
@@ -929,41 +1003,19 @@ setup(adc_channel_t* thermchan){
 // we don't try to measure the first iteration, as we don't yet have a
 // timestamp (and the fans are spinning up, anyway).
 static void
-getFanTachs(unsigned *lrpm, unsigned *urpm, int64_t curtime, int64_t lasttime){
+getPulseCount(int64_t curtime, int64_t lasttime, uint32_t* pcount, uint32_t *lastpcount){
+  unsigned rpm;
   const float diffu = curtime - lasttime;
-  *lrpm = *urpm = 0;
-  emc230x_gettach(&EMC2302, LOWER_FANCHAN, lrpm);
-  emc230x_gettach(&EMC2302, UPPER_FANCHAN, urpm);
-  printf("tach raw: %u %u\n", *lrpm, *urpm);
-  *lrpm /= 2; // two pulses for each rotation
-  *urpm /= 2;
+  rpm = *pcount;
+  printf("pulse count raw: %u\n", rpm);
+  rpm /= 2; // two pulses for each rotation
   const float scale = 60.0 * 1000000u / diffu;
-  *lrpm *= scale;
-  *urpm *= scale;
-  printf("tachscale: %f diffu: %f lrpm: %u urpm: %u\n", scale, diffu, *lrpm, *urpm);
-  if(rpm_valid_p(*lrpm)){
-    LastLowerRPM = *lrpm;
+  rpm *= scale;
+  printf("scale: %f diffu: %f rpm: %u\n", scale, diffu, rpm);
+  if(rpm_valid_p(rpm)){
+    *lastpcount = rpm;
   }
-  if(rpm_valid_p(*urpm)){
-    LastUpperRPM = *urpm;
-  }
-}
-
-// we don't try to measure the first iteration, as we don't yet have a
-// timestamp (and the fans are spinning up, anyway).
-static void
-getHallCount(unsigned *rpm, int64_t curtime, int64_t lasttime){
-  const float diffu = curtime - lasttime;
-  *rpm = HallPulses;
-  printf("spool count raw: %u\n", *rpm);
-  *rpm /= 2; // two pulses for each rotation
-  const float scale = 60.0 * 1000000u / diffu;
-  *rpm *= scale;
-  printf("scale: %f diffu: %f rpm: %u\n", scale, diffu, *rpm);
-  if(rpm_valid_p(*rpm)){
-    LastSpoolRPM = *rpm;
-  }
-  HallPulses = 0;
+  *pcount = 0;
 }
 
 void send_mqtt(int64_t curtime){
@@ -1036,13 +1088,13 @@ void app_main(void){
     }
     printf("esp32 temp: %f weight: %f (%svalid)\n", ambient, weight,
             weight_valid_p(weight) ? "" : "in");
-    unsigned lrpm, urpm, srpm;
     printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
     printf("motor: %s heater: %s\n", motor_state(), heater_state());
     int64_t curtime = esp_timer_get_time();
     if(curtime - lasttachs > TACH_SAMPLE_QUANTUM_USEC){
-      getFanTachs(&lrpm, &urpm, curtime, lasttachs);
-			getHallCount(&srpm, curtime, lasttachs);
+			getPulseCount(curtime, lasttachs, &HallPulses, &LastSpoolRPM);
+			getPulseCount(curtime, lasttachs, &LowerFanPulses, &LastLowerRPM);
+			getPulseCount(curtime, lasttachs, &UpperFanPulses, &LastUpperRPM);
       lasttachs = curtime;
     }
     //printf("dryends: %lld cursec: %lld\n", DryEndsAt, curtime);
