@@ -27,6 +27,7 @@
 #include <driver/temperature_sensor.h>
 
 #define UUIDLEN 16
+#define MAXPWMDUTY 255
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
 #define RPMMAX (1u << 14u)
 #define MIN_TEMP -80
@@ -95,7 +96,7 @@ rpm_valid_p(unsigned rpm){
 
 static inline bool
 pwm_valid_p(int pwm){
-  return pwm >= 0 && pwm <= 255;
+  return pwm >= 0 && pwm <= MAXPWMDUTY;
 }
 
 static inline bool
@@ -208,11 +209,8 @@ setup_intr(gpio_num_t pin, uint32_t* arg){
 
 static int
 set_pwm(const ledc_channel_t channel, unsigned pwm){
-  if(ledc_set_duty(LEDCMODE, channel, pwm) != ESP_OK){
+  if(ledc_set_duty_and_update(LEDCMODE, channel, pwm, MAXPWMDUTY) != ESP_OK){
     fprintf(stderr, "error setting pwm!\n");
-    return -1;
-  }else if(ledc_update_duty(LEDCMODE, channel) != ESP_OK){
-    fprintf(stderr, "error committing pwm!\n");
     return -1;
   }
   printf("set pwm to %u on channel %d\n", pwm, channel);
