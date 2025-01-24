@@ -18,7 +18,12 @@
 // 15 is a strapping pin
 #define LOWER_PWMPIN  GPIO_NUM_14  // lower chamber fan pwm
 #define LOWER_TACHPIN GPIO_NUM_15  // lower chamber fan tach
-#define HALL_DATAPIN  GPIO_NUM_19  // hall sensor
+#define LCD_RST_PIN   GPIO_NUM_18
+#define LCD_SCL_PIN   GPIO_NUM_19
+#define LCD_SDA_PIN   GPIO_NUM_20
+#define LCD_DC_PIN    GPIO_NUM_21
+#define LCD_CS_PIN    GPIO_NUM_22
+#define HALL_DATAPIN  GPIO_NUM_23  // hall sensor
 // 24--30 are reserved for SPI flash
 
 #endif

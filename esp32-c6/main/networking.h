@@ -5,8 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <soc/gpio_num.h>
 
-#define VERSION "0.0.9"
+#define VERSION "1.3.1"
 #define DEVICE "dankdryer"
 
 int setup_network(void);
@@ -39,5 +40,6 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
 int read_wifi_config(unsigned char* essid, size_t essidlen,
                      unsigned char* psk, size_t psklen,
                      int* setupstate);
+int setup_lcd(gpio_num_t sda, gpio_num_t scl, gpio_num_t dc, gpio_num_t cs, gpio_num_t rst);
 
 #endif
