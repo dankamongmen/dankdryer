@@ -973,6 +973,9 @@ setup(adc_channel_t* thermchan){
   if(setup_i2c(&I2CMaster, SDA_PIN, SCL_PIN)){
     set_failure(&SystemError);
   }
+  if(setup_lcd(LCD_SDA_PIN, LCD_SCL_PIN, LCD_DC_PIN, LCD_CS_PIN, LCD_RST_PIN)){
+    set_failure(&SystemError);
+  }
   if(setup_temp(THERM_DATAPIN, ADC_UNIT_1, thermchan)){
     set_failure(&SystemError);
   }
