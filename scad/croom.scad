@@ -239,6 +239,31 @@ module croombottom(rad, z){
     wirechannels();
 }
 
+// ST7789V
+lcdh = 37.11;
+lcdw = 62; // total width (including mounts)
+lcdaw = 50; // visible width
+lcdt = 23; // thickness of mounts
+module lcd(){
+	lcdmt = 4;
+	// FIXME still want four circular mounts
+	translate([-4, -lcdaw / 2, 0]){
+		cube([lcdmt, (lcdw - lcdaw) / 2, lcdh], true);
+	}
+	cube([lcdt, lcdaw, lcdh], true);
+	translate([-4, lcdaw / 2, 0]){
+		cube([lcdmt, (lcdw - lcdaw) / 2, lcdh], true);
+	}
+}
+
+module lcdset(){
+	translate([botinalt, 0, croomz / 2]){
+		rotate([0, 180 + theta, 0]){
+			lcd();
+		}
+	}
+}
+
 // hollow frustrum
 module croom(){
     difference(){
@@ -247,6 +272,7 @@ module croom(){
             croominnercore();
             corners();
         }
+		lcdset();
 		translate([0, -botalt + 10, croomz / 2]){
             rotate([theta, 0, 0]){
                 fanhole(20);
