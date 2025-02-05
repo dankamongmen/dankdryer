@@ -2930,7 +2930,7 @@
 			)
 		)
 		(property "Footprint" "dank:DBZ0003A_L"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6c3144f7-cb04-4302-bc84-7e55a5513a17")
@@ -2942,7 +2942,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/drv5011.pdf?HQS=dis-dk-null-digikeymode-dsf-pf-null-wwe&ts=1734941122314"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "e051d045-31c3-4172-b867-5b9334297037")
@@ -2954,7 +2954,7 @@
 			)
 		)
 		(property "Description" "Digital-latch Hall effect sensor"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "97c6f9b3-5cdd-4e58-9029-9e6d6b4d6fd5")
@@ -3634,7 +3634,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C18"
-			(at 0 -1.68 360)
+			(at 0 -1.68 0)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "57f766ef-c3bf-4d7e-878d-5d03f1b47eb9")
@@ -3646,7 +3646,7 @@
 			)
 		)
 		(property "Value" "1u"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "98331092-b34e-4d95-a031-5aabcef8a878")
@@ -3802,7 +3802,7 @@
 			(uuid "43a02397-3ab9-4863-9084-edc0ff59fe45")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "36b30e17-7d07-417a-9488-f798201bf40f")
 			(effects
@@ -5772,7 +5772,7 @@
 			(pintype "passive")
 			(uuid "4cc30286-4b61-445c-b419-d9b5eedc0c82")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/Connector_JST.3dshapes/JST_VH_B5P-VH-B_1x05_P3.96mm_Vertical.wrl"
+		(model "/home/dank/src/kicad-packages3D/Connector_JST.3dshapes/JST_GH_BM05B-GHS-TBT_1x05-1MP_P1.25mm_Vertical.wrl"
 			(offset
 				(xyz 0 0 0)
 			)

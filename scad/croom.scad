@@ -17,26 +17,13 @@ botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
 
-module foursquare(){
-    children();
-    mirror([1, 0, 0]){
-        children();
-		mirror([0, 1, 0]){
-			children();
+// pyramid insets removed from the bottom
+module bottomcorners(){
+	foursquare(){
+		translate([botalt, botalt, -0.5]){
+			cylinder(20, 30, 1, $fn=4);
 		}
-    }
-    mirror([0, 1, 0]){
-        children();
-    }
-}
-
-// the fundamental structure
-module croomcore(){
-    translate([0, 0, wallz]){
-        rotate([0, 0, 45]){
-            cylinder(croomz - wallz, botrad, toprad, $fn = 4);
-        }
-    }
+	}
 }
 
 // the vast majority of the interior, removed
@@ -283,33 +270,76 @@ module lcd(){
 }
 
 module lcdset(){
-	translate([botinalt, 0, croomz / 2]){
+	translate([botinalt, 0, croomz - lcdh / 2 - 10]){
 		rotate([0, 180 + theta, 0]){
 			lcd();
 		}
 	}
 }
 
-// hollow frustrum
-module croom(){
-    difference(){
-        croomcore();
-        difference(){
-            croominnercore();
-            corners();
+// the fundamental structure (hollow frustrum)
+module croomcore(){
+    translate([0, 0, wallz]){
+        rotate([0, 0, 45]){
+            cylinder(croomz - wallz, botrad, toprad, $fn = 4);
         }
-		lcdset();
-		translate([0, -botalt + 10, croomz / 2]){
-            rotate([theta, 0, 0]){
-                fanhole(20);
-            }
-        }
-        fancablehole();
-		rockerhole();
-		antennahole();
     }
-	croombottom(botrad, wallz);
 }
+
+module bottomcornerfills(){
+	foursquare(){
+		translate([botalt - 25, botalt - 25, -14]){
+			
+		/*a = 0;
+		b = -30;
+		c = 30;
+		multmatrix(m = [
+		[cos(a)*cos(b), cos(a)*sin(b)*sin(c) - sin(a)*cos(c), cos(a)*sin(b)*cos(c) + sin(a)*sin(c), 1],
+		[sin(a)*cos(b), sin(a)*sin(b)*sin(c) + cos(a)*cos(c), sin(a)*sin(b)*cos(c)-cos(a)*sin(c), 1],
+		[-sin(b), cos(b)*sin(c), cos(b)*cos(c), 1],
+		[0, 0, 0, 1]
+					])*/
+					s=29;
+					rotate(a=44, v=[1, -1, 0]){
+					linear_extrude(wallz)
+			polygon([
+				[s, s],
+				[0, s],
+				[s, 0]
+				]);
+				}
+		}
+	}
+}
+
+module croom(){
+	difference(){
+		union(){
+			difference(){
+				difference(){
+					croomcore();
+					difference(){
+						croominnercore();
+						corners();
+					}
+				}
+				lcdset();
+				translate([0, -botalt + 3, (croomz + wallz) / 2]){
+					rotate([theta, 0, 0]){
+						fanhole(10);
+					}
+				}
+				fancablehole();
+				rockerhole();
+				antennahole();
+			}
+			croombottom(botrad, wallz);
+		}
+		bottomcorners();
+	}
+	bottomcornerfills();
+}
+
 
 multicolor("green"){
 	croom();

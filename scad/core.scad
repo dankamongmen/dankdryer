@@ -68,6 +68,19 @@ module topbottom(height){
     }
 }
 
+module foursquare(){
+    children();
+    mirror([1, 0, 0]){
+        children();
+		mirror([0, 1, 0]){
+			children();
+		}
+    }
+    mirror([0, 1, 0]){
+        children();
+    }
+}
+
 // spacing between the 4.3mm diameter holes is 71.5mm, so
 // 8.5 / 2 == 4.25 from hole center to side. triangle with
 // bases 2 * 8.5 == 17
