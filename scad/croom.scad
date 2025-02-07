@@ -17,22 +17,17 @@ botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
 
-// pyramid insets removed from the bottom
-module bottomcorners(){
-	foursquare(){
-		translate([botalt, botalt, -0.5]){
-			cylinder(20, 30, 1, $fn=4);
-		}
-	}
-}
-
 // the vast majority of the interior, removed
 module croominnercore(){
     coreh = croomz - wallz;
     translate([0, 0, wallz]){
-        rotate([0, 0, 45]){
-            cylinder(coreh, botinrad, topinrad, $fn = 4);
-        }
+		br = botinrad * sqrt(2);
+		tr = topinrad * sqrt(2);
+		prismoid(size1=[br, br],
+			size2=[tr, tr],
+			h=coreh,
+			rounding1 = 50,
+			rounding2 = 0);
     }
 }
 
@@ -211,14 +206,7 @@ module rockerhole(){
 }
 
 module croombottom(rad, z){
-    translate([0, 0, z / 2]){
-		difference(){
-			rotate([0, 0, 45]){
-				cylinder(z, rad, rad, $fn = 4, true);
-			}
-		}
-    }
-    acadapterscrews(5);
+	acadapterscrews(5);
     translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
     }
@@ -277,67 +265,38 @@ module lcdset(){
 	}
 }
 
-// the fundamental structure (hollow frustrum)
+// the fundamental structure (hollow frustrum
+// continuously deformed into hollow cylinder)
 module croomcore(){
-    translate([0, 0, wallz]){
-        rotate([0, 0, 45]){
-            cylinder(croomz - wallz, botrad, toprad, $fn = 4);
-        }
-    }
-}
-
-module bottomcornerfills(){
-	foursquare(){
-		translate([botalt - 25, botalt - 25, -14]){
-			
-		/*a = 0;
-		b = -30;
-		c = 30;
-		multmatrix(m = [
-		[cos(a)*cos(b), cos(a)*sin(b)*sin(c) - sin(a)*cos(c), cos(a)*sin(b)*cos(c) + sin(a)*sin(c), 1],
-		[sin(a)*cos(b), sin(a)*sin(b)*sin(c) + cos(a)*cos(c), sin(a)*sin(b)*cos(c)-cos(a)*sin(c), 1],
-		[-sin(b), cos(b)*sin(c), cos(b)*cos(c), 1],
-		[0, 0, 0, 1]
-					])*/
-					s=29;
-					rotate(a=44, v=[1, -1, 0]){
-					linear_extrude(wallz)
-			polygon([
-				[s, s],
-				[0, s],
-				[s, 0]
-				]);
-				}
-		}
-	}
+	br = botrad * sqrt(2);
+	tr = toprad * sqrt(2);
+	prismoid(size1=[br, br],
+		size2=[tr, tr],
+		h=croomz,
+		rounding1 = 60,
+		rounding2 = 0);
 }
 
 module croom(){
 	difference(){
-		union(){
+		difference(){
+			croomcore();
 			difference(){
-				difference(){
-					croomcore();
-					difference(){
-						croominnercore();
-						corners();
-					}
-				}
-				lcdset();
-				translate([0, -botalt + 3, (croomz + wallz) / 2]){
-					rotate([theta, 0, 0]){
-						fanhole(10);
-					}
-				}
-				fancablehole();
-				rockerhole();
-				antennahole();
+				croominnercore();
+				corners();
 			}
-			croombottom(botrad, wallz);
 		}
-		bottomcorners();
+		lcdset();
+		translate([0, -botalt + 3, (croomz + wallz) / 2]){
+			rotate([theta, 0, 0]){
+				fanhole(10);
+			}
+		}
+		fancablehole();
+		rockerhole();
+		antennahole();
 	}
-	bottomcornerfills();
+	croombottom(botrad, wallz);
 }
 
 
