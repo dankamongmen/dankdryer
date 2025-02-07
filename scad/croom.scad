@@ -6,7 +6,7 @@ include <core.scad>
 // thickness of croom xy walls (bottom is wallz)
 croomwall = 3;
 // the outer radii on our top and bottom
-botrad = (totalxy + 14) * sqrt(2) / 2;
+botrad = (totalxy + 4) * sqrt(2) / 2;
 toprad = totalxy * sqrt(2) / 2;
 // the inner radii on its top and bottom
 botinrad = botrad - croomwall * sqrt(2);
@@ -154,32 +154,6 @@ module antennahole(){
     }
 }
 
-// channel for ac wires running from adapter to heater
-module wirechannel(){
-    channelh = 20;
-    translate([-botalt + croomwall, -20, wallz]){
-        rotate([90, 0, 0]){
-            intersection(){
-                difference(){
-                    cylinder(totalxy / 2, channelh / 2, channelh / 2, true);
-                    cylinder(totalxy / 2, (channelh - 2) / 2, (channelh - 2) / 2, true);
-					cylinder(2 * totalxy / 5, channelh / 2, channelh / 2, true);
-                }
-                translate([channelh / 2, channelh / 2, 0]){
-                    cube([channelh, channelh, totalxy / 2], true);
-                }
-
-            }
-        }
-    }
-}
-
-module wirechannels(){
-	mirror([1, 0, 0]){
-		wirechannel();
-	}
-}
-
 // hole for hotbox fan wires
 module fancablehole(){
     translate([-40, botinalt - 6, croomz]){
@@ -198,7 +172,7 @@ module fancablehole(){
 rockerh = 20;
 rockerw = 45.7;
 module rockerhole(){
-	translate([-botinalt, botinalt / 3, rockerh / 2 + 10]){
+	translate([-botinalt - 2, botinalt / 3 - 10, rockerh / 2 + 10]){
 	    rotate([0, 180 - theta, 0]){
 			cube([croomwall + 2, rockerw, rockerh], true);
 		}
@@ -211,7 +185,6 @@ module croombottom(rad, z){
         loadcellmount(loadcellmounth);
     }
 	pcbmounts();
-    wirechannels();
 }
 
 // ST7789V

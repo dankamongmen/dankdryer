@@ -19,14 +19,13 @@ spoold = 205;
 spoolh = 75;
 spoolholed = 55;
 
-// we'll want some room around the spool, but the larger our
-// chamber, the more heat we lose.
-wallz = 2; // bottom thickness; don't want much
+// we'll want some room around the spool,
+// but the larger our chamber, the more heat lost.
+wallz = 1.8; // bottom thickness; don't want much
 gapxy = 1; // gap between spool and walls; spool/walls might expand!
 wallxy = 5;
 topz = 5; // height of top piece
-// spool distance from floor and ceiling. ought add up to 85
-// (so that there's space on either side of the fan).
+// spool distance from floor and ceiling.
 elevation = (85 - spoolh) / 2;
 chordxy = 33;
 innerr = spoold / 2 + gapxy;
