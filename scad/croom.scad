@@ -6,7 +6,7 @@ include <core.scad>
 // thickness of croom xy walls (bottom is wallz)
 croomwall = 3;
 // the outer radii on our top and bottom
-botrad = (totalxy + 4) * sqrt(2) / 2;
+botrad = totalxy * sqrt(2) / 2;
 toprad = totalxy * sqrt(2) / 2;
 // the inner radii on its top and bottom
 botinrad = botrad - croomwall * sqrt(2);
@@ -16,6 +16,7 @@ topalt = toprad / sqrt(2);
 botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
+botround = 70;
 
 // the vast majority of the interior, removed
 module croominnercore(){
@@ -26,7 +27,7 @@ module croominnercore(){
 		prismoid(size1=[br, br],
 			size2=[tr, tr],
 			h=coreh,
-			rounding1 = 50,
+			rounding1 = botround,
 			rounding2 = 0);
     }
 }
@@ -172,7 +173,7 @@ module fancablehole(){
 rockerh = 20;
 rockerw = 45.7;
 module rockerhole(){
-	translate([-botinalt - 2, botinalt / 3 - 10, rockerh / 2 + 10]){
+	translate([-botinalt - 2, botinalt / 3 - 10, rockerh / 2 + 15]){
 	    rotate([0, 180 - theta, 0]){
 			cube([croomwall + 2, rockerw, rockerh], true);
 		}
@@ -246,7 +247,7 @@ module croomcore(){
 	prismoid(size1=[br, br],
 		size2=[tr, tr],
 		h=croomz,
-		rounding1 = 60,
+		rounding1 = botround,
 		rounding2 = 0);
 }
 

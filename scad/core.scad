@@ -51,16 +51,6 @@ opoints = [
             [-totalxy / 2, -totalxy / 2 + chordxy]
         ];
 
-ipoints = [[-totalxy / 2 + (chordxy + wallxy), -totalxy / 2 + wallxy],
-                [totalxy / 2 - (chordxy + wallxy), -totalxy / 2 + wallxy],
-                [totalxy / 2 - wallxy, -totalxy / 2 + (chordxy + wallxy)],
-                [totalxy / 2 - wallxy, totalxy / 2 - (chordxy + wallxy)],
-                [totalxy / 2 - (chordxy + wallxy), totalxy / 2 - wallxy],
-                [-totalxy / 2 + (chordxy + wallxy), totalxy / 2 - wallxy],
-                [-totalxy / 2 + wallxy, totalxy / 2 - (chordxy + wallxy)],
-                [-totalxy / 2 + wallxy, -totalxy / 2 + (chordxy + wallxy)]];
-iipoints = concat(opoints, ipoints);
-
 module topbottom(height){
     linear_extrude(wallz){
         polygon(opoints);

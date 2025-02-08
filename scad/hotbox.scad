@@ -176,10 +176,10 @@ module thermohole(){
     cube([w, l, wallz], true);
     // mounting holes are orthogonal to where we drop in terminals
     translate([-12.5, 0, wallz / 2]){
-        screw("M4", l = wallz);
+        screw("M4", l = wallz * 2);
     }
     translate([12.5, 0, wallz / 2]){
-        screw("M4", l = wallz);
+        screw("M4", l = wallz * 2);
     }
 }
 
@@ -211,9 +211,9 @@ module hotbox(){
                 upcorners();
             }
         }
-        translate([-42, -40, 0]){
+        /*translate([-42, -40, 0]){
             rc522holes(wallz);
-	    }
+	    }*/
 		thermholes(wallz);
 		hallholes(wallz);
         // we want to clear everything in the central
@@ -271,7 +271,6 @@ module hotbox(){
 }
 
 hotbox();
-
 // testing
 
 /*
