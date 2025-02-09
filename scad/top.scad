@@ -13,7 +13,7 @@ module top(){
         }
     }
     linear_extrude(inh / 2){
-        polygon(opoints);
+        circle(totalxy / 2);
     }
 }
 
