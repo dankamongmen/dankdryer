@@ -147,22 +147,28 @@ module loadcell(){
     cube([loadcelll, loadcellh, loadcellh], true);
 }
 
-loadcellmountw = 13.5;
-loadcellmountl = 23;
+// there is 10mm from each side to the center of
+// hole closest to it, and 15mm between the centers
+// of holes on a side. there are 40mm between the
+// centers of the two inner holes.
+loadcellmountholegap = 15;
+loadcellmountholeside = 10;
+loadcellmountholecgap = 40;
+loadcellmountl = loadcellmountholeside +
+                 loadcellmountholegap +
+				 loadcellmountholecgap / 4;
 loadcellmounth = 17;
-loadcellsupph = 4;
 
 module loadcellmount(baseh){
     difference(){
         // load cell mounting base
         translate([0, 0, baseh / 2]){
-            cube([loadcellmountl, loadcellmountw, baseh], true);
+            cube([loadcellmountl, loadcellh, baseh], true);
         }
-        // holes for loadcell screws; need match M5 of load cell
-        translate([-5.1, 0, baseh / 2]){
+        translate([-loadcellmountholegap / 2, 0, baseh / 2]){
             screw("M5", length = baseh);
         }
-        translate([5.1, 0, baseh / 2]){
+        translate([loadcellmountholegap / 2, 0, baseh / 2]){
             screw("M5", length = baseh);
         }
     }
