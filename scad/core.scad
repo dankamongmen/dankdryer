@@ -196,15 +196,13 @@ module motor(){
 motorholderh = 3;
 mlength = motorboxh + motorholderh;
 
-tril = loadcellmountholegap +
-		loadcellmountholeside +
-		3 * loadcellmountholecgap / 4;
-module lowercouplingtri(){
+tril = loadcelll / 2;
+module lowercouplingtri(l){
 	linear_extrude(loadcellsupph){
 		polygon([
-			[tril / 2, loadcellmountw / 2],
-			[tril / 2, (motorboxd - loadcellsupph) / 2],
-			[-tril / 2, loadcellmountw / 2]
+			[-l + tril, loadcellmountw / 2],
+			[-l + tril, (motorboxd - loadcellsupph) / 2],
+			[-l, loadcellmountw / 2]
 		]);
 	}
 }
@@ -215,59 +213,64 @@ module lowercoupling(){
 	// holder rises from the center--the
 	// shaft must be in the dead center
 	// of the structure.
-//	difference(){
+	outerr = (motorboxd + 2) / 2;
+	innerr = motorboxd / 2;
+	// total length of the lower coupling is
+	// one side of the load cell through the
+	// opposite outside of the coupling, aka:
+	couplingl = loadcelll / 2 + outerr;
+	difference(){
 		union(){
-			bracel = loadcelll / 2 - loadcellmountl;
+			bracel = couplingl / 2 - loadcellmountl;
 			translate([-loadcellmountl / 2, 0, 0]){
 				loadcellmount(loadcellsupph);
 			}
-			
-			lowercouplingtri();
+			lowercouplingtri(couplingl / 2);
 			mirror([0, 1, 0]){
-				lowercouplingtri();
+				lowercouplingtri(couplingl / 2);
 			}
 			couplingh = 40;
 			// primary motor holder
-			translate([bracel, 0, 0]){
+			translate([couplingl / 2 - outerr, 0, 0]){
 				difference(){
 					translate([0, 0, couplingh / 2 + loadcellsupph]){
-						cylinder(couplingh, (motorboxd + 2) / 2, (motorboxd + 2) / 2, true);
+						cylinder(couplingh, outerr, outerr, true);
 					}
 					translate([0, 0, loadcellsupph + couplingh / 2]){
-						cylinder(couplingh, motorboxd / 2, motorboxd / 2, true);
+						cylinder(couplingh, innerr, innerr, true);
 					}
 				}
 				cylinder(loadcellsupph,
 						(motorboxd - loadcellsupph) / 2,
-						(motorboxd + 2) / 2);
+						outerr);
 			}
 		}
 		// holes in the bottom for wires, polarity
 		// legend, and center for load cell bump
-		translate([15, 0, loadcellsupph / 2]){
-			cube([tril - loadcellmountl, loadcellh, loadcellsupph], true);
+		translate([couplingl / 2 - outerr, 0, loadcellsupph / 2]){
+			cube([innerr, loadcellh, loadcellsupph], true);
 		}
-		translate([tril / 2 - 2, motorboxd / 2 - 7, loadcellsupph / 2]){
+		translate([couplingl / 2 - outerr, innerr - 7, loadcellsupph / 2]){
 			cylinder(loadcellsupph, 3, 3, true);
 		}
-		translate([tril / 2 - 2, -motorboxd / 2 + 7, loadcellsupph / 2]){
+		translate([couplingl / 2 - outerr, -innerr + 7, loadcellsupph / 2]){
 			cylinder(loadcellsupph, 3, 3, true);
 		}
-		translate([tril / 2 - 5, -13, 0]){
+		translate([couplingl / 2 - outerr - 3, -13, 0]){
 			rotate([0, 0, 90]){
 				linear_extrude(loadcellsupph){
 					text("+", size=7, font="Prosto One");
 				}
 			}
 		}
-	//}
+	}
 }
 /*
 bracel = loadcelll / 2 - loadcellmountl;
 translate([-bracel + 3, 0, 0]){
 	loadcellmount(loadcellsupph);
 }*/
-//lowercoupling();
+lowercoupling();
 
 // the actual platform should cover a good chunk
 // of area, to keep the spool steady. cuts both
