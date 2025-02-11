@@ -129,16 +129,6 @@ module fanhole(h){
     fanmounts(2 * h / 3);
 }
 
-acadapterh = 30;
-module acadapter(){
-    difference(){
-        cube([165.1, 60, acadapterh], true);
-        translate([0, 0, -15]){
-            acadapterscrews(30);
-        }
-    }
-}
-
 loadcellh = 12.7;
 //loadcelll = 76;
 loadcelll = 80;
@@ -159,7 +149,7 @@ loadcellmountl = loadcellmountholeside +
 				 loadcellmountholecgap / 4;
 loadcellmounth = 17;
 loadcellsupph = 4;
-loadcellmountw = 13.5;
+loadcellmountw = loadcellh;
 
 module loadcellmount(baseh){
     difference(){
@@ -222,16 +212,18 @@ module lowercoupling(){
 	// holder rises from the center--the
 	// shaft must be in the dead center
 	// of the structure.
-	difference(){
+//	difference(){
 		union(){
 			bracel = loadcelll / 2 - loadcellmountl;
-			translate([-bracel + 3, 0, 0]){
+			translate([-bracel, 0, 0]){
 				loadcellmount(loadcellsupph);
 			}
+			
 			lowercouplingtri();
 			mirror([0, 1, 0]){
 				lowercouplingtri();
 			}
+			/*
 			couplingh = 40;
 			// primary motor holder
 			translate([bracel, 0, 0]){
@@ -246,13 +238,13 @@ module lowercoupling(){
 				cylinder(loadcellsupph,
 						(motorboxd - loadcellsupph) / 2,
 						(motorboxd + 2) / 2);
-			}
+			}*/
 		}
 		// holes in the bottom for wires, polarity
 		// legend, and center for load cell bump
-		translate([15, 0, loadcellsupph / 2]){
+		/*translate([15, 0, loadcellsupph / 2]){
 			cube([loadcellh, loadcellh, loadcellsupph], true);
-		}
+		}*/
 		translate([motorboxd / 2 - 2, motorboxd / 2 - 7, loadcellsupph / 2]){
 			cylinder(loadcellsupph, 3, 3, true);
 		}
@@ -266,9 +258,13 @@ module lowercoupling(){
 				}
 			}
 		}
-	}
+	//}
 }
-
+/*
+bracel = loadcelll / 2 - loadcellmountl;
+translate([-bracel + 3, 0, 0]){
+	loadcellmount(loadcellsupph);
+}*/
 //lowercoupling();
 
 // the actual platform should cover a good chunk

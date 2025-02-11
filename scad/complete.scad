@@ -55,7 +55,7 @@ multicolor("darkslategrey"){
 
 multicolor("black"){
     drop(){
-        translate([0, 60, wallz + acadapterh / 2]){
+        translate([0, 60, wallz + 7 + 22 / 2]){
             acadapter();
         }
     }

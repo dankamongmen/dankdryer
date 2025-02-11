@@ -60,8 +60,12 @@ module rot(deg){
     }
 }
 
+//acadapterh = 30;
+acadapterh = 22;
+acadapterw = 50;
+acadapterl = 135;
 module acadaptermount(l){
-    translate([165.1 / 2 - 2, -22, wallz + l / 2]){
+    translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz + l / 2]){
         difference(){
             cube([7, 7, l], true);
 			children();
@@ -87,6 +91,15 @@ module acadapterscrews(l){
         }
         mirror([1, 0, 0]){
             acadaptermount(l);
+        }
+    }
+}
+
+module acadapter(){
+    difference(){
+        cube([acadapterl, acadapterw, acadapterh], true);
+        translate([0, 0, -15]){
+            acadapterscrews(30);
         }
     }
 }
