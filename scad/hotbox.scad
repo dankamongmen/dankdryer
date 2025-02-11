@@ -89,19 +89,19 @@ module hbcorner(){
     side = 50;
     t = totalxy / 2;
     difference(){
-        translate([t - 18, t - 18, side / 4]){
+        translate([t - 18, t - 18, side / 8]){
             rotate([0, 0, 45]){
-                cylinder(side / 2, side / 2, side / 4, true, $fn = 4);
+                cylinder(side / 4, side / 4, side / 4, true, $fn = 4);
             }
         }
-        translate([totalxy / 2 - 12, totalxy / 2 - 12, 2 * side / 6]){
+        translate([totalxy / 2 - 14, totalxy / 2 - 14, 2 * side / 6]){
             screw("M5", length = 2 * side / 3);
         }
     }
 }
 
 module hbcorners(){
-    // four corners for mating tChannelo croom
+    // four corners for mating to croom
     hbcorner();
     mirror([0, 1, 0]){
         hbcorner();
@@ -121,7 +121,7 @@ module upcorner(){
     t = totalxy / 2;
     translate([t - 15, t - 15, totalz - side / 2]){
         rotate([0, 0, 45]){
-            cylinder(3 * side / 2, side / 4, side / 2, true, $fn = 4);
+            cylinder(side * 2, side / 3, side / 2, true, $fn = 4);
         }
     }
 	// trim the two fat areas in quadrant I
@@ -143,7 +143,6 @@ module upcorner(){
 }
 
 module upcorners(){
-    // four corners for mating to croom
     upcorner();
     mirror([0, 1, 0]){
         upcorner();
@@ -164,6 +163,16 @@ module core(){
             polygon(opoints);
         }
     }
+}
+
+module bottom(z){
+	br = botrad * sqrt(2);
+	tr = toprad * sqrt(2);
+	prismoid(size1=[br, br],
+		size2=[tr, tr],
+		h=z,
+		rounding1 = topround,
+		rounding2 = topround);
 }
 
 // hole and mounts for 175C thermocouple
@@ -203,7 +212,7 @@ module rc522holes(l){
 module hotbox(){
     difference(){
         union(){
-            topbottom(wallz);
+            bottom(wallz);
             hbcorners();
             difference(){
                 core();

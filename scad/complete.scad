@@ -1,11 +1,11 @@
 include <core.scad>
 use <hotbox.scad>
-include <croom.scad>
+use <croom.scad>
 use <coupling.scad>
 use <top.scad>
 
 multicolor("lightgrey"){
-translate([-115, 6, -65]){
+translate([-110, 0, -60]){
 	rotate([0, 180 - theta, 0]){
 		intersection(){
 			rotate([270, 0, 0]){
@@ -27,7 +27,7 @@ multicolor("lightgreen"){
 			}
 		}
 	}
-	translate([0, -113, -41]){
+	translate([0, -109, -41]){
 		rotate([theta, 0, 0]){
 			rotate([0, 90, 90]){
 				scale(17){

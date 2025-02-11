@@ -36,6 +36,24 @@ totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 ctopz = wallz;
 croomz = wallz + ctopz + 80; // 80mm fan; ought just need sin(theta)80
 
+// thickness of croom xy walls (bottom is wallz)
+croomwall = 3;
+// the outer radii on our top and bottom
+botrad = totalxy * sqrt(2) / 2;
+toprad = totalxy * sqrt(2) / 2;
+// the inner radii on its top and bottom
+botinrad = botrad - croomwall * sqrt(2);
+topinrad = toprad - croomwall * sqrt(2);
+// distances from center to mid-outer wall
+topalt = toprad / sqrt(2);
+botalt = botrad / sqrt(2);
+topinalt = topinrad / sqrt(2);
+botinalt = botinrad / sqrt(2);
+botround = 70;
+topround = 30;
+adj = (botrad - toprad) / sqrt(2);
+theta = (90 - atan(-croomz / adj));
+
 flr = -croomz + wallz; // floor z offset
 mh = wallz; // mount height
 shieldw = 88;

@@ -3,21 +3,6 @@
 // or PA. holds the PCB, scale, AC adapter, etc.
 include <core.scad>
 
-// thickness of croom xy walls (bottom is wallz)
-croomwall = 3;
-// the outer radii on our top and bottom
-botrad = totalxy * sqrt(2) / 2;
-toprad = totalxy * sqrt(2) / 2;
-// the inner radii on its top and bottom
-botinrad = botrad - croomwall * sqrt(2);
-topinrad = toprad - croomwall * sqrt(2);
-// distances from center to mid-outer wall
-topalt = toprad / sqrt(2);
-botalt = botrad / sqrt(2);
-topinalt = topinrad / sqrt(2);
-botinalt = botinrad / sqrt(2);
-botround = 70;
-
 // the vast majority of the interior, removed
 module croominnercore(){
     coreh = croomz - wallz;
@@ -28,12 +13,11 @@ module croominnercore(){
 			size2=[tr, tr],
 			h=coreh,
 			rounding1 = botround,
-			rounding2 = 0);
+			rounding2 = topround);
     }
 }
 
-adj = (botrad - toprad) / sqrt(2);
-theta = (90 - atan(-croomz / adj));
+
 // a corner at the top, to which the hotbox is mounted
 module corner(){
 	h = 5;
@@ -54,7 +38,7 @@ module corner(){
 					}
 				}
             }
-			translate([12, 12, 0]){
+			translate([14, 14, 0]){
                 screw("M5", length = 10);
             }
         }
@@ -248,7 +232,7 @@ module croomcore(){
 		size2=[tr, tr],
 		h=croomz,
 		rounding1 = botround,
-		rounding2 = 0);
+		rounding2 = topround);
 }
 
 module croom(){
