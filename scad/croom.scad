@@ -166,6 +166,7 @@ module rockerhole(){
 
 module croombottom(rad, z){
 	acadapterscrews(5);
+	loadcellmountx = -loadcelll / 2 + 21.05 / 2;
     translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
     }

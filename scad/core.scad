@@ -139,14 +139,14 @@ module acadapter(){
     }
 }
 
-loadcellh = 13.5;
-loadcelll = 76;
+loadcellh = 12.7;
+//loadcelll = 76;
+loadcelll = 80;
 module loadcell(){
     // https://amazon.com/gp/product/B07BGXXHSW
     cube([loadcelll, loadcellh, loadcellh], true);
 }
 
-loadcellmountx = -76 / 2 + 21.05 / 2;
 loadcellmountw = 13.5;
 loadcellmountl = 23;
 loadcellmounth = 17;
