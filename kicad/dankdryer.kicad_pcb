@@ -17444,6 +17444,26 @@
 			)
 		)
 	)
+	(gr_line
+		(start 123.65 93.9)
+		(end 123.65 97.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "0bcee3a2-15c4-4575-94d3-27efa2e62a5a")
+	)
+	(gr_line
+		(start 145.6 94)
+		(end 148.95 94)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "30059205-bd11-42a9-9930-70f610889699")
+	)
 	(gr_rect
 		(start 146 72.35)
 		(end 148.75 87.25)
@@ -17454,6 +17474,16 @@
 		(fill none)
 		(layer "F.SilkS")
 		(uuid "64e80a9b-fcd7-492f-9bca-fa973a03712f")
+	)
+	(gr_line
+		(start 123.55 123.85)
+		(end 123.55 121.6)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "70310122-14ee-4172-91b3-0a6eceb7a411")
 	)
 	(gr_rect
 		(start 125.3 58.85)
@@ -17476,6 +17506,16 @@
 		(fill none)
 		(layer "F.SilkS")
 		(uuid "cea7a35b-2741-4894-bde1-a06b158340f1")
+	)
+	(gr_line
+		(start 123.65 93.9)
+		(end 126.6 93.9)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "df0a834a-082b-4c23-8b67-afad89e4a193")
 	)
 	(gr_circle
 		(center 55 55)
@@ -17526,59 +17566,64 @@
 		(uuid "aa4765e9-a2b4-4fee-9e32-2826ecebddd0")
 	)
 	(gr_rect
-		(start 131.025 93.45)
-		(end 143.275 94.45)
+		(start 127 93.45)
+		(end 145 94.45)
+		(locked yes)
 		(stroke
 			(width 0.05)
 			(type default)
 		)
 		(fill solid)
-		(layer "Edge.Cuts")
+		(layer "User.1")
 		(uuid "ba25d56b-b07f-4d11-bdc6-0ddec8ff841f")
 	)
 	(gr_poly
 		(pts
 			(xy 125.25 90.85) (xy 122 87.6) (xy 124 87.6) (xy 125.25 88.85)
 		)
+		(locked yes)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(fill solid)
-		(layer "Edge.Cuts")
+		(layer "User.1")
 		(uuid "bd8e8c03-5f84-404d-8a04-93b5473e237c")
 	)
 	(gr_rect
 		(start 122.05 69.775)
 		(end 124.05 86.525)
+		(locked yes)
 		(stroke
 			(width 0.05)
 			(type default)
 		)
 		(fill solid)
-		(layer "Edge.Cuts")
+		(layer "User.1")
 		(uuid "d1b2d9ef-6286-468c-841a-1a5a5f6fe9dd")
 	)
 	(gr_rect
-		(start 123.05 102.375)
-		(end 124.05 119.125)
+		(start 123.05 98)
+		(end 124.05 121)
+		(locked yes)
 		(stroke
 			(width 0.05)
 			(type default)
 		)
 		(fill solid)
-		(layer "Edge.Cuts")
+		(layer "User.1")
 		(uuid "d53d1391-3494-46e7-9054-c447ad2f7367")
 	)
 	(gr_rect
 		(start 126.05 88.85)
 		(end 138.3 90.85)
+		(locked yes)
 		(stroke
 			(width 0.05)
 			(type default)
 		)
 		(fill solid)
-		(layer "Edge.Cuts")
+		(layer "User.1")
 		(uuid "eb9ee0eb-fa78-47dc-9b78-cf92a10fc137")
 	)
 	(gr_text "neutral/heater-"
