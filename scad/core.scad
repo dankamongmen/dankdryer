@@ -151,17 +151,17 @@ loadcellmounth = 17;
 loadcellsupph = 4;
 loadcellmountw = loadcellh;
 
-module loadcellmount(baseh){
+module loadcellmount(baseh, s = "M5"){
     difference(){
         // load cell mounting base
         translate([0, 0, baseh / 2]){
             cube([loadcellmountl, loadcellh, baseh], true);
         }
         translate([-loadcellmountholegap / 2, 0, baseh / 2]){
-            screw("M5", length = baseh);
+            screw(s, length = baseh);
         }
         translate([loadcellmountholegap / 2, 0, baseh / 2]){
-            screw("M5", length = baseh);
+            screw(s, length = baseh);
         }
     }
 }
@@ -223,7 +223,7 @@ module lowercoupling(){
 		union(){
 			bracel = couplingl / 2 - loadcellmountl;
 			translate([-loadcellmountl / 2, 0, 0]){
-				loadcellmount(loadcellsupph);
+				loadcellmount(loadcellsupph, "M4");
 			}
 			lowercouplingtri(couplingl / 2);
 			mirror([0, 1, 0]){
@@ -263,6 +263,11 @@ module lowercoupling(){
 				}
 			}
 		}
+		// "redrill" the inner screw so that it
+		// penetrates the cylinders. screw from below.
+		translate([-couplingl / 2 + 22.25, 0, loadcellsupph / 2]){
+            screw("M4", length = loadcellsupph);
+        }	
 	}
 }
 /*
@@ -270,7 +275,7 @@ bracel = loadcelll / 2 - loadcellmountl;
 translate([-bracel + 3, 0, 0]){
 	loadcellmount(loadcellsupph);
 }*/
-lowercoupling();
+//lowercoupling();
 
 // the actual platform should cover a good chunk
 // of area, to keep the spool steady. cuts both
