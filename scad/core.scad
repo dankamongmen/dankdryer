@@ -158,6 +158,8 @@ loadcellmountl = loadcellmountholeside +
                  loadcellmountholegap +
 				 loadcellmountholecgap / 4;
 loadcellmounth = 17;
+loadcellsupph = 4;
+loadcellmountw = 13.5;
 
 module loadcellmount(baseh){
     difference(){
