@@ -137,12 +137,12 @@ module loadcell(){
     cube([loadcelll, loadcellh, loadcellh], true);
 }
 
-// there is 10mm from each side to the center of
+// there is 5mm from each side to the center of
 // hole closest to it, and 15mm between the centers
 // of holes on a side. there are 40mm between the
-// centers of the two inner holes.
+// centers of the two inner holes. 80mm total.
 loadcellmountholegap = 15;
-loadcellmountholeside = 10;
+loadcellmountholeside = 5;
 loadcellmountholecgap = 40;
 loadcellmountl = loadcellmountholeside +
                  loadcellmountholegap +
@@ -196,12 +196,15 @@ module motor(){
 motorholderh = 3;
 mlength = motorboxh + motorholderh;
 
+tril = loadcellmountholegap +
+		loadcellmountholeside +
+		3 * loadcellmountholecgap / 4;
 module lowercouplingtri(){
 	linear_extrude(loadcellsupph){
 		polygon([
-			[motorboxd / 2, loadcellmountw / 2],
-			[motorboxd / 2, (motorboxd - loadcellsupph) / 2],
-			[-loadcellmountl, loadcellmountw / 2]
+			[tril / 2, loadcellmountw / 2],
+			[tril / 2, (motorboxd - loadcellsupph) / 2],
+			[-tril / 2, loadcellmountw / 2]
 		]);
 	}
 }
@@ -215,7 +218,7 @@ module lowercoupling(){
 //	difference(){
 		union(){
 			bracel = loadcelll / 2 - loadcellmountl;
-			translate([-bracel, 0, 0]){
+			translate([-loadcellmountl / 2, 0, 0]){
 				loadcellmount(loadcellsupph);
 			}
 			
@@ -223,7 +226,6 @@ module lowercoupling(){
 			mirror([0, 1, 0]){
 				lowercouplingtri();
 			}
-			/*
 			couplingh = 40;
 			// primary motor holder
 			translate([bracel, 0, 0]){
@@ -238,20 +240,20 @@ module lowercoupling(){
 				cylinder(loadcellsupph,
 						(motorboxd - loadcellsupph) / 2,
 						(motorboxd + 2) / 2);
-			}*/
+			}
 		}
 		// holes in the bottom for wires, polarity
 		// legend, and center for load cell bump
-		/*translate([15, 0, loadcellsupph / 2]){
-			cube([loadcellh, loadcellh, loadcellsupph], true);
-		}*/
-		translate([motorboxd / 2 - 2, motorboxd / 2 - 7, loadcellsupph / 2]){
+		translate([15, 0, loadcellsupph / 2]){
+			cube([tril - loadcellmountl, loadcellh, loadcellsupph], true);
+		}
+		translate([tril / 2 - 2, motorboxd / 2 - 7, loadcellsupph / 2]){
 			cylinder(loadcellsupph, 3, 3, true);
 		}
-		translate([motorboxd / 2 - 2, -motorboxd / 2 + 7, loadcellsupph / 2]){
+		translate([tril / 2 - 2, -motorboxd / 2 + 7, loadcellsupph / 2]){
 			cylinder(loadcellsupph, 3, 3, true);
 		}
-		translate([motorboxd / 2 - 5, -13, 0]){
+		translate([tril / 2 - 5, -13, 0]){
 			rotate([0, 0, 90]){
 				linear_extrude(loadcellsupph){
 					text("+", size=7, font="Prosto One");
