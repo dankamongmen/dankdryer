@@ -223,7 +223,7 @@ module lowercoupling(){
 		union(){
 			bracel = couplingl / 2 - loadcellmountl;
 			translate([-loadcellmountl / 2, 0, 0]){
-				loadcellmount(loadcellsupph, "M4");
+				loadcellmount(loadcellsupph);
 			}
 			lowercouplingtri(couplingl / 2);
 			mirror([0, 1, 0]){
@@ -266,7 +266,7 @@ module lowercoupling(){
 		// "redrill" the inner screw so that it
 		// penetrates the cylinders. screw from below.
 		translate([-couplingl / 2 + 22.25, 0, loadcellsupph / 2]){
-            screw("M4", length = loadcellsupph);
+            screw("M5", length = loadcellsupph);
         }	
 	}
 }
