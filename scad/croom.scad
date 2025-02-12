@@ -146,7 +146,7 @@ module antennahole(){
 	translate([-topalt / 2, -botalt + 10, croomz - 30]){
         rotate([theta, 0, 0]){
             rotate([90, 0, 0]){
-				cylinder(rpsmal, rpsmar + 1, rpsmar + 1, true);
+				cylinder(rpsmal, rpsmar + 0.5, rpsmar + 0.5, true);
 			}
         }
     }
