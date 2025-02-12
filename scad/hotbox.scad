@@ -88,32 +88,31 @@ module floorcuts(){
 module hbcorner(){
     side = 50;
     t = totalxy / 2;
-    difference(){
-        translate([t - 18, t - 18, side / 8]){
-            rotate([0, 0, 45]){
-                cylinder(side / 4, side / 4, side / 4, true, $fn = 4);
-            }
-        }
-        translate([totalxy / 2 - 14, totalxy / 2 - 14, 2 * side / 6]){
-            screw("M5", length = 2 * side / 3);
+    translate([t - 18, t - 18, side / 8]){
+        rotate([0, 0, 45]){
+            cylinder(side / 4, side / 4, side / 4, true, $fn = 4);
         }
     }
 }
 
+module cornerscrew(){
+	side = 50;
+	translate([totalxy / 2 - 14, totalxy / 2 - 14, 2 * side / 6]){
+		screw("M5", length = 2 * side / 3);
+	}
+}
+
 module hbcorners(){
     // four corners for mating to croom
-    hbcorner();
-    mirror([0, 1, 0]){
-        hbcorner();
-    }
-    mirror([1, 0, 0]){
-        hbcorner();
-    }
-    mirror([0, 1, 0]){
-        mirror([1, 0, 0]){
-            hbcorner();
-        }
-    }
+    foursquare(){
+		hbcorner();
+	}
+}
+
+module cornerscrews(){
+	foursquare(){
+		cornerscrew();
+	}
 }
 
 module upcorner(){
@@ -121,7 +120,7 @@ module upcorner(){
     t = totalxy / 2;
     translate([t - 15, t - 15, totalz - side / 2]){
         rotate([0, 0, 45]){
-            cylinder(side * 2, side / 3, side / 2, true, $fn = 4);
+            cylinder(side * 3, side / 3, side / 2, true, $fn = 4);
         }
     }
 	// trim the two fat areas in quadrant I
@@ -258,6 +257,7 @@ module hotbox(){
                 thermohole();
             }
         }
+		cornerscrews();
     }
     translate([0, 0, totalz - topz]){
 		difference(){
