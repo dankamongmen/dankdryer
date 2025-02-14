@@ -7,7 +7,7 @@
 	(title_block
 		(title "dankdryer")
 		(date "2025-02-14")
-		(rev "1.5.0")
+		(rev "1.5.1")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -229,142 +229,6 @@
 						)
 					)
 					(number "5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-		)
-		(symbol "Device:C"
-			(pin_numbers hide)
-			(pin_names
-				(offset 0.254)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "C"
-				(at 0.635 2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "C"
-				(at 0.635 -2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 0.9652 -3.81 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Unpolarized capacitor"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "cap capacitor"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "C_*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "C_0_1"
-				(polyline
-					(pts
-						(xy -2.032 -0.762) (xy 2.032 -0.762)
-					)
-					(stroke
-						(width 0.508)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.032 0.762) (xy 2.032 0.762)
-					)
-					(stroke
-						(width 0.508)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "C_1_1"
-				(pin passive line
-					(at 0 3.81 270)
-					(length 2.794)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -3.81 90)
-					(length 2.794)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -887,32 +751,167 @@
 				)
 			)
 		)
-		(symbol "dank:CGA5L2NP01H104J160AA"
+		(symbol "dank:AH3712Q-P-B"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U8"
+				(at 0.254 11.938 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify right)
+				)
+			)
+			(property "Value" "AH3712Q-P-B"
+				(at 6.096 9.144 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify right)
+				)
+			)
+			(property "Footprint" "Package_TO_SOT_SMD:SC-59"
+				(at 13.97 -8.89 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://www.diodes.com/assets/Datasheets/AH3712Q.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "High Sensitivity Micropower Omnipolar Hall-Effect Switch, SC-59"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "hall switch"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "SC?59*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "AH3712Q-P-B_0_1"
+				(rectangle
+					(start -6.35 7.62)
+					(end 5.08 -3.81)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "AH3712Q-P-B_1_1"
+				(pin power_in line
+					(at 5.08 -2.54 180)
+					(length 2.54)
+					(name "VDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -7.62 1.27 0)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin open_collector line
+					(at 5.08 5.08 180)
+					(length 2.54)
+					(name "OUTPUT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "dank:C0805C105J3RECAUTO"
 			(pin_names
 				(offset 0.254)
 			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "C3"
-				(at 5.0801 -3.81 90)
+			(property "Reference" "C"
+				(at 3.81 3.81 0)
 				(effects
 					(font
 						(size 1.524 1.524)
 					)
-					(justify right)
 				)
 			)
-			(property "Value" ".1u"
-				(at 2.5401 -3.81 90)
+			(property "Value" "1u"
+				(at 3.81 -3.81 0)
 				(effects
 					(font
 						(size 1.524 1.524)
 					)
-					(justify right)
 				)
 			)
-			(property "Footprint" "dank:CAP_3216_TDK"
+			(property "Footprint" "dank:CAPC230145_140N_KEM"
 				(at 0 0 0)
 				(effects
 					(font
@@ -922,7 +921,7 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "CGA5L2NP01H104J160AA"
+			(property "Datasheet" "C0805C105J3RECAUTO"
 				(at 0 0 0)
 				(effects
 					(font
@@ -932,7 +931,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "High-temperature 1206 ceramic capacitor"
+			(property "Description" "CAP CER 0805 1UF 25V X7R 5%"
 				(at 0 0 0)
 				(effects
 					(font
@@ -941,7 +940,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "CGA5L2NP01H104J160AA"
+			(property "ki_keywords" "C0805C105J3RECAUTO"
 				(at 0 0 0)
 				(effects
 					(font
@@ -950,7 +949,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "CAP_3216_TDK CAP_3216_TDK-M CAP_3216_TDK-L"
+			(property "ki_fp_filters" "CAPC230145_140N_KEM CAPC230145_140N_KEM-M CAPC230145_140N_KEM-L"
 				(at 0 0 0)
 				(effects
 					(font
@@ -959,7 +958,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "CGA5L2NP01H104J160AA_1_1"
+			(symbol "C0805C105J3RECAUTO_1_1"
 				(polyline
 					(pts
 						(xy 2.54 0) (xy 3.4798 0)
@@ -1045,7 +1044,7 @@
 					)
 				)
 			)
-			(symbol "CGA5L2NP01H104J160AA_1_2"
+			(symbol "C0805C105J3RECAUTO_1_2"
 				(polyline
 					(pts
 						(xy -1.905 -4.1148) (xy 1.905 -4.1148)
@@ -1132,30 +1131,30 @@
 				)
 			)
 		)
-		(symbol "dank:DRV5011ADDBZR"
+		(symbol "dank:CL21B106KOQNNNE"
 			(pin_names
 				(offset 0.254)
 			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "U"
-				(at 0 2.54 0)
+			(property "Reference" "C"
+				(at 3.81 3.81 0)
 				(effects
 					(font
 						(size 1.524 1.524)
 					)
 				)
 			)
-			(property "Value" "DRV5011ADDBZR"
-				(at 0 0 0)
+			(property "Value" "10u"
+				(at 3.81 -3.81 0)
 				(effects
 					(font
 						(size 1.524 1.524)
 					)
 				)
 			)
-			(property "Footprint" "DBZ0003A_N"
+			(property "Footprint" "dank:CAP_CL21B106KOQNNNE_SAM"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1165,7 +1164,7 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "https://www.ti.com/lit/ds/symlink/drv5011.pdf?HQS=dis-dk-null-digikeymode-dsf-pf-null-wwe&ts=1734941122314"
+			(property "Datasheet" "CL21B106KOQNNNE"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1175,7 +1174,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Digital-latch Hall effect sensor"
+			(property "Description" "10uF 125C ceramic capacitor"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1184,7 +1183,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "DRV5011ADDBZR"
+			(property "ki_keywords" "CL21B106KOQNNNE"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1193,7 +1192,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "DBZ0003A_N DBZ0003A_M DBZ0003A_L"
+			(property "ki_fp_filters" "CAP_CL21B106KOQNNNE_SAM CAP_CL21B106KOQNNNE_SAM-M CAP_CL21B106KOQNNNE_SAM-L"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1202,11 +1201,59 @@
 					(hide yes)
 				)
 			)
-			(symbol "DRV5011ADDBZR_0_1"
-				(pin power_in line
-					(at -17.78 5.08 0)
-					(length 5.08)
-					(name "VCC"
+			(symbol "CL21B106KOQNNNE_1_1"
+				(polyline
+					(pts
+						(xy 2.54 0) (xy 3.4798 0)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.4798 -1.905) (xy 3.4798 1.905)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.1148 -1.905) (xy 4.1148 1.905)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.1148 0) (xy 5.08 0)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at 0 0 0)
+					(length 2.54)
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1221,10 +1268,10 @@
 						)
 					)
 				)
-				(pin output line
-					(at 17.78 5.08 180)
-					(length 5.08)
-					(name "OUT"
+				(pin passive line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1239,17 +1286,85 @@
 						)
 					)
 				)
-				(pin power_in line
-					(at 17.78 -5.08 180)
-					(length 5.08)
-					(name "GND"
+			)
+			(symbol "CL21B106KOQNNNE_1_2"
+				(polyline
+					(pts
+						(xy -1.905 -4.1148) (xy 1.905 -4.1148)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.905 -3.4798) (xy 1.905 -3.4798)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -4.1148) (xy 0 -5.08)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -2.54) (xy 0 -3.4798)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at 0 0 270)
+					(length 2.54)
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
 							)
 						)
 					)
-					(number "3"
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1258,16 +1373,248 @@
 					)
 				)
 			)
-			(symbol "DRV5011ADDBZR_1_1"
-				(rectangle
-					(start -12.7 10.16)
-					(end 12.7 -10.16)
+		)
+		(symbol "dank:CL21C103JBF1PNE"
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "C17"
+				(at 5.842 2.54 90)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" ".01u"
+				(at 2.794 2.032 90)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" "dank:CAP_CL_21_SAM"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "CL21C103JBF1PNE"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ".01uF 125C ceramic capacitor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "CL21C103JBF1PNE"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "CAP_CL_21_SAM CAP_CL_21_SAM-M CAP_CL_21_SAM-L"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "CL21C103JBF1PNE_1_1"
+				(polyline
+					(pts
+						(xy 2.54 0) (xy 3.4798 0)
+					)
 					(stroke
-						(width 0)
+						(width 0.2032)
 						(type default)
 					)
 					(fill
-						(type background)
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.4798 -1.905) (xy 3.4798 1.905)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.1148 -1.905) (xy 4.1148 1.905)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.1148 0) (xy 5.08 0)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at 0 0 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "CL21C103JBF1PNE_1_2"
+				(polyline
+					(pts
+						(xy -1.905 -4.1148) (xy 1.905 -4.1148)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.905 -3.4798) (xy 1.905 -3.4798)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -4.1148) (xy 0 -5.08)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -2.54) (xy 0 -3.4798)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at 0 0 270)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
 					)
 				)
 			)
@@ -1728,6 +2075,108 @@
 				)
 			)
 		)
+		(symbol "power:PWR_FLAG"
+			(power)
+			(pin_numbers hide)
+			(pin_names
+				(offset 0) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "#FLG"
+				(at 0 1.905 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Value" "PWR_FLAG"
+				(at 0 3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Special symbol for telling ERC where power comes from"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "flag power"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "PWR_FLAG_0_0"
+				(pin power_out line
+					(at 0 0 90)
+					(length 0)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "PWR_FLAG_0_1"
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 1.27) (xy -1.016 1.905) (xy 0 2.54) (xy 1.016 1.905) (xy 0 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+		)
+	)
+	(junction
+		(at 73.66 72.39)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "04d9762f-2714-43e8-9958-2527b00dd8fc")
 	)
 	(junction
 		(at 133.35 87.63)
@@ -1736,10 +2185,28 @@
 		(uuid "0feaf5db-dc21-4973-ac65-fc844229cdfc")
 	)
 	(junction
+		(at 218.44 76.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "21218972-af39-4d26-a37d-750e468dfd73")
+	)
+	(junction
+		(at 190.5 76.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "239707af-ea93-4f79-8d60-b02621446c32")
+	)
+	(junction
 		(at 146.05 87.63)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "25746445-9900-4545-be88-03e86dba8797")
+	)
+	(junction
+		(at 83.82 140.97)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "34b89bfe-8f14-4922-9edf-63d80bdd81a8")
 	)
 	(junction
 		(at 133.35 64.77)
@@ -1748,10 +2215,16 @@
 		(uuid "479c68bb-e89c-4032-9bc9-01855f260ce9")
 	)
 	(junction
-		(at 45.72 71.12)
+		(at 71.12 83.82)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "73bf3d77-98d2-417f-a11b-b85ba7908f85")
+		(uuid "4f440bc2-7762-4838-be97-5abd5a011bfc")
+	)
+	(junction
+		(at 54.61 76.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "60fcb571-3fe1-4b7c-9620-a28e88d2e94e")
 	)
 	(junction
 		(at 204.47 83.82)
@@ -1760,28 +2233,32 @@
 		(uuid "8345a347-d04e-4897-9352-b23af11fef9d")
 	)
 	(junction
-		(at 218.44 76.2)
+		(at 71.12 140.97)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "9c103722-ac1e-45a8-8aca-ea70c1a18523")
-	)
-	(junction
-		(at 190.5 76.2)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a09d8153-0c38-4e90-bbae-3265f7f1cf76")
-	)
-	(junction
-		(at 81.28 85.09)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "be866d8c-e002-456b-bb27-be01e197b44f")
+		(uuid "a5270432-e547-4129-b4a1-e3fc9991d97d")
 	)
 	(junction
 		(at 119.38 74.93)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "dd0416b5-6324-4f20-b851-04e1bc2ef5b5")
+	)
+	(junction
+		(at 71.12 80.01)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "dd111e6d-9f5d-4be1-bae6-d9dcd2631a10")
+	)
+	(wire
+		(pts
+			(xy 71.12 80.01) (xy 71.12 83.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0c668b1b-4d8c-4eef-879d-345a88c338fc")
 	)
 	(wire
 		(pts
@@ -1795,13 +2272,33 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 71.12) (xy 45.72 71.12)
+			(xy 218.44 76.2) (xy 232.41 76.2)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "1fd11a3d-4dba-4a40-a972-f3b03a8d65e6")
+		(uuid "188d238b-49ce-47e4-b6b9-f1e0eb9ed06d")
+	)
+	(wire
+		(pts
+			(xy 190.5 76.2) (xy 196.85 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "18ba095d-31f8-4056-b889-0e21c6f67928")
+	)
+	(wire
+		(pts
+			(xy 54.61 76.2) (xy 55.88 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1904d289-8372-4ab9-97d6-506ccb34795b")
 	)
 	(wire
 		(pts
@@ -1855,7 +2352,7 @@
 	)
 	(wire
 		(pts
-			(xy 190.5 76.2) (xy 196.85 76.2)
+			(xy 182.88 76.2) (xy 190.5 76.2)
 		)
 		(stroke
 			(width 0)
@@ -1865,13 +2362,13 @@
 	)
 	(wire
 		(pts
-			(xy 120.65 139.7) (xy 120.65 144.78)
+			(xy 66.04 83.82) (xy 71.12 83.82)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "3314fd48-4a69-4d13-92cb-272d3b733700")
+		(uuid "34e9ece2-ff15-43d3-bb06-8066f8a80361")
 	)
 	(wire
 		(pts
@@ -1885,33 +2382,53 @@
 	)
 	(wire
 		(pts
-			(xy 45.72 71.12) (xy 45.72 76.2)
+			(xy 120.65 139.7) (xy 120.65 144.78)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "468a83b0-3f95-4735-a773-455e39769d3b")
+		(uuid "40240563-c8bc-4154-931d-da233ec79d71")
 	)
 	(wire
 		(pts
-			(xy 113.03 149.86) (xy 124.46 149.86)
+			(xy 71.12 140.97) (xy 71.12 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "43491557-1b2f-441c-a9f2-418dd4506159")
+	)
+	(wire
+		(pts
+			(xy 54.61 83.82) (xy 54.61 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5a0f6ba0-2b68-4b0f-9b49-388570d0f7e6")
+	)
+	(wire
+		(pts
+			(xy 73.66 72.39) (xy 78.74 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5b89e7e5-5026-4b0f-a60a-28f62f343e50")
+	)
+	(wire
+		(pts
+			(xy 110.49 149.86) (xy 124.46 149.86)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "62d4c7d6-00d4-4717-ba2b-eb2c772504da")
-	)
-	(wire
-		(pts
-			(xy 81.28 85.09) (xy 81.28 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "63ba7750-6616-4a4f-bad6-1ed8fce493ae")
 	)
 	(wire
 		(pts
@@ -1925,7 +2442,7 @@
 	)
 	(wire
 		(pts
-			(xy 113.03 139.7) (xy 113.03 149.86)
+			(xy 110.49 139.7) (xy 110.49 149.86)
 		)
 		(stroke
 			(width 0)
@@ -1955,13 +2472,33 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 76.2) (xy 190.5 76.2)
+			(xy 68.58 80.01) (xy 71.12 80.01)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "9cffe951-323d-4cf7-9f1f-507b14eff15c")
+		(uuid "848de1c0-8b4e-4ee4-a63a-7e82a28706b0")
+	)
+	(wire
+		(pts
+			(xy 83.82 140.97) (xy 83.82 144.78)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "98e8691e-bea8-4123-8260-51b1503b1b6a")
+	)
+	(wire
+		(pts
+			(xy 58.42 83.82) (xy 54.61 83.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a2a5bd2c-c981-46ac-9219-4dcd77931465")
 	)
 	(wire
 		(pts
@@ -1995,7 +2532,7 @@
 	)
 	(wire
 		(pts
-			(xy 76.2 149.86) (xy 87.63 149.86)
+			(xy 71.12 149.86) (xy 87.63 149.86)
 		)
 		(stroke
 			(width 0)
@@ -2012,26 +2549,6 @@
 			(type default)
 		)
 		(uuid "b2c87526-d327-454d-a309-2b980cb001fc")
-	)
-	(wire
-		(pts
-			(xy 212.09 76.2) (xy 218.44 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "bb2c46f8-9c8d-4456-8149-922faadaa593")
-	)
-	(wire
-		(pts
-			(xy 81.28 88.9) (xy 45.72 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c14811a5-128d-4f05-bb7f-768af4e00261")
 	)
 	(wire
 		(pts
@@ -2055,16 +2572,6 @@
 	)
 	(wire
 		(pts
-			(xy 190.5 76.2) (xy 190.5 82.55)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c3c9fa57-1b8a-4586-a5eb-ff365089aa4d")
-	)
-	(wire
-		(pts
 			(xy 120.65 144.78) (xy 124.46 144.78)
 		)
 		(stroke
@@ -2075,7 +2582,7 @@
 	)
 	(wire
 		(pts
-			(xy 83.82 139.7) (xy 83.82 144.78)
+			(xy 83.82 139.7) (xy 83.82 140.97)
 		)
 		(stroke
 			(width 0)
@@ -2095,7 +2602,7 @@
 	)
 	(wire
 		(pts
-			(xy 76.2 149.86) (xy 76.2 139.7)
+			(xy 71.12 149.86) (xy 71.12 140.97)
 		)
 		(stroke
 			(width 0)
@@ -2115,27 +2622,27 @@
 	)
 	(wire
 		(pts
-			(xy 45.72 83.82) (xy 45.72 88.9)
+			(xy 71.12 80.01) (xy 73.66 80.01)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "d560f2ad-d0ff-4c66-9345-6633c53ddefe")
+		(uuid "d7129139-8a8b-451a-b83f-968b32b0ad20")
 	)
 	(wire
 		(pts
-			(xy 81.28 85.09) (xy 90.17 85.09)
+			(xy 68.58 72.39) (xy 73.66 72.39)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "d93df2c5-3486-47c3-a013-0c20cd52e26f")
+		(uuid "dd35f6ff-9d4c-4b26-9e51-10e7a1b80ec7")
 	)
 	(wire
 		(pts
-			(xy 218.44 76.2) (xy 232.41 76.2)
+			(xy 212.09 76.2) (xy 218.44 76.2)
 		)
 		(stroke
 			(width 0)
@@ -2155,13 +2662,13 @@
 	)
 	(wire
 		(pts
-			(xy 81.28 81.28) (xy 81.28 85.09)
+			(xy 50.8 76.2) (xy 54.61 76.2)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "eea813d4-6d8a-4abb-8c57-075539fc80f5")
+		(uuid "eb787b05-ece0-4b1d-95a1-ba616b716366")
 	)
 	(wire
 		(pts
@@ -2172,6 +2679,16 @@
 			(type default)
 		)
 		(uuid "f4365b45-a0b7-415f-89c7-d849d2358978")
+	)
+	(wire
+		(pts
+			(xy 85.09 83.82) (xy 71.12 83.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f90178f5-742d-4204-93fb-6bac4bca1e84")
 	)
 	(wire
 		(pts
@@ -2195,12 +2712,11 @@
 	)
 	(text_box "5V (Analog)"
 		(exclude_from_sim no)
-		(at 172.72 57.15 0)
-		(size 66.04 43.18)
+		(at 172.72 53.34 0)
+		(size 66.04 45.72)
 		(stroke
 			(width 0)
 			(type default)
-			(color 0 0 0 1)
 		)
 		(fill
 			(type none)
@@ -2208,7 +2724,6 @@
 		(effects
 			(font
 				(size 2.54 2.54)
-				(color 0 0 0 1)
 			)
 			(justify left top)
 		)
@@ -2233,9 +2748,9 @@
 		)
 		(uuid "b1a11433-4b88-4aad-a73f-0ad48d8954d4")
 	)
-	(text_box "SMT Hall sensor"
+	(text_box "Through-hole Hall sensor"
 		(exclude_from_sim no)
-		(at 35.56 52.07 0)
+		(at 35.56 53.34 0)
 		(size 60.96 45.72)
 		(stroke
 			(width 0)
@@ -2252,7 +2767,7 @@
 		)
 		(uuid "f41b0f62-a2e0-4cff-b62b-3f3c2648d236")
 	)
-	(text "2.5-5.5V, 3mA, max out 30mA@VDD±0.3 (0.159W),\n operational to 135C."
+	(text "3-27V, 4.8mA, max out 60mA@VDD±0.3 (0.165W),\n operational to 150C."
 		(exclude_from_sim no)
 		(at 37.592 94.742 0)
 		(effects
@@ -2263,7 +2778,7 @@
 		)
 		(uuid "54b6b33a-861a-4a02-affb-a9ae4a49a0ae")
 	)
-	(text "Through-holes poke through the ceiling of the cool chamber,\nand are soldered to the board. Another battery of screw\nterminals exchanges five wires with the mainboard. This\nallows us to keep our capacitors near the devices, where we\nwant them (though not as close as on the SMT version of the board)."
+	(text "Through-holes poke through the ceiling of the cool chamber,\nand are soldered to the board. Another battery of screw\nterminals exchanges five wires with the mainboard. This\nallows us to keep our capacitors near the devices, where we\nwant them (though not as close as if we were using SMT\ncomponents)."
 		(exclude_from_sim no)
 		(at 41.91 113.284 0)
 		(effects
@@ -2273,6 +2788,46 @@
 			(justify left)
 		)
 		(uuid "9941969c-8823-44a3-b7af-c7ef91e62e12")
+	)
+	(label "ThermMicro"
+		(at 87.63 152.4 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "01125b49-3eae-4451-b648-c077b6610ab6")
+	)
+	(label "HallMicro"
+		(at 87.63 154.94 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "544f3e4c-5b78-4a8c-b573-637e4ada6c26")
+	)
+	(label "HallMicro"
+		(at 78.74 72.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d41ec927-24c7-4c22-9e4c-fe7a65b482db")
+	)
+	(label "ThermMicro"
+		(at 119.38 72.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "e0b7f065-6912-462e-9b45-b01b1b88a988")
 	)
 	(hierarchical_label "Hall"
 		(shape input)
@@ -2286,58 +2841,6 @@
 			(justify right)
 		)
 		(uuid "5de62bc1-a9b6-4505-9e54-ba4628548281")
-	)
-	(hierarchical_label "Hall"
-		(shape input)
-		(at 81.28 71.12 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-			(justify left)
-		)
-		(uuid "8eb04a98-f7fe-4df8-9c0d-53197597df47")
-	)
-	(hierarchical_label "Hall"
-		(shape input)
-		(at 87.63 154.94 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-			(justify right)
-		)
-		(uuid "b8b67309-2833-4e7d-aa0c-c12746d98b09")
-	)
-	(hierarchical_label "ThermAnalog"
-		(shape input)
-		(at 119.38 72.39 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-			(justify right)
-		)
-		(uuid "bd6c89dd-1dcf-49df-b5a7-1ab97947fedb")
-	)
-	(hierarchical_label "ThermAnalog"
-		(shape input)
-		(at 87.63 152.4 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-			(justify right)
-		)
-		(uuid "d63477fa-f4b8-4ddc-b03f-b11da155fed1")
 	)
 	(hierarchical_label "ThermAnalog"
 		(shape input)
@@ -2371,7 +2874,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Microboard"
+		(property "Value" "to microboard"
 			(at 132.08 151.1299 0)
 			(effects
 				(font
@@ -2450,7 +2953,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+12V"
+		(property "Value" "+12Vmicro"
 			(at 182.88 71.12 0)
 			(effects
 				(font
@@ -2499,7 +3002,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 90.17 85.09 0)
+		(at 50.8 76.2 0)
 		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
@@ -2508,7 +3011,7 @@
 		(dnp no)
 		(uuid "0a152e7f-1be9-4c80-b7c6-d7d1846ef8b6")
 		(property "Reference" "#PWR037"
-			(at 90.17 91.44 0)
+			(at 50.8 82.55 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2517,7 +3020,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 90.17 90.17 0)
+			(at 50.8 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2525,7 +3028,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 90.17 85.09 0)
+			(at 50.8 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2534,7 +3037,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 90.17 85.09 0)
+			(at 50.8 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2543,7 +3046,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 90.17 85.09 0)
+			(at 50.8 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2694,6 +3197,214 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
 					(reference "#PWR020")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 71.12 140.97 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2c034f58-1b30-4ff5-a94a-0b056fb14691")
+		(property "Reference" "#FLG05"
+			(at 69.215 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 67.31 140.9701 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 71.12 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 71.12 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 71.12 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e63fecbc-fb3c-449c-b88e-d20488605839")
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
+					(reference "#FLG05")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "dank:CL21C103JBF1PNE")
+		(at 66.04 83.82 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2dfbd88b-1e82-4551-b7eb-406d43c7a391")
+		(property "Reference" "C17"
+			(at 64.008 89.408 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" ".01u"
+			(at 64.516 87.376 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "dank:CAP_CL_21_SAM"
+			(at 66.04 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "CL21C103JBF1PNE"
+			(at 66.04 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ".01uF 125C ceramic capacitor"
+			(at 66.04 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "72156bb2-fbd7-494c-85e6-8b0b4fa4e11b")
+		)
+		(pin "2"
+			(uuid "5770f360-277f-40ee-bf05-c523840d8713")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
+					(reference "C17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "dank:CL21B106KOQNNNE")
+		(at 190.5 76.2 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3f786fa4-dcbf-49ef-8de9-6361d7d748ac")
+		(property "Reference" "C2"
+			(at 185.166 78.486 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10u"
+			(at 184.15 81.026 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "dank:CAP_CL21B106KOQNNNE_SAM"
+			(at 190.5 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "CL21B106KOQNNNE"
+			(at 190.5 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "10uF 125C ceramic capacitor"
+			(at 190.5 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "540e0b43-fd56-4562-8322-584f96b5df09")
+		)
+		(pin "1"
+			(uuid "97ad9fd9-a4cc-4c71-9f9c-f5a4b12d7b3a")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
+					(reference "C2")
 					(unit 1)
 				)
 			)
@@ -2964,35 +3675,17 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 218.44 80.01 0)
+		(lib_id "power:+3.3V")
+		(at 85.09 83.82 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "513d5096-23c2-43fe-839b-7f584ccfa8df")
-		(property "Reference" "C5"
-			(at 222.25 78.7399 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "10u"
-			(at 222.25 81.2799 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 219.4052 83.82 0)
+		(uuid "5bbf514c-6704-4670-9d5d-36123106fa6e")
+		(property "Reference" "#PWR03"
+			(at 85.09 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3000,8 +3693,16 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "~"
-			(at 218.44 80.01 0)
+		(property "Value" "+3.3Vmicro"
+			(at 85.09 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 85.09 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3009,8 +3710,17 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
-			(at 218.44 80.01 0)
+		(property "Datasheet" ""
+			(at 85.09 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 85.09 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3019,15 +3729,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "9ea2508c-19e7-4d0f-96f2-936157d96617")
-		)
-		(pin "2"
-			(uuid "0dfbc374-f604-42bf-a34e-8a0c583c5e57")
+			(uuid "2caf3962-73e0-45c5-8c44-2aa3bc0bc0d9")
 		)
 		(instances
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
-					(reference "C5")
+					(reference "#PWR03")
 					(unit 1)
 				)
 			)
@@ -3052,7 +3759,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Baseboard"
+		(property "Value" "to baseboard"
 			(at 95.25 151.1299 0)
 			(effects
 				(font
@@ -3113,17 +3820,17 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 154.94 73.66 0)
+		(lib_id "Device:R")
+		(at 73.66 76.2 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "5e96234a-9326-4a8a-b76e-cd171f06b80c")
-		(property "Reference" "C19"
-			(at 158.75 72.3899 0)
+		(uuid "7019d875-77f9-4a65-a4a3-c8ff9399a7ba")
+		(property "Reference" "R20"
+			(at 76.2 74.9299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3131,8 +3838,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" ".01u"
-			(at 158.75 74.9299 0)
+		(property "Value" "10k"
+			(at 76.2 77.4699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3140,8 +3847,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 155.9052 77.47 0)
+		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+			(at 71.882 76.2 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3150,7 +3857,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 154.94 73.66 0)
+			(at 73.66 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3158,8 +3865,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
-			(at 154.94 73.66 0)
+		(property "Description" "Resistor"
+			(at 73.66 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3168,13 +3875,84 @@
 			)
 		)
 		(pin "1"
-			(uuid "8992544f-509b-4929-ab6d-ba40e09450c8")
+			(uuid "8fda962d-af03-44ff-93b7-0198f4094ed7")
 		)
 		(pin "2"
-			(uuid "acebd212-bcf2-41d0-95a2-19bfd858db51")
+			(uuid "a9d17fc3-dcf6-429f-bd58-bdf4c8696ede")
 		)
 		(instances
-			(project "dankdryer"
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
+					(reference "R20")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "dank:C0805C105J3RECAUTO")
+		(at 123.19 87.63 0)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "76be55e3-166a-4bfd-8777-9dc0f6b46988")
+		(property "Reference" "C19"
+			(at 127 93.98 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "1u"
+			(at 127 91.44 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "dank:CAPC230145_140N_KEM"
+			(at 123.19 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "C0805C105J3RECAUTO"
+			(at 123.19 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "CAP CER 0805 1UF 25V X7R 5%"
+			(at 123.19 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "3edcea09-b7e2-4d54-bd71-798e52bb87b2")
+		)
+		(pin "1"
+			(uuid "7c1a08cb-bf30-47f6-9918-4da2782099b3")
+		)
+		(instances
+			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
 					(reference "C19")
 					(unit 1)
@@ -3183,17 +3961,25 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 190.5 80.01 0)
+		(lib_id "power:PWR_FLAG")
+		(at 83.82 140.97 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "66689dcf-dc1c-4d52-b58d-1dc54c51ab1a")
-		(property "Reference" "C2"
-			(at 194.31 78.7399 0)
+		(uuid "878b8cac-f425-49ee-b4b9-7d2353c0e82b")
+		(property "Reference" "#FLG04"
+			(at 85.725 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 87.63 140.9699 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3201,17 +3987,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10u"
-			(at 194.31 81.2799 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 191.4652 83.82 0)
+		(property "Footprint" ""
+			(at 83.82 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3220,7 +3997,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 190.5 80.01 0)
+			(at 83.82 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3228,79 +4005,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
-			(at 190.5 80.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ad86d4fd-5c50-47fb-981a-31729bc45cd8")
-		)
-		(pin "2"
-			(uuid "018e0bcd-299c-4bf6-888e-d36079486cb0")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
-					(reference "C2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "dank:CGA5L2NP01H104J160AA")
-		(at 45.72 83.82 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "80d45659-ea0e-46f2-93be-5843e99fafd0")
-		(property "Reference" "C20"
-			(at 40.132 77.724 90)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" ".01u"
-			(at 38.354 80.772 90)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "dank:CAP_3216_TDK"
-			(at 45.72 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "CGA5L2NP01H104J160AA"
-			(at 45.72 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "High-temperature 1206 ceramic capacitor"
-			(at 45.72 83.82 0)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 83.82 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3309,15 +4015,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "31d32632-6c1b-4e8f-a192-99c2e3291efd")
-		)
-		(pin "2"
-			(uuid "b7515798-88a9-4772-858f-b9b71127b02b")
+			(uuid "ecec2d94-5ff4-46bd-b16e-879dd48086ae")
 		)
 		(instances
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
-					(reference "C20")
+					(reference "#FLG04")
 					(unit 1)
 				)
 			)
@@ -3470,6 +4173,78 @@
 		)
 	)
 	(symbol
+		(lib_id "dank:CL21C103JBF1PNE")
+		(at 154.94 69.85 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "997e009e-88d5-42ef-bba7-cb42a9f4c745")
+		(property "Reference" "C20"
+			(at 158.75 72.3899 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" ".01u"
+			(at 158.75 74.9299 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "dank:CAP_CL_21_SAM"
+			(at 154.94 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "CL21C103JBF1PNE"
+			(at 154.94 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ".01uF 125C ceramic capacitor"
+			(at 154.94 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "665e2c20-eab9-40b5-a445-3b31021f9a04")
+		)
+		(pin "2"
+			(uuid "7cc46ce1-9178-49e7-9d46-2da8948d7d41")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
+					(reference "C20")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 204.47 88.9 0)
 		(unit 1)
@@ -3603,7 +4378,7 @@
 	)
 	(symbol
 		(lib_id "power:+3.3V")
-		(at 76.2 139.7 0)
+		(at 71.12 139.7 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3611,7 +4386,7 @@
 		(dnp no)
 		(uuid "d30a5620-9272-4dc9-b71b-c4cc97ee97ec")
 		(property "Reference" "#PWR024"
-			(at 76.2 143.51 0)
+			(at 71.12 143.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3619,8 +4394,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3.3V"
-			(at 76.2 134.62 0)
+		(property "Value" "+3.3Vmicro"
+			(at 71.12 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3628,7 +4403,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 76.2 139.7 0)
+			(at 71.12 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3637,7 +4412,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 76.2 139.7 0)
+			(at 71.12 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3646,7 +4421,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 76.2 139.7 0)
+			(at 71.12 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3661,72 +4436,6 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
 					(reference "#PWR024")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3.3V")
-		(at 43.18 71.12 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "d53dfd86-2a2a-4b50-aac3-2396e420a894")
-		(property "Reference" "#PWR03"
-			(at 43.18 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3.3V"
-			(at 43.18 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 43.18 71.12 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 43.18 71.12 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 43.18 71.12 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a19b2c81-34a1-4976-a74f-221aeebd6242")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
-					(reference "#PWR03")
 					(unit 1)
 				)
 			)
@@ -3751,7 +4460,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+12V"
+		(property "Value" "+12Vmicro"
 			(at 83.82 134.62 0)
 			(effects
 				(font
@@ -3799,120 +4508,51 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 127 87.63 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "e31ac83a-4b35-4100-8c26-70f3e4abc4a4")
-		(property "Reference" "C18"
-			(at 127 93.726 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "1u"
-			(at 127 91.948 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 123.19 88.5952 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 127 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 127 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a9af2940-f4bf-4c82-aed5-38ca67f4e89b")
-		)
-		(pin "2"
-			(uuid "d2a77751-84b5-42b5-b933-c6621d5c8837")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
-					(reference "C18")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "dank:DRV5011ADDBZR")
-		(at 63.5 76.2 0)
+		(lib_id "dank:AH3712Q-P-B")
+		(at 63.5 77.47 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "f5c00ca4-2963-4fb5-b033-b0832227e424")
+		(uuid "d8910285-1fa2-47ed-be69-1f7d632a4ab2")
 		(property "Reference" "U2"
-			(at 63.5 60.96 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Value" "DRV5011ADDBZR"
-			(at 63.5 63.5 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Footprint" "dank:DBZ0003A_L"
-			(at 63.5 76.2 0)
+			(at 62.865 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
-					(italic yes)
+				)
+			)
+		)
+		(property "Value" "AH3712Q-P-B"
+			(at 62.865 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "dank:TRANS_AH3712-P-B_DIO"
+			(at 77.47 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/drv5011.pdf?HQS=dis-dk-null-digikeymode-dsf-pf-null-wwe&ts=1734941122314"
-			(at 63.5 76.2 0)
+		(property "Datasheet" "https://www.diodes.com/assets/Datasheets/AH3712Q.pdf"
+			(at 63.5 77.47 0)
 			(effects
 				(font
 					(size 1.27 1.27)
-					(italic yes)
 				)
 				(hide yes)
 			)
 		)
-		(property "Description" "Digital-latch Hall effect sensor"
-			(at 63.5 76.2 0)
+		(property "Description" "High Sensitivity Micropower Omnipolar Hall-Effect Switch, SC-59"
+			(at 63.5 77.47 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3921,16 +4561,16 @@
 			)
 		)
 		(pin "1"
-			(uuid "7b8ee982-83cd-40c5-bd30-145f172b1243")
-		)
-		(pin "3"
-			(uuid "6fbbd7bb-e12d-46de-b203-dc7f0adb0575")
+			(uuid "2cf49c0e-b127-483b-9ccb-2047005ac88f")
 		)
 		(pin "2"
-			(uuid "b93b7303-7b89-482c-8eec-f28cda5e7de4")
+			(uuid "924b442e-d52f-4bc9-b53e-04ea99a27a07")
+		)
+		(pin "3"
+			(uuid "05283611-5aee-4b89-a8ed-a0554c1dc6d5")
 		)
 		(instances
-			(project "dankdryer"
+			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
 					(reference "U2")
 					(unit 1)
@@ -3939,8 +4579,80 @@
 		)
 	)
 	(symbol
+		(lib_id "dank:CL21B106KOQNNNE")
+		(at 218.44 83.82 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ef62984d-cfe6-4ce7-97db-690259dfda85")
+		(property "Reference" "C5"
+			(at 222.25 78.7399 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10u"
+			(at 222.25 81.2799 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "dank:CAP_CL21B106KOQNNNE_SAM"
+			(at 218.44 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "CL21B106KOQNNNE"
+			(at 218.44 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "10uF 125C ceramic capacitor"
+			(at 218.44 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "1b1e56ed-289d-4458-b84c-dfb5c66714cd")
+		)
+		(pin "1"
+			(uuid "5210313a-c4e0-4b56-8cd9-90408d64bba6")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
+					(reference "C5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+3.3V")
-		(at 113.03 139.7 0)
+		(at 110.49 139.7 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3949,7 +4661,7 @@
 		(fields_autoplaced yes)
 		(uuid "fffd27c3-5bcd-4a81-86dc-d83f180ecfc2")
 		(property "Reference" "#PWR07"
-			(at 113.03 143.51 0)
+			(at 110.49 143.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3958,7 +4670,7 @@
 			)
 		)
 		(property "Value" "+3.3V"
-			(at 113.03 134.62 0)
+			(at 110.49 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3966,7 +4678,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 113.03 139.7 0)
+			(at 110.49 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3975,7 +4687,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 113.03 139.7 0)
+			(at 110.49 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3984,7 +4696,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 113.03 139.7 0)
+			(at 110.49 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
