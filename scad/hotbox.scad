@@ -85,27 +85,10 @@ module floorcuts(){
     }
 }
 
-module hbcorner(){
-    side = 50;
-    t = totalxy / 2;
-    translate([t - 18, t - 18, side / 8]){
-        rotate([0, 0, 45]){
-            cylinder(side / 4, side / 4, side / 4, true, $fn = 4);
-        }
-    }
-}
-
 module cornerscrew(){
 	side = 50;
 	translate([totalxy / 2 - 14, totalxy / 2 - 14, 2 * side / 6]){
 		screw("M5", length = 2 * side / 3);
-	}
-}
-
-module hbcorners(){
-    // four corners for mating to croom
-    foursquare(){
-		hbcorner();
 	}
 }
 
@@ -212,7 +195,6 @@ module hotbox(){
     difference(){
         union(){
             bottom(wallz);
-            hbcorners();
             difference(){
                 core();
                 // cut away top corners to reduce material costs
