@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-02-01")
-		(rev "1.4.0")
+		(date "2025-02-14")
+		(rev "1.5.0")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -6158,7 +6158,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_JST:JST_PUD_B08B-PUDSS_2x04_P2.00mm_Vertical"
+		(property "Footprint" "Connector_JST:JST_PHD_B8B-PHDSS_2x04_P2.00mm_Vertical"
 			(at 132.08 134.62 0)
 			(effects
 				(font
