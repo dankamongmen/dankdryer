@@ -5772,15 +5772,15 @@
 			(pintype "passive")
 			(uuid "4cc30286-4b61-445c-b419-d9b5eedc0c82")
 		)
-		(model "/home/dank/src/kicad-packages3D/Connector_JST.3dshapes/JST_GH_BM05B-GHS-TBT_1x05-1MP_P1.25mm_Vertical.wrl"
+		(model "/home/dank/.local/share/kicad/8.0/3dmodels/B5P-VH--3DModel-STEP-56544.STEP"
 			(offset
-				(xyz 0 0 0)
+				(xyz 8 0.5 0)
 			)
 			(scale
 				(xyz 1 1 1)
 			)
 			(rotate
-				(xyz 0 0 0)
+				(xyz -90 0 0)
 			)
 		)
 	)
@@ -15101,6 +15101,17 @@
 			)
 			(rotate
 				(xyz 0 0 0)
+			)
+		)
+		(model "/home/dank/.local/share/kicad/8.0/3dmodels/B5P-VH--3DModel-STEP-56544.STEP"
+			(offset
+				(xyz 7.5 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz -90 0 0)
 			)
 		)
 	)
