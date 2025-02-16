@@ -9,16 +9,16 @@ module top(){
     // a tight fit.
     translate([0, 0, toph]){
         difference(){
-			ScrewThread(innerr * 2 + 4, inh, 2);
+			ScrewThread(innerr * 2, inh, 2);
 			//threaded_rod(innerr * 2 + 4, inh, 2);
             //cylinder(inh, innerr - 0.5, innerr - 0.5, true);
 			translate([0, 0, inh / 2]){
-				cylinder(inh, innerr - 2, innerr - 2, true);
+				cylinder(inh, innerr - 4, innerr - 4, true);
 			}
         }
     }
     linear_extrude(toph){
-        circle(totalxy / 2);
+        circle(innerr + 2);
     }
 }
 

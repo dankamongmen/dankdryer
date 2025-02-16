@@ -243,14 +243,13 @@ module hotbox(){
     }
     translate([0, 0, totalz - topz]){
 		// cut away top to get threading
-		ScrewHole(innerr * 2 + 4,
+		ScrewHole(innerr * 2,
 				  topz,
 				  pitch = 2){
 			linear_extrude(topz){
-				difference(){
-					circle(innerr + 5);
-					circle(innerr);
-				}
+				//difference(){
+				circle(innerr + 3);
+				//}
 			}
 		}
     }
