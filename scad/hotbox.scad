@@ -3,7 +3,7 @@
 // the top is lifted up and out to insert a spool
 // the spool sits on corner walls
 include <core.scad>
-use <top.scad>
+use <threads.scad>
 
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5
@@ -242,19 +242,14 @@ module hotbox(){
 		cornerscrews();
     }
     translate([0, 0, totalz - topz]){
-		difference(){
+		// cut away top to get threading
+		ScrewHole(innerr * 2 + 4,
+				  topz,
+				  pitch = 2){
 			linear_extrude(topz){
 				difference(){
 					circle(innerr + 5);
 					circle(innerr);
-				}
-			}
-			// cut away top to get threading
-			translate([0, 0, 9]){
-				mirror([0, 0, 1]){
-					scale(1.01){
-						top();
-					}
 				}
 			}
 		}
