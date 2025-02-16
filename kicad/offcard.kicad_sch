@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-02-14")
-		(rev "1.5.1")
+		(date "2025-02-16")
+		(rev "1.6.0")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -2984,28 +2984,22 @@
 		(uuid "27ab34be-c449-4fc5-b3af-a8770bcc894e")
 	)
 	(junction
-		(at 71.12 58.42)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "33548167-fdd9-4057-b494-5f51cc8ffcd0")
-	)
-	(junction
-		(at 71.12 66.04)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "3dadcf59-c83c-4f49-8f11-6158117a58ce")
-	)
-	(junction
 		(at 201.93 35.56)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "42a6e89a-d43d-4bdf-82fe-ba2eb5b7512f")
+		(uuid "47d69be3-7c45-4175-95ab-fb7e5b012248")
 	)
 	(junction
 		(at 62.23 143.51)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "4bb723bc-7855-4f34-9e76-ac777c6f86dc")
+	)
+	(junction
+		(at 33.02 62.23)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5903edbb-bf0d-4c2d-91d9-f122e224f529")
 	)
 	(junction
 		(at 127 134.62)
@@ -3035,7 +3029,13 @@
 		(at 33.02 69.85)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "bd8d1ff2-4300-438b-bcf6-6a0f05c31abe")
+		(uuid "b01b691e-2a58-41df-8f2b-8685517cc310")
+	)
+	(junction
+		(at 71.12 58.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e581641e-5e13-4e26-8911-45ea465e5c41")
 	)
 	(junction
 		(at 251.46 43.18)
@@ -3044,16 +3044,16 @@
 		(uuid "e89511cf-9c95-4ee4-84e9-4103938657e4")
 	)
 	(junction
-		(at 33.02 62.23)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "edf207f5-f4c9-4a1e-b995-74f6625d1935")
-	)
-	(junction
 		(at 201.93 44.45)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "f1e0cc26-8265-483e-a2ab-43e66c6ad435")
+	)
+	(junction
+		(at 71.12 66.04)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "ffa0ba70-4780-43f8-9caf-6c6de7353aae")
 	)
 	(no_connect
 		(at 242.57 55.88)
@@ -3203,6 +3203,16 @@
 	)
 	(wire
 		(pts
+			(xy 201.93 35.56) (xy 205.74 35.56)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "313feff4-3634-4030-9f97-19bf11fe4ff1")
+	)
+	(wire
+		(pts
 			(xy 198.12 63.5) (xy 198.12 68.58)
 		)
 		(stroke
@@ -3343,7 +3353,7 @@
 	)
 	(wire
 		(pts
-			(xy 205.74 35.56) (xy 201.93 35.56)
+			(xy 199.39 35.56) (xy 201.93 35.56)
 		)
 		(stroke
 			(width 0)
@@ -3400,16 +3410,6 @@
 			(type default)
 		)
 		(uuid "797c2f6f-d414-43a0-b086-dd1251dc308f")
-	)
-	(wire
-		(pts
-			(xy 199.39 35.56) (xy 201.93 35.56)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7f7e66e3-d294-4207-a809-49749c3c9777")
 	)
 	(wire
 		(pts
@@ -3817,7 +3817,7 @@
 		)
 		(uuid "32aee328-e49e-4aab-a092-221a3e8fab04")
 	)
-	(text "0.005A minimum to drive MOC3063SM.\n3.3V / 620Ω = 0.0053A (0.0176W).\nMOC3063 has drop of 1.3-1.5V, forward current of 60mA.\nHeater neutral returns from 150C thermostat.\nHeater is resistive load, no need for snubber circuit.\n450W±20% max draw -> 540W / 120VAC -> 4.5A max switched in triac.\nT1210 wants 1.3V and latching 25-30mA / holding 15mA (max 0.039W),\n switches 12A continuous and 126A peak of 120VAC@60Hz."
+	(text "0.005A minimum to drive MOC3063SM.\n3.3V / 620Ω = 0.0053A (0.0176W).\nMOC3063 has drop of 1.3-1.5V, forward current of 60mA.\nHeater neutral returns from 150C thermostat.\nHeater is resistive load, no need for snubber circuit.\n450W±20% max draw -> 540W / 120VAC -> 4.5A max switched in triac.\nT1210 wants 1.3V and latching 25-30mA / holding 15mA (max 0.039W),\n switches 12A continuous and 126A peak of 120VAC@60Hz.\nRK73H2As support 150V and 0.25W."
 		(exclude_from_sim no)
 		(at 15.748 161.29 0)
 		(effects
@@ -5247,6 +5247,76 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 71.12 62.23 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6d95f740-e016-47cc-ab66-21921ceb2750")
+		(property "Reference" "R19"
+			(at 73.66 60.9599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "15k"
+			(at 73.66 63.4999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "PCM_Resistor_SMD_AKL:R_1206_3216Metric_Pad1.30x1.75mm"
+			(at 69.342 62.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 71.12 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 71.12 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7e805fc8-71ee-436d-ad8c-62d89216cf77")
+		)
+		(pin "2"
+			(uuid "eb714c22-2073-470b-beec-c1f171a0b611")
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
+					(reference "R19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 71.12 69.85 0)
 		(unit 1)
@@ -5383,76 +5453,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
-		(at 33.02 66.04 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "7eba44c4-0bac-43aa-8e88-32079e294698")
-		(property "Reference" "R9"
-			(at 35.56 64.7699 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "15k"
-			(at 35.56 67.3099 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
-			(at 31.242 66.04 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 33.02 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 33.02 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "720f7eeb-8f32-4f5e-810c-3bb94f66ee2c")
-		)
-		(pin "1"
-			(uuid "2c6de80a-42a1-4e2f-a166-aab77448b81f")
-		)
-		(instances
-			(project ""
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "R9")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 27.94 62.23 0)
 		(unit 1)
@@ -5512,6 +5512,75 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "#PWR035")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 198.12 59.69 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8508d651-db41-4fc5-9afa-8d235aa7622d")
+		(property "Reference" "C8"
+			(at 195.326 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1u"
+			(at 193.548 64.008 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+			(at 199.0852 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 198.12 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 198.12 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "84faab2c-e6be-4be6-ac22-c9d6351eb0f6")
+		)
+		(pin "1"
+			(uuid "556fbda4-f59d-4df0-a229-0b710e44bc9b")
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
+					(reference "C8")
 					(unit 1)
 				)
 			)
@@ -6353,75 +6422,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 201.93 39.37 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "be6dba5e-53ab-4a2a-9cd0-1b9f1313f331")
-		(property "Reference" "C9"
-			(at 195.58 38.354 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "0.1u"
-			(at 194.564 40.64 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 202.8952 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 201.93 39.37 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 201.93 39.37 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "3bff0e56-6244-41fc-9026-418f6da279b6")
-		)
-		(pin "2"
-			(uuid "383c7ddf-4c95-41d8-b7e3-847301fad842")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "C9")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "dank:MOC3063SM")
 		(at 46.99 125.73 0)
 		(unit 1)
@@ -6883,6 +6883,76 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 33.02 66.04 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d17bc072-c5c4-4110-a3af-61061f7d8c17")
+		(property "Reference" "R9"
+			(at 35.56 64.7699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "15k"
+			(at 35.56 67.3099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "PCM_Resistor_SMD_AKL:R_1206_3216Metric_Pad1.30x1.75mm"
+			(at 31.242 66.04 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 33.02 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 33.02 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ac9c84e7-4ce5-49d0-b914-86104f340e07")
+		)
+		(pin "2"
+			(uuid "e01d4528-25b2-4511-ad29-5fa45154b923")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
+					(reference "R9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 33.02 73.66 0)
 		(unit 1)
@@ -6947,6 +7017,75 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "C16")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 201.93 39.37 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "dde0488a-d160-45d5-9524-04f4d9d3dab4")
+		(property "Reference" "C9"
+			(at 196.596 38.354 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1u"
+			(at 195.072 40.386 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+			(at 202.8952 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 201.93 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 201.93 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "97b3de5a-1436-416a-9f73-e5aad36cbf2b")
+		)
+		(pin "1"
+			(uuid "576e1e4a-390c-4034-b485-613fa4f3fe71")
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
+					(reference "C9")
 					(unit 1)
 				)
 			)
@@ -7079,75 +7218,6 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "#PWR026")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 198.12 59.69 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "ef3ef052-bc74-4c94-a35a-9a230d9cf733")
-		(property "Reference" "C8"
-			(at 201.676 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "0.1u"
-			(at 201.168 60.706 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 199.0852 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 198.12 59.69 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 198.12 59.69 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "29ba425f-88b6-4181-816a-4dfa142e44fa")
-		)
-		(pin "2"
-			(uuid "fcea9dd0-ddbd-4a20-998e-8cc2dd57b650")
-		)
-		(instances
-			(project ""
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "C8")
 					(unit 1)
 				)
 			)
@@ -7289,76 +7359,6 @@
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "Q3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 71.12 62.23 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "faddf916-e970-4008-8d01-732822fdec88")
-		(property "Reference" "R19"
-			(at 73.66 60.9599 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "15k"
-			(at 73.66 63.4999 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
-			(at 69.342 62.23 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 71.12 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 71.12 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "6d0b1b29-0816-454a-a441-8c25e3d9a96c")
-		)
-		(pin "1"
-			(uuid "f48d21e3-dfb1-4722-9cf6-696d94838647")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "R19")
 					(unit 1)
 				)
 			)

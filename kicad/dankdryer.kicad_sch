@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-02-14")
-		(rev "1.5.1")
+		(date "2025-02-16")
+		(rev "1.6.0")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -3388,10 +3388,10 @@
 		(uuid "438592f4-2948-4d95-a4ef-be38f41b75a8")
 	)
 	(junction
-		(at 175.26 50.8)
+		(at 137.16 137.16)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "55f3b7b3-ef26-4a75-9b17-9b3fc35b999d")
+		(uuid "47bba519-e4e3-4e2f-a385-4d1bc2c9bee4")
 	)
 	(junction
 		(at 83.82 35.56)
@@ -3418,6 +3418,12 @@
 		(uuid "9e534adc-a093-46de-901c-0e647c199bb9")
 	)
 	(junction
+		(at 241.3 55.88)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9ec02769-3f25-4eda-916f-68b81e0e9e57")
+	)
+	(junction
 		(at 104.14 55.88)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3428,12 +3434,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ad2401f7-e76e-4573-b28f-76c700ed6109")
-	)
-	(junction
-		(at 137.16 137.16)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "b34afadd-07f5-4be0-9cc5-ed08781c0f6e")
 	)
 	(junction
 		(at 93.98 45.72)
@@ -3478,10 +3478,10 @@
 		(uuid "deecdad8-9b03-4d23-b11d-1d0199307065")
 	)
 	(junction
-		(at 241.3 55.88)
+		(at 175.26 50.8)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "f39ebf6d-8b00-4949-beaa-27c9a5fa478b")
+		(uuid "e79bfa68-4d8f-4583-88b7-f2bbc22b1007")
 	)
 	(no_connect
 		(at 189.23 64.77)
@@ -3532,16 +3532,6 @@
 			(type default)
 		)
 		(uuid "093e0da8-7b7a-43f1-b728-064d0f310c31")
-	)
-	(wire
-		(pts
-			(xy 241.3 55.88) (xy 241.3 62.23)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0b7664a1-89aa-41c4-b106-c7b459b64250")
 	)
 	(wire
 		(pts
@@ -3875,6 +3865,16 @@
 	)
 	(wire
 		(pts
+			(xy 124.46 50.8) (xy 124.46 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5c22703f-771d-468f-9bbd-c430f78f11ae")
+	)
+	(wire
+		(pts
 			(xy 114.3 55.88) (xy 124.46 55.88)
 		)
 		(stroke
@@ -3995,7 +3995,7 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 38.1) (xy 124.46 41.91)
+			(xy 124.46 38.1) (xy 124.46 43.18)
 		)
 		(stroke
 			(width 0)
@@ -4265,6 +4265,16 @@
 	)
 	(wire
 		(pts
+			(xy 241.3 55.88) (xy 241.3 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e3272759-26b8-4a8d-a6ee-1771b51fd5b4")
+	)
+	(wire
+		(pts
 			(xy 64.77 137.16) (xy 52.07 137.16)
 		)
 		(stroke
@@ -4282,16 +4292,6 @@
 			(type default)
 		)
 		(uuid "f074c0e1-cff5-4549-a2cf-e5c12964eb9a")
-	)
-	(wire
-		(pts
-			(xy 124.46 49.53) (xy 124.46 55.88)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f6e72ae3-3b2b-4487-9bf3-4ea8a810307b")
 	)
 	(wire
 		(pts
@@ -4431,7 +4431,7 @@
 	)
 	(text "Loads\n TMP235: .000017A @ 5V (0.000085W)\n GPIO8: .000033A @ 3.3V (0.0001W)\n I2C: 2x.0007A @ 3.3V (0.00462W)\n NAU7802: 0.0021A @ 3.3V (0.00693W)\n Tachs: 2x0.005A @ 3.3V (0.033W)\n MCU: 0.382A @ 3.3V (1.2606W)\n3.3V total: 0.392A (1.2936W) 80% efficiency: 0.49A (1.617W)\n 3.3V network: 0.13475A @ 12V (1.617W)\n Fans: 2x0.11A @ 12V (2.64W)\n Motor: steady 0.7A @ 12V (8.4W) stall 1.6A (19.2W)\n12V total: steady 1.05475A (12.657W) peak 1.95475A (23.457W)"
 		(exclude_from_sim no)
-		(at 94.742 81.026 0)
+		(at 96.012 77.216 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4499,7 +4499,7 @@
 	)
 	(text "HMLQ32251B-2R2MS 2.2uH 3.2A max 3.6A 85mΩ.\nFB is connected to GND on fixed-output TPS62132\n for \"improved thermal performance (p14).\"\nPG \"may be left floating (p11).\""
 		(exclude_from_sim no)
-		(at 91.948 64.008 0)
+		(at 33.02 86.614 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5061,87 +5061,17 @@
 		(uuid "e3572dea-28df-4e8d-a437-f30498a2c65b")
 	)
 	(symbol
-		(lib_id "Device:R")
-		(at 52.07 142.24 0)
-		(mirror y)
+		(lib_id "Device:C")
+		(at 124.46 46.99 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "046d349f-10d4-45be-a19b-84fac1370cf2")
-		(property "Reference" "R18"
-			(at 54.61 140.9699 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "680"
-			(at 54.61 143.5099 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
-			(at 53.848 142.24 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 52.07 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 52.07 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "45125d1f-b818-4abf-87e2-02bc6f2a1b13")
-		)
-		(pin "1"
-			(uuid "21e2fb34-6e40-4291-b647-29625a1cb506")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "R18")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 137.16 140.97 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "099e34e2-576c-4cf9-a2e3-28e8e866f754")
-		(property "Reference" "R17"
-			(at 139.7 139.6999 0)
+		(uuid "0b1bd4fe-3a17-46c9-b95b-b1b6c3b7c419")
+		(property "Reference" "C13"
+			(at 128.27 45.7199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5149,8 +5079,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10K"
-			(at 139.7 142.2399 0)
+		(property "Value" "22u"
+			(at 128.27 48.2599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5158,8 +5088,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
-			(at 135.382 140.97 90)
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+			(at 125.4252 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5167,8 +5097,8 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "~"
-			(at 137.16 140.97 0)
+		(property "Datasheet" "CL31A226KAHNNNE"
+			(at 124.46 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5176,8 +5106,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Resistor"
-			(at 137.16 140.97 0)
+		(property "Description" "CAP CER 22UF 25V X5R 1206"
+			(at 124.46 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5186,15 +5116,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "ce4fda49-36c9-4b0d-a247-1c964431e73c")
+			(uuid "0fd7ae7f-ce6b-442b-887e-da2586bb827d")
 		)
 		(pin "2"
-			(uuid "02ba1921-e22f-4075-9b26-89d29760535f")
+			(uuid "d11ffa75-4d13-414a-bc39-315773f51c46")
 		)
 		(instances
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "R17")
+					(reference "C13")
 					(unit 1)
 				)
 			)
@@ -5260,6 +5190,215 @@
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
 					(reference "#PWR041")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 175.26 46.99 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "129080a6-3358-4431-ba7a-433066fb6534")
+		(property "Reference" "R13"
+			(at 177.8 45.7199 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10k"
+			(at 177.8 48.2599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
+			(at 173.482 46.99 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 175.26 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 175.26 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "f9aaa28b-e15a-440f-903d-dc8518c87ed8")
+		)
+		(pin "1"
+			(uuid "f0a413d2-1547-4fc3-a594-4aa23140c136")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
+					(reference "R13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 104.14 139.7 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "12cf4351-e806-4caa-838d-eb897c371c0e")
+		(property "Reference" "R15"
+			(at 106.68 138.4299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10k"
+			(at 106.68 140.9699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
+			(at 102.362 139.7 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 104.14 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 104.14 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "230362e6-36b0-43e5-b9ae-57d4e2d1f93f")
+		)
+		(pin "1"
+			(uuid "4319360a-b63e-4d6d-9b9f-b02b26dfde59")
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
+					(reference "R15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 64.77 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "161e75c8-f780-4f60-9cb7-59d4f3492121")
+		(property "Reference" "C20"
+			(at 67.818 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1u"
+			(at 68.072 143.764 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+			(at 65.7352 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 64.77 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 64.77 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "eb97387a-d60c-4531-8c8b-ec4d1ad620b4")
+		)
+		(pin "1"
+			(uuid "82cac222-4c87-43cb-94ac-079bdb2bc9ad")
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
+					(reference "C20")
 					(unit 1)
 				)
 			)
@@ -5466,6 +5605,76 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:C")
+		(at 175.26 54.61 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "28752dbd-b2be-4fdc-ad2c-92d9308b0895")
+		(property "Reference" "C10"
+			(at 179.07 53.3399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1u"
+			(at 179.07 55.8799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+			(at 176.2252 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 175.26 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 175.26 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "a8cfe0ff-936f-4bc6-89ea-d35381d57ca0")
+		)
+		(pin "1"
+			(uuid "49ddd824-b3ce-4b23-b738-3f3487b75b99")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
+					(reference "C10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 241.3 62.23 0)
 		(unit 1)
@@ -5591,75 +5800,6 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
 					(reference "#PWR014")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 83.82 41.91 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "4a25e64d-948d-4098-becd-04b2d3a3ae1d")
-		(property "Reference" "C7"
-			(at 81.026 44.45 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" ".1u"
-			(at 80.518 46.736 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 84.7852 45.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 83.82 41.91 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 83.82 41.91 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "68d9bbd9-100b-4b01-a53a-377a97a4b03a")
-		)
-		(pin "1"
-			(uuid "eec71c1d-8c61-42e6-bf1f-8d3bf18741ba")
-		)
-		(instances
-			(project ""
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "C7")
 					(unit 1)
 				)
 			)
@@ -5861,73 +6001,6 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
 					(reference "C4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 175.26 54.61 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "5971f0bf-38e3-473d-bc8b-f0174934c88b")
-		(property "Reference" "C10"
-			(at 179.07 54.61 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "1u"
-			(at 171.704 54.356 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 174.2948 50.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 175.26 54.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 175.26 54.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "2eb24361-c00b-4f24-86a6-e502430860d8")
-		)
-		(pin "2"
-			(uuid "aace4b28-d2b9-42d0-9cae-8c5297105df5")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "C10")
 					(unit 1)
 				)
 			)
@@ -6253,6 +6326,74 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:C")
+		(at 237.49 55.88 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6a55aa2c-e7e3-465e-939a-96b7900e764d")
+		(property "Reference" "C6"
+			(at 237.49 48.26 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "22u"
+			(at 237.49 50.8 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+			(at 233.68 56.8452 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "CL31A226KAHNNNE"
+			(at 237.49 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "CAP CER 22UF 25V X5R 1206"
+			(at 237.49 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7f780e70-9cf0-4398-9a7f-51d68162214b")
+		)
+		(pin "2"
+			(uuid "5b2917cd-805e-4883-935e-f048d42a84fb")
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
+					(reference "C6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector:Screw_Terminal_01x02")
 		(at 115.57 185.42 180)
 		(unit 1)
@@ -6384,75 +6525,6 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
 					(reference "R8")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 175.26 46.99 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "7f918022-5dcc-41c5-8e10-4d2915149bbd")
-		(property "Reference" "R13"
-			(at 178.054 49.022 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "10k"
-			(at 172.72 49.022 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
-			(at 173.482 46.99 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 175.26 46.99 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 175.26 46.99 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "5f547413-42f7-4123-aae6-7d1e0ad4b48d")
-		)
-		(pin "1"
-			(uuid "61e354da-05df-4e17-a4f5-7201b84d9c7d")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "R13")
 					(unit 1)
 				)
 			)
@@ -6724,6 +6796,75 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 52.07 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8ff29225-2cc5-4dcc-b08c-5851624414a8")
+		(property "Reference" "R22"
+			(at 54.864 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "680"
+			(at 54.864 143.764 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+			(at 50.292 142.24 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 52.07 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 52.07 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "5b996e86-bbf2-4247-97f1-09a81a65a98a")
+		)
+		(pin "1"
+			(uuid "bffd846d-2b74-493a-82ca-a7511c263f17")
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
+					(reference "R22")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 64.77 146.05 0)
 		(unit 1)
@@ -6864,73 +7005,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 64.77 142.24 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "9c130c67-0223-4fe5-84b5-d9081d2b032f")
-		(property "Reference" "C14"
-			(at 70.104 141.224 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "0.1u"
-			(at 69.85 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 63.8048 138.43 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 64.77 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 64.77 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "4859fc4f-36aa-4d0c-96c4-d127dd5b9c2b")
-		)
-		(pin "1"
-			(uuid "39c275fc-0d1b-4b49-8f52-1f49510fd314")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "C14")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:+3.3V")
 		(at 201.93 149.86 0)
 		(unit 1)
@@ -7057,6 +7131,76 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
 					(reference "#PWR023")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 137.16 140.97 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a75b420f-25b0-4b4a-8742-db50bfad6903")
+		(property "Reference" "R17"
+			(at 139.7 139.6999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10k"
+			(at 139.7 142.2399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
+			(at 135.382 140.97 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 137.16 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 137.16 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "424be00d-959b-473f-9176-aabae96a1585")
+		)
+		(pin "1"
+			(uuid "410ee691-03ee-4273-9cb4-835509ef706a")
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
+					(reference "R17")
 					(unit 1)
 				)
 			)
@@ -7194,75 +7338,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
-		(at 104.14 139.7 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "adb7d00d-fb21-4564-8f5a-111c271f08ef")
-		(property "Reference" "R15"
-			(at 98.298 138.43 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "10k"
-			(at 98.298 140.716 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
-			(at 102.362 139.7 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 104.14 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 104.14 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "0b98b643-f11a-451c-ac05-ed7c8661e859")
-		)
-		(pin "1"
-			(uuid "4724c349-30e3-4fbc-a467-9c986713a05c")
-		)
-		(instances
-			(project ""
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "R15")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C")
 		(at 88.9 48.26 0)
 		(unit 1)
@@ -7326,74 +7401,6 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
 					(reference "C12")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 237.49 55.88 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "d51efa47-a97a-4359-a797-8d66b470c305")
-		(property "Reference" "C6"
-			(at 237.49 48.26 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "22u"
-			(at 237.49 50.8 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 241.3 54.9148 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 237.49 55.88 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 237.49 55.88 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "c4452c02-d134-4bb0-bea1-e59f46fe21fa")
-		)
-		(pin "1"
-			(uuid "acc2b5b4-17bc-4958-96e6-f95c7e2667b7")
-		)
-		(instances
-			(project ""
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "C6")
 					(unit 1)
 				)
 			)
@@ -7668,6 +7675,75 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
 					(reference "#PWR011")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 83.82 41.91 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e8f2e804-17cc-4188-9355-c0f57d3c6b81")
+		(property "Reference" "C7"
+			(at 81.026 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1u"
+			(at 79.248 46.228 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+			(at 84.7852 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 83.82 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 83.82 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "0a36ed98-bf56-4fdd-9cf1-cf4f29078340")
+		)
+		(pin "1"
+			(uuid "65a49bea-8f96-42ae-875f-60397d28bd67")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
+					(reference "C7")
 					(unit 1)
 				)
 			)
@@ -8308,75 +8384,6 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 124.46 45.72 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "f592c919-6e6f-4a9c-a745-91b6523d530e")
-		(property "Reference" "C13"
-			(at 119.634 48.006 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "22u"
-			(at 120.142 50.038 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 125.4252 49.53 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 124.46 45.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 124.46 45.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "9458d1ec-ffab-4efe-a22c-e5f126026601")
-		)
-		(pin "1"
-			(uuid "956c51c7-38d4-4ca5-991b-3a396593b82a")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "C13")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
 		(at 237.49 44.45 90)
 		(unit 1)
 		(exclude_from_sim no)
@@ -8401,7 +8408,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
 			(at 241.3 43.4848 0)
 			(effects
 				(font

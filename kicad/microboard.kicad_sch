@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-02-14")
-		(rev "1.5.1")
+		(date "2025-02-16")
+		(rev "1.6.0")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -888,7 +888,250 @@
 				)
 			)
 		)
-		(symbol "dank:C0805C105J3RECAUTO"
+		(symbol "dank:CL31B103KHFNFNE"
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "C"
+				(at 3.81 3.81 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Value" ".01u"
+				(at 3.81 -3.81 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Footprint" "dank:CAP_CL31_SAM"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "CL31B103KHFNFNE"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "10000 pF ±10% 630V Ceramic Capacitor X7R 1206 (3216 Metric)"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "CL31B103KHFNFNE"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "CAP_CL31_SAM CAP_CL31_SAM-M CAP_CL31_SAM-L"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "CL31B103KHFNFNE_1_1"
+				(polyline
+					(pts
+						(xy 2.54 0) (xy 3.4798 0)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.4798 -1.905) (xy 3.4798 1.905)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.1148 -1.905) (xy 4.1148 1.905)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.1148 0) (xy 5.08 0)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at 0 0 0)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "CL31B103KHFNFNE_1_2"
+				(polyline
+					(pts
+						(xy -1.905 -4.1148) (xy 1.905 -4.1148)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.905 -3.4798) (xy 1.905 -3.4798)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -4.1148) (xy 0 -5.08)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -2.54) (xy 0 -3.4798)
+					)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at 0 0 270)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "dank:CL31B105KAHNNNE"
 			(pin_names
 				(offset 0.254)
 			)
@@ -911,7 +1154,7 @@
 					)
 				)
 			)
-			(property "Footprint" "dank:CAPC230145_140N_KEM"
+			(property "Footprint" "dank:CAP_CL31_SAM"
 				(at 0 0 0)
 				(effects
 					(font
@@ -921,7 +1164,7 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "C0805C105J3RECAUTO"
+			(property "Datasheet" "CL31B105KAHNNNE"
 				(at 0 0 0)
 				(effects
 					(font
@@ -931,7 +1174,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "CAP CER 0805 1UF 25V X7R 5%"
+			(property "Description" "1 µF ±10% 25V Ceramic Capacitor X7R 1206 (3216 Metric)"
 				(at 0 0 0)
 				(effects
 					(font
@@ -940,7 +1183,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "C0805C105J3RECAUTO"
+			(property "ki_keywords" "CL31B105KAHNNNE"
 				(at 0 0 0)
 				(effects
 					(font
@@ -949,7 +1192,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "CAPC230145_140N_KEM CAPC230145_140N_KEM-M CAPC230145_140N_KEM-L"
+			(property "ki_fp_filters" "CAP_CL31_SAM CAP_CL31_SAM-M CAP_CL31_SAM-L"
 				(at 0 0 0)
 				(effects
 					(font
@@ -958,7 +1201,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "C0805C105J3RECAUTO_1_1"
+			(symbol "CL31B105KAHNNNE_1_1"
 				(polyline
 					(pts
 						(xy 2.54 0) (xy 3.4798 0)
@@ -1044,7 +1287,7 @@
 					)
 				)
 			)
-			(symbol "C0805C105J3RECAUTO_1_2"
+			(symbol "CL31B105KAHNNNE_1_2"
 				(polyline
 					(pts
 						(xy -1.905 -4.1148) (xy 1.905 -4.1148)
@@ -1131,7 +1374,7 @@
 				)
 			)
 		)
-		(symbol "dank:CL21B106KOQNNNE"
+		(symbol "dank:CL31B106KAHNNNE"
 			(pin_names
 				(offset 0.254)
 			)
@@ -1154,7 +1397,7 @@
 					)
 				)
 			)
-			(property "Footprint" "dank:CAP_CL21B106KOQNNNE_SAM"
+			(property "Footprint" "dank:CAP_CL31_SAM"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1164,7 +1407,7 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "CL21B106KOQNNNE"
+			(property "Datasheet" "CL31B106KAHNNNE"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1174,7 +1417,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "10uF 125C ceramic capacitor"
+			(property "Description" "10 µF ±10% 25V Ceramic Capacitor X7R 1206 (3216 Metric)"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1183,7 +1426,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "CL21B106KOQNNNE"
+			(property "ki_keywords" "CL31B106KAHNNNE"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1192,7 +1435,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "CAP_CL21B106KOQNNNE_SAM CAP_CL21B106KOQNNNE_SAM-M CAP_CL21B106KOQNNNE_SAM-L"
+			(property "ki_fp_filters" "CAP_CL31_SAM CAP_CL31_SAM-M CAP_CL31_SAM-L"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1201,7 +1444,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "CL21B106KOQNNNE_1_1"
+			(symbol "CL31B106KAHNNNE_1_1"
 				(polyline
 					(pts
 						(xy 2.54 0) (xy 3.4798 0)
@@ -1287,252 +1530,7 @@
 					)
 				)
 			)
-			(symbol "CL21B106KOQNNNE_1_2"
-				(polyline
-					(pts
-						(xy -1.905 -4.1148) (xy 1.905 -4.1148)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.905 -3.4798) (xy 1.905 -3.4798)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -4.1148) (xy 0 -5.08)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -2.54) (xy 0 -3.4798)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin passive line
-					(at 0 0 270)
-					(length 2.54)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -7.62 90)
-					(length 2.54)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-		)
-		(symbol "dank:CL21C103JBF1PNE"
-			(pin_names
-				(offset 0.254)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "C17"
-				(at 5.842 2.54 90)
-				(effects
-					(font
-						(size 1.524 1.524)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" ".01u"
-				(at 2.794 2.032 90)
-				(effects
-					(font
-						(size 1.524 1.524)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" "dank:CAP_CL_21_SAM"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-						(italic yes)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "CL21C103JBF1PNE"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-						(italic yes)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" ".01uF 125C ceramic capacitor"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "CL21C103JBF1PNE"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "CAP_CL_21_SAM CAP_CL_21_SAM-M CAP_CL_21_SAM-L"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "CL21C103JBF1PNE_1_1"
-				(polyline
-					(pts
-						(xy 2.54 0) (xy 3.4798 0)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 3.4798 -1.905) (xy 3.4798 1.905)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 4.1148 -1.905) (xy 4.1148 1.905)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 4.1148 0) (xy 5.08 0)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin passive line
-					(at 0 0 0)
-					(length 2.54)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 0 180)
-					(length 2.54)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(symbol "CL21C103JBF1PNE_1_2"
+			(symbol "CL31B106KAHNNNE_1_2"
 				(polyline
 					(pts
 						(xy -1.905 -4.1148) (xy 1.905 -4.1148)
@@ -2185,18 +2183,6 @@
 		(uuid "0feaf5db-dc21-4973-ac65-fc844229cdfc")
 	)
 	(junction
-		(at 218.44 76.2)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "21218972-af39-4d26-a37d-750e468dfd73")
-	)
-	(junction
-		(at 190.5 76.2)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "239707af-ea93-4f79-8d60-b02621446c32")
-	)
-	(junction
 		(at 146.05 87.63)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2227,6 +2213,12 @@
 		(uuid "60fcb571-3fe1-4b7c-9620-a28e88d2e94e")
 	)
 	(junction
+		(at 218.44 76.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "6515d5d7-ff8b-4235-bb56-adb734d4401c")
+	)
+	(junction
 		(at 204.47 83.82)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2250,6 +2242,12 @@
 		(color 0 0 0 0)
 		(uuid "dd111e6d-9f5d-4be1-bae6-d9dcd2631a10")
 	)
+	(junction
+		(at 190.5 76.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f138ca4a-c42c-48f6-bbad-6e7acb7aa9ab")
+	)
 	(wire
 		(pts
 			(xy 71.12 80.01) (xy 71.12 83.82)
@@ -2272,17 +2270,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 76.2) (xy 232.41 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "188d238b-49ce-47e4-b6b9-f1e0eb9ed06d")
-	)
-	(wire
-		(pts
-			(xy 190.5 76.2) (xy 196.85 76.2)
+			(xy 182.88 76.2) (xy 190.5 76.2)
 		)
 		(stroke
 			(width 0)
@@ -2299,6 +2287,26 @@
 			(type default)
 		)
 		(uuid "1904d289-8372-4ab9-97d6-506ccb34795b")
+	)
+	(wire
+		(pts
+			(xy 190.5 76.2) (xy 196.85 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "19be88c6-4977-4b32-b8ef-e11c9f1355e2")
+	)
+	(wire
+		(pts
+			(xy 218.44 76.2) (xy 232.41 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1ca404e4-4c54-4a8b-afc9-bb3bfb7a477b")
 	)
 	(wire
 		(pts
@@ -2349,16 +2357,6 @@
 			(type default)
 		)
 		(uuid "2fa58559-f391-4b2c-aec1-0714c096443f")
-	)
-	(wire
-		(pts
-			(xy 182.88 76.2) (xy 190.5 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "315611d3-92f3-4a08-afd5-b978a4e73055")
 	)
 	(wire
 		(pts
@@ -3094,7 +3092,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+		(property "Footprint" "PCM_Resistor_SMD_AKL:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
 			(at 117.602 81.28 90)
 			(effects
 				(font
@@ -3112,7 +3110,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "RK73H2BTTD68R0F"
 			(at 119.38 81.28 0)
 			(effects
 				(font
@@ -3203,6 +3201,77 @@
 		)
 	)
 	(symbol
+		(lib_id "dank:CL31B105KAHNNNE")
+		(at 123.19 87.63 0)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "2806b442-e302-4b33-a8b3-ba356001bd00")
+		(property "Reference" "C19"
+			(at 127 93.98 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "1u"
+			(at 127 91.44 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "dank:CAP_CL31_SAM"
+			(at 123.19 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "CL31B105KAHNNNE"
+			(at 123.19 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "1 µF ±10% 25V Ceramic Capacitor X7R 1206 (3216 Metric)"
+			(at 123.19 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "144ddd60-8b6a-44de-bc1d-d691bb55f1b2")
+		)
+		(pin "1"
+			(uuid "f9bd3af7-1b00-4fff-89e6-7393852e4fd0")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
+					(reference "C19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:PWR_FLAG")
 		(at 71.12 140.97 90)
 		(unit 1)
@@ -3269,34 +3338,35 @@
 		)
 	)
 	(symbol
-		(lib_id "dank:CL21C103JBF1PNE")
-		(at 66.04 83.82 180)
+		(lib_id "dank:CL31B103KHFNFNE")
+		(at 154.94 77.47 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2dfbd88b-1e82-4551-b7eb-406d43c7a391")
-		(property "Reference" "C17"
-			(at 64.008 89.408 0)
+		(fields_autoplaced yes)
+		(uuid "38c89a1e-ccd5-4a8c-b062-9e1b72e00f36")
+		(property "Reference" "C18"
+			(at 158.75 72.3899 90)
 			(effects
 				(font
 					(size 1.524 1.524)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
 		(property "Value" ".01u"
-			(at 64.516 87.376 0)
+			(at 158.75 74.9299 90)
 			(effects
 				(font
 					(size 1.524 1.524)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
-		(property "Footprint" "dank:CAP_CL_21_SAM"
-			(at 66.04 83.82 0)
+		(property "Footprint" "dank:CAP_CL31_SAM"
+			(at 154.94 77.47 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3305,8 +3375,8 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "CL21C103JBF1PNE"
-			(at 66.04 83.82 0)
+		(property "Datasheet" "CL31B103KHFNFNE"
+			(at 154.94 77.47 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3315,8 +3385,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ".01uF 125C ceramic capacitor"
-			(at 66.04 83.82 0)
+		(property "Description" "10000 pF ±10% 630V Ceramic Capacitor X7R 1206 (3216 Metric)"
+			(at 154.94 77.47 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3325,86 +3395,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "72156bb2-fbd7-494c-85e6-8b0b4fa4e11b")
+			(uuid "f421734a-ae90-48bb-aba0-c25edee233a2")
 		)
 		(pin "2"
-			(uuid "5770f360-277f-40ee-bf05-c523840d8713")
+			(uuid "a31406ec-4d7b-41d3-b080-7ed8f10bc447")
 		)
 		(instances
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
-					(reference "C17")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "dank:CL21B106KOQNNNE")
-		(at 190.5 76.2 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "3f786fa4-dcbf-49ef-8de9-6361d7d748ac")
-		(property "Reference" "C2"
-			(at 185.166 78.486 90)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "10u"
-			(at 184.15 81.026 90)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "dank:CAP_CL21B106KOQNNNE_SAM"
-			(at 190.5 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "CL21B106KOQNNNE"
-			(at 190.5 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "10uF 125C ceramic capacitor"
-			(at 190.5 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "540e0b43-fd56-4562-8322-584f96b5df09")
-		)
-		(pin "1"
-			(uuid "97ad9fd9-a4cc-4c71-9f9c-f5a4b12d7b3a")
-		)
-		(instances
-			(project ""
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
-					(reference "C2")
+					(reference "C18")
 					(unit 1)
 				)
 			)
@@ -3847,7 +3846,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+		(property "Footprint" "PCM_Resistor_SMD_AKL:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
 			(at 71.882 76.2 90)
 			(effects
 				(font
@@ -3890,8 +3889,8 @@
 		)
 	)
 	(symbol
-		(lib_id "dank:C0805C105J3RECAUTO")
-		(at 123.19 87.63 0)
+		(lib_id "dank:CL31B103KHFNFNE")
+		(at 58.42 83.82 0)
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
@@ -3899,25 +3898,25 @@
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "76be55e3-166a-4bfd-8777-9dc0f6b46988")
-		(property "Reference" "C19"
-			(at 127 93.98 0)
+		(uuid "7920e1a2-d001-48fa-956e-682eae64ae73")
+		(property "Reference" "C17"
+			(at 62.23 90.17 0)
 			(effects
 				(font
 					(size 1.524 1.524)
 				)
 			)
 		)
-		(property "Value" "1u"
-			(at 127 91.44 0)
+		(property "Value" ".01u"
+			(at 62.23 87.63 0)
 			(effects
 				(font
 					(size 1.524 1.524)
 				)
 			)
 		)
-		(property "Footprint" "dank:CAPC230145_140N_KEM"
-			(at 123.19 87.63 0)
+		(property "Footprint" "dank:CAP_CL31_SAM"
+			(at 58.42 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3926,8 +3925,8 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "C0805C105J3RECAUTO"
-			(at 123.19 87.63 0)
+		(property "Datasheet" "CL31B103KHFNFNE"
+			(at 58.42 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3936,25 +3935,98 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "CAP CER 0805 1UF 25V X7R 5%"
-			(at 123.19 87.63 0)
+		(property "Description" "10000 pF ±10% 630V Ceramic Capacitor X7R 1206 (3216 Metric)"
+			(at 58.42 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
-		)
-		(pin "2"
-			(uuid "3edcea09-b7e2-4d54-bd71-798e52bb87b2")
 		)
 		(pin "1"
-			(uuid "7c1a08cb-bf30-47f6-9918-4da2782099b3")
+			(uuid "75f20fc3-21cf-47ef-91c2-bc30c34e50b0")
+		)
+		(pin "2"
+			(uuid "55bfcc76-43f4-43b4-9a11-d1680e7747ea")
 		)
 		(instances
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
-					(reference "C19")
+					(reference "C17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "dank:CL31B106KAHNNNE")
+		(at 190.5 83.82 270)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7e5f224e-d740-4580-82e7-de5fce180801")
+		(property "Reference" "C2"
+			(at 186.69 78.7399 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10u"
+			(at 186.69 81.2799 90)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "dank:CAP_CL31_SAM"
+			(at 190.5 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "CL31B106KAHNNNE"
+			(at 190.5 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "10 µF ±10% 25V Ceramic Capacitor X7R 1206 (3216 Metric)"
+			(at 190.5 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b81fbb5c-afe1-441b-8d7b-119296b729f5")
+		)
+		(pin "2"
+			(uuid "de9f06c8-8ba6-4c8e-8701-d82ea8f62fb8")
+		)
+		(instances
+			(project ""
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
+					(reference "C2")
 					(unit 1)
 				)
 			)
@@ -4173,35 +4245,35 @@
 		)
 	)
 	(symbol
-		(lib_id "dank:CL21C103JBF1PNE")
-		(at 154.94 69.85 270)
+		(lib_id "dank:CL31B106KAHNNNE")
+		(at 218.44 83.82 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "997e009e-88d5-42ef-bba7-cb42a9f4c745")
-		(property "Reference" "C20"
-			(at 158.75 72.3899 90)
+		(uuid "ac104dae-464d-4eb3-8ab0-6157986d1f5b")
+		(property "Reference" "C5"
+			(at 222.25 78.7399 90)
 			(effects
 				(font
 					(size 1.524 1.524)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
-		(property "Value" ".01u"
-			(at 158.75 74.9299 90)
+		(property "Value" "10u"
+			(at 222.25 81.2799 90)
 			(effects
 				(font
 					(size 1.524 1.524)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
-		(property "Footprint" "dank:CAP_CL_21_SAM"
-			(at 154.94 69.85 0)
+		(property "Footprint" "dank:CAP_CL31_SAM"
+			(at 218.44 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4210,8 +4282,8 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "CL21C103JBF1PNE"
-			(at 154.94 69.85 0)
+		(property "Datasheet" "CL31B106KAHNNNE"
+			(at 218.44 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4220,8 +4292,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ".01uF 125C ceramic capacitor"
-			(at 154.94 69.85 0)
+		(property "Description" "10 µF ±10% 25V Ceramic Capacitor X7R 1206 (3216 Metric)"
+			(at 218.44 83.82 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4230,15 +4302,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "665e2c20-eab9-40b5-a445-3b31021f9a04")
+			(uuid "cec9b8d3-4557-4da7-af6b-c33abe5ad5be")
 		)
 		(pin "2"
-			(uuid "7cc46ce1-9178-49e7-9d46-2da8948d7d41")
+			(uuid "f7e400c0-cf30-42ba-8605-1f1883995bf8")
 		)
 		(instances
-			(project ""
+			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
-					(reference "C20")
+					(reference "C5")
 					(unit 1)
 				)
 			)
@@ -4573,78 +4645,6 @@
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
 					(reference "U2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "dank:CL21B106KOQNNNE")
-		(at 218.44 83.82 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "ef62984d-cfe6-4ce7-97db-690259dfda85")
-		(property "Reference" "C5"
-			(at 222.25 78.7399 90)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "10u"
-			(at 222.25 81.2799 90)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "dank:CAP_CL21B106KOQNNNE_SAM"
-			(at 218.44 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "CL21B106KOQNNNE"
-			(at 218.44 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "10uF 125C ceramic capacitor"
-			(at 218.44 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "1b1e56ed-289d-4458-b84c-dfb5c66714cd")
-		)
-		(pin "1"
-			(uuid "5210313a-c4e0-4b56-8cd9-90408d64bba6")
-		)
-		(instances
-			(project ""
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/e87156ca-67c4-4a67-9b05-7ba1374951ea"
-					(reference "C5")
 					(unit 1)
 				)
 			)
