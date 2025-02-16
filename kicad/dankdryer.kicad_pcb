@@ -2714,7 +2714,7 @@
 		(descr "Capacitor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C6"
-			(at 0 -1.85 360)
+			(at 0 -1.85 0)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "d5953a33-ea4e-4b42-9e25-195640bd2404")
@@ -2726,7 +2726,7 @@
 			)
 		)
 		(property "Value" "22u"
-			(at 0 1.85 360)
+			(at 0 1.85 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "db07eab2-ea21-4640-a2d5-c0a71ba17053")
@@ -2882,7 +2882,7 @@
 			(uuid "0e4ca10f-1676-41a3-ae79-7a00fd308d35")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "1d1ebaec-67e7-4d40-b65c-5f65ff4bb292")
 			(effects
@@ -8318,7 +8318,7 @@
 		(descr "Capacitor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C9"
-			(at 0 -1.85 360)
+			(at 0 -1.85 0)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "6c6eca88-7f63-4b1c-8465-9dbb280658e6")
@@ -8330,7 +8330,7 @@
 			)
 		)
 		(property "Value" "0.1u"
-			(at 0 1.85 360)
+			(at 0 1.85 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "8bfb5d86-661f-47f0-97fb-64ad5e7f41c3")
@@ -8486,7 +8486,7 @@
 			(uuid "db024cb7-bbe3-4514-bdf1-112d8d3e8812")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "dae89967-f364-4ea5-b3be-174c4d761a16")
 			(effects
@@ -13563,7 +13563,7 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), Alternate KiCad Library")
 		(tags "resistor handsolder")
 		(property "Reference" "R22"
-			(at 0 -1.65 360)
+			(at 0 -1.65 0)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "4f5280a5-2796-4d59-ac87-f98726afd973")
@@ -13575,7 +13575,7 @@
 			)
 		)
 		(property "Value" "680"
-			(at 0 1.65 360)
+			(at 0 1.65 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "71ff1030-ac1c-44e2-8801-8b58e354d09f")
@@ -13587,7 +13587,7 @@
 			)
 		)
 		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "9970a087-cd22-4a84-9acb-ffb9e216ac91")
@@ -13599,7 +13599,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "641ca3cc-e42a-4527-b4a2-63b8586681ce")
@@ -13611,7 +13611,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "45b7f707-5839-4f55-a9f9-bfe22c2e1fee")
@@ -13748,7 +13748,7 @@
 			(uuid "12bf00f3-2fcf-4d04-a2d9-c7068571da4c")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "4d86f17c-e554-4958-8749-22e399ce3ecc")
 			(effects

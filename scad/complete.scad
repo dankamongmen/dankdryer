@@ -36,6 +36,9 @@ multicolor("lightgreen"){
 			}
 		}
 	}
+	translate([-55, -118, -35]){
+		import("antenna_WiFi_RP-SMA_conn.stl");
+	}
 }
 
 multicolor("darkslategrey"){

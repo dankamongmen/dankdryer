@@ -3817,7 +3817,7 @@
 		)
 		(uuid "32aee328-e49e-4aab-a092-221a3e8fab04")
 	)
-	(text "0.005A minimum to drive MOC3063SM.\n3.3V / 620Ω = 0.0053A (0.0176W).\nMOC3063 has drop of 1.3-1.5V, forward current of 60mA.\nHeater neutral returns from 150C thermostat.\nHeater is resistive load, no need for snubber circuit.\n450W±20% max draw -> 540W / 120VAC -> 4.5A max switched in triac.\nT1210 wants 1.3V and latching 25-30mA / holding 15mA (max 0.039W),\n switches 12A continuous and 126A peak of 120VAC@60Hz.\nRK73H2As support 150V and 0.25W."
+	(text "0.005A minimum to drive MOC3063SM.\n3.3V / 620Ω = 0.0053A (0.0176W).\nMOC3063 has drop of 1.3-1.5V, forward current of 60mA.\nHeater neutral returns from 150C thermostat.\nHeater is resistive load, no need for snubber circuit.\n50W±20% max draw -> 60W / 120VAC -> 0.5A max switched in triac.\nT1210 wants 1.3V and latching 25-30mA / holding 15mA (max 0.039W),\n switches 12A continuous and 126A peak of 120VAC@60Hz.\nRK73H2As support 150V and 0.25W."
 		(exclude_from_sim no)
 		(at 15.748 161.29 0)
 		(effects

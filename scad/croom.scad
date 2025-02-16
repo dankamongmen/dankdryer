@@ -141,7 +141,7 @@ module pcbmounts(){
 
 // RP-SMA antenna will be glued in
 module antennahole(){
-	rpsmar = 12.6 / 2;
+	rpsmar = 12 / 2;
 	rpsmal = 25;
 	translate([-topalt / 2, -botalt + 10, croomz - 30]){
         rotate([theta, 0, 0]){
@@ -170,7 +170,7 @@ module fancablehole(){
 rockerh = 20;
 rockerw = 45.7;
 module rockerhole(){
-	translate([-botinalt - 2, botinalt / 3 - 10, rockerh / 2 + 15]){
+	translate([-botinalt - 2, botinalt / 3 - 15, rockerh / 2 + 15]){
 	    rotate([0, 180 - theta, 0]){
 			cube([croomwall + 2, rockerw, rockerh], true);
 		}
@@ -258,7 +258,7 @@ module croom(){
 				corners();
 			}
 		}
-		lcdset();
+		//lcdset();
 		translate([0, -botalt + 3, (croomz + wallz) / 2]){
 			rotate([theta, 0, 0]){
 				fanhole(10);
