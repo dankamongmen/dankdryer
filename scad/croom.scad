@@ -97,7 +97,9 @@ module acadapterscrews(l){
 
 module acadapter(){
     difference(){
-        cube([acadapterl, acadapterw, acadapterh], true);
+		translate([0, 0, acadapterh / 2]){
+			cube([acadapterl, acadapterw, acadapterh], true);
+		}
         translate([0, 0, -15]){
             acadapterscrews(30);
         }
@@ -281,10 +283,11 @@ multicolor("green"){
 multicolor("white"){
     assembly();
 }
-
+*/
 multicolor("grey"){
 	translate([0, 50, acadapterh / 2 + wallz]){
 		acadapter();
 	}
 }
+/*
 */

@@ -5,13 +5,13 @@ $fn = 128;
 
 current_color = "ALL";
 
-module multicolor(color) {
-	if (current_color != "ALL" && current_color != color) {
-		// ignore our children.
-	} else {
-		color(color)
+module multicolor(color, opacity=1) {
+	//if (current_color != "ALL" && current_color != color) {
+		color(color, opacity)
 		children();
-	}
+	/*} else {
+		// ignore
+	}*/
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide

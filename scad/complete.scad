@@ -4,19 +4,22 @@ use <croom.scad>
 use <coupling.scad>
 use <top.scad>
 
-multicolor("lightgrey"){
-translate([-110, -10, -60]){
-	rotate([0, 180 - theta, 0]){
-		intersection(){
-			rotate([270, 0, 0]){
-				rotate([0, 0, 270]){
-					import("iec.stl");
+multicolor("slategrey"){
+	translate([-110, -10, -60]){
+		rotate([0, 180 - theta, 0]){
+			intersection(){
+				rotate([270, 0, 0]){
+					rotate([0, 0, 270]){
+						import("iec.stl");
+					}
 				}
+				cube([40, 120, 30], true);
 			}
-			cube([40, 120, 30], true);
 		}
 	}
-}
+	translate([-55, -118, -35]){
+		import("antenna_WiFi_RP-SMA_conn.stl");
+	}
 }
 
 multicolor("lightgreen"){
@@ -36,12 +39,9 @@ multicolor("lightgreen"){
 			}
 		}
 	}
-	/*translate([-55, -118, -35]){
-		import("antenna_WiFi_RP-SMA_conn.stl");
-	}*/
 }
 
-multicolor("darkslategrey"){
+multicolor("dimgrey"){
     rotate([0, 0, 180]){
         hotbox();
     }
@@ -50,19 +50,19 @@ multicolor("darkslategrey"){
     }
 }
 
+multicolor("darkorchid"){
+	drop(){
+		translate([0, 60, wallz + 7]){
+			acadapter();
+		}
+	}
+}
+
 //multicolor("cornsilk"){
     rotate([0, 0, $t]){
         spool();
     }
 //}
-
-multicolor("black"){
-    drop(){
-        translate([0, 60, wallz + 7 + 22 / 2]){
-            acadapter();
-        }
-    }
-}
 
 multicolor("lightblue"){
     drop(){
@@ -70,7 +70,7 @@ multicolor("lightblue"){
     }
 }
 
-color("darkslategrey"){
+multicolor("silver"){
     translate([0, 0, totalz + 4]){
         mirror([0, 0, 1]){
             top();
