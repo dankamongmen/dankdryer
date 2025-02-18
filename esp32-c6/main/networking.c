@@ -9,7 +9,6 @@
 #include <host/ble_hs.h>
 #include <host/ble_gatt.h>
 #include <host/ble_hs_id.h>
-#include <esp_openthread.h>
 #include <esp_netif_sntp.h>
 #include <esp_http_server.h>
 #include <host/ble_hs_mbuf.h>
@@ -713,9 +712,6 @@ int setup_network(void){
     }
   }
   if(setup_ble()){
-    return -1;
-  }
-  if(esp_openthread_init(NULL) != ESP_OK){
     return -1;
   }
   return 0;
