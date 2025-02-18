@@ -3574,12 +3574,6 @@
 		(uuid "2aaa4372-c304-4889-89bf-736e1a285394")
 	)
 	(junction
-		(at 219.71 132.08)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "2c2a67a7-23de-4bdc-9307-bf51b915da67")
-	)
-	(junction
 		(at 76.2 55.88)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3704,6 +3698,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e79bfa68-4d8f-4583-88b7-f2bbc22b1007")
+	)
+	(junction
+		(at 219.71 132.08)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f7f535c3-4379-4a87-a638-debae58469b7")
 	)
 	(no_connect
 		(at 189.23 64.77)
@@ -3855,6 +3855,16 @@
 	)
 	(wire
 		(pts
+			(xy 219.71 132.08) (xy 226.06 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2b260e0e-354a-426d-8f29-8f13e1f72dac")
+	)
+	(wire
+		(pts
 			(xy 241.3 44.45) (xy 241.3 55.88)
 		)
 		(stroke
@@ -3962,16 +3972,6 @@
 			(type default)
 		)
 		(uuid "3acd52ba-3323-4f82-b95b-d6095e43a2ab")
-	)
-	(wire
-		(pts
-			(xy 213.36 132.08) (xy 219.71 132.08)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3df08908-3409-487e-b567-b9c7fc6475ec")
 	)
 	(wire
 		(pts
@@ -4505,7 +4505,7 @@
 	)
 	(wire
 		(pts
-			(xy 219.71 132.08) (xy 226.06 132.08)
+			(xy 213.36 132.08) (xy 219.71 132.08)
 		)
 		(stroke
 			(width 0)
@@ -5995,6 +5995,73 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 219.71 128.27 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2a45e745-573a-4b7d-b80d-6af7860a0862")
+		(property "Reference" "R8"
+			(at 217.17 128.016 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "4.7k"
+			(at 222.25 128.524 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
+			(at 217.932 128.27 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 219.71 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 219.71 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1894eecb-d98c-49ba-8863-be0e48209de6")
+		)
+		(pin "2"
+			(uuid "b1df1069-00e2-40b2-b92a-2229f0cb9a19")
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
+					(reference "R8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 241.3 62.23 0)
 		(unit 1)
@@ -6847,74 +6914,6 @@
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
 					(reference "J11")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 219.71 128.27 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "7b222d0f-82d8-43a0-82ea-e791c1f7198d")
-		(property "Reference" "R8"
-			(at 216.916 128.27 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "4.7k"
-			(at 221.996 128.27 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
-			(at 221.488 128.27 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 219.71 128.27 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 219.71 128.27 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "d69922e6-9a8b-4e93-b93e-6e62b819d8fc")
-		)
-		(pin "2"
-			(uuid "e68392ee-2169-495d-945a-290d67c7a35d")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "R8")
 					(unit 1)
 				)
 			)
@@ -8156,7 +8155,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_Resistor_SMD_AKL:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
 			(at 189.992 128.27 90)
 			(effects
 				(font

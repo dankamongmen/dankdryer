@@ -7,8 +7,9 @@ current_color = "ALL";
 
 module multicolor(color, opacity=1) {
 	//if (current_color != "ALL" && current_color != color) {
-		color(color, opacity)
-		children();
+		color(color, opacity){
+			children();
+		}
 	/*} else {
 		// ignore
 	}*/
@@ -408,18 +409,18 @@ module assembly(){
 		translate([0, 0, loadcellh / 2]){
 			loadcell();
 		}
-		translate([-14.5, 0, loadcellh]){
+		translate([-10.5, 0, loadcellh]){
 			mirror([0, 1, 0]){
 				lowercoupling();
 			}
-			translate([15, 0, platformh / 2 + cupolah + loadcellh + 30]){
-			    platform(platforminnerr, platformouterd / 2);
-			}
-		}
-		translate([0, 0, motorboxh]){
-			motor();
-			translate([0, 0, 25]){
-				rotor();
+			translate([10.5, 0, motorboxh / 2 + loadcellsupph]){
+				motor();
+				translate([0, 0, 25]){
+					rotor();
+					translate([0, 0, -10]){
+						platform(platforminnerr, platformouterd / 2);
+					}
+				}
 			}
 		}
 	}
@@ -474,7 +475,7 @@ module spool(){
 	fild = spoolholed + 1.75 * 55;
 	filh = 1.75 * 35;
 	reelh = (spoolh - filh) / 2;
-    translate([0, 0, wallz + elevation + platformtoph + 5]){
+    translate([0, 0, croomz + elevation + platformtoph + 4]){
 		color([1, 1, 1]){
 			difference(){
 				linear_extrude(spoolh){
@@ -508,3 +509,4 @@ module spool(){
 }
 
 //spool();
+//assembly();

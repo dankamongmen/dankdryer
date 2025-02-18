@@ -41,15 +41,6 @@ multicolor("lightgreen"){
 	}
 }
 
-multicolor("dimgrey"){
-    rotate([0, 0, 180]){
-        hotbox();
-    }
-    drop(){
-        croom();
-    }
-}
-
 multicolor("darkorchid"){
 	drop(){
 		translate([0, 60, wallz + 7]){
@@ -58,11 +49,11 @@ multicolor("darkorchid"){
 	}
 }
 
-//multicolor("cornsilk"){
-    rotate([0, 0, $t]){
-        spool();
-    }
-//}
+rotate([0, 0, $t]){
+	drop(){
+		spool();
+	}
+}
 
 multicolor("lightblue"){
     drop(){
@@ -75,5 +66,14 @@ multicolor("silver"){
         mirror([0, 0, 1]){
             top();
         }
+    }
+}
+
+multicolor("dimgrey"){
+    rotate([0, 0, 180]){
+        hotbox();
+    }
+    drop(){
+        croom();
     }
 }

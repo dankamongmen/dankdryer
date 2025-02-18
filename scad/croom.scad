@@ -64,6 +64,7 @@ module rot(deg){
 acadapterh = 22;
 acadapterw = 50;
 acadapterl = 135;
+acmounth = 7;
 module acadaptermount(l){
     translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz + l / 2]){
         difference(){
@@ -96,14 +97,9 @@ module acadapterscrews(l){
 }
 
 module acadapter(){
-    difference(){
-		translate([0, 0, acadapterh / 2]){
-			cube([acadapterl, acadapterw, acadapterh], true);
-		}
-        translate([0, 0, -15]){
-            acadapterscrews(30);
-        }
-    }
+	translate([0, 0, acadapterh / 2]){
+		cube([acadapterl, acadapterw, acadapterh], true);
+	}
 }
 
 module fullmount(c, h){
@@ -113,29 +109,29 @@ module fullmount(c, h){
 }
 
 // M4 screw hole through a cXcXh cube.
-module mount(c, h){
+module mount(c, h, t){
 	difference(){
 		fullmount(c, h);
 		translate([0, 0, wallz + h / 2]){
-			screw("M4", length = wallz + h, thread=true);
+			screw(t, length = wallz + h, thread=true);
 		}
 	}
 }
 
-// width: mid2mid 65mm with 5mm holes
-// length: mid2mid 90mm with 5mm holes
+// width: mid2mid 65mm with M5 holes
+// length: mid2mid 90mm with M5 holes
 module pcbmounts(){
-	c = 5;
-	h = 4;
+	c = 6;
+	h = 6;
     translate([45, -0.95 * totalxy / 2 + mh + 10, 0]){
-        mount(c, h);
+        mount(c, h, "M5");
         translate([-90, 0, 0]){
-            mount(c, h);
+            mount(c, h, "M5");
         }
         translate([0, 65, 0]){
-            mount(c, h);
+            mount(c, h, "M5");
             translate([-90, 0, 0]){
-                mount(c, h);
+                mount(c, h, "M5");
             }
         }
     }
@@ -156,10 +152,10 @@ module antennahole(){
 
 // hole for hotbox fan wires
 module fancablehole(){
-    translate([-40, botinalt - 6, croomz]){
+    translate([-40, botinalt + croomwall / 2, croomz]){
 		rotate([180 - theta, 0, 0]){
             rotate([90, 0, 0]){
-                cylinder(croomwall + 1, 5, 5, true);
+                cylinder(croomwall, 5, 5, true);
             }
         }
     }
@@ -180,7 +176,7 @@ module rockerhole(){
 }
 
 module croombottom(rad, z){
-	acadapterscrews(5);
+	acadapterscrews(acmounth);
 	loadcellmountx = (-loadcelll + loadcellmountl) / 2;
     translate([loadcellmountx, 0, wallz]){
         loadcellmount(loadcellmounth);
@@ -283,11 +279,10 @@ multicolor("green"){
 multicolor("white"){
     assembly();
 }
-*/
+
 multicolor("grey"){
-	translate([0, 50, acadapterh / 2 + wallz]){
+	translate([0, 50, wallz + acmounth]){
 		acadapter();
 	}
 }
-/*
 */

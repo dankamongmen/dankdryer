@@ -1,6 +1,5 @@
 // intended for use on an ESP32-S3-WROOM-1
 #include "networking.h"
-#include "emc230x.h"
 #include "nau7802.h"
 #include "pins.h"
 #include "ota.h"
@@ -59,7 +58,6 @@
 #define LOWER_FANTIMER LEDC_TIMER_0
 #define UPPER_FANTIMER LEDC_TIMER_1
 
-static emc230x EMC2302;
 static bool MotorState;
 static bool HeaterState;
 static uint32_t LowerPWM = 128;
@@ -736,20 +734,6 @@ read_pstore(void){
 }
 
 static int
-setup_emc2302(i2c_master_bus_handle_t master){
-  if(emc230x_detect(master, EMC2302_MODEL_UNSPEC, &EMC2302)){
-    return -1;
-  }
-  if(set_pwm(LOWER_FANCHAN, LowerPWM)){
-    return -1;
-  }
-  if(set_pwm(UPPER_FANCHAN, UpperPWM)){
-    return -1;
-  }
-  return 0;
-}
-
-static int
 setup_nau7802(i2c_master_bus_handle_t master){
   if(nau7802_detect(master, &NAU7802)){
     return -1;
@@ -977,9 +961,6 @@ setup(adc_channel_t* thermchan){
     set_failure(&SystemError);
   }
   if(setup_temp(THERM_DATAPIN, ADC_UNIT_1, thermchan)){
-    set_failure(&SystemError);
-  }
-  if(setup_emc2302(I2CMaster)){
     set_failure(&SystemError);
   }
   if(setup_nau7802(I2CMaster)){
