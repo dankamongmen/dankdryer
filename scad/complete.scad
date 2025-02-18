@@ -5,7 +5,7 @@ use <coupling.scad>
 use <top.scad>
 
 multicolor("lightgrey"){
-translate([-110, 0, -60]){
+translate([-110, -10, -60]){
 	rotate([0, 180 - theta, 0]){
 		intersection(){
 			rotate([270, 0, 0]){
@@ -36,9 +36,9 @@ multicolor("lightgreen"){
 			}
 		}
 	}
-	translate([-55, -118, -35]){
+	/*translate([-55, -118, -35]){
 		import("antenna_WiFi_RP-SMA_conn.stl");
-	}
+	}*/
 }
 
 multicolor("darkslategrey"){

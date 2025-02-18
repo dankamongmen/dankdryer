@@ -1,7 +1,7 @@
 .PHONY: all images firmware clean
 
 OUT:=out
-SCADBASE:=$(addprefix scad/, coupling croom hotbox top)
+SCADBASE:=$(addprefix scad/, coupling croom hotbox top complete)
 STL:=$(addsuffix .stl, $(addprefix $(OUT)/, $(SCADBASE)))
 IMAGES:=$(addsuffix .png, $(addprefix $(OUT)/, $(SCADBASE)))
 
