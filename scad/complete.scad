@@ -43,7 +43,7 @@ multicolor("lightgreen"){
 
 multicolor("darkorchid"){
 	drop(){
-		translate([0, 60, wallz + 7]){
+		translate([0, 50, wallz + 7]){
 			acadapter();
 		}
 	}
