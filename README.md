@@ -93,8 +93,8 @@ be able to use a cheapter motor.
 
 Generated via Kicad:
 
-|"Designator"|"Footprint"|"Quantity"|"Designation"|
-|------------|-----------|----------|-------------|
+|Designator|Footprint|Quantity|Designation|
+|----------|---------|--------|-----------|
 |U1|TPS62132|1|TPS62132|
 |R4|R_1206_3216Metric_Pad1.30x1.75mm_HandSolder|1|360|
 |R2|R_1206_3216Metric_Pad1.30x1.75mm_HandSolder|1|620|
