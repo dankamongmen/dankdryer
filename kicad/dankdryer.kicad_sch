@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-02-18")
-		(rev "1.7.2")
+		(date "2025-02-21")
+		(rev "1.7.3")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -3646,12 +3646,6 @@
 		(uuid "ad2401f7-e76e-4573-b28f-76c700ed6109")
 	)
 	(junction
-		(at 139.7 134.62)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ae0ddf65-93fd-4038-be6d-e0b02f13e49d")
-	)
-	(junction
 		(at 93.98 45.72)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3710,14 +3704,6 @@
 		(uuid "020bc804-58f6-42fa-aeb3-c1437a407afe")
 	)
 	(no_connect
-		(at 125.73 134.62)
-		(uuid "198565e7-cadd-4031-9d0a-79c4e89f1319")
-	)
-	(no_connect
-		(at 135.89 139.7)
-		(uuid "24c7d906-18ca-4d22-96df-06fa7b80eb51")
-	)
-	(no_connect
 		(at 114.3 45.72)
 		(uuid "4116d47a-ce3a-4e54-a8ea-b93054878b8f")
 	)
@@ -3726,12 +3712,20 @@
 		(uuid "84687630-667a-46ad-9bad-5ddfbbcc3c29")
 	)
 	(no_connect
+		(at 138.43 132.08)
+		(uuid "8b78034f-d3c0-4acc-bf4e-09cff68572fd")
+	)
+	(no_connect
 		(at 57.15 38.1)
 		(uuid "dec5e54b-43d4-4958-aef7-ac466d764f86")
 	)
 	(no_connect
 		(at 189.23 62.23)
 		(uuid "e829fdb1-3290-45d2-ae6d-afa5c1f68095")
+	)
+	(no_connect
+		(at 128.27 137.16)
+		(uuid "fefe6b45-2338-42a1-9f22-9e7c9cc5f440")
 	)
 	(wire
 		(pts
@@ -3825,7 +3819,7 @@
 	)
 	(wire
 		(pts
-			(xy 100.33 142.24) (xy 100.33 146.05)
+			(xy 102.87 140.97) (xy 102.87 144.78)
 		)
 		(stroke
 			(width 0)
@@ -4082,16 +4076,6 @@
 			(type default)
 		)
 		(uuid "5835926e-8b1c-4e18-9215-025127ce302b")
-	)
-	(wire
-		(pts
-			(xy 135.89 134.62) (xy 139.7 134.62)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "583c478b-d9f1-48a1-b1a3-b05dbd5b4a78")
 	)
 	(wire
 		(pts
@@ -4355,16 +4339,6 @@
 	)
 	(wire
 		(pts
-			(xy 120.65 139.7) (xy 125.73 139.7)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c3c6c89c-b3fb-48b9-b4ab-6a31b82c74d8")
-	)
-	(wire
-		(pts
 			(xy 76.2 45.72) (xy 76.2 55.88)
 		)
 		(stroke
@@ -4475,13 +4449,13 @@
 	)
 	(wire
 		(pts
-			(xy 139.7 134.62) (xy 146.05 134.62)
+			(xy 123.19 132.08) (xy 128.27 132.08)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "df11ac6b-3ca8-46e3-9334-db0bce97ff5a")
+		(uuid "ddbd1d8c-6526-4aa8-aefa-18c4e68308e4")
 	)
 	(wire
 		(pts
@@ -4690,9 +4664,9 @@
 		)
 		(uuid "12f63a6a-0a88-4c69-bf4f-8de95d4621eb")
 	)
-	(text "If GPIO9 is high, we use SPI boot. If GPIO9 is low and GPIO8 is\n high, we use download boot. Both low is an illegal configuration.\nAlways take GPIO8 high, and allow a button to bring GPIO9 low\n to push code. Button is normally-open.\nGPIO8 sinks a steady 33μA (3.3V / 10000Ω).\nGPIO9 sinks 1mA (3.3V / 3300Ω) while pressed.\nB3F-1020 handles 0.05A and 24V.\nMight be able to use ESP32 pulldown and eliminate R10."
+	(text "If GPIO9 is high, we use SPI boot. If GPIO9 is low and GPIO8 is\n high, we use download boot. Both low is an illegal configuration.\nGPIO9 uses an onboard 45kΩ pullup resistor by default.\nAlways take GPIO8 high, and allow a button to bring GPIO9 low\n to push code. Button is normally-open.\nGPIO8 sinks a steady 33μA (3.3V / 10000Ω).\nGPIO9 sinks 1mA (3.3V / 3300Ω) while pressed.\nB3F-1020 handles 50mA and 24V."
 		(exclude_from_sim no)
-		(at 89.154 159.258 0)
+		(at 89.154 158.242 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4758,28 +4732,6 @@
 			(justify left)
 		)
 		(uuid "d10ce131-6f49-4213-89f4-7616c7eaeb89")
-	)
-	(global_label "IO9"
-		(shape input)
-		(at 146.05 134.62 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "074adbd0-9f6c-4290-868b-5b1e8fd8f505")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 152.18 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
 	)
 	(global_label "LCDSDA"
 		(shape input)
@@ -4935,6 +4887,28 @@
 			)
 		)
 	)
+	(global_label "IO9"
+		(shape input)
+		(at 138.43 137.16 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "89c810d8-3b14-4bad-85b3-952edef579ee")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 144.56 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "UPWM"
 		(shape input)
 		(at 189.23 72.39 180)
@@ -4981,7 +4955,7 @@
 	)
 	(global_label "IO8"
 		(shape input)
-		(at 100.33 146.05 0)
+		(at 102.87 144.78 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4991,7 +4965,7 @@
 		)
 		(uuid "eecfbd0e-53d1-473a-850e-c603d989c262")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 106.46 146.05 0)
+			(at 109 144.78 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5382,7 +5356,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 139.7 142.24 0)
+		(at 123.19 139.7 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5390,7 +5364,7 @@
 		(dnp no)
 		(uuid "10db6765-f243-4f23-9711-0afd66543691")
 		(property "Reference" "#PWR041"
-			(at 139.7 148.59 0)
+			(at 123.19 146.05 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5399,7 +5373,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 139.7 147.32 0)
+			(at 123.19 144.78 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5407,7 +5381,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 139.7 142.24 0)
+			(at 123.19 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5416,7 +5390,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 139.7 142.24 0)
+			(at 123.19 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5425,7 +5399,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 139.7 142.24 0)
+			(at 123.19 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5517,7 +5491,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 100.33 138.43 0)
+		(at 102.87 137.16 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5526,7 +5500,7 @@
 		(fields_autoplaced yes)
 		(uuid "12cf4351-e806-4caa-838d-eb897c371c0e")
 		(property "Reference" "R15"
-			(at 102.87 137.1599 0)
+			(at 105.41 135.8899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5535,7 +5509,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 102.87 139.6999 0)
+			(at 105.41 138.4299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5544,7 +5518,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
-			(at 98.552 138.43 90)
+			(at 101.092 137.16 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5553,7 +5527,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 100.33 138.43 0)
+			(at 102.87 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5562,7 +5536,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 100.33 138.43 0)
+			(at 102.87 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6921,7 +6895,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 120.65 135.89 0)
+		(at 123.19 135.89 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6929,7 +6903,7 @@
 		(dnp no)
 		(uuid "7fc19408-5a62-4d43-8a55-f74ead922654")
 		(property "Reference" "R14"
-			(at 115.062 134.62 0)
+			(at 117.602 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6938,7 +6912,7 @@
 			)
 		)
 		(property "Value" "3.3k"
-			(at 114.808 136.652 0)
+			(at 117.348 136.652 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6947,7 +6921,7 @@
 			)
 		)
 		(property "Footprint" "PCM_Resistor_SMD_AKL:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
-			(at 118.872 135.89 90)
+			(at 121.412 135.89 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6956,7 +6930,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 120.65 135.89 0)
+			(at 123.19 135.89 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6965,7 +6939,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 120.65 135.89 0)
+			(at 123.19 135.89 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6990,7 +6964,7 @@
 	)
 	(symbol
 		(lib_id "power:+3.3V")
-		(at 100.33 134.62 0)
+		(at 102.87 133.35 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6998,7 +6972,7 @@
 		(dnp no)
 		(uuid "8149c298-30c4-44bb-b402-0b81c05e5320")
 		(property "Reference" "#PWR038"
-			(at 100.33 138.43 0)
+			(at 102.87 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7007,7 +6981,7 @@
 			)
 		)
 		(property "Value" "+3.3V"
-			(at 100.33 128.524 90)
+			(at 102.87 127.254 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7015,7 +6989,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 100.33 134.62 0)
+			(at 102.87 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7024,7 +6998,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 100.33 134.62 0)
+			(at 102.87 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7033,7 +7007,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 100.33 134.62 0)
+			(at 102.87 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7114,71 +7088,6 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
 					(reference "#FLG01")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3.3V")
-		(at 120.65 132.08 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "897761b3-d58f-42b1-bbb9-64a79ecfba2f")
-		(property "Reference" "#PWR021"
-			(at 120.65 135.89 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3.3V"
-			(at 120.65 125.73 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 120.65 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 120.65 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 120.65 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "8decf3f2-6d73-47b5-8c27-85a899ccdeff")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -7452,76 +7361,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
-		(at 139.7 138.43 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "a75b420f-25b0-4b4a-8742-db50bfad6903")
-		(property "Reference" "R17"
-			(at 142.24 137.1599 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "10k"
-			(at 142.24 139.6999 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
-			(at 137.922 138.43 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 139.7 138.43 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 139.7 138.43 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "424be00d-959b-473f-9176-aabae96a1585")
-		)
-		(pin "1"
-			(uuid "410ee691-03ee-4273-9cb4-835509ef706a")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(reference "R17")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 223.52 90.17 0)
 		(unit 1)
@@ -7740,7 +7579,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Conn_01x04"
+		(property "Value" "UART"
 			(at 209.55 154.9399 0)
 			(effects
 				(font
@@ -8699,7 +8538,7 @@
 	)
 	(symbol
 		(lib_id "Switch:SW_Push_Dual")
-		(at 130.81 137.16 180)
+		(at 133.35 134.62 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -8708,7 +8547,7 @@
 		(fields_autoplaced yes)
 		(uuid "fa871dd8-c7d5-4d6f-b64f-2939bf13e541")
 		(property "Reference" "SW2"
-			(at 130.81 128.27 0)
+			(at 133.35 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8716,7 +8555,7 @@
 			)
 		)
 		(property "Value" "bootmode"
-			(at 130.81 130.81 0)
+			(at 133.35 128.27 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8724,7 +8563,7 @@
 			)
 		)
 		(property "Footprint" "dank:SW_B3F-1000_OMR"
-			(at 130.81 144.78 0)
+			(at 133.35 142.24 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8733,7 +8572,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 130.81 137.16 0)
+			(at 133.35 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8742,7 +8581,7 @@
 			)
 		)
 		(property "Description" "Push button switch, generic, symbol, four pins"
-			(at 130.81 137.16 0)
+			(at 133.35 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
