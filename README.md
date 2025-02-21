@@ -84,9 +84,6 @@ heating circuit) in the hot box; nothing else ought be there.
 * 2-to-4 cable splitter
 * Custom PCB (fabrication cost is negligible; see components below)
 
-Of these, we don't need nearly so powerful an AC adapter, and we ought
-be able to use a cheapter motor.
-
 #### PCB components
 
 <img alt="Custom PCB" src="images/pcb.png"/>
