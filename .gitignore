@@ -27,5 +27,6 @@ kicad/microboard/*.png
 kicad/microboard/*.rpt
 kicad/microboard/*.zip
 kicad/microboard/fp-info-cache
+kicad/production/
 kicad/report.txt
 out
