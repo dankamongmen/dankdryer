@@ -9,6 +9,7 @@
 #include <ctype.h>
 #include <cJSON.h>
 #include <string.h>
+#include <stdatomic.h>
 #include <led_strip.h>
 #include <nvs_flash.h>
 #include <esp_timer.h>
@@ -72,7 +73,9 @@ static i2c_master_dev_handle_t NAU7802;
 static i2c_master_bus_handle_t I2CMaster;
 static float LastLowerTemp, LastUpperTemp;
 static uint32_t LastLowerRPM, LastUpperRPM;
-static uint32_t HallPulses, LowerFanPulses, UpperFanPulses;
+
+// variables manipulated by interrupts
+static _Atomic(uint32_t) HallPulses, LowerFanPulses, UpperFanPulses;
 
 // ESP-IDF objects
 static bool ADC1Calibrated;
@@ -185,7 +188,7 @@ initialize_25k_pwm(ledc_channel_t channel, gpio_num_t pin, ledc_timer_t timer){
 }
 
 static int
-setup_intr(gpio_num_t pin, uint32_t* arg){
+setup_intr(gpio_num_t pin, _Atomic(uint32_t)* arg){
   if(gpio_set_input(pin)){
     return -1;
   }
@@ -985,7 +988,7 @@ setup(adc_channel_t* thermchan){
 // we don't try to measure the first iteration, as we don't yet have a
 // timestamp (and the fans are spinning up, anyway).
 static void
-getPulseCount(int64_t curtime, int64_t lasttime, uint32_t* pcount, uint32_t *lastpcount){
+getPulseCount(int64_t curtime, int64_t lasttime, _Atomic(uint32_t)* pcount, uint32_t *lastpcount){
   unsigned rpm;
   const float diffu = curtime - lasttime;
   rpm = *pcount;
