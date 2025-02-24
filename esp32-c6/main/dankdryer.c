@@ -86,7 +86,7 @@ static adc_cali_handle_t ADC1Calibration;
 
 static void
 pulse_isr(void* pulsecount){
-  uint32_t* pc = pulsecount;
+  _Atomic(uint32_t)* pc = pulsecount;
   ++*pc;
 }
 
