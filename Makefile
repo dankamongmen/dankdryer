@@ -11,7 +11,7 @@ SCADFLAGS=--hardwarnings --viewall --autocenter --imgsize=1920,1080 \
 # allow OSCAD (openscad binary) to be set externally
 OSCAD?=openscad
 
-all: firmware $(STL)
+all: firmware $(STL) $(IMAGES)
 
 images: $(IMAGES)
 
