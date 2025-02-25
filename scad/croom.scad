@@ -120,18 +120,18 @@ module mount(c, h, t){
 
 // width: mid2mid 65mm with M5 holes
 // length: mid2mid 90mm with M5 holes
+pcbmountc = 6;
 module pcbmounts(){
-	c = 6;
 	h = 6;
     translate([45, -0.95 * totalxy / 2 + mh + 10, 0]){
-        mount(c, h, "M5");
+        mount(pcbmountc, h, "M5");
         translate([-90, 0, 0]){
-            mount(c, h, "M5");
+            mount(pcbmountc, h, "M5");
         }
         translate([0, 65, 0]){
-            mount(c, h, "M5");
+            mount(pcbmountc, h, "M5");
             translate([-90, 0, 0]){
-                mount(c, h, "M5");
+                mount(pcbmountc, h, "M5");
             }
         }
     }
@@ -270,14 +270,29 @@ module croom(){
 }
 
 
-multicolor("green"){
+multicolor("blue"){
 	croom();
+}
+
+module pcb(){
+	pcbl = 100;
+	pcbw = 75;
+	pcbh = 1.6;
+	translate([0, -pcbw / 2 - 22, wallz + pcbmountc]){
+		rotate([0, 0, 180]){
+			import("dankdryer.stl");
+		}
+	}
 }
 
 /*
 // testing + full assemblage
 multicolor("white"){
     assembly();
+}
+
+multicolor("green"){
+	pcb();
 }
 
 multicolor("grey"){

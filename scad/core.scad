@@ -329,15 +329,15 @@ module platform(inr, outr){
 						}
 					}
 				} // cylinder to thin spokes
-				translate([0, 0, wallz + elevation / 2]){
-					cylinder(elevation, inr, outr, true);
+				translate([0, 0, platformtoph + wallz + 3]){
+					cylinder(elevation + wallz + platformtoph, outr - 20, outr, true);
 				}
 			}
 		}
 		cylinder(cupolah, cupolaw / 2, cupolaw / 2, true);
 	}
 }
-
+//	platform(platforminnerr, platformouterd / 2);
 shafth = platformh + 35;
 platformouterd = spoold / 2;
 
