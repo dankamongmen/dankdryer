@@ -24,7 +24,7 @@ jobs:
           cd $HOME/bin
           git clone --recurse-submodules https://github.com/espressif/esp-idf.git
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 

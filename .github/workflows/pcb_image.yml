@@ -6,14 +6,17 @@ jobs:
     name: render-image
     runs-on: ubuntu-latest
     steps:
+      - name: install deps
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y kicad
+
       - name: Check out the repo
         uses: actions/checkout@v4
 
       - name: render pcb image
-        uses: linalinn/kicad-render@main
-        with:
-          pcb_file: 'kicad/dankdryer.kicad_pcb'
-          output_path: ${{ github.workspace }}/images
+        run: |
+          kicad-cli pcb render --quality high --output ${{ github.workspace }}/images/pcb.png 'kicad/dankdryer.kicad_pcb'
         
       - name: Setup Pages
         if: github.ref == 'refs/heads/master'
