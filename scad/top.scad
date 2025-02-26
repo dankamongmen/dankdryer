@@ -9,7 +9,7 @@ module top(){
     translate([0, 0, toph]){
         difference(){
 			ScrewThread(innerr * 2, ttopz, tpitch);
-			translate([0, 0, ttopz]){
+			translate([0, 0, ttopz / 2]){
 				cylinder(ttopz, innerr - 4, innerr - 4, true);
 			}
         }
