@@ -4,7 +4,24 @@ use <croom.scad>
 use <coupling.scad>
 use <top.scad>
 
-multicolor("slategrey"){
+multicolor("lightgreen"){
+	translate([0, -109, -41]){
+		rotate([theta, 0, 0]){
+			rotate([0, 90, 90]){
+				scale(17){
+					import("noctua_nf-a12_fan.stl");
+				}
+			}
+		}
+	}
+}
+
+multicolor("black"){
+	drop(){
+		translate([0, 50, wallz + 7]){
+			acadapter();
+		}
+	}
 	translate([-110, -10, -60]){
 		rotate([0, 180 - theta, 0]){
 			intersection(){
@@ -22,6 +39,31 @@ multicolor("slategrey"){
 	}
 }
 
+multicolor("dimgrey"){
+    drop(){
+        croom();
+    }
+}
+
+multicolor("green"){
+	drop(){
+		pcb();
+	}
+}
+
+multicolor("lightblue"){
+    drop(){
+        assembly();
+    }
+}
+
+// top portion
+rotate([0, 0, $t]){
+	drop(){
+		spool();
+	}
+}
+
 multicolor("lightgreen"){
 	translate([0, 109, 43]){
 		rotate([0, 90, 90]){
@@ -30,35 +72,6 @@ multicolor("lightgreen"){
 			}
 		}
 	}
-	translate([0, -109, -41]){
-		rotate([theta, 0, 0]){
-			rotate([0, 90, 90]){
-				scale(17){
-					import("noctua_nf-a12_fan.stl");
-				}
-			}
-		}
-	}
-}
-
-multicolor("darkorchid"){
-	drop(){
-		translate([0, 50, wallz + 7]){
-			acadapter();
-		}
-	}
-}
-
-rotate([0, 0, $t]){
-	drop(){
-		spool();
-	}
-}
-
-multicolor("lightblue"){
-    drop(){
-        assembly();
-    }
 }
 
 multicolor("silver"){
@@ -73,13 +86,4 @@ multicolor("dimgrey"){
     rotate([0, 0, 180]){
         hotbox();
     }
-    drop(){
-        croom();
-    }
-}
-
-multicolor("green"){
-	drop(){
-		pcb();
-	}
 }
