@@ -19,19 +19,19 @@ module multicolor(color, opacity=1) {
 spoold = 205;
 spoolh = 75;
 spoolholed = 55;
-
+tpitch = 4;
 // we'll want some room around the spool,
 // but the larger our chamber, the more heat lost.
 wallz = 1.8; // bottom thickness; don't want much
 gapxy = 1; // gap between spool and walls; spool/walls might expand!
 wallxy = 5;
-topz = 5; // height of top piece
+ttopz = 10; // height of top piece
 // spool distance from floor and ceiling.
 elevation = (85 - spoolh) / 2;
 chordxy = 33;
 innerr = spoold / 2 + gapxy;
 totalxy = spoold + wallxy * 2 + gapxy * 2;
-totalz = spoolh + wallz + topz + elevation * 2;
+totalz = spoolh + wallz + ttopz + elevation * 2;
 totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 
 ctopz = wallz;

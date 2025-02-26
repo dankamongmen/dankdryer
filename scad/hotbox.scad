@@ -141,7 +141,7 @@ module upcorners(){
 
 module core(){
     translate([0, 0, wallz]){
-        linear_extrude(totalz - wallz - topz){
+        linear_extrude(totalz - wallz - ttopz){
             polygon(opoints);
         }
     }
@@ -241,12 +241,12 @@ module hotbox(){
         }
 		cornerscrews();
     }
-    translate([0, 0, totalz - topz]){
+    translate([0, 0, totalz - ttopz]){
 		// cut away top to get threading
 		ScrewHole(innerr * 2,
-				  topz,
-				  pitch = 2){
-			linear_extrude(topz){
+				  ttopz,
+				  pitch = tpitch){
+			linear_extrude(ttopz){
 				//difference(){
 				circle(innerr + 3);
 				//}

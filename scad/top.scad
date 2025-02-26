@@ -8,9 +8,9 @@ module top(){
     // a tight fit.
     translate([0, 0, toph]){
         difference(){
-			ScrewThread(innerr * 2, topz * 2, 2);
-			translate([0, 0, topz]){
-				cylinder(topz * 2, innerr - 4, innerr - 4, true);
+			ScrewThread(innerr * 2, ttopz, tpitch);
+			translate([0, 0, ttopz]){
+				cylinder(ttopz, innerr - 4, innerr - 4, true);
 			}
         }
     }
