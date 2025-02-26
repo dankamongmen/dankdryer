@@ -18,16 +18,21 @@ module multicolor(color, opacity=1) {
 // we need to hold a spool up to 205mm in diameter and 75mm wide
 spoold = 205;
 spoolh = 75;
+hotz = 80; // 80mm fan; use sin(theta)80
 spoolholed = 55;
-tpitch = 4;
+tpitch = 3; // multiple of 0.3 and 0.2
 // we'll want some room around the spool,
 // but the larger our chamber, the more heat lost.
 wallz = 1.8; // bottom thickness; don't want much
 gapxy = 1; // gap between spool and walls; spool/walls might expand!
 wallxy = 5;
-ttopz = 10; // height of top piece
+// height of threaded, mated section at the top
+// (and probably soon at the middle FIXME).
+// ensure it's a multiple of both 0.2 and 0.3 to
+// support both .4mm and .6mm nozzle layer heights.
+ttopz = 0.2 * 0.3 * 100; // 6mm
 // spool distance from floor and ceiling.
-elevation = (85 - spoolh) / 2;
+elevation = (hotz - spoolh) / 2;
 chordxy = 33;
 innerr = spoold / 2 + gapxy;
 totalxy = spoold + wallxy * 2 + gapxy * 2;
@@ -35,7 +40,7 @@ totalz = spoolh + wallz + ttopz + elevation * 2;
 totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 
 ctopz = wallz;
-croomz = wallz + ctopz + 80; // 80mm fan; ought just need sin(theta)80
+croomz = wallz + ctopz + hotz;
 
 // thickness of croom xy walls (bottom is wallz)
 croomwall = 3;
