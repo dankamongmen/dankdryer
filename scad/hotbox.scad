@@ -1,7 +1,5 @@
 // chamber for a high-temperature (150C) filament dryer
-// intended to be printed in polycarbonate + PAHT-CF
-// the top is lifted up and out to insert a spool
-// the spool sits on corner walls
+// intended to be printed in PA6-[CG]F.
 include <core.scad>
 use <threads.scad>
 
