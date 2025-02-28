@@ -235,14 +235,14 @@ module croom(){
 			}
 		}
 		//lcdset();
-		translate([0, -botalt + 3, (croomz + wallz) / 2]){
-			rotate([theta, 0, 0]){
-				fanhole(10);
-			}
-		}
 		fancablehole();
 		rockerhole();
 		antennahole();
+		translate([0, -botalt, (croomz + wallz) / 2]){
+			rotate([theta, 0, 0]){
+				fanhole(6);
+			}
+		}
 	}
 	croombottom(botrad, wallz);
 }

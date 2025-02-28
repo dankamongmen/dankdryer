@@ -112,16 +112,18 @@ module fanmountur(h){
     rotate([90, 0, 0]){
         // really want 4.3 but 4.5 is a multiple of
 		// 0.3, and these will be horizontal
-		ScrewThread(4.5, h, 3);
+		// FIXME
+		//ScrewThread(4.5, h, pitch=3);
+		cylinder(h, 4.5 / 2, 4.5 / 2, true);
     }
 }
 
 module fanmountsider(h, d){
-    translate([0, h / 2, d]){
+    translate([0, 0, d]){
         fanmountur(h);
     }
     mirror([0, 0, 1]){
-        translate([0, h / 2, d]){
+        translate([0, 0, d]){
             fanmountur(h);
         }
     }
