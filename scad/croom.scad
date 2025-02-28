@@ -75,7 +75,7 @@ module acadaptermount(l){
 // screw holes are 6mm in from sides, so they start at
 // 6mm (through 10mm) and 50mm (through 54mm)
 module acadapterscrews(l){
-	r = 5 / 2;
+	r = 4 / 2;
     translate([0, acadapterw, 0]){
         acadaptermount(l){
 			cylinder(l, r, r, true);
