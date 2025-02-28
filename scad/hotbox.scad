@@ -5,12 +5,11 @@ include <core.scad>
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5
 ceramheat230w = 77;
-module ceramheat230(height){
-	r = 3.5 / 2;
+module ceramheat230(rh, th){
+	d = 3.5;
     holegapw = 32;
 	holegapl = 52;
 	mounth = 2;
-	rh = height - mounth;
 	translate([-holegapw / 2, -holegapl / 2, mounth / 2]){
 		cube([5, 5, mounth], true);
 		translate([holegapw, 0, 0]){
@@ -23,16 +22,16 @@ module ceramheat230(height){
 			cube([5, 5, mounth], true);
 		}
 	}
-	translate([-holegapw / 2, -holegapl / 2, mounth + rh / 2]){
-		cylinder(rh, r, r, true);
+	translate([-holegapw / 2, -holegapl / 2, mounth]){
+		RodStart(d, rh, th, 0, 0.7);
 		translate([holegapw, 0, 0]){
-			cylinder(rh, r, r, true);
+			RodStart(d, rh, th, 0, 0.7);
 			translate([0, holegapl, 0]){
-				cylinder(rh, r, r, true);
+				RodStart(d, rh, th, 0, 0.7);
 			}
 		}
 		translate([0, holegapl, 0]){
-			cylinder(rh, r, r, true);
+			RodStart(d, rh, th, 0, 0.7);
 		}
 	}
 }
@@ -229,7 +228,7 @@ module hotbox(){
 			// spool, and closer to the perimeter
 			// than the center.
 			translate([0, totalxy / 4 + 8, wallz]){
-				ceramheat230(9); // 2mm + 1mm + 5mm
+				ceramheat230(1, 5);
 			}
         }
         // now remove all other interacting pieces
