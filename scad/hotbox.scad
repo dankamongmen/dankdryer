@@ -7,21 +7,35 @@ use <threads.scad>
 // holes: 28.3/48.6 3.5
 ceramheat230w = 77;
 module ceramheat230(height){
-	r = 3.5;
+	r = 3.5 / 2;
     holegapw = 32;
 	holegapl = 52;
-    translate([-holegapw / 2, -holegapl / 2, 0]){
-        screw("M4", length = height);
-        translate([holegapw, 0, 0]){
-            screw("M4", length = height);
-            translate([0, holegapl, 0]){
-                screw("M4", length = height);
-            }
-        }
-        translate([0, holegapl, 0]){
-            screw("M4", length = height);
-        }
-    }
+	mounth = 2;
+	rh = height - mounth;
+	translate([-holegapw / 2, -holegapl / 2, mounth / 2]){
+		cube([5, 5, mounth], true);
+		translate([holegapw, 0, 0]){
+			cube([5, 5, mounth], true);
+			translate([0, holegapl, 0]){
+				cube([5, 5, mounth], true);
+			}
+		}
+		translate([0, holegapl, 0]){
+			cube([5, 5, mounth], true);
+		}
+	}
+	translate([-holegapw / 2, -holegapl / 2, mounth + rh / 2]){
+		cylinder(rh, r, r, true);
+		translate([holegapw, 0, 0]){
+			cylinder(rh, r, r, true);
+			translate([0, holegapl, 0]){
+				cylinder(rh, r, r, true);
+			}
+		}
+		translate([0, holegapl, 0]){
+			cylinder(rh, r, r, true);
+		}
+	}
 }
 
 // three small holes for the thermometer's leads
@@ -195,10 +209,10 @@ module hotbox(){
             bottom(wallz);
             difference(){
                 core();
-                // cut away top corners to reduce material costs
+                // cut away top corners
                 upcorners();
             }
-        }
+		}
         /*translate([-42, -40, 0]){
             rc522holes(wallz);
 	    }*/
@@ -207,11 +221,20 @@ module hotbox(){
         // we want to clear everything in the central
         // cylinder from the floor up.
         cheight = totalz - wallz;
-        translate([0, 0, cheight / 2 + wallz]){
-            cylinder(cheight, innerr, innerr, true, $fn=256);
+		difference(){
+			translate([0, 0, cheight / 2 + wallz]){
+				cylinder(cheight, innerr, innerr, true, $fn=256);
+			}
+			// mounts for the ceramic heating element.
+			// we want it entirely underneath the
+			// spool, and closer to the perimeter
+			// than the center.
+			translate([0, totalxy / 4 + 8, wallz]){
+				ceramheat230(6);
+			}
         }
         // now remove all other interacting pieces
-        // 80x80mm worth of air passage cut into the floor
+        // 80x80mm worth of air passage
         floorcuts();
         mirror([1, 0, 0]){
             floorcuts();
@@ -223,12 +246,6 @@ module hotbox(){
         // central column
         translate([0, 0, wallz / 2]){
             cylinder(wallz, columnr, columnr, true);
-        }
-        // screw holes for the ceramic heating element.
-        // we want it entirely underneath the spool, but
-        // further towards the perimeter than the center.
-        translate([0, totalxy / 4 + 8, wallz / 2]){
-            ceramheat230(wallz);
         }
         // hole and mounts for 175C thermocouple and
 		// heating element wires
