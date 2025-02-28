@@ -252,12 +252,6 @@ multicolor("lightblue"){
 	croom();
 }
 
-/*
-// testing + full assemblage
-multicolor("white"){
-    assembly();
-}
-
 module pcb(){
 	pcbl = 100;
 	pcbw = 75;
@@ -269,14 +263,20 @@ module pcb(){
 	}
 }
 
-multicolor("green"){
-	pcb();
-}
-
 module acadapter(){
 	translate([0, 0, acadapterh / 2]){
 		cube([acadapterl, acadapterw, acadapterh], true);
 	}
+}
+
+/*
+// testing + full assemblage
+multicolor("white"){
+    assembly();
+}
+
+multicolor("green"){
+	pcb();
 }
 
 multicolor("grey"){
