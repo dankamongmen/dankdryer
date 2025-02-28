@@ -67,10 +67,7 @@ acadapterl = 135;
 acmounth = 7;
 module acadaptermount(l){
     translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz + l / 2]){
-        difference(){
-            cube([7, 7, l], true);
-			children();
-        }
+        children();
     }
 }
 
@@ -78,20 +75,17 @@ module acadaptermount(l){
 // screw holes are 6mm in from sides, so they start at
 // 6mm (through 10mm) and 50mm (through 54mm)
 module acadapterscrews(l){
-    translate([0, 50, 0]){
+	r = 5 / 2;
+    translate([0, acadapterw, 0]){
         acadaptermount(l){
-			screw("M5", length = l, thread=true);
+			cylinder(l, r, r, true);
 		}
         mirror([0, 1, 0]){
-            acadaptermount(l);
 			mirror([1, 0, 0]){
                 acadaptermount(l){
-					screw("M5", length = l, thread=true);
+					cylinder(l, r, r, true);
 				}
             }
-        }
-        mirror([1, 0, 0]){
-            acadaptermount(l);
         }
     }
 }
@@ -108,12 +102,15 @@ module fullmount(c, h){
 	}
 }
 
-// M4 screw hole through a cXcXh cube.
+// 3mm square bottom plus (h - 3mm) M5 riser
 module mount(c, h, t){
-	difference(){
-		fullmount(c, h);
-		translate([0, 0, wallz + h / 2]){
-			screw(t, length = wallz + h, thread=true);
+	mounth = 3;
+	riserh = h - mounth;
+	r = 5 / 2;
+	translate([0, 0, wallz + mounth / 2]){
+		cube([r * 2 + 1, r * 2 + 1, mounth], true);
+		translate([0, 0, mounth + riserh / 2]){
+			cylinder(riserh, r, r, true);
 		}
 	}
 }
