@@ -18,7 +18,9 @@ module multicolor(color, opacity=1) {
 // we need to hold a spool up to 205mm in diameter and 75mm wide
 spoold = 205;
 spoolh = 75;
-hotz = 80; // 80mm fan; use sin(theta)80
+// 80mm fan; use sin(theta)80 if we're sloped.
+// 81 is a multiple of both 0.3 and 0.2.
+hotz = 81;
 spoolholed = 55;
 tpitch = 3; // multiple of 0.3 and 0.2
 // we'll want some room around the spool,
