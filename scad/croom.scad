@@ -54,48 +54,6 @@ module corners(){
 	}
 }
 
-module rot(deg){
-    rotate([theta + deg, 0, 0]){
-        children();
-    }
-}
-
-//acadapterh = 30;
-acadapterh = 22;
-acadapterw = 50;
-acadapterl = 135;
-acmounth = 7;
-module acadaptermount(l){
-    translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz + l / 2]){
-        children();
-    }
-}
-
-// 60mm wide total
-// screw holes are 6mm in from sides, so they start at
-// 6mm (through 10mm) and 50mm (through 54mm)
-module acadapterscrews(l){
-	r = 4 / 2;
-    translate([0, acadapterw, 0]){
-        acadaptermount(l){
-			cylinder(l, r, r, true);
-		}
-        mirror([0, 1, 0]){
-			mirror([1, 0, 0]){
-                acadaptermount(l){
-					cylinder(l, r, r, true);
-				}
-            }
-        }
-    }
-}
-
-module acadapter(){
-	translate([0, 0, acadapterh / 2]){
-		cube([acadapterl, acadapterw, acadapterh], true);
-	}
-}
-
 module fullmount(c, h){
 	translate([0, 0, wallz + h / 2]){
 		cube([c, c, h], true);
@@ -167,6 +125,32 @@ module rockerhole(){
 			cube([croomwall + 2, rockerw, rockerh], true);
 		}
 	}
+}
+
+//acadapterh = 30; // old model
+acadapterh = 22;
+acadapterw = 50;
+acadapterl = 135;
+acmounth = locknuth + 1; // 6mm, multiple of .3
+module acadaptermount(l){
+	d = 4; // M4
+    translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz]){
+		RodStart(d, l - locknuth, locknuth, 0, 0.7);
+    }
+}
+
+// 60mm wide total
+// screw holes are 6mm in from sides, so they start at
+// 6mm (through 10mm) and 50mm (through 54mm)
+module acadapterscrews(l){
+    translate([0, acadapterw, 0]){
+        acadaptermount(l);
+        mirror([0, 1, 0]){
+			mirror([1, 0, 0]){
+                acadaptermount(l);
+            }
+        }
+    }
 }
 
 module croombottom(rad, z){
@@ -264,8 +248,14 @@ module croom(){
 }
 
 
-multicolor("blue"){
+multicolor("lightblue"){
 	croom();
+}
+
+/*
+// testing + full assemblage
+multicolor("white"){
+    assembly();
 }
 
 module pcb(){
@@ -279,14 +269,14 @@ module pcb(){
 	}
 }
 
-/*
-// testing + full assemblage
-multicolor("white"){
-    assembly();
-}
-
 multicolor("green"){
 	pcb();
+}
+
+module acadapter(){
+	translate([0, 0, acadapterh / 2]){
+		cube([acadapterl, acadapterw, acadapterh], true);
+	}
 }
 
 multicolor("grey"){

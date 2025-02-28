@@ -45,6 +45,8 @@ totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 ctopz = wallz;
 croomz = wallz + ctopz + hotz;
 
+locknuth = 5; // locknuts go atop mounting rods
+
 // thickness of croom xy walls (bottom is wallz)
 croomwall = 3;
 // the outer radii on our top and bottom
@@ -93,6 +95,12 @@ module foursquare(){
 		}
     }
     mirror([0, 1, 0]){
+        children();
+    }
+}
+
+module rot(deg){
+    rotate([theta + deg, 0, 0]){
         children();
     }
 }
