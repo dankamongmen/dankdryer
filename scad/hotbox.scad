@@ -229,7 +229,7 @@ module hotbox(){
 			// spool, and closer to the perimeter
 			// than the center.
 			translate([0, totalxy / 4 + 8, wallz]){
-				ceramheat230(6);
+				ceramheat230(9); // 2mm + 1mm + 5mm
 			}
         }
         // now remove all other interacting pieces
