@@ -78,6 +78,7 @@ static uint32_t LastLowerRPM, LastUpperRPM;
 static _Atomic(uint32_t) HallPulses, LowerFanPulses, UpperFanPulses;
 
 // ESP-IDF objects
+static bool NAUAvailable;
 static bool ADC1Calibrated;
 static led_strip_handle_t Neopixel;
 static adc_oneshot_unit_handle_t ADC1;
@@ -507,6 +508,9 @@ getAmbient(void){
 
 float getWeight(void){
   int32_t v;
+  if(!NAUAvailable){
+    return -1.0;
+  }
   if(nau7802_read(NAU7802, &v) || v < 0){
     fprintf(stderr, "bad nau7802 read %ld\n", v);
     return -1.0;
@@ -968,6 +972,8 @@ setup(adc_channel_t* thermchan){
   }
   if(setup_nau7802(I2CMaster)){
     set_failure(&SystemError);
+  }else{
+    NAUAvailable = true;
   }
   if(setup_heater(SSR_GPIN)){
     set_failure(&SystemError);
