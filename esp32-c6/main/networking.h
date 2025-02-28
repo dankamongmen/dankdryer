@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <soc/gpio_num.h>
 
-#define VERSION "1.3.1"
+#define VERSION "1.8.0"
 #define DEVICE "dankdryer"
 
 int setup_network(void);

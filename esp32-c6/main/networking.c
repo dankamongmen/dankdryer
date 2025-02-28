@@ -40,6 +40,7 @@ static const ble_uuid128_t setup_state_chr_uuid =
 #define TARE_CHANNEL CCHAN DEVICE "/tare"
 #define CALIBRATE_CHANNEL CCHAN DEVICE "/calibrate"
 #define FACTORYRESET_CHANNEL CCHAN DEVICE "/factoryreset"
+// FIXME stir in some per-device data
 #define CLIENTID DEVICE VERSION
 
 static httpd_handle_t HTTPServ;
@@ -104,7 +105,6 @@ static const esp_mqtt_client_config_t MQTTConfig = {
   },
   .credentials = {
     .username = MQTTUSER,
-    // FIXME set client id, but stir in some per-device data
     .authentication = {
       .password = MQTTPASS,
     },
@@ -250,6 +250,19 @@ subscribe(esp_mqtt_client_handle_t handle, const char* chan){
   }
 }
 
+// home assistant autodiscovery message
+static void
+mqtt_publish_hadiscovery(void){
+  #define DISCOVERYPREFIX "homeassistant/" // FIXME can be changed in HA
+  static const char topic[] = DISCOVERYPREFIX "device/" CLIENTID "/config";
+  static const char s[] = "";
+  size_t slen = strlen(s);
+  printf("HADiscovery: %s\n", s);
+  if(esp_mqtt_client_publish(MQTTHandle, topic, s, slen, 0, 0)){
+    fprintf(stderr, "couldn't publish %zuB mqtt message\n", slen);
+  }
+}
+
 static void
 mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   if(id == MQTT_EVENT_CONNECTED){
@@ -262,6 +275,7 @@ mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
     subscribe(MQTTHandle, TARE_CHANNEL);
     subscribe(MQTTHandle, CALIBRATE_CHANNEL);
     subscribe(MQTTHandle, FACTORYRESET_CHANNEL);
+    mqtt_publish_hadiscovery();
   }else if(id == MQTT_EVENT_DATA){
     handle_mqtt_msg(data);
   }else{
