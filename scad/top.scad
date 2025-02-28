@@ -39,7 +39,7 @@ module top(){
 					}
 				}
 				translate([0, 0, hhw * 4]){
-					cube(hhw * 6, true);
+					cube(hhw * 5, true);
 				}
 			}
 		}

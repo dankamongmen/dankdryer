@@ -130,9 +130,6 @@ module pcbmounts(){
         }
         translate([0, 65, 0]){
             mount(pcbmountc, h, "M5");
-            translate([-90, 0, 0]){
-                mount(pcbmountc, h, "M5");
-            }
         }
     }
 }

@@ -75,7 +75,7 @@ multicolor("lightgreen"){
 }
 
 multicolor("silver"){
-    translate([0, 0, totalz + 4]){
+    translate([0, 0, totalz + 2]){
         mirror([0, 0, 1]){
             top();
         }
