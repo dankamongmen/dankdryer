@@ -1,7 +1,6 @@
 // chamber for a high-temperature (150C) filament dryer
 // intended to be printed in PA6-[CG]F.
 include <core.scad>
-use <threads.scad>
 
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5

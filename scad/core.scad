@@ -1,5 +1,6 @@
 include <BOSL2/std.scad>
 include <BOSL2/screws.scad>
+use <threads.scad>
 
 $fn = 128;
 
@@ -96,22 +97,23 @@ module foursquare(){
     }
 }
 
-// spacing between the 4.3mm diameter holes is 71.5mm, so
-// 8.5 / 2 == 4.25 from hole center to side. triangle with
-// bases 2 * 8.5 == 17
+// spacing between the 4.3mm diameter holes is
+// 71.5mm, so 8.5 / 2 == 4.25 from hole center
+// to side. triangle with bases 2 * 8.5 == 17
 module fanmountur(h){
     rotate([90, 0, 0]){
-        // really want 4.3 hrmmm
-        screw("M4", length = h);
+        // really want 4.3 but 4.5 is a multiple of
+		// 0.3, and these will be horizontal
+		ScrewThread(4.5, h, 3);
     }
 }
 
 module fanmountsider(h, d){
-    translate([0, 0, d]){
+    translate([0, h / 2, d]){
         fanmountur(h);
     }
     mirror([0, 0, 1]){
-        translate([0, 0, d]){
+        translate([0, h / 2, d]){
             fanmountur(h);
         }
     }
@@ -130,12 +132,16 @@ module fanmounts(h){
     }
 }
 
+//fanmounts(9);
+
 module fanhole(h){
     rotate([90, 0, 0]){
         cylinder(h, 80 / 2, 80 / 2, true);
     }
-    fanmounts(2 * h / 3);
+    fanmounts(h);
 }
+
+//fanhole(9);
 
 loadcellh = 12.7;
 //loadcelll = 76;
