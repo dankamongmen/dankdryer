@@ -103,7 +103,7 @@ module fullmount(c, h){
 }
 
 // 3mm square bottom plus (h - 3mm) M5 riser
-module mount(c, h, t){
+module mount(c, h){
 	mounth = 3;
 	riserh = h - mounth;
 	r = 5 / 2;
@@ -119,14 +119,14 @@ module mount(c, h, t){
 // length: mid2mid 90mm with M5 holes
 pcbmountc = 6;
 module pcbmounts(){
-	h = 6;
+	h = 10; // 3mm + 5mm locknut + 2mm PCB
     translate([45, -0.95 * totalxy / 2 + mh + 10, 0]){
-        mount(pcbmountc, h, "M5");
+        mount(pcbmountc, h);
         translate([-90, 0, 0]){
-            mount(pcbmountc, h, "M5");
+            mount(pcbmountc, h);
         }
         translate([0, 65, 0]){
-            mount(pcbmountc, h, "M5");
+            mount(pcbmountc, h);
         }
     }
 }
