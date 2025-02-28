@@ -109,7 +109,7 @@ module mount(c, h, t){
 	r = 5 / 2;
 	translate([0, 0, wallz + mounth / 2]){
 		cube([r * 2 + 1, r * 2 + 1, mounth], true);
-		translate([0, 0, mounth + riserh / 2]){
+		translate([0, 0, (mounth + riserh) / 2]){
 			cylinder(riserh, r, r, true);
 		}
 	}
