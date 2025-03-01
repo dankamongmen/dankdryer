@@ -531,5 +531,43 @@ module spool(){
 	}
 }
 
+// cantilevers that grow from the top of the croom,
+// and are cut away from the bottom of the hotbox.
+// these are used to join the two pieces.
+midcantih = wallz * 2;
+module midcanti(){
+	cube([wallz, 2 * topalt / 3, midcantih], true);
+	translate([midcantih / 4, 0, -midcantih / 4]){
+		rotate([0, 90, 0]){
+			cube([wallz, 2 * topalt / 3, midcantih], true);
+		}
+	}
+}
+
+module midcantis(dist){
+	mirror([0, 0, 1]){
+		translate([-dist, 0, 0]){
+			midcanti();
+		}
+		translate([0, -dist, 0]){
+			rotate([0, 0, 90]){
+				midcanti();
+			}
+		}
+		translate([dist, 0, 0]){
+			rotate([0, 0, 180]){
+				midcanti();
+			}
+		}
+		translate([0, dist, 0]){
+			rotate([0, 0, 270]){
+				midcanti();
+			}
+		}
+	}
+}
+
+//midcantis(topalt / 2);
+
 //spool();
 //assembly();
