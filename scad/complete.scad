@@ -22,7 +22,7 @@ multicolor("black"){
 			acadapter();
 		}
 	}
-	translate([-110, -10, -60]){
+	translate([-110, -30, -60]){
 		rotate([0, 180 - theta, 0]){
 			intersection(){
 				rotate([270, 0, 0]){
