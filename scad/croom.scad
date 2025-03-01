@@ -107,7 +107,7 @@ module fancablehole(){
     translate([-40, botinalt + croomwall / 2, croomz]){
 		rotate([180 - theta, 0, 0]){
             rotate([90, 0, 0]){
-                cylinder(croomwall, 5, 5, true);
+                cylinder(10, 5, 5, true);
             }
         }
     }
@@ -117,10 +117,12 @@ module fancablehole(){
 // https://www.amazon.com/dp/B0CW2XJ339
 // 45.7mm wide, 20mm high. if we can't print
 // the bridge, we'll have to reorient it.
-rockerh = 20;
+// model with fuse is 30mm
+//rockerh = 20;
+rockerh = 30;
 rockerw = 45.7;
-module rockerhole(){
-	translate([-botinalt - 2, botinalt / 3 - 15, rockerh / 2 + 15]){
+module rockerhole(iech){
+	translate([-botinalt - 2, 0, iech / 2 + 15]){
 	    rotate([0, 180 - theta, 0]){
 			cube([croomwall + 2, rockerw, rockerh], true);
 		}
@@ -225,7 +227,7 @@ module croomcore(){
 		rounding2 = topround);
 }
 
-module croom(){
+module croom(iech = 20){
 	difference(){
 		difference(){
 			croomcore();
@@ -236,11 +238,11 @@ module croom(){
 		}
 		//lcdset();
 		fancablehole();
-		rockerhole();
+		rockerhole(iech);
 		antennahole();
 		translate([0, -botalt, (croomz + wallz) / 2]){
 			rotate([theta, 0, 0]){
-				fanhole(6);
+				fanhole(10);
 			}
 		}
 	}
@@ -249,7 +251,7 @@ module croom(){
 
 
 multicolor("lightblue"){
-	croom();
+	croom(rockerh);
 }
 
 module pcb(){

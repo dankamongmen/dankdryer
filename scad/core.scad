@@ -60,8 +60,8 @@ topalt = toprad / sqrt(2);
 botalt = botrad / sqrt(2);
 topinalt = topinrad / sqrt(2);
 botinalt = botinrad / sqrt(2);
-botround = 70;
-topround = 30;
+botround = 90;
+topround = 70;
 adj = (botrad - toprad) / sqrt(2);
 theta = (90 - atan(-croomz / adj));
 
