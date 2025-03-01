@@ -1,0 +1,57 @@
+#!/bin/sh
+
+set -e
+
+ESSIDUUID=00002b29-0000-1000-8000-00805f9b34fb
+PSKUUID=00002b3a-0000-1000-8000-00805f9b34fb
+MQTTUUID=00002a05-0000-1000-8000-00805f9b34fb
+
+# probably need to accept arguments to pass to bluetoothctl, so adapter
+# can be chosen etc. FIXME
+
+ID=dankdryer
+
+usage () {
+  echo "usage: $(basename $0) ESSID PSK [mqttbroker]"
+}
+
+[ $# -ge 2 ] || { usage >&2 ; exit 1 ; }
+[ $# -le 3 ] || { usage >&2 ; exit 1 ; }
+
+ESSID="$1"
+PSK="$2"
+MQTT="$3"
+
+echo -n "Using controller:"
+bluetoothctl show
+
+DELAY=10 # FIXME
+echo -n "Starting ${DELAY}s BLE scan..."
+bluetoothctl -t $DELAY scan le
+echo
+
+echo -n "Looking for device '$ID'..."
+# FIXME might match multiple items
+DEV=$(bluetoothctl devices | grep " $ID" | cut -d\  -f2-)
+[ -n "$DEV" ] || { echo "Couldn't find device" >&2 ; exit 1 ; }
+MAC=$(echo $DEV | cut -d\  -f1)
+DEV=$(echo $DEV | cut -d\  -f2)
+echo
+
+echo -n "Connecting to $DEV at $MAC..."
+bluetoothctl connect "$MAC"
+echo
+
+echo "Listing characteristics..."
+bluetoothctl gatt.list-attributes
+
+echo -n "Reading current ESSID..."
+printf "gatt.select-attribute $ESSIDUUID\ngatt.read" | bluetoothctl
+
+echo -n "Reading current PSK..."
+printf "gatt.select-attribute $PSKUUID\ngatt.read" | bluetoothctl
+
+echo -n "Reading current MQTT..."
+printf "gatt.select-attribute $MQTTUUID\ngatt.read" | bluetoothctl
+
+# FIXME write new values
