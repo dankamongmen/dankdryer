@@ -95,19 +95,6 @@ module floorcuts(){
     }
 }
 
-module cornerscrew(){
-	side = 50;
-	translate([totalxy / 2 - 14, totalxy / 2 - 14, 2 * side / 6]){
-		screw("M5", length = 2 * side / 3);
-	}
-}
-
-module cornerscrews(){
-	foursquare(){
-		cornerscrew();
-	}
-}
-
 module upcorner(){
     side = 40;
     t = totalxy / 2;
@@ -157,14 +144,14 @@ module core(){
     }
 }
 
-module bottom(z){
+module bottom(z, tround){
 	br = botrad * sqrt(2);
 	tr = toprad * sqrt(2);
 	prismoid(size1=[br, br],
 		size2=[tr, tr],
 		h=z,
 		rounding1 = topround,
-		rounding2 = topround);
+		rounding2 = tround);
 }
 
 // hole and mounts for 175C thermocouple
@@ -184,32 +171,18 @@ module thermohole(){
     }
 }
 
-module rc522side(l){
-    holer = 3.1 / 2;
-    translate([-35.5 / 2 - holer, -32.25 / 2 - holer, l / 2]){
-        screw("M4", length = l);
-    }
-    translate([34 / 2 + holer, -22.25 / 2 - holer, l / 2]){
-        screw("M4", length = l);
-    }
-}
-
-module rc522holes(l){
-    rc522side(l);
-    mirror([0, 1, 0]){
-        rc522side(l);
-    }
-}
-
 module hotbox(){
     difference(){
         union(){
-            bottom(wallz);
-            difference(){
-                core();
-                // cut away top corners
-                upcorners();
-            }
+            bottom(wallz, topround);
+			intersection(){
+				bottom(totalz, botround);
+				difference(){
+					core();
+					// cut away top corners
+					upcorners();
+				}
+			}
 		}
         /*translate([-42, -40, 0]){
             rc522holes(wallz);
@@ -252,7 +225,6 @@ module hotbox(){
                 thermohole();
             }
         }
-		cornerscrews();
     }
     translate([0, 0, totalz - ttopz]){
 		// cut away top to get threading
