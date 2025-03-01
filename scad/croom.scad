@@ -247,6 +247,9 @@ module croom(iech = 20){
 		}
 	}
 	croombottom(botrad, wallz);
+	translate([0, 0, croomz + midcantih / 2]){
+		midcantis(topalt - wallz / 2);
+	}
 }
 
 
