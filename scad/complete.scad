@@ -41,7 +41,7 @@ multicolor("black"){
 
 multicolor("dimgrey"){
     drop(){
-        croom();
+        croom(20);
     }
 }
 
