@@ -544,30 +544,5 @@ module midcanti(){
 	}
 }
 
-module midcantis(dist){
-	mirror([0, 0, 1]){
-		translate([-dist, 0, 0]){
-			midcanti();
-		}
-		translate([0, -dist, 0]){
-			rotate([0, 0, 90]){
-				midcanti();
-			}
-		}
-		translate([dist, 0, 0]){
-			rotate([0, 0, 180]){
-				midcanti();
-			}
-		}
-		translate([0, dist, 0]){
-			rotate([0, 0, 270]){
-				midcanti();
-			}
-		}
-	}
-}
-
-//midcantis(topalt / 2);
-
 //spool();
 //assembly();

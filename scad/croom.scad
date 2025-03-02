@@ -133,7 +133,7 @@ module rockerhole(iech){
 acadapterh = 22;
 acadapterw = 50;
 acadapterl = 135;
-acmounth = locknuth + 1; // 6mm, multiple of .3
+acmounth = locknuth + 2.5; // 7.5mm
 module acadaptermount(l){
 	d = 4; // M4
     translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz]){
@@ -162,57 +162,6 @@ module croombottom(rad, z){
         loadcellmount(loadcellmounth);
     }
 	pcbmounts();
-}
-
-// ST7789V
-lcdh = 37;
-lcdw = 62; // total width (including mounts)
-lcdaw = 51.5; // visible width
-lcdt = 23; // thickness of mounts
-module lcd(){
-	lcdmt = 4;
-	// 2.6mm diameter
-	//3.25 + 3.4 mm offsets
-	// want four circular mounts
-	translate([-4, -lcdaw / 2, 0]){
-		difference(){
-			cube([lcdmt, (lcdw - lcdaw) / 2, lcdh], true);
-			translate([0, -1.5, 15]){
-				rotate([0, 90, 0]){
-					cylinder(2, 1, 1);
-				}
-			}
-			translate([0, -1.5, -15]){
-				rotate([0, 90, 0]){
-					cylinder(2, 1, 1);
-				}
-			}
-		}
-	}
-	cube([lcdt, lcdaw, lcdh], true);
-	translate([-4, lcdaw / 2, 0]){
-		difference(){
-			cube([lcdmt, (lcdw - lcdaw) / 2, lcdh], true);
-			translate([0, 1.5, 15]){
-				rotate([0, 90, 0]){
-					cylinder(2, 1, 1);
-				}
-			}
-			translate([0, 1.5, -15]){
-				rotate([0, 90, 0]){
-					cylinder(2, 1, 1);
-				}
-			}
-		}
-	}
-}
-
-module lcdset(){
-	translate([botinalt, 0, croomz - lcdh / 2 - 10]){
-		rotate([0, 180 + theta, 0]){
-			lcd();
-		}
-	}
 }
 
 // the fundamental structure (hollow frustrum
@@ -247,9 +196,6 @@ module croom(iech = 20){
 		}
 	}
 	croombottom(botrad, wallz);
-	translate([0, 0, croomz + midcantih / 2]){
-		midcantis(topalt - wallz / 2);
-	}
 }
 
 
