@@ -195,6 +195,9 @@ module croom(iech = 20){
 			}
 		}
 	}
+	translate([0, 0, croomz]){
+		chamberconnector();
+	}
 	croombottom(botrad, wallz);
 }
 

@@ -227,6 +227,8 @@ module hotbox(){
                 thermohole();
             }
         }
+		// cut out the frictionfit plug
+		chamberplug();
     }
     translate([0, 0, totalz - ttopz]){
 		// cut away top to get threading

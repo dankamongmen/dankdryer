@@ -544,5 +544,46 @@ module midcanti(){
 	}
 }
 
+// friction-fit connector for croom+hotbox
+chamberconnh = 3 * wallz / 2;
+chamberconnw = wallz;
+chamberconnd = toprad * sqrt(2) - wallz * 2;
+module chamberconnector(){
+	difference(){
+		d = chamberconnd + chamberconnw;
+		id = chamberconnd;
+		prismoid(size1=[d, d],
+			size2=[d, d],
+			h=chamberconnh,
+			rounding1 = topround,
+			rounding2 = topround);
+		prismoid(size1=[id, id],
+			size2=[id, id],
+			h=chamberconnh,
+			rounding1 = topround,
+			rounding2 = topround);
+	}
+}
+//chamberconnector();
+
+// chamberconnector, with a bit of give
+module chamberplug(){
+	friction = 0.08;
+	difference(){
+		d = chamberconnd + chamberconnw + friction;
+		id = chamberconnd - friction;
+		prismoid(size1=[d, d],
+			size2=[d, d],
+			h=chamberconnh + friction,
+			rounding1 = topround,
+			rounding2 = topround);
+		prismoid(size1=[id, id],
+			size2=[id, id],
+			h=chamberconnh + friction,
+			rounding1 = topround,
+			rounding2 = topround);
+	}
+}
+
 //spool();
 //assembly();
