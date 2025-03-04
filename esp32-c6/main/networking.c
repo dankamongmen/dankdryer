@@ -256,6 +256,7 @@ mqtt_publish_hadiscovery(void){
   #define DISCOVERYPREFIX "homeassistant/" // FIXME can be changed in HA
   static const char topic[] = DISCOVERYPREFIX "device/" CLIENTID "/config";
   static const char s[] = "";
+  // FIXME set up discovery message
   size_t slen = strlen(s);
   printf("HADiscovery: %s\n", s);
   if(esp_mqtt_client_publish(MQTTHandle, topic, s, slen, 0, 0)){

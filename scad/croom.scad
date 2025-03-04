@@ -176,6 +176,17 @@ module croomcore(){
 		rounding2 = topround);
 }
 
+module hotboxplug(){
+	translate([0, botrad * sqrt(2) / 2 + 1.5, croomz]){
+		translate([20, 0, 0]){
+			chamberplug();
+		}
+		translate([-20, 0, 0]){
+			chamberplug();
+		}
+	}
+}
+
 module croom(iech = 20){
 	difference(){
 		difference(){
@@ -189,15 +200,19 @@ module croom(iech = 20){
 		fancablehole();
 		rockerhole(iech);
 		antennahole();
-		translate([0, -botalt, (croomz + wallz) / 2]){
+		translate([0, -botalt, croomz / 2]){
 			rotate([theta, 0, 0]){
 				fanhole(10);
 			}
 		}
 	}
-	translate([0, 0, croomz]){
-		chamberconnector();
+	rotate([0, 0, 90]){
+		hotboxplug();
+		rotate([0, 0, 90]){
+			hotboxplug();
+		}
 	}
+	hotboxplug();
 	croombottom(botrad, wallz);
 }
 
