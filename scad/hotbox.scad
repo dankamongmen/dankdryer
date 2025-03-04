@@ -36,8 +36,8 @@ module ceramheat230(rh, th){
 	}
 }
 
-// three small holes for the thermometer's leads
-module thermholes(h){
+// three small holes for throughhole leads
+module throughholes(x, y, h){
 	translate([-40, 10, h / 2]){
 		cylinder(h, 1, 1, true);
 		translate([2, -2, 0]){
@@ -49,26 +49,15 @@ module thermholes(h){
 	}
 }
 
-// three small holes for the hall sensor's leads
-module hallholes(h){
-	translate([-35, 15, h / 2]){
-		cylinder(h, 1, 1, true);
-		translate([2, -2, 0]){
-			cylinder(h, 1, 1, true);
-			translate([2, -2, 0]){
-				cylinder(h, 1, 1, true);
-			}
-		}
-	}
-}
-
-// 2500mm² worth of air passage through one side of floor.
-// the fan is 80mm x 80mm, suggesting 6400 (and thus 3200 per
-// side), but it's actually only π40² or ~5027.
+// 2500mm² worth of air passage through one side
+// of floor. the fan is 80mm x 80mm, suggesting
+// 6400 (and thus 3200 per side), but it's actually
+// only π40² ~= 5027.
 module floorcuts(){
     d = wallz;
-    // all floor holes ought be in the actual hotbox, not under
-    // the infill (which would cause support problems anyway).
+    // all floor holes ought be in the actual
+	// hotbox, not under the infill (which would
+	// cause support problems anyway).
     intersection(){
         translate([0, 0, d / 2]){
             cylinder(d, totalxy / 2 - 5, totalxy / 2 - 5, true);
@@ -103,37 +92,12 @@ module upcorner(){
             cylinder(side * 3, side / 3, side / 2, true, $fn = 4);
         }
     }
-	// trim the two fat areas in quadrant I
-	// these eight areas might in the future
-	// become siting areas for dessicants...
-	// FIXME seems to *increase* material cost?!
-	/*
-	hheight = totalz / 2;
-	translate([t, t, totalz - hheight]){
-		linear_extrude(hheight){
-			polygon([[-(side - 5), -5],
-					[-side * 2, -5],
-					[-(side - 5), -25]]);
-			polygon([[-5, -(side - 5)],
-					[-5, -side * 2],
-					[-25, -(side - 5)]]);
-		}
-	}*/
 }
 
 module upcorners(){
-    upcorner();
-    mirror([0, 1, 0]){
-        upcorner();
-    }
-    mirror([1, 0, 0]){
-        upcorner();
-    }
-    mirror([0, 1, 0]){
-        mirror([1, 0, 0]){
-            upcorner();
-        }
-    }
+	foursquare(){
+		upcorner();
+	}
 }
 
 module core(){
@@ -154,8 +118,6 @@ module bottom(z, tround){
 		rounding2 = tround);
 }
 
-
-
 // hole and mounts for 175C thermocouple
 // and heating element wires
 module thermohole(){
@@ -164,13 +126,25 @@ module thermohole(){
     w = 6;
     cylinder(wallz, r, r, true);
     cube([w, l, wallz], true);
-    // mounting holes are orthogonal to where we drop in terminals
+    // mounting holes are orthogonal to where we
+	// drop in terminals
     translate([-12.5, 0, wallz / 2]){
         screw("M4", l = wallz * 2);
     }
     translate([12.5, 0, wallz / 2]){
         screw("M4", l = wallz * 2);
     }
+}
+
+module croomclip(){
+	translate([0, botrad * sqrt(2) / 2 + 1.5, ccliph / 2]){
+		translate([20, 0, 0]){
+			chamberclip();
+		}
+		translate([-20, 0, 0]){
+			chamberclip();
+		}
+	}
 }
 
 module hotbox(){
@@ -189,8 +163,9 @@ module hotbox(){
         /*translate([-42, -40, 0]){
             rc522holes(wallz);
 	    }*/
-		thermholes(wallz);
-		hallholes(wallz);
+		// holes for our throughhole thermo+hall
+		throughholes(-40, 10, wallz);
+		throughholes(-35, 15, wallz);
         // we want to clear everything in the central
         // cylinder from the floor up.
         cheight = totalz - wallz;
@@ -227,8 +202,6 @@ module hotbox(){
                 thermohole();
             }
         }
-		// cut out the frictionfit plug
-		chamberplug();
     }
     translate([0, 0, totalz - ttopz]){
 		// cut away top to get threading
@@ -242,6 +215,14 @@ module hotbox(){
 			}
 		}
     }
+	// clips for the croom
+	rotate([0, 0, 180]){
+		croomclip();
+		rotate([0, 0, 90]){
+			croomclip();
+		}
+	}
+	croomclip();
 }
 
 hotbox();

@@ -531,59 +531,42 @@ module spool(){
 	}
 }
 
-// cantilevers that grow from the top of the croom,
-// and are cut away from the bottom of the hotbox.
-// these are used to join the two pieces.
-midcantih = wallz * 2;
-module midcanti(){
-	cube([wallz, 2 * topalt / 3, midcantih], true);
-	translate([midcantih / 4, 0, -midcantih / 4]){
-		rotate([0, 90, 0]){
-			cube([wallz, 2 * topalt / 3, midcantih], true);
+//spool();
+//assembly();
+
+ccliph = 3;
+cclipw = 10;
+cclipl = 5;
+module chamberclip(){
+	difference(){
+		cube([cclipw, cclipw, ccliph], true);
+		translate([0, -1, 0]){
+			cube([cclipw - 4, cclipw - 2, ccliph], true);
 		}
 	}
 }
 
-// friction-fit connector for croom+hotbox
-chamberconnh = 3 * wallz / 2;
-chamberconnw = wallz;
-chamberconnd = toprad * sqrt(2) - wallz * 2;
-module chamberconnector(){
-	difference(){
-		d = chamberconnd + chamberconnw;
-		id = chamberconnd;
-		prismoid(size1=[d, d],
-			size2=[d, d],
-			h=chamberconnh,
-			rounding1 = topround,
-			rounding2 = topround);
-		prismoid(size1=[id, id],
-			size2=[id, id],
-			h=chamberconnh,
-			rounding1 = topround,
-			rounding2 = topround);
-	}
-}
-//chamberconnector();
-
-// chamberconnector, with a bit of give
 module chamberplug(){
-	friction = 0.08;
-	difference(){
-		d = chamberconnd + chamberconnw + friction;
-		id = chamberconnd - friction;
-		prismoid(size1=[d, d],
-			size2=[d, d],
-			h=chamberconnh + friction,
-			rounding1 = topround,
-			rounding2 = topround);
-		prismoid(size1=[id, id],
-			size2=[id, id],
-			h=chamberconnh + friction,
-			rounding1 = topround,
-			rounding2 = topround);
+	translate([0, -1, 0]){
+		cclipr = (cclipw - 2) / 2;
+		// fits over the clip
+		translate([0, 1, ccliph + 0.5]){
+			cube([cclipw - 4, cclipw, 1], true);
+		}
+		// fits into the clip
+		translate([0, 0, ccliph / 2]){
+			cube([cclipw - 4, cclipw - 2, ccliph], true);
+		}
+		translate([0, -cclipr / 2, 0]){
+			cube([cclipw - 4, cclipr, cclipr * 2], true);
+		}
+		rotate([0, 90, 0]){
+			cylinder(cclipw - 4, cclipr, cclipr, true);
+		}
 	}
 }
 
-//spool();
-//assembly();
+/*translate([0, 0, 5]){
+	chamberclip();
+}
+chamberplug();*/
