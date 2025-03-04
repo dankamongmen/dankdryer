@@ -223,22 +223,23 @@ static int
 setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
            gpio_num_t lowertpin, gpio_num_t uppertpin){
   int ret = 0;
+  esp_err_t e;
+  if((e = ledc_fade_func_install(0)) != ESP_OK){
+    fprintf(stderr, "error (%s) installing ledc interrupt\n", esp_err_to_name(e));
+    ret = -1;
+  }
   if(setup_intr(lowertpin, &LowerFanPulses)){
+    ret = -1;
+  }
+  if(initialize_25k_pwm(LOWER_FANCHAN, lowerppin, LOWER_FANTIMER)
+      || set_pwm(LOWER_FANCHAN, LowerPWM)){
     ret = -1;
   }
   if(setup_intr(uppertpin, &UpperFanPulses)){
     ret = -1;
   }
-  if(initialize_25k_pwm(LOWER_FANCHAN, lowerppin, LOWER_FANTIMER)){
-    ret = -1;
-  }
-  if(initialize_25k_pwm(UPPER_FANCHAN, upperppin, UPPER_FANTIMER)){
-    ret = -1;
-  }
-  if(set_pwm(UPPER_FANCHAN, UpperPWM)){
-    ret = -1;
-  }
-  if(set_pwm(LOWER_FANCHAN, LowerPWM)){
+  if(initialize_25k_pwm(UPPER_FANCHAN, upperppin, UPPER_FANTIMER)
+      || set_pwm(UPPER_FANCHAN, UpperPWM)){
     ret = -1;
   }
   return ret;
@@ -569,15 +570,17 @@ setup_neopixel(gpio_num_t pin){
 #endif
 
 // initialize and calibrate an ADC unit (ESP32-S3 has two, but ADC2 is
-// used by wifi). ADC1 supports 8 channels on pins 32--39.
+// used by wifi). ADC1 supports GPIO 0--6.
 static int
 setup_adc_oneshot(adc_unit_t unit, adc_oneshot_unit_handle_t* handle,
-                  adc_cali_handle_t* cali, bool* calibrated){
-  esp_err_t e;
+                  adc_cali_handle_t* cali, bool* calibrated,
+                  adc_channel_t channel){
+  *calibrated = false;
   adc_oneshot_unit_init_cfg_t acfg = {
     .unit_id = unit,
     .ulp_mode = ADC_ULP_MODE_DISABLE,
   };
+  esp_err_t e;
   if((e = adc_oneshot_new_unit(&acfg, handle)) != ESP_OK){
     fprintf(stderr, "error (%s) getting adc unit\n", esp_err_to_name(e));
     return -1;
@@ -586,10 +589,10 @@ setup_adc_oneshot(adc_unit_t unit, adc_oneshot_unit_handle_t* handle,
     .bitwidth = ADC_BITWIDTH_DEFAULT,
     .atten = ADC_ATTEN_DB_2_5,
     .unit_id = unit,
+    .chan = channel,
   };
   if((e = adc_cali_create_scheme_curve_fitting(&caliconf, cali)) != ESP_OK){
     fprintf(stderr, "error (%s) creating adc calibration\n", esp_err_to_name(e));
-    *calibrated = false;
   }else{
     printf("using curve fitting adc calibration\n");
     *calibrated = true;
@@ -814,22 +817,25 @@ static float
 getLM35(adc_channel_t channel){
   esp_err_t e;
   int raw;
-  e = adc_oneshot_read(ADC1, channel, &raw);
-  if(e != ESP_OK){
-    fprintf(stderr, "error (%s) reading from adc\n", esp_err_to_name(e));
-    return MIN_TEMP - 1;
-  }
-  int vout;
+  float o;
   if(ADC1Calibrated){
-    if((e = adc_cali_raw_to_voltage(ADC1Calibration, raw, &vout)) != ESP_OK){
-      fprintf(stderr, "error (%s) calibrating raw adc value %d\n", esp_err_to_name(e), raw);
-      vout = raw;
+    if((e = adc_oneshot_get_calibrated_result(ADC1, ADC1Calibration, channel, &raw)) != ESP_OK){
+      fprintf(stderr, "error (%s) reading calibrated adc value %d\n", esp_err_to_name(e), raw);
+      return MIN_TEMP - 1;
     }
+    // Dmax is 4095 on single read mode, 8191 on continuous
+    // Vmax is 3100mA with ADC_ATTEN_DB_12, 1750 with _6, 1250 w/ _2_5
+    // result is read * Vmax / Dmax
+    o = raw * 1250.0 / 4095;
+  }else{
+    if((e = adc_oneshot_read(ADC1, channel, &raw)) != ESP_OK){
+      fprintf(stderr, "error (%s) reading from adc\n", esp_err_to_name(e));
+      return MIN_TEMP - 1;
+    }
+    o = raw * 1250.0 / 4095;
+    o /= 10.0; // 10 mV per C
   }
-  // Dmax is 4095 on single read mode, 8191 on continuous
-  // Vmax is 3100mA with ADC_ATTEN_DB_12, 1750 with _6, 1250 w/ _2_5
-  float o = vout / 4095.0 * 125;
-  printf("ADC1: converted %d to %d -> %f\n", raw, vout, o);
+  printf("ADC1: %d -> %f\n", raw, o);
   return o;
 }
 
@@ -958,9 +964,6 @@ setup(adc_channel_t* thermchan){
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
     set_failure(&SystemError);
   }
-  if(setup_adc_oneshot(ADC_UNIT_1, &ADC1, &ADC1Calibration, &ADC1Calibrated)){
-    set_failure(&SystemError);
-  }
   if(setup_i2c(&I2CMaster, SDA_PIN, SCL_PIN)){
     set_failure(&SystemError);
   }
@@ -968,6 +971,9 @@ setup(adc_channel_t* thermchan){
     set_failure(&SystemError);
   }
   if(setup_temp(THERM_DATAPIN, ADC_UNIT_1, thermchan)){
+    set_failure(&SystemError);
+  }
+  if(setup_adc_oneshot(ADC_UNIT_1, &ADC1, &ADC1Calibration, &ADC1Calibrated, *thermchan)){
     set_failure(&SystemError);
   }
   if(setup_nau7802(I2CMaster)){
