@@ -7,8 +7,8 @@
 #include <stdbool.h>
 #include <soc/gpio_num.h>
 
-#define VERSION "1.8.0"
-#define DEVICE "dankdryer"
+#define VERSION "1.9.0"
+#define DEVICE "hohlraum"
 
 int setup_network(void);
 int handle_dry(unsigned sec, unsigned temp);
