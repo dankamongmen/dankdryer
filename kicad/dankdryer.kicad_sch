@@ -3097,7 +3097,7 @@
 		)
 		(uuid "4c744d62-aa84-45e0-a857-211034ab61ad")
 	)
-	(text "ESP32 pins tolerate 20mA@3.3V.\n412Ω+680Ω takes 5.3V to 3.369V and 5V to 3.178V,\n and limits current to 12.1mA.\nESP32 ADC wants a 0.1uF filter capacitor \"to improve accuracy\"."
+	(text "ESP32 pins tolerate 20mA@3.3V.\n390Ω+680Ω takes 5.3V to 3.368V and 5V to 3.178V,\n and limits current to 12.8mA.\nESP32 ADC wants a 0.1uF filter capacitor \"to improve accuracy\"."
 		(exclude_from_sim no)
 		(at 24.384 143.764 0)
 		(effects
@@ -3370,7 +3370,7 @@
 	)
 	(no_connect
 		(at 219.71 80.01)
-		(uuid "84687630-667a-46ad-9bad-5ddfbbcc3c29")
+		(uuid "78d2f8b8-f0d9-4d52-845a-7ab065f355b6")
 	)
 	(no_connect
 		(at 143.51 115.57)
@@ -4028,6 +4028,28 @@
 		)
 		(uuid "fc718a58-b1d4-43f0-a980-6ce2a94b19ac")
 	)
+	(global_label "UPWM"
+		(shape input)
+		(at 189.23 72.39 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "1a3a7f8d-df77-4919-83db-4cc7cff2a1a6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 180.7415 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "LCDSDA"
 		(shape input)
 		(at 219.71 72.39 0)
@@ -4050,6 +4072,28 @@
 			)
 		)
 	)
+	(global_label "LPWM"
+		(shape input)
+		(at 189.23 59.69 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "363b6cf6-4cc4-455e-8417-541558f619df")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 181.0439 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "LCDSCL"
 		(shape input)
 		(at 219.71 69.85 0)
@@ -4063,6 +4107,28 @@
 		(uuid "475188b0-0009-497c-890e-a1f96bd9b586")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 229.7709 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "LCDCS"
+		(shape input)
+		(at 219.71 77.47 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "48e16f2e-fb7a-4e32-8b36-4c4744ac21df")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 228.7428 77.47 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4116,50 +4182,6 @@
 			)
 		)
 	)
-	(global_label "LTach"
-		(shape input)
-		(at 219.71 64.77 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "6592b91c-638b-4f92-9c77-69fb8d6dec78")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 228.0775 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "LCDCS"
-		(shape input)
-		(at 219.71 77.47 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "8014435a-fe96-44ef-b220-f8ff782bfc02")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 228.7428 77.47 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "IO9"
 		(shape input)
 		(at 143.51 120.65 0)
@@ -4182,9 +4204,9 @@
 			)
 		)
 	)
-	(global_label "UTach"
+	(global_label "LTach"
 		(shape input)
-		(at 189.23 72.39 180)
+		(at 189.23 57.15 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4192,9 +4214,9 @@
 			)
 			(justify right)
 		)
-		(uuid "b757722e-99de-4dba-b5b7-88a853f512c5")
+		(uuid "d7fad27e-ba1e-40a9-b5d8-a501b384376d")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 180.5601 72.39 0)
+			(at 180.8625 57.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4204,24 +4226,24 @@
 			)
 		)
 	)
-	(global_label "LPWM"
+	(global_label "UTach"
 		(shape input)
-		(at 219.71 62.23 0)
+		(at 189.23 74.93 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
+			(justify right)
 		)
-		(uuid "eb3e8e51-4f46-4dc7-a77e-7f03324cf4eb")
+		(uuid "ec9883b3-240c-4086-b668-3f0d7f773392")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 227.8961 62.23 0)
+			(at 180.5601 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 				(hide yes)
 			)
 		)
@@ -4248,28 +4270,6 @@
 			)
 		)
 	)
-	(global_label "UPWM"
-		(shape input)
-		(at 189.23 74.93 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "ef43cb64-f6fd-479c-9cc8-49762398baec")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 180.7415 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(hierarchical_label "ACNeutral"
 		(shape input)
 		(at 67.31 179.07 0)
@@ -4291,17 +4291,6 @@
 			(justify right)
 		)
 		(uuid "16a78d80-79a5-4f9a-be6f-0933ebe8ce20")
-	)
-	(hierarchical_label "SCL"
-		(shape output)
-		(at 189.23 69.85 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "1f267e46-4f7e-4067-8ca6-d38fae9ca32a")
 	)
 	(hierarchical_label "SDA"
 		(shape bidirectional)
@@ -4380,17 +4369,6 @@
 		)
 		(uuid "4ec36cd7-ecfa-4ad0-8700-236362a8de28")
 	)
-	(hierarchical_label "SDA"
-		(shape bidirectional)
-		(at 189.23 67.31 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "5be1e941-5f59-4433-a9f1-7445dd02e5f4")
-	)
 	(hierarchical_label "SCL"
 		(shape input)
 		(at 34.29 181.61 180)
@@ -4423,6 +4401,17 @@
 			(justify right)
 		)
 		(uuid "a291d70d-91e6-44ac-ab72-5967128bcab3")
+	)
+	(hierarchical_label "Therm"
+		(shape bidirectional)
+		(at 189.23 69.85 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "acd3cc3a-208c-4dd6-8e49-db15afbff066")
 	)
 	(hierarchical_label "SCL"
 		(shape output)
@@ -4468,16 +4457,27 @@
 		)
 		(uuid "c20f6358-9a79-4ca1-9e2d-6985d8f85508")
 	)
-	(hierarchical_label "SSRControl"
-		(shape bidirectional)
-		(at 219.71 59.69 0)
+	(hierarchical_label "SCL"
+		(shape output)
+		(at 219.71 62.23 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left)
 		)
-		(uuid "d1d4fd97-3e32-47ea-b315-6200bab2ff9d")
+		(uuid "cd4e7801-5015-43d5-ad21-c65019a2b7cf")
+	)
+	(hierarchical_label "Hall"
+		(shape bidirectional)
+		(at 189.23 67.31 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "d268b258-5402-45de-a9eb-9e7d669324a8")
 	)
 	(hierarchical_label "Therm"
 		(shape input)
@@ -4501,17 +4501,6 @@
 			(justify right)
 		)
 		(uuid "d3b72458-2d73-4e94-9076-8b3e77c0bdfd")
-	)
-	(hierarchical_label "Hall"
-		(shape bidirectional)
-		(at 189.23 59.69 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "d4bf1d16-3f2c-41db-af26-cbdc38294aa0")
 	)
 	(hierarchical_label "Motor"
 		(shape input)
@@ -4546,6 +4535,17 @@
 		)
 		(uuid "d865615d-9322-4c80-bc37-4857424c8e05")
 	)
+	(hierarchical_label "SSRControl"
+		(shape bidirectional)
+		(at 219.71 64.77 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "db3a545d-ed11-457b-807f-ff4cb0923111")
+	)
 	(hierarchical_label "A+"
 		(shape input)
 		(at 34.29 186.69 180)
@@ -4557,16 +4557,16 @@
 		)
 		(uuid "e2d0f7ec-943e-4e48-89c7-9bf85faa5d10")
 	)
-	(hierarchical_label "Therm"
+	(hierarchical_label "SDA"
 		(shape bidirectional)
-		(at 189.23 57.15 180)
+		(at 219.71 59.69 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right)
+			(justify left)
 		)
-		(uuid "e3572dea-28df-4e8d-a437-f30498a2c65b")
+		(uuid "f0746249-7387-47a1-8837-bae914550336")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -4655,7 +4655,7 @@
 				)
 			)
 		)
-		(property "Value" "100n"
+		(property "Value" ".1u"
 			(at 97.79 39.37 90)
 			(effects
 				(font
@@ -4798,7 +4798,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 173.482 46.99 90)
 			(effects
 				(font
@@ -4928,7 +4928,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "0.1u"
+		(property "Value" ".1u"
 			(at 73.152 127.254 0)
 			(effects
 				(font
@@ -4937,7 +4937,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 70.8152 129.54 0)
 			(effects
 				(font
@@ -5199,7 +5199,7 @@
 				)
 			)
 		)
-		(property "Value" "412"
+		(property "Value" "390"
 			(at 60.706 117.602 0)
 			(effects
 				(font
@@ -5207,7 +5207,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 58.928 116.84 90)
 			(effects
 				(font
@@ -5277,7 +5277,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 176.2252 58.42 0)
 			(effects
 				(font
@@ -5344,7 +5344,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 217.932 128.27 90)
 			(effects
 				(font
@@ -5888,7 +5888,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 233.68 56.8452 0)
 			(effects
 				(font
@@ -6298,7 +6298,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 55.372 125.73 90)
 			(effects
 				(font
@@ -7038,7 +7038,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 189.992 128.27 90)
 			(effects
 				(font
@@ -7530,7 +7530,7 @@
 				)
 			)
 		)
-		(property "Value" "0.1u"
+		(property "Value" ".1u"
 			(at 237.49 39.37 90)
 			(effects
 				(font
@@ -7538,7 +7538,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 241.3 43.4848 0)
 			(effects
 				(font
