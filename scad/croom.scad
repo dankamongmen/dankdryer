@@ -3,21 +3,6 @@
 // or PA. holds the PCB, scale, AC adapter, etc.
 include <core.scad>
 
-// the vast majority of the interior, removed
-module croominnercore(){
-    coreh = croomz - wallz;
-    translate([0, 0, wallz]){
-		br = botinrad * sqrt(2);
-		tr = topinrad * sqrt(2);
-		prismoid(size1=[br, br],
-			size2=[tr, tr],
-			h=coreh,
-			rounding1 = botround,
-			rounding2 = topround);
-    }
-}
-
-
 // a corner at the top, to which the hotbox is mounted
 module corner(){
 	h = 5;
@@ -164,6 +149,20 @@ module croombottom(rad, z){
 	pcbmounts();
 }
 
+// the vast majority of the interior, removed
+module croominnercore(){
+    coreh = croomz - wallz;
+    translate([0, 0, wallz]){
+		br = botinrad * sqrt(2);
+		tr = topinrad * sqrt(2);
+		prismoid(size1=[br, br],
+			size2=[tr, tr],
+			h=coreh,
+			rounding1 = botround,
+			rounding2 = topround);
+    }
+}
+
 // the fundamental structure (hollow frustrum
 // continuously deformed into hollow cylinder)
 module croomcore(){
@@ -177,7 +176,7 @@ module croomcore(){
 }
 
 module hotboxplug(){
-	translate([0, botrad * sqrt(2) / 2 + 1.5, croomz]){
+	translate([0, botrad * sqrt(2) / 2 + 1, croomz]){
 		translate([20, 0, 0]){
 			chamberplug();
 		}

@@ -534,39 +534,46 @@ module spool(){
 //spool();
 //assembly();
 
-ccliph = 3;
+cclipr = croomwall;
+ccliph = cclipr;
 cclipw = 10;
-cclipl = 5;
+cclipl = cclipr * 2 + 2;
 module chamberclip(){
 	difference(){
-		cube([cclipw, cclipw, ccliph], true);
+		cube([cclipw, cclipl, ccliph], true);
 		translate([0, -1, 0]){
-			cube([cclipw - 4, cclipw - 2, ccliph], true);
+			cube([cclipw - 4, cclipr * 2, ccliph], true);
 		}
 	}
 }
 
 module chamberplug(){
 	translate([0, -1, 0]){
-		cclipr = (cclipw - 2) / 2;
-		// fits over the clip
-		translate([0, 1, ccliph + 0.5]){
-			cube([cclipw - 4, cclipw, 1], true);
-		}
-		// fits into the clip
-		translate([0, 0, ccliph / 2]){
-			cube([cclipw - 4, cclipw - 2, ccliph], true);
-		}
-		translate([0, -cclipr / 2, 0]){
-			cube([cclipw - 4, cclipr, cclipr * 2], true);
-		}
-		rotate([0, 90, 0]){
-			cylinder(cclipw - 4, cclipr, cclipr, true);
+		difference(){
+			union(){
+				// fits over the clip
+				translate([0, 1, ccliph + 0.5]){
+					cube([cclipw - 4, cclipl, 1], true);
+				}
+				// fits into the clip
+				translate([0, 0, ccliph / 2]){
+					cube([cclipw - 4, cclipr * 2, ccliph], true);
+				}
+				translate([0, -cclipr / 2, 0]){
+					cube([cclipw - 4, cclipr, cclipr * 2], true);
+				}
+				rotate([0, 90, 0]){
+					cylinder(cclipw - 4, cclipr, cclipr, true);
+				}
+			}
+			translate([0, -cclipr / 2, 2]){
+				cube([cclipw - 4, cclipr, cclipr + 1], true);
+			}
 		}
 	}
 }
-
-/*translate([0, 0, 5]){
+/*
+translate([0, 0, ccliph / 2]){
 	chamberclip();
 }
 chamberplug();*/

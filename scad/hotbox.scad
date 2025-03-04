@@ -87,7 +87,7 @@ module floorcuts(){
 module upcorner(){
     side = 40;
     t = totalxy / 2;
-    translate([t - 15, t - 15, totalz - side / 2]){
+    translate([t - 18, t - 18, totalz - side / 2]){
         rotate([0, 0, 45]){
             cylinder(side * 3, side / 3, side / 2, true, $fn = 4);
         }
