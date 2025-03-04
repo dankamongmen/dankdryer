@@ -70,6 +70,10 @@ module pcbmounts(){
         }
         translate([0, 65, 0]){
             mount(pcbmountc, rh, th);
+			// this one is off-corner
+			translate([-65, 0, 0]){
+				mount(pcbmountc, rh, th);
+			}
         }
     }
 }
@@ -205,16 +209,18 @@ module croom(iech = 20){
 			}
 		}
 	}
+	hotboxplug();
 	rotate([0, 0, 90]){
 		hotboxplug();
 		rotate([0, 0, 90]){
 			hotboxplug();
+			rotate([0, 0, 90]){
+				hotboxplug();
+			}
 		}
 	}
-	hotboxplug();
 	croombottom(botrad, wallz);
 }
-
 
 multicolor("lightblue"){
 	croom(rockerh);
@@ -248,7 +254,7 @@ multicolor("green"){
 }
 
 multicolor("grey"){
-	translate([0, 50, wallz + acmounth]){
+	translate([0, 50, wallz]){
 		acadapter();
 	}
 }
