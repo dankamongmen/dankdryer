@@ -5,12 +5,13 @@
 
 // https://docs.espressif.com/projects/esp-idf/en/stable/esp32c6/api-reference/peripherals/gpio.html
 // 0--6 are connected to ADC1
-#define SDA_PIN       GPIO_NUM_0   // I2C clock
-#define SCL_PIN       GPIO_NUM_1   // I2C data
+#define THERM_DATAPIN GPIO_NUM_0   // analog thermometer (ADC1)
+#define HALL_DATAPIN  GPIO_NUM_1  // hall sensor
 // 4 and 5 are strapping pins
-#define UPPER_PWMPIN  GPIO_NUM_4   // upper chamber fan pwm
-#define UPPER_TACHPIN GPIO_NUM_5   // upper chamber fan tach
-#define THERM_DATAPIN GPIO_NUM_6   // analog thermometer (ADC1)
+#define SDA_PIN       GPIO_NUM_4   // I2C clock
+#define SCL_PIN       GPIO_NUM_5   // I2C data
+#define UPPER_TACHPIN GPIO_NUM_6   // upper chamber fan tach
+#define UPPER_PWMPIN  GPIO_NUM_7   // upper chamber fan pwm
 // 8 and 9 are strapping pins
 // 12--13 are used for JTAG (not strictly needed)
 #define MOTOR_GATEPIN GPIO_NUM_12   // MOSFET gate for motor
@@ -23,7 +24,6 @@
 #define LCD_SDA_PIN   GPIO_NUM_20
 #define LCD_DC_PIN    GPIO_NUM_21
 #define LCD_CS_PIN    GPIO_NUM_22
-#define HALL_DATAPIN  GPIO_NUM_23  // hall sensor
 // 24--30 are reserved for SPI flash
 
 #endif
