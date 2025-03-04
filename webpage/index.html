@@ -87,8 +87,8 @@
      Taring calibrates the scale's zero point. Taring ought be performed without
      a spool (or anything else) sitting on the platform, but with the motor, the
      motor coupling, and the platform all installed. Simply press the Tare Scale
-     button on the web page, or post to the <tt>/tare</tt> MQTT topic. Taring
-     is instantaneous.
+     button on the web page, or post to the <tt>control/ID/tare</tt> MQTT topic.
+     Taring is instantaneous.
    </div>
    <h3>Drying</h3>
    <div class="proddesc">
@@ -114,7 +114,7 @@
    </div>
    <h3>Factory reset</h3>
    <div class="proddesc">
-     Post to the <tt>/factoryreset</tt> MQTT topic, or click the Factory Reset
+     Post to the <tt>control/ID/factoryreset</tt> MQTT topic, or click the Factory Reset
      button on the web page. This will reset networking options and tare
      settings, and cancel any ongoing drying activity.
    </div>
