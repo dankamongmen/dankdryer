@@ -538,17 +538,13 @@ cclipr = croomwall;
 ccliph = cclipr;
 cclipw = 10;
 cclipl = cclipr * 2 + 2;
-module chamberclip(){
+module chamberclip(skoosh = 0.08){
 	difference(){
 		cube([cclipw, cclipl, ccliph], true);
 		translate([0, -1, 0]){
-			cube([cclipw - 4, cclipr * 2, ccliph], true);
+			cube([cclipw - 4 + skoosh, cclipr * 2 + skoosh, ccliph], true);
 		}
 	}
-}
-
-module chamberclipinverse(){
-	cube([cclipw - 4, cclipr * 2, ccliph], true);
 }
 
 module chamberplug(){
