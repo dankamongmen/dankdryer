@@ -178,7 +178,7 @@ module hotbox(){
 			// spool, and closer to the perimeter
 			// than the center.
 			translate([0, totalxy / 4 + 8, wallz]){
-				ceramheat230(1, 5);
+				ceramheat230(2, 5);
 			}
         }
 		// now remove all other interacting pieces
