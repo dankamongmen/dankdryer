@@ -3016,9 +3016,9 @@
 		)
 		(uuid "69bf5e72-dcea-4b76-a35a-54a58e11126d")
 	)
-	(text "12V fans support a max of 5mA on tachs.\n3.3V / 0.005A = 660Ω (0.0165W).\n3.3V / 680Ω = 0.00485A (0.0160W).\n400 pF capacitive load per bus line.\nThe fans are entirely unobstructed, so select for\n maximum airflow; static pressure is unimportant.\nArctic F8 draws .11A at 12V (1.32W) in steady state."
+	(text "12V fans support a max of 5mA on tachs.\n3.3V / 0.005A = 660Ω (0.0165W).\n3.3V / 680Ω = 0.00485A (0.0160W).\n400 pF capacitive load per bus line.\nThe fans are entirely unobstructed, so select for\n maximum airflow; static pressure is unimportant.\nArctic F8 draws .11A at 12V (1.32W) in steady state.\nRC is a low-pass filter at 10.610 kHz (1 / (2π * 15k * 1n)."
 		(exclude_from_sim no)
-		(at 16.764 94.234 0)
+		(at 16.764 92.964 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5705,7 +5705,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" ".1n"
+		(property "Value" "1n"
 			(at 69.85 71.1199 0)
 			(effects
 				(font
@@ -7010,7 +7010,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" ".1n"
+		(property "Value" "1n"
 			(at 36.83 71.1199 0)
 			(effects
 				(font
