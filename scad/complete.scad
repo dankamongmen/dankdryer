@@ -18,7 +18,7 @@ multicolor("lightgreen"){
 
 multicolor("black"){
 	drop(){
-		translate([0, 50, wallz + 7]){
+		translate([0, 50, wallz]){
 			acadapter();
 		}
 	}
@@ -58,6 +58,7 @@ multicolor("lightblue"){
 }
 
 // top portion
+/*
 rotate([0, 0, $t]){
 	drop(){
 		spool();
@@ -86,4 +87,4 @@ multicolor("dimgrey"){
     rotate([0, 0, 180]){
         hotbox();
     }
-}
+}*/

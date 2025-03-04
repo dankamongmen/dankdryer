@@ -38,7 +38,7 @@ module ceramheat230(rh, th){
 
 // three small holes for throughhole leads
 module throughholes(x, y, h){
-	translate([-40, 10, h / 2]){
+	translate([x, y, h / 2]){
 		cylinder(h, 1, 1, true);
 		translate([2, -2, 0]){
 			cylinder(h, 1, 1, true);
@@ -87,7 +87,7 @@ module floorcuts(){
 module upcorner(){
     side = 40;
     t = totalxy / 2;
-    translate([t - 18, t - 18, totalz - side / 2]){
+    translate([t - 19, t - 19, totalz - side / 2]){
         rotate([0, 0, 45]){
             cylinder(side * 3, side / 3, side / 2, true, $fn = 4);
         }
@@ -181,7 +181,7 @@ module hotbox(){
 				ceramheat230(1, 5);
 			}
         }
-        // now remove all other interacting pieces
+		// now remove all other interacting pieces
         // 80x80mm worth of air passage
         floorcuts();
         mirror([1, 0, 0]){
@@ -216,13 +216,17 @@ module hotbox(){
 		}
     }
 	// clips for the croom
-	rotate([0, 0, 180]){
+	croomclip();
+	rotate([0, 0, 90]){
 		croomclip();
 		rotate([0, 0, 90]){
 			croomclip();
+			rotate([0, 0, 90]){
+				croomclip();
+			}
 		}
+        
 	}
-	croomclip();
 }
 
 hotbox();

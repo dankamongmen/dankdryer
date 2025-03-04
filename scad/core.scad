@@ -547,14 +547,14 @@ module chamberclip(){
 	}
 }
 
+module chamberclipinverse(){
+	cube([cclipw - 4, cclipr * 2, ccliph], true);
+}
+
 module chamberplug(){
 	translate([0, -1, 0]){
 		difference(){
 			union(){
-				// fits over the clip
-				translate([0, 1, ccliph + 0.5]){
-					cube([cclipw - 4, cclipl, 1], true);
-				}
 				// fits into the clip
 				translate([0, 0, ccliph / 2]){
 					cube([cclipw - 4, cclipr * 2, ccliph], true);
