@@ -68,11 +68,11 @@ static float TareWeight = -1.0;
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static uint32_t LastSpoolRPM;
-static adc_channel_t Thermchan;
 static i2c_master_dev_handle_t NAU7802;
 static i2c_master_bus_handle_t I2CMaster;
 static float LastLowerTemp, LastUpperTemp;
 static uint32_t LastLowerRPM, LastUpperRPM;
+static adc_channel_t Thermchan = ADC_CHANNEL_0;
 
 // variables manipulated by interrupts
 static _Atomic(uint32_t) HallPulses, LowerFanPulses, UpperFanPulses;
@@ -585,9 +585,18 @@ setup_adc_oneshot(adc_unit_t unit, adc_oneshot_unit_handle_t* handle,
     fprintf(stderr, "error (%s) getting adc unit\n", esp_err_to_name(e));
     return -1;
   }
-  adc_cali_curve_fitting_config_t caliconf = {
+  adc_oneshot_chan_cfg_t cconf = {
     .bitwidth = ADC_BITWIDTH_DEFAULT,
-    .atten = ADC_ATTEN_DB_2_5,
+    .atten = ADC_ATTEN_DB_6,
+  };
+  if((e = adc_oneshot_config_channel(*handle, channel, &cconf)) != ESP_OK){
+    fprintf(stderr, "error (%s) configuring adc channel\n", esp_err_to_name(e));
+    adc_oneshot_del_unit(*handle);
+    return -1;
+  }
+  adc_cali_curve_fitting_config_t caliconf = {
+    .bitwidth = cconf.bitwidth,
+    .atten = cconf.atten,
     .unit_id = unit,
     .chan = channel,
   };
@@ -818,24 +827,25 @@ getLM35(adc_channel_t channel){
   esp_err_t e;
   int raw;
   float o;
+  // FIXME if we didn't get an ADC handle at all, need to elide read entirely
   if(ADC1Calibrated){
     if((e = adc_oneshot_get_calibrated_result(ADC1, ADC1Calibration, channel, &raw)) != ESP_OK){
       fprintf(stderr, "error (%s) reading calibrated adc value %d\n", esp_err_to_name(e), raw);
       return MIN_TEMP - 1;
     }
-    // Dmax is 4095 on single read mode, 8191 on continuous
-    // Vmax is 3100mA with ADC_ATTEN_DB_12, 1750 with _6, 1250 w/ _2_5
-    // result is read * Vmax / Dmax
-    o = raw * 1250.0 / 4095;
+    o = raw;
   }else{
     if((e = adc_oneshot_read(ADC1, channel, &raw)) != ESP_OK){
       fprintf(stderr, "error (%s) reading from adc\n", esp_err_to_name(e));
       return MIN_TEMP - 1;
     }
-    o = raw * 1250.0 / 4095;
-    o /= 10.0; // 10 mV per C
+    // Dmax is 4095 on single read mode, 8191 on continuous
+    // Vmax is 3100mA with ADC_ATTEN_DB_12, 1750 with _6, 1250 w/ _2_5
+    // result is read * Vmax / Dmax
+    o = raw * 1750.0 / 4095;
   }
   printf("ADC1: %d -> %f\n", raw, o);
+  o /= 10.0; // 10 mV per C
   return o;
 }
 
