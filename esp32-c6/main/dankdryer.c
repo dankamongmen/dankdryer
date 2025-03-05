@@ -68,11 +68,11 @@ static float TareWeight = -1.0;
 static time_t DryEndsAt; // dry stop time in seconds since epoch
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static uint32_t LastSpoolRPM;
+static adc_channel_t Thermchan;
 static i2c_master_dev_handle_t NAU7802;
 static i2c_master_bus_handle_t I2CMaster;
 static float LastLowerTemp, LastUpperTemp;
 static uint32_t LastLowerRPM, LastUpperRPM;
-static adc_channel_t Thermchan = ADC_CHANNEL_0;
 
 // variables manipulated by interrupts
 static _Atomic(uint32_t) HallPulses, LowerFanPulses, UpperFanPulses;
