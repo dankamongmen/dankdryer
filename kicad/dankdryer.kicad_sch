@@ -3088,7 +3088,7 @@
 	)
 	(text "If GPIO9 is high, we use SPI boot. If GPIO9 is low and GPIO8 is\n high, we use download boot. Both low is an illegal configuration.\nGPIO9 uses an onboard 45kΩ pullup resistor by default.\nAlways take GPIO8 high, and allow a button to bring GPIO9 low\n to push code. Button is normally-open.\nGPIO8 sinks a steady 33μA (3.3V / 10000Ω).\nGPIO9 sinks 1mA (3.3V / 3300Ω) while pressed.\nB3F-1020 handles 50mA and 24V."
 		(exclude_from_sim no)
-		(at 94.234 141.732 0)
+		(at 93.98 142.24 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3099,7 +3099,7 @@
 	)
 	(text "ESP32-C6-MINI-1U: unicore 160MHz RISC-V.\n4MB QSPI flash, 40–105C.\nGPIOs 0-6 are connected to 12-bit ADC.\nADC wants a 0.1uF filter capacitor \"to improve accuracy\".\nGPIOs 4, 5, 8, 9, and 15 are strapping pins.\nPulling 9 high ensures a boot from SPI.\nGPIOs 12 and 13 are used for JTAG.\nGPIOs 24-30 are used for QSPI flash.\nModule has a U.FL antenna connector.\nPeak draw of 0.382A at 3.3V (1.2606W)."
 		(exclude_from_sim no)
-		(at 171.704 103.124 0)
+		(at 171.45 102.87 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3111,7 +3111,7 @@
 	)
 	(text "12V+/- via barreljack to motor and fans.\n5V analog devices use quiet linear regulator from 12V.\n3.3V digital devices use buck converter from 12V.\nAP63203WU takes up to 32V to a fixed 3.3V, max 2A\n at minimum efficiency of ~80%.\nIFSC1515AHER2R2M01 is 2.2uH 3A 45mΩ."
 		(exclude_from_sim no)
-		(at 23.368 72.39 0)
+		(at 22.86 72.39 0)
 		(effects
 			(font
 				(size 1.524 1.524)
@@ -4618,7 +4618,7 @@
 				)
 			)
 		)
-		(property "Value" ".1u"
+		(property "Value" "100n"
 			(at 97.79 39.37 90)
 			(effects
 				(font
@@ -4892,7 +4892,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" ".1u"
+		(property "Value" "100n"
 			(at 182.118 75.184 0)
 			(effects
 				(font
@@ -7291,7 +7291,7 @@
 				)
 			)
 		)
-		(property "Value" ".1u"
+		(property "Value" "100n"
 			(at 240.03 39.37 90)
 			(effects
 				(font
