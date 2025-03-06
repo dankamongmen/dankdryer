@@ -58,7 +58,6 @@ multicolor("lightblue"){
 }
 
 // top portion
-/*
 rotate([0, 0, $t]){
 	drop(){
 		spool();
@@ -87,4 +86,4 @@ multicolor("dimgrey"){
     rotate([0, 0, 180]){
         hotbox();
     }
-}*/
+}

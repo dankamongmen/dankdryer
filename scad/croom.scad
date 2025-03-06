@@ -180,12 +180,25 @@ module croomcore(){
 }
 
 module hotboxplug(){
-	translate([0, botrad * sqrt(2) / 2 + 1, croomz]){
+	translate([0, botrad * sqrt(2) / 2, croomz]){
 		translate([20, 0, 0]){
 			chamberplug();
 		}
 		translate([-20, 0, 0]){
 			chamberplug();
+		}
+	}
+}
+
+module hotboxinnerplug(){
+	translate([0, botrad * sqrt(2) / 2 - croomwall, croomz]){
+		mirror([0, 1, 0]){
+			translate([20, 0, 0]){
+				chamberplug();
+			}
+			translate([-20, 0, 0]){
+				chamberplug();
+			}
 		}
 	}
 }
@@ -210,12 +223,13 @@ module croom(iech = 20){
 		}
 	}
 	hotboxplug();
+	hotboxinnerplug();
 	rotate([0, 0, 90]){
-		hotboxplug();
+		hotboxinnerplug();
 		rotate([0, 0, 90]){
-			hotboxplug();
+			hotboxinnerplug();
 			rotate([0, 0, 90]){
-				hotboxplug();
+				hotboxinnerplug();
 			}
 		}
 	}

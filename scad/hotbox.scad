@@ -77,9 +77,6 @@ module floorcuts(){
                     }
                 }
             }
-            translate([-31, 105, d / 2]){
-                cube([62, 14, d], true);
-            }
         }
     }
 }
@@ -137,12 +134,23 @@ module thermohole(){
 }
 
 module croomclip(){
-	translate([0, botrad * sqrt(2) / 2 + 1.5, ccliph / 2]){
+	translate([0, botrad * sqrt(2) / 2 + cclipl / 2, ccliph / 2]){
 		translate([20, 0, 0]){
 			chamberclip();
 		}
 		translate([-20, 0, 0]){
 			chamberclip();
+		}
+	}
+}
+
+module croomclipinner(){
+	translate([0, botrad * sqrt(2) / 2 - croomwall * 1.5, ccliph / 2]){
+		translate([20, 0, 0]){
+			chamberclipinverse();
+		}
+		translate([-20, 0, 0]){
+			chamberclipinverse();
 		}
 	}
 }
@@ -202,7 +210,19 @@ module hotbox(){
                 thermohole();
             }
         }
-    }
+		// clips for the croom
+		croomclipinner();
+		rotate([0, 0, 90]){
+			croomclipinner();
+			rotate([0, 0, 90]){
+				croomclipinner();
+				rotate([0, 0, 90]){
+					croomclipinner();
+				}
+			}
+			
+		}
+	}
     translate([0, 0, totalz - ttopz]){
 		// cut away top to get threading
 		ScrewHole(innerr * 2,
@@ -215,17 +235,10 @@ module hotbox(){
 			}
 		}
     }
-	// clips for the croom
-	croomclip();
 	rotate([0, 0, 90]){
-		croomclip();
 		rotate([0, 0, 90]){
 			croomclip();
-			rotate([0, 0, 90]){
-				croomclip();
-			}
-		}
-        
+		}   
 	}
 }
 
