@@ -43,8 +43,6 @@ elevation = (hotz - spoolh) / 2;
 chordxy = 33;
 innerr = spoold / 2 + gapxy;
 totalxy = spoold + wallxy * 2 + gapxy * 2;
-totalz = spoolh + wallz + ttopz + elevation * 2;
-totald = sqrt(totalxy * totalxy + totalxy * totalxy);
 
 ctopz = wallz;
 croomz = wallz + ctopz + hotz;
@@ -72,17 +70,6 @@ theta = (90 - atan(-croomz / adj));
 flr = -croomz + wallz; // floor z offset
 mh = wallz; // mount height
 shieldw = 88;
-
-opoints = [
-            [-totalxy / 2 + chordxy, -totalxy / 2],
-            [totalxy / 2 - chordxy, -totalxy / 2],
-            [totalxy / 2, -totalxy / 2 + chordxy],
-            [totalxy / 2, totalxy / 2 - chordxy],
-            [totalxy / 2 - chordxy, totalxy / 2],
-            [-totalxy / 2 + chordxy, totalxy / 2],
-            [-totalxy / 2, totalxy / 2 - chordxy],
-            [-totalxy / 2, -totalxy / 2 + chordxy]
-        ];
 
 module topbottom(height){
     linear_extrude(wallz){
@@ -537,6 +524,9 @@ cclipr = croomwall; // inner size of clip (hole)
 ccliph = cclipr;
 cclipw = 10;
 cclipl = cclipr + 2; // 2 is size of clip wall
+// an external clip for the chamberplug. this
+// is inferior to internal plugs using
+// camberclipinverse().
 module chamberclip(skoosh = 0.1){
     difference(){
         cube([cclipw, cclipl, ccliph], true);
@@ -546,40 +536,42 @@ module chamberclip(skoosh = 0.1){
     }
 }
 
+// ought be included as a difference()
+// meant to be internal. better in terms
+// of both support and aesthetics than
+// external chamberclip().
 module chamberclipinverse(skoosh = 0.1){
 	cube([cclipw - 4 + skoosh, cclipr + skoosh, ccliph], true);
 }
 
+// an external stud which mates into chamberclip()
 module chamberplug(){
-    translate([0, 0, 0]){
-        difference(){
-            union(){
-                // fits into the clip
-                translate([0, 0, ccliph / 2]){
-                    cube([cclipw - 4, cclipr * 2, ccliph], true);
-				}
-                rotate([0, 90, 0]){
-                    cylinder(cclipw - 4, cclipr, cclipr, true);
-                }
-            }
-			// strip off the back
-            translate([0, -cclipr / 2, 0]){
-                cube([cclipw - 4, cclipr, cclipr * 2], true);
-            }
-        }
-    }
+	// fits into the clip
+	translate([0, 0, ccliph / 2]){
+		cube([cclipw - 4, cclipr, ccliph], true);
+	}
+	translate([-(cclipw - 4) / 2, -cclipr / 2, 0]){
+		rotate([0, 90, 0]){
+			linear_extrude(cclipw - 4){
+				polygon([
+					[0, 0],
+					[3 * cclipr / 2, 0],
+					[0, ccliph]
+				]);
+			}
+		}
+	}
 }
 
+// interior, for mating with chamberclipinverse()
 module chamberpluginverse(){
 	mirror([0, 1, 0]){
-		translate([0, -cclipr / 2, 0]){
-			chamberplug();
-		}
+		chamberplug();
 	}
 }
 
 /*translate([0, cclipl / 2, ccliph / 2]){
 	chamberclip();
-}
-chamberplug();
+}*/
+/*chamberplug();
 chamberpluginverse();*/

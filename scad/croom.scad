@@ -180,7 +180,7 @@ module croomcore(){
 }
 
 module hotboxplug(){
-	translate([0, botrad * sqrt(2) / 2, croomz]){
+	translate([0, botrad * sqrt(2) / 2 + croomwall / 2, croomz]){
 		translate([20, 0, 0]){
 			chamberplug();
 		}
@@ -191,7 +191,7 @@ module hotboxplug(){
 }
 
 module hotboxinnerplug(){
-	translate([0, botrad * sqrt(2) / 2 - croomwall, croomz]){
+	translate([0, botrad * sqrt(2) / 2 - 3 * croomwall / 2, croomz]){
 		mirror([0, 1, 0]){
 			translate([20, 0, 0]){
 				chamberplug();
