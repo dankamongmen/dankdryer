@@ -2,6 +2,8 @@
 // intended to be printed in PA6-[CG]F.
 include <core.scad>
 
+totalz = hotz + wallz + ttopz + elevation;
+
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5
 ceramheat230w = 77;
@@ -87,7 +89,7 @@ module upcorner(){
     t = totalxy / 2;
     translate([t - 19, t - 19, totalz - side / 2]){
         rotate([0, 0, 45]){
-            cylinder(side * 3, side / 3, side / 2, true, $fn = 4);
+            cylinder(side * 3, side / 3, side / 2, true, $fn = 5);
         }
     }
 }
@@ -99,21 +101,13 @@ module upcorners(){
 }
 
 module core(){
-    translate([0, 0, wallz]){
-        linear_extrude(totalz - wallz - ttopz){
-            polygon(opoints);
-        }
-    }
-}
-
-module bottom(z, tround){
 	br = botrad * sqrt(2);
 	tr = toprad * sqrt(2);
 	prismoid(size1=[br, br],
 		size2=[tr, tr],
-		h=z,
+		h=totalz - ttopz,
 		rounding1 = topround,
-		rounding2 = tround);
+		rounding2 = botround);
 }
 
 // hole and mounts for 175C thermocouple
@@ -158,18 +152,12 @@ module croomclipinner(){
 
 module hotbox(){
     difference(){
-        union(){
-            bottom(wallz, topround);
-			intersection(){
-				bottom(totalz, botround);
-				difference(){
-					core();
-					// cut away top corners
-					upcorners();
-				}
-			}
+		difference(){
+			core();
+			// cut away top corners
+			upcorners();
 		}
-        /*translate([-42, -40, 0]){
+		/*translate([-42, -40, 0]){
             rc522holes(wallz);
 	    }*/
 		// holes for our throughhole thermo+hall
@@ -197,7 +185,7 @@ module hotbox(){
             floorcuts();
         }
         // exhaust fan hole
-        translate([0, -(totalxy - wallxy) / 2, 80 / 2 + wallz]){
+        translate([0, -(totalxy - wallxy) / 2, wallz + elevation + hotz / 2]){
             fanhole(wallxy + 16);
         }
         // central column
