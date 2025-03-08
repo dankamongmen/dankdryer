@@ -222,6 +222,11 @@ module croom(iech = 20){
 			}
 		}
 	}
+	translate([botinalt - 10, 10, wallz]){
+		rotate([0, 0, 270]){
+			idtext();
+		}
+	}
 	hotboxplug();
 	hotboxinnerplug();
 	rotate([0, 0, 90]){

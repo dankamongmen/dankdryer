@@ -224,6 +224,11 @@ module hotbox(){
 			
 		}
 	}
+	translate([50, -botinalt + 25, wallz]){
+		rotate([0, 0, 225]){
+			idtext();
+		}
+	}
     translate([0, 0, totalz - ttopz]){
 		// cut away top to get threading
 		ScrewHole(innerr * 2,
