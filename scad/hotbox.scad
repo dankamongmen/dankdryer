@@ -22,16 +22,17 @@ module ceramheat230(rh, th){
 			cube([5, 5, mounth], true);
 		}
 	}
+	sd = d + 0.5;
 	translate([-holegapw / 2, -holegapl / 2, mounth]){
 		RodStart(d, rh, th, 0, 0.7);
 		translate([holegapw, 0, 0]){
 			RodStart(d, rh, th, 0, 0.7);
 			translate([0, holegapl, 0]){
-				RodStart(d, rh, th, 0, 0.7);
+				RodStart(sd, rh, th, 0, 0.7);
 			}
 		}
 		translate([0, holegapl, 0]){
-			RodStart(d, rh, th, 0, 0.7);
+			RodStart(sd, rh, th, 0, 0.7);
 		}
 	}
 }

@@ -220,7 +220,7 @@ module motor(){
 motorholderh = 3;
 mlength = motorboxh + motorholderh;
 
-tril = loadcelll / 2;
+tril = loadcelll / 2 + 5;
 module lowercouplingtri(l){
 	linear_extrude(loadcellsupph){
 		polygon([
@@ -255,7 +255,7 @@ module lowercoupling(){
 			}
 			couplingh = 40;
 			// primary motor holder
-			translate([couplingl / 2 - outerr, 0, 0]){
+			translate([couplingl / 2 - outerr + 5, 0, 0]){
 				difference(){
 					translate([0, 0, couplingh / 2 + loadcellsupph]){
 						cylinder(couplingh, outerr, outerr, true);
@@ -271,35 +271,30 @@ module lowercoupling(){
 		}
 		// holes in the bottom for wires, polarity
 		// legend, and center for load cell bump
-		translate([couplingl / 2 - outerr, 0, loadcellsupph / 2]){
+		translate([couplingl / 2 - outerr + 5, 0, loadcellsupph / 2]){
 			cube([innerr, loadcellh, loadcellsupph], true);
+			translate([0, innerr - 7, 0]){
+				cylinder(loadcellsupph, 3, 3, true);
+			}
+			translate([0, -innerr + 7, 0]){
+				cylinder(loadcellsupph, 3, 3, true);
+			}
 		}
-		translate([couplingl / 2 - outerr, innerr - 7, loadcellsupph / 2]){
-			cylinder(loadcellsupph, 3, 3, true);
-		}
-		translate([couplingl / 2 - outerr, -innerr + 7, loadcellsupph / 2]){
-			cylinder(loadcellsupph, 3, 3, true);
-		}
-		translate([couplingl / 2 - outerr - 3, -13, 0]){
+		translate([couplingl / 2 - outerr + 2, -13, 0]){
 			rotate([0, 0, 90]){
 				linear_extrude(loadcellsupph){
 					text("+", size=7, font="Prosto One");
 				}
 			}
 		}
-		// "redrill" the inner screw so that it
-		// penetrates the cylinders. screw from below.
-		translate([-couplingl / 2 + 22.25, 0, loadcellsupph / 2]){
-            screw("M5", length = loadcellsupph);
-        }	
 	}
 }
-/*
-bracel = loadcelll / 2 - loadcellmountl;
+
+/*bracel = loadcelll / 2 - loadcellmountl;
 translate([-bracel + 3, 0, 0]){
 	loadcellmount(loadcellsupph);
-}*/
-//lowercoupling();
+}
+lowercoupling();*/
 
 // the actual platform should cover a good chunk
 // of area, to keep the spool steady. cuts both
@@ -538,7 +533,7 @@ cclipr = croomwall; // inner size of clip (hole)
 ccliph = cclipr;
 cclipw = 10;
 cclipl = cclipr + 2; // 2 is size of clip wall
-module chamberclip(skoosh = 0.08){
+module chamberclip(skoosh = 0.1){
     difference(){
         cube([cclipw, cclipl, ccliph], true);
         translate([0, -1, 0]){
@@ -547,7 +542,7 @@ module chamberclip(skoosh = 0.08){
     }
 }
 
-module chamberclipinverse(skoosh = 0.08){
+module chamberclipinverse(skoosh = 0.1){
 	cube([cclipw - 4 + skoosh, cclipr + skoosh, ccliph], true);
 }
 
@@ -574,22 +569,7 @@ module chamberplug(){
 module chamberpluginverse(){
 	mirror([0, 1, 0]){
 		translate([0, -cclipr / 2, 0]){
-			difference(){
-				union(){
-					// fits into the clip
-					translate([0, 0, ccliph / 2]){
-						cube([cclipw - 4, cclipr * 2, ccliph], true);
-					}
-					// binds to the croom wall
-					rotate([0, 90, 0]){
-						cylinder(cclipw - 4, cclipr, cclipr, true);
-					}
-				}
-				// strip off the back
-				translate([0, -cclipr / 2, 0]){
-					cube([cclipw - 4, cclipr, cclipr * 2], true);
-				}
-			}
+			chamberplug();
 		}
 	}
 }
