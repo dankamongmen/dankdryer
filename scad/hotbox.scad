@@ -2,8 +2,6 @@
 // intended to be printed in PA6-[CG]F.
 include <core.scad>
 
-totalz = hotz + wallz + ttopz + elevation;
-
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5
 ceramheat230w = 77;

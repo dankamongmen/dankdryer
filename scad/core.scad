@@ -46,7 +46,7 @@ totalxy = spoold + wallxy * 2 + gapxy * 2;
 
 ctopz = wallz;
 croomz = wallz + ctopz + hotz;
-
+totalz = hotz + wallz + ttopz + elevation;
 locknuth = 5; // locknuts go atop mounting rods
 
 // thickness of croom xy walls (bottom is wallz)
