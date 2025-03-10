@@ -6,7 +6,7 @@ include <core.scad>
 // holes: 28.3/48.6 3.5
 ceramheat230w = 77;
 module ceramheat230(rh, th){
-	d = 3.5;
+	d = 3.3;
     holegapw = 32;
 	holegapl = 52;
 	mounth = 2;
