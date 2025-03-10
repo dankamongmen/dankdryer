@@ -10,29 +10,17 @@ module ceramheat230(rh, th){
     holegapw = 32;
 	holegapl = 52;
 	mounth = 2;
-	translate([-holegapw / 2, -holegapl / 2, mounth / 2]){
-		cube([5, 5, mounth], true);
-		translate([holegapw, 0, 0]){
-			cube([5, 5, mounth], true);
-			translate([0, holegapl, 0]){
-				cube([5, 5, mounth], true);
-			}
-		}
-		translate([0, holegapl, 0]){
-			cube([5, 5, mounth], true);
-		}
-	}
 	sd = d + 0.5;
-	translate([-holegapw / 2, -holegapl / 2, mounth]){
-		RodStart(d, rh, th, 0, 0.7);
+	translate([-holegapw / 2, -holegapl / 2, 0]){
+		mount(5, rh, th, sd);
 		translate([holegapw, 0, 0]){
-			RodStart(d, rh, th, 0, 0.7);
+			mount(5, rh, th, sd);
 			translate([0, holegapl, 0]){
-				RodStart(sd, rh, th, 0, 0.7);
+				mount(5, rh, th, sd);
 			}
 		}
 		translate([0, holegapl, 0]){
-			RodStart(sd, rh, th, 0, 0.7);
+			mount(5, rh, th, sd);
 		}
 	}
 }
@@ -172,7 +160,7 @@ module hotbox(){
 			// we want it entirely underneath the
 			// spool, and closer to the perimeter
 			// than the center.
-			translate([0, totalxy / 4 + 8, wallz]){
+			translate([0, totalxy / 4 + 8, 0]){
 				ceramheat230(2, 5);
 			}
         }
@@ -183,7 +171,7 @@ module hotbox(){
             floorcuts();
         }
         // exhaust fan hole
-        translate([0, -(totalxy - wallxy) / 2, wallz + elevation + hotz / 2]){
+        translate([0, -(totalxy - wallxy) / 2, wallz + hotz / 2]){
             fanhole(wallxy + 16);
         }
         // central column

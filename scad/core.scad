@@ -17,7 +17,7 @@ module multicolor(color, opacity=1) {
 }
 
 module idtext(){
-  text3d("v1.9.8", h=1.2, size=3, font="Prosto One");
+  text3d("v1.9.9", h=1.2, size=3, font="Prosto One");
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
@@ -75,6 +75,17 @@ module topbottom(height){
     linear_extrude(wallz){
         polygon(opoints);
     }
+}
+
+// 3mm tall square bottom plus (th + rh) d-wide riser
+module mount(c, rh, th, d){
+	ct = 3;
+	translate([0, 0, wallz + ct / 2]){
+		cube([c, c, ct], true);
+		translate([0, 0, ct / 2]){
+			RodStart(d, rh, th, 0, 0.7);
+		}
+	}
 }
 
 module foursquare(){
@@ -353,13 +364,10 @@ platformouterd = spoold / 2;
 // the platform sheathes the rotor, then descends to
 // the hotbox floor, and expands.
 cupolah = 24;
-cupolat = 4;
-cupolaw = motorboxd + cupolat;
+cupolaw = motorboxd + 4;
 columnr = 25;
 platforminnerr = columnr - 0.5;
 wormbore = 6.5; // taken from specsheet + 0.5 skoosh
-wormlen = 15;
-wormthick = 2;
 bottoml = 4;
 ch = (cupolaw - motorboxd) / 2;
 rotorh = cupolah + ch;
@@ -527,7 +535,7 @@ cclipl = cclipr + 2; // 2 is size of clip wall
 // an external clip for the chamberplug. this
 // is inferior to internal plugs using
 // camberclipinverse().
-module chamberclip(skoosh = 0.1){
+module chamberclip(skoosh = 0.2){
     difference(){
         cube([cclipw, cclipl, ccliph], true);
         translate([0, -1, 0]){
@@ -540,7 +548,7 @@ module chamberclip(skoosh = 0.1){
 // meant to be internal. better in terms
 // of both support and aesthetics than
 // external chamberclip().
-module chamberclipinverse(skoosh = 0.1){
+module chamberclipinverse(skoosh = 0.2){
 	cube([cclipw - 4 + skoosh, cclipr + skoosh, ccliph], true);
 }
 

@@ -45,34 +45,23 @@ module fullmount(c, h){
 	}
 }
 
-// 3mm square bottom plus (th + rh) M5 riser
-module mount(c, rh, th){
-	mounth = 3;
-	d = 5;
-	translate([0, 0, wallz + mounth / 2]){
-		cube([c, c, mounth], true);
-		translate([0, 0, (mounth) / 2]){
-			RodStart(d, rh, th, 0, 0.7);
-		}
-	}
-}
-
 // width: mid2mid 65mm with M5 holes
 // length: mid2mid 90mm with M5 holes
 pcbmountc = 6;
 module pcbmounts(){
-	rh = 2;
+	rh = 4;
 	th = 5;
+	d = 5;
     translate([45, -0.95 * totalxy / 2 + mh + 10, 0]){
-        mount(pcbmountc, rh, th);
+        mount(pcbmountc, rh, th, d);
         translate([-90, 0, 0]){
-            mount(pcbmountc, rh, th);
+			mount(pcbmountc, rh, th, d);
         }
         translate([0, 65, 0]){
-            mount(pcbmountc, rh, th);
+			mount(pcbmountc, rh, th, d);
 			// this one is off-corner
 			translate([-65, 0, 0]){
-				mount(pcbmountc, rh, th);
+				mount(pcbmountc, rh, th, d);
 			}
         }
     }
@@ -122,7 +111,7 @@ module rockerhole(iech){
 acadapterh = 22;
 acadapterw = 50;
 acadapterl = 135;
-acmounth = locknuth + 2.5; // 7.5mm
+acmounth = locknuth + 4; // 9mm
 module acadaptermount(l){
 	d = 4; // M4
     translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz]){
