@@ -450,7 +450,7 @@ module assembly(){
 				translate([0, 0, 25]){
 					rotor();
 					translate([0, 0, -10]){
-						platform(platforminnerr, platformouterd / 2);
+						platform(platforminnerr);
 					}
 				}
 			}
