@@ -3331,9 +3331,9 @@
 		)
 		(uuid "89a2def1-962d-406e-b8ef-57fbb7300ca0")
 	)
-	(text "2.7-5.5V input.\nAVDD must not exceed DVDD.\nOur AVDD is 5, and our DVDD 3.3, so we don't use AVDD.\nKGI is the through-hole model, which I accidentally ordered.\n400 pF capacitive load per bus line."
+	(text "2.7-5.5V input.\nAVDD must not exceed DVDD.\n400 pF capacitive load per bus line."
 		(exclude_from_sim no)
-		(at 179.07 96.52 0)
+		(at 179.07 98.298 0)
 		(effects
 			(font
 				(size 1.27 1.27)
