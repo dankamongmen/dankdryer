@@ -271,14 +271,7 @@ module lowercoupling(){
 				// fill in the bottom, except for the
 				// front, where we need leave space
 				// for the head of a bolt
-				difference(){
-					cylinder(loadcellsupph,
-							(motorboxd - loadcellsupph) / 2,
-							outerr);
-					translate([outerr - 1, 0, 0]){
-						cylinder(loadcellsupph - 1, 6, 5);
-					}
-				}
+				cylinder(loadcellsupph, (motorboxd - loadcellsupph) / 2, outerr);
 			}
 		}
 		// holes in the bottom for wires, polarity
@@ -299,6 +292,10 @@ module lowercoupling(){
 					text("+", size=7, font="Prosto One");
 				}
 			}
+		}
+		// cut out the front for farside bolt
+		translate([couplingl / 2 + 4, 0, 0]){
+			sphere(7);
 		}
 	}
 }
@@ -355,15 +352,31 @@ module platform(inr){
 			intersection(){
 				// chunky spokes
 				for(i = [0 : 60 : 360]){
-					translate([0, 0, (wallz + elevation + platformtoph) / 2]){
+					rotate([0, 0, i]){
+					rotate_extrude(angle = 10){
+						polygon([
+							[inr, 0],
+							[inr, platformh - 2],
+							[outr, platformh - 2]
+						]);
+						polygon([
+							[inr, 0],
+							[inr, platformh],
+							[outr, platformh]
+						]);
+					}
+					}
+				}
+				
+				/*	translate([0, 0, (wallz + elevation + platformtoph) / 2]){
 						rotate([0, 0, i]){
 							cube([5, outr * 2, elevation + wallz + platformtoph], true);
 						}
 					}
-				} // cylinder to thin spokes
+				// cylinder to thin spokes
 				translate([0, 0, platformtoph + wallz + 3]){
 					cylinder(elevation + wallz + platformtoph, outr - 20, outr, true);
-				}
+				}*/
 			}
 		}
 		cylinder(cupolah, cupolaw / 2 + 1, cupolaw / 2 + 1, true);
