@@ -560,7 +560,10 @@ setup_nau7802(i2c_master_bus_handle_t master){
   if(nau7802_poweron(NAU7802)){
     return -1;
   }
-  // FIXME set gain / LDO?
+  if(nau7802_set_pga_cap(NAU7802, true)){
+    return -1;
+  }
+  // FIXME set gain?
   return 0;
 }
 
