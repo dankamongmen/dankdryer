@@ -17,7 +17,7 @@ module multicolor(color, opacity=1) {
 }
 
 module idtext(){
-  text3d("v1.9.9", h=1.2, size=3, font="Prosto One");
+  text3d("v2.0.0", h=1.2, size=3);
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
@@ -177,17 +177,17 @@ loadcellmounth = 17;
 loadcellsupph = 4;
 loadcellmountw = loadcellh;
 
-module loadcellmount(baseh, s = "M5"){
+// load cell mounting base with two threads
+module loadcellmount(baseh){
     difference(){
-        // load cell mounting base
         translate([0, 0, baseh / 2]){
             cube([loadcellmountl, loadcellh, baseh], true);
         }
-        translate([-loadcellmountholegap / 2, 0, baseh / 2]){
-            screw(s, length = baseh);
+        translate([-loadcellmountholegap / 2, 0, 0]){
+			ScrewThread(5, baseh);
         }
-        translate([loadcellmountholegap / 2, 0, baseh / 2]){
-            screw(s, length = baseh);
+        translate([loadcellmountholegap / 2, 0, 0]){
+			ScrewThread(5, baseh);
         }
     }
 }
@@ -240,7 +240,9 @@ module lowercoupling(){
 	// shaft must be in the dead center
 	// of the structure.
 	outerr = (motorboxd + 2) / 2;
-	innerr = motorboxd / 2;
+	// we add 1mm for the carbon fiber, as
+	// it has no flex (0.5 added to innerr)
+	innerr = motorboxd / 2 + 0.5;
 	// total length of the lower coupling is
 	// one side of the load cell through the
 	// opposite outside of the coupling, aka:
@@ -266,9 +268,17 @@ module lowercoupling(){
 						cylinder(couplingh, innerr, innerr, true);
 					}
 				}
-				cylinder(loadcellsupph,
-						(motorboxd - loadcellsupph) / 2,
-						outerr);
+				// fill in the bottom, except for the
+				// front, where we need leave space
+				// for the head of a bolt
+				difference(){
+					cylinder(loadcellsupph,
+							(motorboxd - loadcellsupph) / 2,
+							outerr);
+					translate([outerr - 1, 0, 0]){
+						cylinder(loadcellsupph - 1, 6, 5);
+					}
+				}
 			}
 		}
 		// holes in the bottom for wires, polarity
@@ -282,6 +292,7 @@ module lowercoupling(){
 				cylinder(loadcellsupph, 3, 3, true);
 			}
 		}
+		// designate positive side
 		translate([couplingl / 2 - outerr + 2, -13, 0]){
 			rotate([0, 0, 90]){
 				linear_extrude(loadcellsupph){
@@ -295,15 +306,16 @@ module lowercoupling(){
 /*bracel = loadcelll / 2 - loadcellmountl;
 translate([-bracel + 3, 0, 0]){
 	loadcellmount(loadcellsupph);
-}
-lowercoupling();*/
+}*/
+//lowercoupling();
 
 // the actual platform should cover a good chunk
 // of area, to keep the spool steady. cuts both
 // allow heat to flow, and reduce weight.
 platformtoph = 2;
 platformh = elevation + wallz + platformtoph;
-module platform(inr, outr){
+module platform(inr){
+	outr = platformouterd / 2;
 	difference(){
 		union(){
 			difference(){
@@ -354,10 +366,11 @@ module platform(inr, outr){
 				}
 			}
 		}
-		cylinder(cupolah, cupolaw / 2, cupolaw / 2, true);
+		cylinder(cupolah, cupolaw / 2 + 1, cupolaw / 2 + 1, true);
 	}
 }
-//	platform(platforminnerr, platformouterd / 2);
+
+//platform(platforminnerr);
 shafth = platformh + 35;
 platformouterd = spoold / 2;
 
@@ -365,19 +378,19 @@ platformouterd = spoold / 2;
 // the hotbox floor, and expands.
 cupolah = 24;
 cupolaw = motorboxd + 4;
-columnr = 25;
-platforminnerr = columnr - 0.5;
-wormbore = 6.5; // taken from specsheet + 0.5 skoosh
+platforminnerr = 25;
+wormbore = 6.8; // taken from specsheet + 0.8 skoosh
 bottoml = 4;
 ch = (cupolaw - motorboxd) / 2;
 rotorh = cupolah + ch;
 module rotor(){
 	translate([0, 0, -1]){ // z-center it properly
+		// main core
 		difference(){
 			cylinder(cupolah, cupolaw / 2, cupolaw / 2, true);
 			// cut out the core, representing the motor
 			// plus a small amount of skoosh (radius)
-			innersk = (motorboxd + 1) / 2;
+			innersk = (motorboxd + 1) / 2 + 0.5;
 			cylinder(cupolah, innersk, innersk, true);
 		}
 			
@@ -394,6 +407,7 @@ module rotor(){
 		// motor-wide cylinder transfixed by the rotor.
 		// it is this to which torque is imparted.
 		translate([0, 0, (cupolah + ch) / 2]){
+			// bend inwards at the top
 			translate([0, 0, -ch / 2]){
 				rotate_extrude(){
 					translate([motorboxd / 2, 0, 0]){
@@ -404,6 +418,7 @@ module rotor(){
 				}
 			}
 			r = motorboxd / 2;
+			// inner core of the top
 			difference(){
 				cylinder(ch, r, r, true);
 				cylinder(ch, wormbore / 2, wormbore / 2, true);

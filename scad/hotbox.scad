@@ -176,7 +176,7 @@ module hotbox(){
         }
         // central column
         translate([0, 0, wallz / 2]){
-            cylinder(wallz, columnr, columnr, true);
+            cylinder(wallz, platforminnerr, platforminnerr, true);
         }
         // hole and mounts for 175C thermocouple and
 		// heating element wires

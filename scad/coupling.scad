@@ -32,7 +32,7 @@ multicolor("lightblue"){
 multicolor("lightgreen"){
 translate([0, 30, platformh]){
 	mirror([0, 0, 1]){
-		platform(platforminnerr, platformouterd / 2);
+		platform(platforminnerr);
 	}
 }
 }
@@ -43,4 +43,4 @@ multicolor("pink"){
 		assembly();
 	}
 }
-*/
+//*/
