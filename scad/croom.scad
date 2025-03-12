@@ -114,14 +114,20 @@ acadapterl = 135;
 acmounth = locknuth + 4; // 9mm
 module acadaptermount(l){
 	d = 4; // M4
-    translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz]){
-		RodStart(d, l - locknuth, locknuth, 0, 0.7);
+	bh = l - locknuth;
+    translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz + bh / 2]){
+		cylinder(bh, d / 2, d / 2, true);
+		/*translate([0, 0, (bh + locknuth) / 2 - 1]){
+			cylinder(locknuth, d / 2, d, true);
+		}*/
+		//RodStart(d, l - locknuth, locknuth, 0, 0.7);
     }
 }
 
 // 60mm wide total
 // screw holes are 6mm in from sides, so they start at
 // 6mm (through 10mm) and 50mm (through 54mm)
+// they have 2mm radius and 3mm height
 module acadapterscrews(l){
     translate([0, acadapterw, 0]){
         acadaptermount(l);
