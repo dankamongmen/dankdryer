@@ -22,7 +22,7 @@ firmware:
 
 $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
 	@mkdir -p $(@D)
-	time $(OSCAD) $(SCADFLAGS) -o $@ $<
+	time $(OSCAD) -DOPENTOP=0 $(SCADFLAGS) -o $@ $<
 
 $(OUT)/scad/%.png: scad/%.scad scad/core.scad
 	@mkdir -p $(@D)
