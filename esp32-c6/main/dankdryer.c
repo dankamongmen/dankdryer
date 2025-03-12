@@ -1,7 +1,9 @@
 // intended for use on an ESP32-S3-WROOM-1
 #include "networking.h"
+#include "dankdryer.h"
 #include "nau7802.h"
 #include "pins.h"
+#include "fans.h"
 #include "ota.h"
 #include <nvs.h>
 #include <time.h>
@@ -20,16 +22,14 @@
 #include <hal/ledc_types.h>
 #include <esp_idf_version.h>
 #include <soc/adc_channel.h>
-#include <esp32c6/rom/rtc.h>
+//#include <esp32c6/rom/rtc.h>
 #include <esp_adc/adc_cali.h>
 #include <driver/i2c_master.h>
+#include <driver/gpio_filter.h>
 #include <esp_adc/adc_oneshot.h>
 #include <driver/temperature_sensor.h>
 
 #define UUIDLEN 16
-#define MAXPWMDUTY 255
-#define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
-#define RPMMAX (1u << 14u)
 #define MIN_TEMP -80
 #define MAX_TEMP 200
 #define MAX_DRYREQ_TMP 150
@@ -39,30 +39,16 @@
 // give tachs a longer period to smooth them out
 #define TACH_SAMPLE_QUANTUM_USEC 5000000ul
 
-#define NVS_HANDLE_NAME "pstore"
 #define BOOTCOUNT_RECNAME "bootcount"
 #define TAREOFFSET_RECNAME "tare"
-#define LOWERPWM_RECNAME "lpwm"
-#define UPPERPWM_RECNAME "upwm"
 #define ESSID_RECNAME "essid"
 #define PSK_RECNAME "psk"
 #define SETUPSTATE_RECNAME "sstate"
-#ifdef LEDC_HIGH_SPEED_MODE
-#define LEDCMODE LEDC_HIGH_SPEED_MODE
-#else
-#define LEDCMODE LEDC_LOW_SPEED_MODE
-#endif
 #define LOAD_CELL_MAX 5000 // 5kg capable
-
-#define LOWER_FANCHAN 0
-#define UPPER_FANCHAN 1
-#define LOWER_FANTIMER LEDC_TIMER_0
-#define UPPER_FANTIMER LEDC_TIMER_1
 
 static bool MotorState;
 static bool HeaterState;
-static uint32_t LowerPWM = 128;
-static uint32_t UpperPWM = 128;
+static bool StartupFailure;
 static float LastWeight = -1.0;
 static float TareWeight = -1.0;
 static time_t DryEndsAt; // dry stop time in seconds since epoch
@@ -75,12 +61,11 @@ static float LastLowerTemp, LastUpperTemp;
 static uint32_t LastLowerRPM, LastUpperRPM;
 
 // variables manipulated by interrupts
-static _Atomic(uint32_t) HallPulses, LowerFanPulses, UpperFanPulses;
+static _Atomic(uint32_t) HallPulses;
 
 // ESP-IDF objects
 static bool NAUAvailable;
 static bool ADC1Calibrated;
-static led_strip_handle_t Neopixel;
 static adc_oneshot_unit_handle_t ADC1;
 static temperature_sensor_handle_t temp;
 static adc_cali_handle_t ADC1Calibration;
@@ -97,11 +82,6 @@ rpm_valid_p(unsigned rpm){
 }
 
 static inline bool
-pwm_valid_p(int pwm){
-  return pwm >= 0 && pwm <= MAXPWMDUTY;
-}
-
-static inline bool
 temp_valid_p(float temp){
   return temp >= MIN_TEMP && temp <= MAX_TEMP;
 }
@@ -111,18 +91,8 @@ weight_valid_p(float weight){
   return weight >= 0 && weight <= LOAD_CELL_MAX;
 }
 
-typedef struct failure_indication {
-  int r, g, b;
-} failure_indication;
-
-static bool StartupFailure;
-static const failure_indication SystemError = { 32, 0, 0 };
-static const failure_indication NetworkError = { 32, 0, 32 };
-static const failure_indication PostFailure = { 0, 0, 0 };
-
 // gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
-static int
-gpio_setup(gpio_num_t pin, gpio_mode_t mode, const char *mstr){
+int gpio_setup(gpio_num_t pin, gpio_mode_t mode, const char *mstr){
   gpio_reset_pin(pin);
   esp_err_t err;
   if((err = gpio_set_direction(pin, mode)) != ESP_OK){
@@ -132,69 +102,33 @@ gpio_setup(gpio_num_t pin, gpio_mode_t mode, const char *mstr){
   return 0;
 }
 
-static inline int
-gpio_set_inputoutput_opendrain(gpio_num_t pin){
-  return gpio_setup(pin, GPIO_MODE_INPUT_OUTPUT_OD, "input+output(od)");
-}
-
-static inline int
-gpio_set_inputoutput(gpio_num_t pin){
-  return gpio_setup(pin, GPIO_MODE_INPUT_OUTPUT, "input+output");
-}
-
-static inline int
-gpio_set_input(gpio_num_t pin){
-  return gpio_setup(pin, GPIO_MODE_INPUT, "input");
-}
-
-static inline int
-gpio_set_output(gpio_num_t pin){
-  return gpio_setup(pin, GPIO_MODE_OUTPUT, "output");
-}
-
-static int
-initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_t timer){
-  if(gpio_set_output(pin)){
-    return -1;
-  }
-  ledc_timer_config_t ledc_timer;
-  memset(&ledc_timer, 0, sizeof(ledc_timer));
-  ledc_timer.speed_mode = LEDCMODE;
-  ledc_timer.duty_resolution = FANPWM_BIT_NUM;
-  ledc_timer.timer_num = timer;
-  ledc_timer.freq_hz = freq;
-  if(ledc_timer_config(&ledc_timer) != ESP_OK){
-    fprintf(stderr, "error (timer config)!\n");
-    return -1;
-  }
-  ledc_channel_config_t conf;
-  memset(&conf, 0, sizeof(conf));
-  conf.gpio_num = pin;
-  conf.speed_mode = LEDCMODE;
-  conf.intr_type = LEDC_INTR_DISABLE;
-  conf.timer_sel = timer;
-  conf.duty = FANPWM_BIT_NUM;
-  conf.channel = channel;
-  printf("setting up pin %d for %dHz PWM\n", pin, freq);
-  if(ledc_channel_config(&conf) != ESP_OK){
-    fprintf(stderr, "error (channel config)!\n");
-    return -1;
-  }
-  return 0;
-}
-
-static int
-initialize_25k_pwm(ledc_channel_t channel, gpio_num_t pin, ledc_timer_t timer){
-  return initialize_pwm(channel, pin, 25000, timer);
-}
-
-static int
-setup_intr(gpio_num_t pin, _Atomic(uint32_t)* arg){
+int setup_intr(gpio_num_t pin, _Atomic(uint32_t)* arg){
   if(gpio_set_input(pin)){
     return -1;
   }
-  esp_err_t e = gpio_set_intr_type(pin, GPIO_INTR_NEGEDGE);
-  if(e != ESP_OK){
+  esp_err_t e;
+  gpio_pin_glitch_filter_config_t fconf = {
+    .clk_src = SOC_MOD_CLK_XTAL,
+    .gpio_num = pin,
+  };
+  gpio_glitch_filter_handle_t gfilter;
+  if((e = gpio_new_pin_glitch_filter(&fconf, &gfilter)) != ESP_OK){
+    fprintf(stderr, "error (%s) creating glitch filter on %d\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_glitch_filter_enable(gfilter)) != ESP_OK){
+    fprintf(stderr, "error (%s) enabling glitch filter on %d\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_pullup_dis(pin)) != ESP_OK){
+    fprintf(stderr, "error (%s) disabling pullup on %d\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_pulldown_en(pin)) != ESP_OK){
+    fprintf(stderr, "error (%s) enabling pulldown on %d\n", esp_err_to_name(e), pin);
+    return -1;
+  }
+  if((e = gpio_set_intr_type(pin, GPIO_INTR_NEGEDGE)) != ESP_OK){
     fprintf(stderr, "failure (%s) installing %d interrupt\n", esp_err_to_name(e), pin);
     return -1;
   }
@@ -207,42 +141,6 @@ setup_intr(gpio_num_t pin, _Atomic(uint32_t)* arg){
     return -1;
   }
   return 0;
-}
-
-static int
-set_pwm(const ledc_channel_t channel, unsigned pwm){
-  if(ledc_set_duty_and_update(LEDCMODE, channel, pwm, MAXPWMDUTY) != ESP_OK){
-    fprintf(stderr, "error setting pwm!\n");
-    return -1;
-  }
-  printf("set pwm to %u on channel %d\n", pwm, channel);
-  return 0;
-}
-
-static int
-setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
-           gpio_num_t lowertpin, gpio_num_t uppertpin){
-  int ret = 0;
-  esp_err_t e;
-  if((e = ledc_fade_func_install(0)) != ESP_OK){
-    fprintf(stderr, "error (%s) installing ledc interrupt\n", esp_err_to_name(e));
-    ret = -1;
-  }
-  if(setup_intr(lowertpin, &LowerFanPulses)){
-    ret = -1;
-  }
-  if(initialize_25k_pwm(LOWER_FANCHAN, lowerppin, LOWER_FANTIMER)
-      || set_pwm(LOWER_FANCHAN, LowerPWM)){
-    ret = -1;
-  }
-  if(setup_intr(uppertpin, &UpperFanPulses)){
-    ret = -1;
-  }
-  if(initialize_25k_pwm(UPPER_FANCHAN, upperppin, UPPER_FANTIMER)
-      || set_pwm(UPPER_FANCHAN, UpperPWM)){
-    ret = -1;
-  }
-  return ret;
 }
 
 // precondition: isxdigit(c) is true
@@ -279,14 +177,6 @@ float get_weight(void){
   return LastWeight;
 }
 
-unsigned get_lower_pwm(void){
-  return LowerPWM;
-}
-
-unsigned get_upper_pwm(void){
-  return UpperPWM;
-}
-
 uint32_t get_spool_rpm(void){
   return LastSpoolRPM;
 }
@@ -297,30 +187,6 @@ unsigned get_lower_rpm(void){
 
 unsigned get_upper_rpm(void){
   return LastUpperRPM;
-}
-
-static int
-write_pwm(const char* recname, uint32_t pwm){
-  nvs_handle_t nvsh;
-  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
-  if(err){
-    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
-    return -1;
-  }
-  err = nvs_set_u32(nvsh, recname, pwm);
-  if(err){
-    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), recname);
-    nvs_close(nvsh);
-    return -1;
-  }
-  err = nvs_commit(nvsh);
-  if(err){
-    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
-    nvs_close(nvsh);
-    return -1;
-  }
-  nvs_close(nvsh);
-  return 0;
 }
 
 int read_wifi_config(unsigned char* essid, size_t essidlen,
@@ -397,18 +263,6 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
   }
   nvs_close(nvsh);
   return 0;
-}
-
-void set_lower_pwm(unsigned pwm){
-  LowerPWM = pwm;
-  write_pwm(LOWERPWM_RECNAME, pwm);
-  set_pwm(LOWER_FANCHAN, LowerPWM);
-}
-
-void set_upper_pwm(unsigned pwm){
-  UpperPWM = pwm;
-  write_pwm(UPPERPWM_RECNAME, pwm);
-  set_pwm(UPPER_FANCHAN, UpperPWM);
 }
 
 // update NVS with tare offset
@@ -526,49 +380,6 @@ float getWeight(void){
   return newv;
 }
 
-static int
-rgbset(unsigned r, unsigned g, unsigned b){
-  esp_err_t e = led_strip_set_pixel(Neopixel, 0, r, g, b);
-  if(e != ESP_OK){
-    fprintf(stderr, "failure %d setting LED\n", e);
-    return -1;
-  }
-  if((e = led_strip_refresh(Neopixel)) != ESP_OK){
-    fprintf(stderr, "failure %d refreshing LED\n", e);
-    return -1;
-  }
-  return 0;
-}
-
-#ifdef RGB_PIN
-static int
-setup_neopixel(gpio_num_t pin){
-  if(gpio_set_output(pin)){
-    return -1;
-  }
-  led_strip_config_t sconf = {
-    .strip_gpio_num = pin,
-    .max_leds = 1,
-    .led_model = LED_MODEL_WS2812,
-    .flags.invert_out = false,
-  };
-  led_strip_rmt_config_t rconf = {
-    .clk_src = RMT_CLK_SRC_DEFAULT,
-    .resolution_hz = 10 * 1000 * 1000,
-    .flags.with_dma = false,
-  };
-  esp_err_t e;
-  if((e = led_strip_new_rmt_device(&sconf, &rconf, &Neopixel)) != ESP_OK){
-    fprintf(stderr, "failure %d initializing LED at %d\n", e, pin);
-    return -1;
-  }
-  if(rgbset(64, 64, 64)){
-    return -1;
-  }
-  return 0;
-}
-#endif
-
 // initialize and calibrate an ADC unit (ESP32-S3 has two, but ADC2 is
 // used by wifi). ADC1 supports GPIO 0--6.
 static int
@@ -626,6 +437,10 @@ setup_temp(gpio_num_t thermpin, adc_unit_t unit, adc_channel_t* channel){
     return -1;
   }
   esp_err_t e;
+  if((e = gpio_pullup_dis(thermpin)) != ESP_OK){
+    fprintf(stderr, "error (%s) disabling pullup on %d\n", esp_err_to_name(e), thermpin);
+    return -1;
+  }
   if((e = adc_oneshot_io_to_channel(thermpin, &unit, channel)) != ESP_OK){
     fprintf(stderr, "error (%s) getting adc channel for %d\n", esp_err_to_name(e), thermpin);
     return -1;
@@ -724,22 +539,7 @@ read_pstore(void){
     nvs_close(nvsh);
     return -1;
   }
-  uint32_t lpwm = LowerPWM;
-  if(nvs_get_opt_u32(nvsh, LOWERPWM_RECNAME, &lpwm) == 0){
-    if(pwm_valid_p(lpwm)){
-      LowerPWM = lpwm;
-    }else{
-      fprintf(stderr, "read invalid lower pwm %lu\n", lpwm);
-    }
-  }
-  uint32_t upwm = UpperPWM;
-  if(nvs_get_opt_u32(nvsh, UPPERPWM_RECNAME, &upwm) == 0){
-    if(pwm_valid_p(upwm)){
-      UpperPWM = upwm;
-    }else{
-      fprintf(stderr, "read invalid upper pwm %lu\n", upwm);
-    }
-  }
+  read_fans_pstore(nvsh);
   float tare = TareWeight; // if not present, don't change initialized value
   if(nvs_get_opt_float(nvsh, TAREOFFSET_RECNAME, &tare) == 0){
     if(weight_valid_p(tare)){
@@ -765,16 +565,8 @@ setup_nau7802(i2c_master_bus_handle_t master){
 }
 
 static void
-set_led(const struct failure_indication *nin){
-  rgbset(nin->r, nin->g, nin->b);
-}
-
-static void
-set_failure(const struct failure_indication *fin){
-  if(fin != &PostFailure){
-    StartupFailure = true;
-  }
-  set_led(fin);
+set_failure(void){
+  StartupFailure = true;
 }
 
 static int
@@ -952,77 +744,82 @@ print_reset_reason(void){
 
 static void
 setup(adc_channel_t* thermchan){
-#ifdef RGB_PIN
-  setup_neopixel(RGB_PIN);
-#endif
   printf(DEVICE " v" VERSION "\n");
   print_reset_reason();
   if(!init_pstore()){
     read_pstore();
   }
   if(ota_init()){
-    set_failure(&SystemError);
+    set_failure();
   }
+  // install the ETS_GPIO_INTR_SOURCE interrupt handler, which demuxes
+  // to per-pin interrupt handlers.
   esp_err_t e = gpio_install_isr_service(0);
   if(e != ESP_OK){
     fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
-    set_failure(&SystemError);
+    set_failure();
   }
   if(setup_intr(HALL_DATAPIN, &HallPulses)){
-    set_failure(&SystemError);
+    set_failure();
   }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
-    set_failure(&SystemError);
+    set_failure();
   }
   if(setup_i2c(&I2CMaster, SDA_PIN, SCL_PIN)){
-    set_failure(&SystemError);
+    set_failure();
   }
-  if(setup_lcd(LCD_SDA_PIN, LCD_SCL_PIN, LCD_DC_PIN, LCD_CS_PIN, LCD_RST_PIN)){
-    set_failure(&SystemError);
-  }
+  /*if(setup_lcd(LCD_SDA_PIN, LCD_SCL_PIN, LCD_DC_PIN, LCD_CS_PIN, LCD_RST_PIN)){
+    set_failure();
+  }*/
   if(setup_temp(THERM_DATAPIN, ADC_UNIT_1, thermchan)){
-    set_failure(&SystemError);
+    set_failure();
   }
   if(setup_adc_oneshot(ADC_UNIT_1, &ADC1, &ADC1Calibration, &ADC1Calibrated, *thermchan)){
-    set_failure(&SystemError);
+    set_failure();
   }
   if(setup_nau7802(I2CMaster)){
-    set_failure(&SystemError);
+    set_failure();
   }else{
     NAUAvailable = true;
   }
   if(setup_heater(SSR_GPIN)){
-    set_failure(&SystemError);
+    set_failure();
   }
   if(setup_motor(MOTOR_GATEPIN)){
-    set_failure(&SystemError);
+    set_failure();
   }
   if(setup_network()){
-    set_failure(&NetworkError);
+    set_failure();
   }
-  //gpio_dump_all_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
+  //gpio_dump_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
   if(!StartupFailure){
-    set_failure(&PostFailure);
+    set_failure();
   }
   printf("initialization %ssuccessful v" VERSION "\n", StartupFailure ? "un" : "");
+}
+
+static uint32_t
+get_hall_count(void){
+  uint32_t r = HallPulses;
+  HallPulses = 0;
+  return r;
 }
 
 // we don't try to measure the first iteration, as we don't yet have a
 // timestamp (and the fans are spinning up, anyway).
 static void
-getPulseCount(int64_t curtime, int64_t lasttime, _Atomic(uint32_t)* pcount, uint32_t *lastpcount){
+getPulseCount(int64_t curtime, int64_t lasttime, uint32_t(*getcount)(void), uint32_t *lastpcount){
   unsigned rpm;
   const float diffu = curtime - lasttime;
-  rpm = *pcount;
+  rpm = getcount();
   printf("pulse count raw: %u\n", rpm);
-  rpm /= 2; // two pulses for each rotation
   const float scale = 60.0 * 1000000u / diffu;
   rpm *= scale;
+  rpm /= 2; // two pulses for each rotation
   printf("scale: %f diffu: %f rpm: %u\n", scale, diffu, rpm);
   if(rpm_valid_p(rpm)){
     *lastpcount = rpm;
   }
-  *pcount = 0;
 }
 
 void send_mqtt(int64_t curtime){
@@ -1046,8 +843,8 @@ void send_mqtt(int64_t curtime){
   if(rpm_valid_p(LastSpoolRPM)){
     cJSON_AddNumberToObject(root, "srpm", LastSpoolRPM);
   }
-  cJSON_AddNumberToObject(root, "lpwm", LowerPWM);
-  cJSON_AddNumberToObject(root, "upwm", UpperPWM);
+  cJSON_AddNumberToObject(root, "lpwm", get_lower_pwm());
+  cJSON_AddNumberToObject(root, "upwm", get_upper_pwm());
   if(weight_valid_p(LastWeight)){
     cJSON_AddNumberToObject(root, "mass", LastWeight);
   }
@@ -1095,13 +892,13 @@ void app_main(void){
     }
     printf("esp32 temp: %f weight: %f (%svalid)\n", ambient, weight,
             weight_valid_p(weight) ? "" : "in");
-    printf("pwm-l: %lu pwm-u: %lu\n", LowerPWM, UpperPWM);
+    printf("pwm-l: %u pwm-u: %u\n", get_lower_pwm(), get_upper_pwm());
     printf("motor: %s heater: %s\n", motor_state(), heater_state());
     int64_t curtime = esp_timer_get_time();
     if(curtime - lasttachs > TACH_SAMPLE_QUANTUM_USEC){
-			getPulseCount(curtime, lasttachs, &HallPulses, &LastSpoolRPM);
-			getPulseCount(curtime, lasttachs, &LowerFanPulses, &LastLowerRPM);
-			getPulseCount(curtime, lasttachs, &UpperFanPulses, &LastUpperRPM);
+			getPulseCount(curtime, lasttachs, get_hall_count, &LastSpoolRPM);
+			getPulseCount(curtime, lasttachs, get_lower_tach, &LastLowerRPM);
+			getPulseCount(curtime, lasttachs, get_upper_tach, &LastUpperRPM);
       lasttachs = curtime;
     }
     //printf("dryends: %lld cursec: %lld\n", DryEndsAt, curtime);
