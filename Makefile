@@ -3,7 +3,7 @@
 OUT:=out
 SCADBASE:=$(addprefix scad/, coupling croom hotbox top complete)
 STL:=$(addsuffix .stl, $(addprefix $(OUT)/, $(SCADBASE)))
-IMAGES:=$(addsuffix .png, $(addprefix $(OUT)/, $(SCADBASE)))
+IMAGES:=$(addsuffix .png, $(addprefix $(OUT)/, $(SCADBASE) scad/open))
 
 SCADFLAGS=--hardwarnings --viewall --autocenter --imgsize=1920,1080 \
 					--render --backend Manifold --summary all --colorscheme=Starnight
@@ -26,7 +26,11 @@ $(OUT)/scad/%.stl: scad/%.scad scad/core.scad
 
 $(OUT)/scad/%.png: scad/%.scad scad/core.scad
 	@mkdir -p $(@D)
-	time $(OSCAD) $(SCADFLAGS) -o $@ $<
+	time $(OSCAD) -DOPENTOP=0 $(SCADFLAGS) -o $@ $<
+
+$(OUT)/scad/open.png: scad/complete.scad scad/core.scad
+	@mkdir -p $(@D)
+	time $(OSCAD) -DOPENTOP=1 $(SCADFLAGS) -o $@ $<
 
 clean:
 	rm -rf $(OUT)

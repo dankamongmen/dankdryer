@@ -58,32 +58,34 @@ multicolor("lightblue"){
 }
 
 // top portion
-rotate([0, 0, $t]){
-	drop(){
-		spool();
+if(!OPENTOP){
+	rotate([0, 0, $t]){
+		drop(){
+			spool();
+		}
 	}
-}
 
-multicolor("lightgreen"){
-	translate([0, 109, 43]){
-		rotate([0, 90, 90]){
-			scale(17){
-				import("noctua_nf-a12_fan.stl");
+	multicolor("lightgreen"){
+		translate([0, 109, 43]){
+			rotate([0, 90, 90]){
+				scale(17){
+					import("noctua_nf-a12_fan.stl");
+				}
 			}
 		}
 	}
-}
 
-multicolor("silver"){
-    translate([0, 0, totalz + 2]){
-        mirror([0, 0, 1]){
-            top();
-        }
-    }
-}
+	multicolor("silver"){
+			translate([0, 0, totalz + 2]){
+					mirror([0, 0, 1]){
+							top();
+					}
+			}
+	}
 
-multicolor("dimgrey"){
-    rotate([0, 0, 180]){
-        hotbox();
-    }
+	multicolor("dimgrey"){
+			rotate([0, 0, 180]){
+					hotbox();
+			}
+	}
 }
