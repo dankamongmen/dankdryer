@@ -77,13 +77,14 @@ module topbottom(height){
     }
 }
 
-// 3mm tall square bottom plus (th + rh) d-wide riser
+// cXcX3mm cube bottom plus (rh + th) d-wide riser
+// rh is smooth length, th is threaded length
 module mount(c, rh, th, d){
 	ct = 3;
 	translate([0, 0, wallz + ct / 2]){
 		cube([c, c, ct], true);
 		translate([0, 0, ct / 2]){
-			RodStart(d, rh, th, 0, 0.7);
+			RodStart(d, rh, th, 0, 0);
 		}
 	}
 }
