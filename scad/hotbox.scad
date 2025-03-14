@@ -165,12 +165,16 @@ module thermohole(){
     }
 }
 
+// don't put these immediately opposite the
+// ones on the inside, spreading the lock action
+// (and keeping printing irregularities from
+// spreading)
 module croomclip(){
 	translate([0, botrad * sqrt(2) / 2 + cclipl / 2, ccliph / 2]){
-		translate([20, 0, 0]){
+		translate([20 + cclipw, 0, 0]){
 			chamberclip();
 		}
-		translate([-20, 0, 0]){
+		translate([-20 - cclipw, 0, 0]){
 			chamberclip();
 		}
 	}

@@ -176,10 +176,10 @@ module croomcore(){
 
 module hotboxplug(){
 	translate([0, botrad * sqrt(2) / 2 + croomwall / 2, croomz]){
-		translate([20, 0, 0]){
+		translate([20 + cclipw, 0, 0]){
 			chamberplug();
 		}
-		translate([-20, 0, 0]){
+		translate([-20 - cclipw, 0, 0]){
 			chamberplug();
 		}
 	}
