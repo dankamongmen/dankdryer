@@ -189,12 +189,16 @@ module croomclipinner(){
 
 //https://us.store.bambulab.com/products/pc4-m6-pneumatic-connector-for-ptfe-tube
 // PTFE connector (M6 x 5mm)
+// place it near the top, and at an angle (the
+// latter to make it easier to print).
 module ptfeconn(){
-	translate([-spoold / 2 / sqrt(2), -spoold / 2 / sqrt(2), wallz + totalz / 2 + 3]){
-		rotate([0, 0, -45]){
-			rotate([90, 0, 0]){
-				ScrewThread(6, 15);
-			}
+	translate([-spoold / 2 / sqrt(2), -spoold / 2 / sqrt(2), totalz - 30]){
+		rotate([0, 0, 45]){
+		//	rotate([90, 0, 0]){
+				rotate([0, -45, 0]){
+					ScrewThread(6, 20);
+				}
+		//	}
 		}
 	}
 }
