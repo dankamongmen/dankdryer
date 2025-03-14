@@ -2719,7 +2719,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin passive line
 					(at 0 -12.7 0)
 					(length 7.62)
 					(name "VBG"
@@ -2737,7 +2737,7 @@
 						)
 					)
 				)
-				(pin unspecified line
+				(pin power_in line
 					(at 0 -15.24 0)
 					(length 7.62)
 					(name "REFN"
@@ -2755,7 +2755,7 @@
 						)
 					)
 				)
-				(pin power_out line
+				(pin power_in line
 					(at 0 -17.78 0)
 					(length 7.62)
 					(name "AVSS"
@@ -2899,7 +2899,7 @@
 						)
 					)
 				)
-				(pin power_out line
+				(pin power_in line
 					(at 40.64 -17.78 180)
 					(length 7.62)
 					(name "DVSS"
