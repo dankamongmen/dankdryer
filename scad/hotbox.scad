@@ -4,23 +4,74 @@ include <core.scad>
 
 // ceramic heater 230C  77x62
 // holes: 28.3/48.6 3.5
-ceramheat230w = 77;
-module ceramheat230(rh, th){
-	d = 3.3;
-    holegapw = 32;
+ceramheat230w = 77; // width
+ceramheat230l = 62; // full length
+ceramheat230ml = 44; // main section length
+ceramheat230sidel =
+ (ceramheat230l - ceramheat230ml) / 2; // side length
+ceramheat230h = 6.3; // main section height
+ceramheat230sideh = 1.8; // side section height
+ceramheat230yoff = totalxy / 4 + 8;
+ceramholegapw = 32;
+ceramholegapr = 3.4 / 2;
+// total height plus wallz ends up being:
+//  3 (base) + 6.3 (ceramheat230h) == 9.3
+// (the spool must clear this)
+
+// the ceramic heating element has two thin sides
+// into which the mounting holes are drilled
+module heaterside(){
+	r = ceramholegapr;
+	difference(){
+		cube([ceramheat230w,
+			  ceramheat230sidel,
+			  ceramheat230sideh], true);
+		translate([ceramholegapw / 2, 0, 0]){
+			cylinder(ceramheat230sideh, r, r, true);
+		}
+		translate([-ceramholegapw / 2, 0, 0]){
+			cylinder(ceramheat230sideh, r, r, true);
+		}
+	}
+	translate([-ceramholegapw / 2, 0, 1]){
+		import("m4nyloc.stl");
+	}
+	translate([ceramholegapw / 2, 0, 1]){
+		import("m4nyloc.stl");
+	}
+}
+
+// the ceramic heating element
+module heater(){
+	translate([0, ceramheat230yoff, wallz + 3]){
+		translate([0, 0, ceramheat230h / 2]){
+			cube([ceramheat230w, ceramheat230ml, ceramheat230h], true);
+		}
+		translate([0, (ceramheat230ml + ceramheat230sidel)/ 2, ceramheat230sideh / 2]){
+			heaterside();
+		}
+		translate([0, -(ceramheat230ml + ceramheat230sidel)/ 2, ceramheat230sideh / 2]){
+			heaterside();
+		}
+	}
+}
+
+// mounting poles for ceramic heating element
+module ceramheat230(){
+	rh = ceramheat230sideh * 2;
+	th = 5;
+	d = ceramholegapr * 2;
 	holegapl = 52;
-	mounth = 2;
-	sd = d + 0.5;
-	translate([-holegapw / 2, -holegapl / 2, 0]){
-		mount(5, rh, th, sd);
-		translate([holegapw, 0, 0]){
-			mount(5, rh, th, sd);
+	translate([-ceramholegapw / 2, -holegapl / 2, 0]){
+		mount(5, rh, th, d);
+		translate([ceramholegapw, 0, 0]){
+			mount(5, rh, th, d);
 			translate([0, holegapl, 0]){
-				mount(5, rh, th, sd);
+				mount(5, rh, th, d);
 			}
 		}
 		translate([0, holegapl, 0]){
-			mount(5, rh, th, sd);
+			mount(5, rh, th, d);
 		}
 	}
 }
@@ -136,6 +187,18 @@ module croomclipinner(){
 	}
 }
 
+//https://us.store.bambulab.com/products/pc4-m6-pneumatic-connector-for-ptfe-tube
+// PTFE connector (M6 x 5mm)
+module ptfeconn(){
+	translate([-spoold / 2 / sqrt(2), -spoold / 2 / sqrt(2), wallz + totalz / 2 + 3]){
+		rotate([0, 0, -45]){
+			rotate([90, 0, 0]){
+				ScrewThread(6, 15);
+			}
+		}
+	}
+}
+
 module hotbox(){
     difference(){
 		difference(){
@@ -143,9 +206,9 @@ module hotbox(){
 			// cut away top corners
 			upcorners();
 		}
-		/*translate([-42, -40, 0]){
-            rc522holes(wallz);
-	    }*/
+		translate([-42, -40, 0]){
+            // rc522holes(wallz);
+	    }
 		// holes for our throughhole thermo+hall
 		throughholes(-40, 10, wallz);
 		throughholes(-35, 15, wallz);
@@ -160,8 +223,8 @@ module hotbox(){
 			// we want it entirely underneath the
 			// spool, and closer to the perimeter
 			// than the center.
-			translate([0, totalxy / 4 + 8, 0]){
-				ceramheat230(2, 5);
+			translate([0, ceramheat230yoff, 0]){
+				ceramheat230();
 			}
         }
 		// now remove all other interacting pieces
@@ -197,6 +260,8 @@ module hotbox(){
 			}
 			
 		}
+		// hole in front left corner for PTFE connector
+		ptfeconn();
 	}
 	translate([50, -botinalt + 25, wallz]){
 		rotate([0, 0, 225]){
@@ -223,9 +288,12 @@ module hotbox(){
 }
 
 hotbox();
-// testing
 
-/*
+// testing
+/*multicolor("silver"){
+	heater();
+}
+
 multicolor("green"){
 	rotate([0, 0, $t]){
 		spool();
@@ -236,4 +304,3 @@ multicolor("orange"){
     top();
 }
 */
-	
