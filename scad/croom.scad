@@ -114,14 +114,21 @@ acadapterl = 135;
 acmounth = locknuth + 4; // 9mm
 module acadaptermount(l){
 	d = 4; // M4
+	c = 4;
 	bh = l - locknuth;
-    translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz + bh / 2]){
-		cylinder(bh, d / 2, d / 2, true);
-		/*translate([0, 0, (bh + locknuth) / 2 - 1]){
-			cylinder(locknuth, d / 2, d, true);
-		}*/
-		//RodStart(d, l - locknuth, locknuth, 0, 0.7);
+    translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, 0]){
+		mount(c, bh, locknuth, d);
     }
+}
+
+// the stand without the plug, since our AC
+// adapters only have two places to screw
+module acadapterstand(){
+	ct = 3;
+	c = 4;
+	translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz + ct / 2]){
+		cube([c, c, ct], true);
+	}
 }
 
 // 60mm wide total
@@ -129,13 +136,17 @@ module acadaptermount(l){
 // 6mm (through 10mm) and 50mm (through 54mm)
 // they have 2mm radius and 3mm height
 module acadapterscrews(l){
-    translate([0, acadapterw, 0]){
+	translate([0, acadapterw, 0]){
         acadaptermount(l);
         mirror([0, 1, 0]){
+			acadapterstand();
 			mirror([1, 0, 0]){
                 acadaptermount(l);
             }
         }
+		mirror([1, 0, 0]){
+			acadapterstand();
+		}
     }
 }
 
