@@ -186,13 +186,13 @@ module hotboxplug(){
 }
 
 module hotboxinnerplug(){
-	translate([0, botrad * sqrt(2) / 2 - 3 * croomwall / 2, croomz]){
+	translate([0, botrad * sqrt(2) / 2 - 3.5, croomz]){
 		mirror([0, 1, 0]){
 			translate([20, 0, 0]){
-				chamberplug();
+				chamberinnerplug();
 			}
 			translate([-20, 0, 0]){
-				chamberplug();
+				chamberinnerplug();
 			}
 		}
 	}

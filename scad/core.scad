@@ -17,7 +17,7 @@ module multicolor(color, opacity=1) {
 }
 
 module idtext(){
-  text3d("v2.0.1", h=1.2, size=3);
+  text3d("v2.0.4", h=1.2, size=3);
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
@@ -573,23 +573,15 @@ module chamberclip(skoosh = 0.2){
     }
 }
 
-// ought be included as a difference()
-// meant to be internal. better in terms
-// of both support and aesthetics than
-// external chamberclip().
-module chamberclipinverse(skoosh = 0.2){
-	cube([cclipw - 4 + skoosh, cclipr + skoosh, ccliph], true);
-}
-
-// an external stud which mates into chamberclip()
-module chamberplug(){
+// a stud which mates into a chamber clip
+module clipplug(w){
 	// fits into the clip
 	translate([0, 0, ccliph / 2]){
-		cube([cclipw - 4, cclipr, ccliph], true);
+		cube([w, cclipr, ccliph], true);
 	}
-	translate([-(cclipw - 4) / 2, -cclipr / 2, 0]){
+	translate([-w / 2, -cclipr / 2, 0]){
 		rotate([0, 90, 0]){
-			linear_extrude(cclipw - 4){
+			linear_extrude(w){
 				polygon([
 					[0, 0],
 					[3 * cclipr / 2, 0],
@@ -598,6 +590,24 @@ module chamberplug(){
 			}
 		}
 	}
+}
+
+module chamberplug(){
+	clipplug(cclipw - 4);
+}
+
+module chamberinnerplug(){
+	clipplug(cclipw - 2);
+}
+
+// ought be included as a difference()
+// meant to be internal. better in terms
+// of both support and aesthetics than
+// external chamberclip().
+// slightly wider than the chamberclip, because
+// we can be.
+module chamberclipinverse(skoosh = 0.2){
+	cube([cclipw - 2 + skoosh, cclipr + skoosh, ccliph], true);
 }
 
 // interior, for mating with chamberclipinverse()
