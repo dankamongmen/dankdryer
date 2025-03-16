@@ -2,6 +2,7 @@
 #include "networking.h"
 #include "dankdryer.h"
 #include "nau7802.h"
+#include "reset.h"
 #include "pins.h"
 #include "fans.h"
 #include "ota.h"
@@ -765,6 +766,9 @@ setup(adc_channel_t* thermchan){
   if(setup_intr(HALL_DATAPIN, &HallPulses)){
     set_failure();
   }
+  if(setup_factory_reset(FRESET_PIN)){
+    set_failure();
+  }
   if(setup_fans(LOWER_PWMPIN, UPPER_PWMPIN, LOWER_TACHPIN, UPPER_TACHPIN)){
     set_failure();
   }
@@ -795,9 +799,6 @@ setup(adc_channel_t* thermchan){
     set_failure();
   }
   //gpio_dump_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
-  if(!StartupFailure){
-    set_failure();
-  }
   printf("initialization %ssuccessful v" VERSION "\n", StartupFailure ? "un" : "");
 }
 

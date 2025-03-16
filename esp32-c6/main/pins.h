@@ -15,6 +15,7 @@
 #define UPPER_TACHPIN GPIO_NUM_6   // upper chamber fan tach
 #define UPPER_PWMPIN  GPIO_NUM_7   // upper chamber fan pwm
 // 8 and 9 are strapping pins
+#define FRESET_PIN    GPIO_NUM_9    // factory reset when held for 5s
 // 12--13 are used for JTAG (not strictly needed)
 #define MOTOR_GATEPIN GPIO_NUM_12   // MOSFET gate for motor
 #define SSR_GPIN      GPIO_NUM_13   // heater solid state relay
