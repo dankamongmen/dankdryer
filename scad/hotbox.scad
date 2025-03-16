@@ -257,8 +257,7 @@ module hotbox(){
                 thermohole();
             }
         }
-		// clips for the croom
-		croomclipinner();
+		// connectors for the croom
 		rotate([0, 0, 90]){
 			croomclipinner();
 			rotate([0, 0, 90]){

@@ -69,7 +69,7 @@ module pcbmounts(){
 
 // RP-SMA antenna will be glued in
 module antennahole(){
-	rpsmar = 12 / 2;
+	rpsmar = 11 / 2; // 12 is loose
 	rpsmal = 25;
 	translate([-topalt / 2, -botalt + 10, croomz - 30]){
         rotate([theta, 0, 0]){
@@ -238,7 +238,8 @@ module croom(iech = 20){
 	rotate([0, 0, 90]){
 		hotboxinnerplug();
 		rotate([0, 0, 90]){
-			hotboxinnerplug();
+			// plugs on the fan side never seem to
+			// work; leave them off
 			rotate([0, 0, 90]){
 				hotboxinnerplug();
 			}
