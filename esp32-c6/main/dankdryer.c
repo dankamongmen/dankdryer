@@ -916,5 +916,8 @@ void app_main(void){
       send_mqtt(curtime);
       lastpub = curtime;
     }
+    if(check_factory_reset(curtime)){
+      factory_reset();
+    }
   }
 }
