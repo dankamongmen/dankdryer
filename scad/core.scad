@@ -27,7 +27,7 @@ spoolh = 75;
 // 81 is a multiple of both 0.3 and 0.2.
 hotz = 81;
 spoolholed = 55;
-tpitch = 3; // multiple of 0.3 and 0.2
+tpitch = 1.8; // multiple of 0.3 and 0.2
 // we'll want some room around the spool,
 // but the larger our chamber, the more heat lost.
 wallz = 1.8; // bottom thickness; don't want much
@@ -84,7 +84,9 @@ module mount(c, rh, th, d){
 	translate([0, 0, wallz + ct / 2]){
 		cube([c, c, ct], true);
 		translate([0, 0, ct / 2]){
-			RodStart(d, rh, th, 0, 0);
+			RodStart(d, rh, th,
+			         thread_diam=d - 0.5,
+					 thread_pitch=0);
 		}
 	}
 }
