@@ -196,13 +196,14 @@ module croomclipinner(){
 // place it near the top, and at an angle (the
 // latter to make it easier to print).
 module ptfeconn(){
-	translate([-spoold / 2 / sqrt(2), -spoold / 2 / sqrt(2), totalz - 30]){
-		rotate([0, 0, 45]){
-		//	rotate([90, 0, 0]){
-				rotate([0, -45, 0]){
-					ScrewThread(6, 20, pitch=1, tolerance=0.8);
-				}
-		//	}
+	translate([-spoold / 2 / sqrt(2) - 9, -spoold / 2 / sqrt(2) - 9, totalz / 2]){
+		rotate([0, 0, 225]){
+			rotate([0, -90, 0]){
+				ScrewThread(6, 5, pitch=1,
+				            tolerance=0.8);
+				ptfer = 4.5 / 2;
+				cylinder(25, ptfer, ptfer);
+			}
 		}
 	}
 }
