@@ -111,23 +111,28 @@ module rockerhole(iech){
 acadapterh = 22;
 acadapterw = 50;
 acadapterl = 135;
-acmounth = locknuth + 4; // 9mm
-module acadaptermount(l){
+acmounth = 2;
+module acadaptermount(){
 	d = 4; // M4
-	c = 4;
-	bh = l - locknuth;
-    translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, 0]){
-		mount(c, bh, locknuth, d);
+	c = 7; // total length of cutout
+	// 3 on z matches ct in acadapterstand()
+    translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, acmounth]){
+		linear_extrude(acmounth){
+			hull(){
+				circle(d / 2);
+				translate([c - d, 0, 0]){
+					circle(d / 2);
+				}
+			}
+		}
     }
 }
 
 // the stand without the plug, since our AC
 // adapters only have two places to screw
 module acadapterstand(){
-	ct = 3;
-	c = 4;
-	translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, wallz + ct / 2]){
-		cube([c, c, ct], true);
+	translate([acadapterl / 2 - 0.5, -acadapterw / 2 + 7, acmounth / 2]){
+		cube([8, 6, acmounth], true);
 	}
 }
 
@@ -135,13 +140,15 @@ module acadapterstand(){
 // screw holes are 6mm in from sides, so they start at
 // 6mm (through 10mm) and 50mm (through 54mm)
 // they have 2mm radius and 3mm height
-module acadapterscrews(l){
+module acadapterscrews(){
 	translate([0, acadapterw, 0]){
-        acadaptermount(l);
+        acadaptermount();
+		acadapterstand();
         mirror([0, 1, 0]){
 			acadapterstand();
 			mirror([1, 0, 0]){
-                acadaptermount(l);
+                acadaptermount();
+				acadapterstand();
             }
         }
 		mirror([1, 0, 0]){
@@ -151,12 +158,14 @@ module acadapterscrews(l){
 }
 
 module croombottom(rad, z){
-	acadapterscrews(acmounth);
-	loadcellmountx = (-loadcelll + loadcellmountl) / 2;
-    translate([loadcellmountx, 0, wallz]){
-        loadcellmount(loadcellmounth);
-    }
-	pcbmounts();
+	translate([0, 0, wallz]){
+		acadapterscrews();
+		loadcellmountx = (-loadcelll + loadcellmountl) / 2;
+		translate([loadcellmountx, 0, 0]){
+			loadcellmount(loadcellmounth);
+		}
+		pcbmounts();
+	}
 }
 
 // the vast majority of the interior, removed
@@ -209,6 +218,22 @@ module hotboxinnerplug(){
 	}
 }
 
+module hotboxcornerplug(){
+	r = botrad * sqrt(2) / 2 - 24;
+	translate([r, r, croomz]){
+		rotate([0, 0, -45]){
+			mirror([0, 1, 0]){
+				translate([10, 0, 0]){
+					chamberinnerplug();
+				}
+				translate([-10, 0, 0]){
+					chamberinnerplug();
+				}
+			}
+		}
+	}
+}
+
 module croom(iech = 20){
 	difference(){
 		difference(){
@@ -235,13 +260,17 @@ module croom(iech = 20){
 	}
 	hotboxplug();
 	hotboxinnerplug();
+	hotboxcornerplug();
 	rotate([0, 0, 90]){
 		hotboxinnerplug();
+		hotboxcornerplug();
 		rotate([0, 0, 90]){
 			// plugs on the fan side never seem to
 			// work; leave them off
+			hotboxcornerplug();
 			rotate([0, 0, 90]){
 				hotboxinnerplug();
+				hotboxcornerplug();
 			}
 		}
 	}

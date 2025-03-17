@@ -17,7 +17,7 @@ module multicolor(color, opacity=1) {
 }
 
 module idtext(){
-  text3d("v2.0.4", h=1.2, size=3);
+  text3d("v2.0.5", h=1.2, size=3);
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
@@ -81,7 +81,7 @@ module topbottom(height){
 // rh is smooth length, th is threaded length
 module mount(c, rh, th, d){
 	ct = 3;
-	translate([0, 0, wallz + ct / 2]){
+	translate([0, 0, ct / 2]){
 		cube([c, c, ct], true);
 		translate([0, 0, ct / 2]){
 			RodStart(d, rh, th,

@@ -62,7 +62,7 @@ module ceramheat230(){
 	th = 5;
 	d = ceramholegapr * 2;
 	holegapl = 52;
-	translate([-ceramholegapw / 2, -holegapl / 2, 0]){
+	translate([-ceramholegapw / 2, -holegapl / 2, wallz]){
 		mount(5, rh, th, d);
 		translate([ceramholegapw, 0, 0]){
 			mount(5, rh, th, d);
@@ -181,7 +181,8 @@ module croomclip(){
 }
 
 module croomclipinner(){
-	translate([0, botrad * sqrt(2) / 2 - 3.5, ccliph / 2]){
+	r = botrad * sqrt(2) / 2 - 3.5;
+	translate([0, r, ccliph / 2]){
 		translate([20, 0, 0]){
 			chamberclipinverse();
 		}
@@ -189,6 +190,20 @@ module croomclipinner(){
 			chamberclipinverse();
 		}
 	}
+}
+
+module croomclipcorner(){
+	r = botrad * sqrt(2) / 2 - 24;
+	translate([r, r, ccliph / 2]){
+		rotate([0, 0, -45]){
+			translate([10, 0, 0]){
+				chamberclipinverse();
+			}
+			translate([-10, 0, 0]){
+				chamberclipinverse();
+			}
+		}
+	}	
 }
 
 //https://us.store.bambulab.com/products/pc4-m6-pneumatic-connector-for-ptfe-tube
@@ -258,12 +273,16 @@ module hotbox(){
             }
         }
 		// connectors for the croom
+		croomclipcorner();
 		rotate([0, 0, 90]){
 			croomclipinner();
+			croomclipcorner();
 			rotate([0, 0, 90]){
 				croomclipinner();
+				croomclipcorner();
 				rotate([0, 0, 90]){
 					croomclipinner();
+					croomclipcorner();
 				}
 			}
 			
