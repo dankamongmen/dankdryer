@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-03-12")
-		(rev "2.0.1")
+		(date "2025-03-18")
+		(rev "2.1.0")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -3521,6 +3521,12 @@
 		(uuid "5903edbb-bf0d-4c2d-91d9-f122e224f529")
 	)
 	(junction
+		(at 110.49 50.8)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "60193b19-60df-46be-bc55-406ce0c4b735")
+	)
+	(junction
 		(at 66.04 48.26)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3531,12 +3537,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "696768e5-2a1c-4009-8256-321d7916c8f0")
-	)
-	(junction
-		(at 110.49 53.34)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "886cf812-97f7-42ac-bb98-592e4be04569")
 	)
 	(junction
 		(at 66.04 76.2)
@@ -3810,16 +3810,6 @@
 	)
 	(wire
 		(pts
-			(xy 121.92 50.8) (xy 125.73 50.8)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "28ca6b88-7ebb-438e-96b9-db8c413b3dc9")
-	)
-	(wire
-		(pts
 			(xy 114.3 134.62) (xy 114.3 125.73)
 		)
 		(stroke
@@ -3827,16 +3817,6 @@
 			(type default)
 		)
 		(uuid "299a10db-b355-4c0a-803b-b262d36e8b68")
-	)
-	(wire
-		(pts
-			(xy 106.68 53.34) (xy 110.49 53.34)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "30340a46-fbf6-4f75-aa37-7c7dce54d5f1")
 	)
 	(wire
 		(pts
@@ -4200,6 +4180,16 @@
 	)
 	(wire
 		(pts
+			(xy 106.68 50.8) (xy 110.49 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "97686e8d-68ae-47d9-8a70-b3ee6f4cdd43")
+	)
+	(wire
+		(pts
 			(xy 30.48 33.02) (xy 30.48 58.42)
 		)
 		(stroke
@@ -4420,13 +4410,13 @@
 	)
 	(wire
 		(pts
-			(xy 110.49 53.34) (xy 118.11 53.34)
+			(xy 110.49 50.8) (xy 118.11 50.8)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "d47f2eab-1b52-4981-a6a7-63f4dd4e8e78")
+		(uuid "d42ae89f-68c0-4053-8add-8bc8bfa762f1")
 	)
 	(wire
 		(pts
@@ -4837,6 +4827,17 @@
 		)
 		(uuid "2ef2a845-560a-41fc-b4c6-575abb3c1f0a")
 	)
+	(hierarchical_label "MotorPin"
+		(shape input)
+		(at 106.68 50.8 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "4084e113-2dc8-4e34-a0cc-8dbe4bc1908d")
+	)
 	(hierarchical_label "ACNeutral"
 		(shape input)
 		(at 36.83 147.32 180)
@@ -4904,17 +4905,6 @@
 		)
 		(uuid "73c5ad34-2832-4388-a47d-839bff9ba2ff")
 	)
-	(hierarchical_label "MotorPin"
-		(shape input)
-		(at 106.68 53.34 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "81927cfa-6f2f-4f31-bc4a-4635ab5a1623")
-	)
 	(hierarchical_label "ACNeutral"
 		(shape input)
 		(at 71.12 143.51 0)
@@ -4961,8 +4951,8 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 121.92 50.8 0)
-		(mirror x)
+		(at 125.73 53.34 0)
+		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4971,7 +4961,7 @@
 		(fields_autoplaced yes)
 		(uuid "010b6325-5a6b-40aa-b979-7b56bd160cbb")
 		(property "Reference" "#PWR022"
-			(at 121.92 44.45 0)
+			(at 125.73 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4980,16 +4970,15 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 119.38 49.5299 0)
+			(at 125.73 58.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
 			)
 		)
 		(property "Footprint" ""
-			(at 121.92 50.8 0)
+			(at 125.73 53.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4998,7 +4987,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 121.92 50.8 0)
+			(at 125.73 53.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5007,7 +4996,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 121.92 50.8 0)
+			(at 125.73 53.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5019,7 +5008,7 @@
 			(uuid "da08743f-e4dd-491a-bb93-c2db7eac57ec")
 		)
 		(instances
-			(project ""
+			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "#PWR022")
 					(unit 1)
@@ -5584,7 +5573,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 110.49 57.15 0)
+		(at 110.49 54.61 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5593,7 +5582,7 @@
 		(fields_autoplaced yes)
 		(uuid "3607f4da-cd61-4f8c-811d-6471b20a0345")
 		(property "Reference" "R7"
-			(at 113.03 55.8799 0)
+			(at 113.03 53.3399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5602,7 +5591,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 113.03 58.4199 0)
+			(at 113.03 55.8799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5611,7 +5600,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 108.712 57.15 90)
+			(at 108.712 54.61 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5620,7 +5609,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 110.49 57.15 0)
+			(at 110.49 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5629,7 +5618,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 110.49 57.15 0)
+			(at 110.49 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5644,7 +5633,7 @@
 			(uuid "81b1a081-a80c-4051-8fce-3663d81c191f")
 		)
 		(instances
-			(project ""
+			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "R7")
 					(unit 1)
@@ -5857,7 +5846,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 110.49 60.96 0)
+		(at 110.49 58.42 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5866,7 +5855,7 @@
 		(fields_autoplaced yes)
 		(uuid "4fbd34aa-38e3-471a-8aa9-5d38136ebf64")
 		(property "Reference" "#PWR032"
-			(at 110.49 67.31 0)
+			(at 110.49 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5875,7 +5864,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 110.49 66.04 0)
+			(at 110.49 63.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5883,7 +5872,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 110.49 60.96 0)
+			(at 110.49 58.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5892,7 +5881,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 110.49 60.96 0)
+			(at 110.49 58.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5901,7 +5890,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 110.49 60.96 0)
+			(at 110.49 58.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6831,7 +6820,7 @@
 		(dnp no)
 		(uuid "9b6495a1-2ced-4fca-93b1-79af8fa6ef19")
 		(property "Reference" "D2"
-			(at 158.496 64.77 90)
+			(at 158.496 59.69 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6840,7 +6829,7 @@
 			)
 		)
 		(property "Value" "D_Schottky"
-			(at 155.448 66.802 90)
+			(at 154.686 62.484 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7918,7 +7907,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 121.92 53.34 90)
+		(at 121.92 50.8 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7926,7 +7915,7 @@
 		(dnp no)
 		(uuid "f632523d-c0a1-4ce8-9454-fb5c8fe36d79")
 		(property "Reference" "R12"
-			(at 121.92 57.912 90)
+			(at 121.92 55.372 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7934,7 +7923,7 @@
 			)
 		)
 		(property "Value" "330"
-			(at 121.92 55.88 90)
+			(at 121.92 53.34 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7942,7 +7931,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
-			(at 121.92 55.118 90)
+			(at 121.92 52.578 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7951,7 +7940,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 121.92 53.34 0)
+			(at 121.92 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7960,7 +7949,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 121.92 53.34 0)
+			(at 121.92 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7975,7 +7964,7 @@
 			(uuid "2b97696a-b826-41c6-be32-67478c3691c8")
 		)
 		(instances
-			(project ""
+			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "R12")
 					(unit 1)
@@ -8058,7 +8047,7 @@
 		(dnp no)
 		(uuid "fdf36e87-d857-43d2-89a7-046a64f8dd89")
 		(property "Reference" "M1"
-			(at 163.576 61.214 0)
+			(at 164.084 38.354 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8066,8 +8055,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Motor_DC"
-			(at 159.766 57.404 0)
+		(property "Value" "12VDC motor"
+			(at 160.782 41.656 0)
 			(effects
 				(font
 					(size 1.27 1.27)
