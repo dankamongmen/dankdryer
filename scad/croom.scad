@@ -69,12 +69,12 @@ module pcbmounts(){
 
 // RP-SMA antenna will be glued in
 module antennahole(){
-	rpsmar = 11 / 2; // 12 is loose
+	rpsmar = 12 / 2; // 12.5 is loose
 	rpsmal = 25;
 	translate([-topalt / 2, -botalt + 10, croomz - 30]){
         rotate([theta, 0, 0]){
             rotate([90, 0, 0]){
-				cylinder(rpsmal, rpsmar + 0.5, rpsmar + 0.5, true);
+				cylinder(rpsmal, rpsmar, rpsmar, true);
 			}
         }
     }
@@ -194,17 +194,6 @@ module croomcore(){
 		rounding2 = topround);
 }
 
-module hotboxplug(){
-	translate([0, botrad * sqrt(2) / 2 + croomwall / 2, croomz]){
-		translate([20 + cclipw, 0, 0]){
-			chamberplug();
-		}
-		translate([-20 - cclipw, 0, 0]){
-			chamberplug();
-		}
-	}
-}
-
 module hotboxinnerplug(){
 	translate([0, botrad * sqrt(2) / 2 - 3.5, croomz]){
 		mirror([0, 1, 0]){
@@ -258,7 +247,6 @@ module croom(iech = 20){
 			idtext();
 		}
 	}
-	hotboxplug();
 	hotboxinnerplug();
 	hotboxcornerplug();
 	rotate([0, 0, 90]){

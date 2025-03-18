@@ -17,7 +17,7 @@ module multicolor(color, opacity=1) {
 }
 
 module idtext(){
-  text3d("v2.0.5", h=1.2, size=3);
+  text3d("v2.0.6", h=1.2, size=3);
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
@@ -563,18 +563,6 @@ cclipr = croomwall; // inner size of clip (hole)
 ccliph = cclipr;
 cclipw = 10;
 cclipl = cclipr + 2; // 2 is size of clip wall
-// an external clip for the chamberplug. this
-// is inferior to internal plugs using
-// camberclipinverse().
-module chamberclip(skoosh = 0.2){
-    difference(){
-        cube([cclipw, cclipl, ccliph], true);
-        translate([0, -1, 0]){
-            cube([cclipw - 4 + skoosh, cclipr + skoosh, ccliph], true);
-        }
-    }
-}
-
 // a stud which mates into a chamber clip
 module clipplug(w){
 	// fits into the clip
@@ -592,10 +580,6 @@ module clipplug(w){
 			}
 		}
 	}
-}
-
-module chamberplug(){
-	clipplug(cclipw - 4);
 }
 
 module chamberinnerplug(){
