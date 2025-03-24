@@ -362,10 +362,28 @@ getAmbient(void){
   return t;
 }
 
+static int
+setup_nau7802(i2c_master_bus_handle_t master){
+  if(nau7802_detect(master, &NAU7802)){
+    return -1;
+  }
+  if(nau7802_poweron(NAU7802)){
+    return -1;
+  }
+  if(nau7802_set_pga_cap(NAU7802, true)){
+    return -1;
+  }
+  // FIXME set gain?
+  return 0;
+}
+
 float getWeight(void){
   int32_t v;
   if(!NAUAvailable){
-    return -1.0;
+    if(setup_nau7802(I2CMaster)){
+      return -1.0;
+    }
+    NAUAvailable = true;
   }
   if(nau7802_read(NAU7802, &v) || v < 0){
     fprintf(stderr, "bad nau7802 read %ld\n", v);
@@ -454,7 +472,6 @@ init_pstore(void){
   printf("initializing persistent store...\n");
   esp_err_t err = nvs_flash_init();
   if(err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND){
-    // FIXME LED feedback during erase + init
     printf("erasing flash...\n");
     err = nvs_flash_erase();
     if(err == ESP_OK){
@@ -463,7 +480,6 @@ init_pstore(void){
     }
   }
   if(err){
-    // FIXME LED feedback
     fprintf(stderr, "failure (%d) initializing nvs!\n", err);
     return -1;
   }
@@ -550,21 +566,6 @@ read_pstore(void){
     }
   }
   nvs_close(nvsh);
-  return 0;
-}
-
-static int
-setup_nau7802(i2c_master_bus_handle_t master){
-  if(nau7802_detect(master, &NAU7802)){
-    return -1;
-  }
-  if(nau7802_poweron(NAU7802)){
-    return -1;
-  }
-  if(nau7802_set_pga_cap(NAU7802, true)){
-    return -1;
-  }
-  // FIXME set gain?
   return 0;
 }
 
