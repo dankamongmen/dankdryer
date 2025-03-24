@@ -52,7 +52,7 @@ module pcbmounts(){
 	rh = 4;
 	th = 5;
 	d = 5;
-    translate([45, -0.95 * totalxy / 2 + mh + 10, 0]){
+    translate([45, -0.95 * totalxy / 2 + mh + 15, 0]){
         mount(pcbmountc, rh, th, d);
         translate([-90, 0, 0]){
 			mount(pcbmountc, rh, th, d);

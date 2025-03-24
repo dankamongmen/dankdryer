@@ -17,7 +17,7 @@ module multicolor(color, opacity=1) {
 }
 
 module idtext(){
-  text3d("v2.0.6", h=1.2, size=3);
+  text3d("v2.1.1", h=1.2, size=3);
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
