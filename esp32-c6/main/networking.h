@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <soc/gpio_num.h>
 
-#define VERSION "1.9.8"
+#define VERSION "2.1.0"
 #define DEVICE "hohlraum"
 
 int setup_network(void);

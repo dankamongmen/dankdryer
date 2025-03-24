@@ -3298,7 +3298,7 @@
 	)
 	(text "0.005A minimum to drive MOC3063SM.\n3.3V / 330Ω = 0.01A (0.033W).\nMOC3063 has drop of 1.3-1.5V, forward current of 60mA.\nHeater neutral returns from 150C thermostat.\nHeater is resistive load, no need for snubber circuit.\n50W±20% max draw -> 60W / 120VAC -> 0.5A max switched in triac.\nT1210 wants 1.3V and latching 25-30mA / holding 15mA (max 0.039W),\n switches 12A continuous and 126A peak of 120VAC@60Hz.\nRK73H2As support 150V and 0.25W."
 		(exclude_from_sim no)
-		(at 15.24 161.29 0)
+		(at 16.51 159.766 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3373,10 +3373,11 @@
 		(margins 1.905 1.905 1.905 1.905)
 		(stroke
 			(width 0)
-			(type default)
+			(type solid)
 		)
 		(fill
-			(type none)
+			(type color)
+			(color 241 209 255 1)
 		)
 		(effects
 			(font
@@ -4640,28 +4641,6 @@
 			)
 		)
 	)
-	(global_label "UPWM"
-		(shape input)
-		(at 36.83 45.72 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "0a357c21-8111-414f-bce0-521a4dcc22a1")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 45.3185 45.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "LCDSCL"
 		(shape input)
 		(at 127 137.16 180)
@@ -4684,9 +4663,9 @@
 			)
 		)
 	)
-	(global_label "LTach"
+	(global_label "A+"
 		(shape input)
-		(at 66.04 67.31 0)
+		(at 227.33 76.2 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4694,9 +4673,9 @@
 			)
 			(justify left)
 		)
-		(uuid "81c0ed39-d060-4ae9-8a80-dd9f3137a45b")
+		(uuid "984dd9d2-5464-4c06-b27d-16226d7d1aa1")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 74.4075 67.31 0)
+			(at 232.9762 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4728,24 +4707,24 @@
 			)
 		)
 	)
-	(global_label "LPWM"
+	(global_label "A-"
 		(shape input)
-		(at 63.5 45.72 180)
+		(at 227.33 78.74 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right)
+			(justify left)
 		)
-		(uuid "cbacd758-c116-496a-9812-407059ec1dbc")
+		(uuid "c74ad81f-a67e-4bff-ad6a-1854393bd246")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 55.3139 45.72 0)
+			(at 232.9762 78.74 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -4772,6 +4751,50 @@
 			)
 		)
 	)
+	(global_label "A-"
+		(shape input)
+		(at 191.77 35.56 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "ccb9c8bf-b38a-48eb-8027-29a6a2b33ba3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 186.1238 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "A+"
+		(shape input)
+		(at 191.77 44.45 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "de3782ba-ac75-442d-b5d4-90c6f4b96170")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 186.1238 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "LCDDC"
 		(shape input)
 		(at 139.7 134.62 0)
@@ -4794,27 +4817,16 @@
 			)
 		)
 	)
-	(global_label "UTach"
+	(hierarchical_label "UTach"
 		(shape input)
 		(at 33.02 67.31 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right)
 		)
-		(uuid "ff22dfb7-9730-4e17-aaa1-6c960a5dd521")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 24.3501 67.31 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
+		(uuid "09c7db5d-411f-46a6-bf14-3faa2d86522a")
 	)
 	(hierarchical_label "SCL"
 		(shape input)
@@ -4849,27 +4861,16 @@
 		)
 		(uuid "463eaa1e-3045-4674-a5f5-b21de9b343a9")
 	)
-	(hierarchical_label "A-"
+	(hierarchical_label "LTach"
 		(shape input)
-		(at 227.33 78.74 0)
+		(at 66.04 67.31 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left)
 		)
-		(uuid "5b5e80e1-4aeb-4cbd-a294-d347e92270c5")
-	)
-	(hierarchical_label "A+"
-		(shape input)
-		(at 191.77 44.45 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "6253e6ce-1bf5-4189-9e82-1064e0e05211")
+		(uuid "677c0aa3-edab-44f4-a11f-c7443b32ba76")
 	)
 	(hierarchical_label "SDA"
 		(shape bidirectional)
@@ -4894,16 +4895,16 @@
 		)
 		(uuid "71125f22-defc-4527-9161-257232966a0f")
 	)
-	(hierarchical_label "A+"
+	(hierarchical_label "UPWM"
 		(shape input)
-		(at 227.33 76.2 0)
+		(at 36.83 45.72 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left)
 		)
-		(uuid "73c5ad34-2832-4388-a47d-839bff9ba2ff")
+		(uuid "a0940a86-9ad0-47e2-b355-0b772cb6ffb1")
 	)
 	(hierarchical_label "ACNeutral"
 		(shape input)
@@ -4915,6 +4916,17 @@
 			(justify left)
 		)
 		(uuid "b3ad28be-bf6c-43f2-9241-5f40a22dd8f9")
+	)
+	(hierarchical_label "LPWM"
+		(shape input)
+		(at 63.5 45.72 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "beeb176b-ca19-44c1-aedb-e89cb6f438c7")
 	)
 	(hierarchical_label "HeaterNeutral"
 		(shape input)
@@ -4937,17 +4949,6 @@
 			(justify left)
 		)
 		(uuid "e03bfac8-8302-4c97-bbc9-b2b5e3d4214e")
-	)
-	(hierarchical_label "A-"
-		(shape input)
-		(at 191.77 35.56 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "ef277581-27b7-4614-8b85-010682ff15d4")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -5599,7 +5600,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
 			(at 108.712 54.61 90)
 			(effects
 				(font
