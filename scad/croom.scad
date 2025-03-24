@@ -69,7 +69,7 @@ module pcbmounts(){
 
 // RP-SMA antenna will be glued in
 module antennahole(){
-	rpsmar = 12 / 2; // 12.5 is loose
+	rpsmar = 12.24 / 2; // 12.5 is loose, 12 too tight
 	rpsmal = 25;
 	translate([-topalt / 2, -botalt + 10, croomz - 30]){
         rotate([theta, 0, 0]){
