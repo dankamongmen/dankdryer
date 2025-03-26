@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-03-18")
-		(rev "2.1.0")
+		(date "2025-03-26")
+		(rev "2.1.1")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -5635,7 +5635,7 @@
 				)
 			)
 		)
-		(property "Value" "4.7k"
+		(property "Value" "2.2k"
 			(at 222.25 123.444 90)
 			(effects
 				(font
@@ -7252,7 +7252,7 @@
 				)
 			)
 		)
-		(property "Value" "4.7k"
+		(property "Value" "2.2k"
 			(at 194.31 123.444 90)
 			(effects
 				(font
