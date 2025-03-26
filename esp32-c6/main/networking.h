@@ -7,9 +7,6 @@
 #include <stdbool.h>
 #include <soc/gpio_num.h>
 
-#define VERSION "2.1.1"
-#define DEVICE "hohlraum"
-
 int setup_network(void);
 int handle_dry(unsigned sec, unsigned temp);
 int extract_bool(const char* data, size_t dlen, bool* val);
