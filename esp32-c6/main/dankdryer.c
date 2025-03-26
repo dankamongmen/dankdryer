@@ -1,6 +1,7 @@
 // intended for use on an ESP32-S3-WROOM-1
 #include "networking.h"
 #include "dankdryer.h"
+#include "version.h"
 #include "nau7802.h"
 #include "reset.h"
 #include "pins.h"

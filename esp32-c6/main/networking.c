@@ -1,5 +1,6 @@
 #include "dryer-network.h"
 #include "networking.h"
+#include "version.h"
 #include <mdns.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>

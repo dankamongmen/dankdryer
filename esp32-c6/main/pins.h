@@ -7,21 +7,21 @@
 
 // https://docs.espressif.com/projects/esp-idf/en/stable/esp32c6/api-reference/peripherals/gpio.html
 // 0--6 are connected to ADC1
-#define THERM_DATAPIN GPIO_NUM_0   // analog thermometer (ADC1)
-#define HALL_DATAPIN  GPIO_NUM_1   // hall sensor
+#define LOWER_TACHPIN GPIO_NUM_0   // lower chamber fan tach
+#define LOWER_PWMPIN  GPIO_NUM_1   // lower chamber fan pwm
+#define HALL_DATAPIN  GPIO_NUM_4   // hall sensor
+#define THERM_DATAPIN GPIO_NUM_5   // analog thermometer (ADC1)
 // 4 and 5 are strapping pins
-#define SDA_PIN       GPIO_NUM_4   // I2C clock
-#define SCL_PIN       GPIO_NUM_5   // I2C data
 #define UPPER_TACHPIN GPIO_NUM_6   // upper chamber fan tach
 #define UPPER_PWMPIN  GPIO_NUM_7   // upper chamber fan pwm
 // 8 and 9 are strapping pins
-#define FRESET_PIN    GPIO_NUM_9    // factory reset when held for 5s
+#define FRESET_PIN    GPIO_NUM_9   // factory reset when held for 5s
 // 12--13 are used for JTAG (not strictly needed)
-#define MOTOR_GATEPIN GPIO_NUM_12   // MOSFET gate for motor
-#define SSR_GPIN      GPIO_NUM_13   // heater solid state relay
+#define MOTOR_GATEPIN GPIO_NUM_12  // MOSFET gate for motor
+#define SDA_PIN       GPIO_NUM_13  // I2C clock
+#define SCL_PIN       GPIO_NUM_14  // I2C data
 // 15 is a strapping pin
-#define LOWER_PWMPIN  GPIO_NUM_14   // lower chamber fan pwm
-#define LOWER_TACHPIN GPIO_NUM_15   // lower chamber fan tach
+#define SSR_GPIN      GPIO_NUM_15  // heater solid state relay
 /*
 #define LCD_RST_PIN   GPIO_NUM_18
 #define LCD_SCL_PIN   GPIO_NUM_19

@@ -3,42 +3,6 @@
 // or PA. holds the PCB, scale, AC adapter, etc.
 include <core.scad>
 
-// a corner at the top, to which the hotbox is mounted
-module corner(){
-	h = 5;
-	s = 40;
-    translate([-totalxy / 2, -totalxy / 2, croomz - h / 2]){
-        difference(){
-            union(){
-                cube([s, s, h], true);
-				translate([0, s / 2, -h / 2 - 10]){
-					rotate([90, 0, 0]){
-						linear_extrude(44){
-							polygon([
-								[-s / 2, -10],
-								[s / 2, 10],
-								[-s / 2, 10]
-							]);
-						}
-					}
-				}
-            }
-			translate([14, 14, 0]){
-                screw("M5", length = 10);
-            }
-        }
-    }
-}
-
-// mounts for the hotbox
-module corners(){
-    // cut top corners out of removal,
-	// leaving supports for top
-	foursquare(){
-		corner();
-	}
-}
-
 module fullmount(c, h){
 	translate([0, 0, wallz + h / 2]){
 		cube([c, c, h], true);
@@ -229,7 +193,6 @@ module croom(iech = 20){
 			croomcore();
 			difference(){
 				croominnercore();
-				corners();
 			}
 		}
 		//lcdset();
