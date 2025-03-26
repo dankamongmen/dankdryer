@@ -374,6 +374,7 @@ setup_nau7802(i2c_master_bus_handle_t master){
     return -1;
   }
   // FIXME set gain?
+  NAUAvailable = true;
   return 0;
 }
 
@@ -383,7 +384,6 @@ float getWeight(void){
     if(setup_nau7802(I2CMaster)){
       return -1.0;
     }
-    NAUAvailable = true;
   }
   if(nau7802_read(NAU7802, &v) || v < 0){
     fprintf(stderr, "bad nau7802 read %ld\n", v);
@@ -784,11 +784,6 @@ setup(adc_channel_t* thermchan){
   }
   if(setup_adc_oneshot(ADC_UNIT_1, &ADC1, &ADC1Calibration, &ADC1Calibrated, *thermchan)){
     set_failure();
-  }
-  if(setup_nau7802(I2CMaster)){
-    set_failure();
-  }else{
-    NAUAvailable = true;
   }
   if(setup_heater(SSR_GPIN)){
     set_failure();
