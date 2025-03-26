@@ -3331,9 +3331,9 @@
 		)
 		(uuid "89a2def1-962d-406e-b8ef-57fbb7300ca0")
 	)
-	(text "2.7-5.5V input.\nAVDD must not exceed DVDD.\n400 pF capacitive load per bus line."
+	(text "2.7-5.5V input; we use 3.3V.\nAVDD must not exceed DVDD.\n400 pF capacitive load per bus line.\n330 pF Cfilter recommended for 3.3V (p27), requires PGA_CAP_EN[7] = 1."
 		(exclude_from_sim no)
-		(at 179.07 98.298 0)
+		(at 178.816 96.52 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3741,7 +3741,7 @@
 	)
 	(wire
 		(pts
-			(xy 207.01 49.53) (xy 199.39 49.53)
+			(xy 207.01 50.8) (xy 199.39 50.8)
 		)
 		(stroke
 			(width 0)
@@ -3928,16 +3928,6 @@
 			(type default)
 		)
 		(uuid "464465e2-b081-437f-a9e0-3bf19fa88ecb")
-	)
-	(wire
-		(pts
-			(xy 207.01 52.07) (xy 207.01 53.34)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4a39a992-f5e8-465b-a789-a6b8d4ea05ad")
 	)
 	(wire
 		(pts
@@ -4141,23 +4131,13 @@
 	)
 	(wire
 		(pts
-			(xy 199.39 49.53) (xy 199.39 52.07)
+			(xy 199.39 50.8) (xy 199.39 53.34)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "8632b45d-56ef-4a53-a850-366190870d59")
-	)
-	(wire
-		(pts
-			(xy 207.01 50.8) (xy 207.01 49.53)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8877fec0-7b3f-447a-b368-5c33607465d6")
 	)
 	(wire
 		(pts
@@ -5913,7 +5893,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 203.2 52.07 90)
+		(at 203.2 53.34 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5921,15 +5901,15 @@
 		(dnp no)
 		(uuid "5feee078-1550-4431-aaa0-d9d71af512f8")
 		(property "Reference" "C11"
-			(at 193.548 53.34 90)
+			(at 193.548 54.61 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "470p"
-			(at 198.628 53.34 90)
+		(property "Value" "330p"
+			(at 198.628 54.61 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5937,7 +5917,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 207.01 51.1048 0)
+			(at 207.01 52.3748 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5946,7 +5926,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 203.2 52.07 0)
+			(at 203.2 53.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5955,7 +5935,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 203.2 52.07 0)
+			(at 203.2 53.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
