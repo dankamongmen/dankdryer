@@ -809,17 +809,14 @@ get_hall_count(void){
 // we don't try to measure the first iteration, as we don't yet have a
 // timestamp (and the fans are spinning up, anyway).
 static void
-getPulseCount(int64_t curtime, int64_t lasttime, uint32_t(*getcount)(void), uint32_t *lastpcount){
+getPulseCount(float scale, uint32_t(*getcount)(void), uint32_t *lastpcount){
   unsigned rpm;
-  const float diffu = curtime - lasttime;
   rpm = getcount();
-  printf("pulse count raw: %u\n", rpm);
-  const float scale = 60.0 * 1000000u / diffu;
-  rpm *= scale;
-  rpm /= 2; // two pulses for each rotation
-  printf("scale: %f diffu: %f rpm: %u\n", scale, diffu, rpm);
-  if(rpm_valid_p(rpm)){
-    *lastpcount = rpm;
+  float scaled = rpm * scale;
+  scaled /= 2; // two pulses for each rotation
+  printf("raw: %u scale: %f rpm: %f\n", rpm, scale, scaled);
+  if(rpm_valid_p(scaled)){
+    *lastpcount = scaled;
   }
 }
 
@@ -897,9 +894,11 @@ void app_main(void){
     printf("motor: %s heater: %s\n", motor_state(), heater_state());
     int64_t curtime = esp_timer_get_time();
     if(curtime - lasttachs > TACH_SAMPLE_QUANTUM_USEC){
-			getPulseCount(curtime, lasttachs, get_hall_count, &LastSpoolRPM);
-			getPulseCount(curtime, lasttachs, get_lower_tach, &LastLowerRPM);
-			getPulseCount(curtime, lasttachs, get_upper_tach, &LastUpperRPM);
+      const float diffu = curtime - lasttachs;
+      const float scale = 60.0 * 1000000u / diffu;
+			getPulseCount(scale, get_hall_count, &LastSpoolRPM);
+			getPulseCount(scale, get_lower_tach, &LastLowerRPM);
+			getPulseCount(scale, get_upper_tach, &LastUpperRPM);
       lasttachs = curtime;
     }
     //printf("dryends: %lld cursec: %lld\n", DryEndsAt, curtime);
