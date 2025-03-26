@@ -12,8 +12,8 @@
 #define HALL_DATAPIN  GPIO_NUM_4   // hall sensor
 #define THERM_DATAPIN GPIO_NUM_5   // analog thermometer (ADC1)
 // 4 and 5 are strapping pins
-#define UPPER_TACHPIN GPIO_NUM_6   // upper chamber fan tach
-#define UPPER_PWMPIN  GPIO_NUM_7   // upper chamber fan pwm
+#define UPPER_PWMPIN  GPIO_NUM_6   // upper chamber fan pwm
+#define UPPER_TACHPIN GPIO_NUM_7   // upper chamber fan tach
 // 8 and 9 are strapping pins
 #define FRESET_PIN    GPIO_NUM_9   // factory reset when held for 5s
 // 12--13 are used for JTAG (not strictly needed)
