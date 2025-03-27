@@ -3839,6 +3839,16 @@
 	)
 	(wire
 		(pts
+			(xy 182.88 60.96) (xy 196.85 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2f49b8fa-5ebb-4ff2-a091-136f04f082cf")
+	)
+	(wire
+		(pts
 			(xy 129.54 36.83) (xy 129.54 31.75)
 		)
 		(stroke
@@ -3946,16 +3956,6 @@
 			(type default)
 		)
 		(uuid "491a372d-a1a1-4cc5-a804-81d2cad804e5")
-	)
-	(wire
-		(pts
-			(xy 182.88 60.96) (xy 196.85 60.96)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "49cbeb83-be08-4e4e-8afc-189c51063a48")
 	)
 	(wire
 		(pts
@@ -4682,27 +4682,16 @@
 		)
 		(uuid "27727487-bffd-408e-b574-6bfbcbf04997")
 	)
-	(hierarchical_label "LPWM"
+	(hierarchical_label "LTach"
 		(shape input)
-		(at 196.85 50.8 180)
+		(at 196.85 48.26 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right)
 		)
-		(uuid "29a5aea7-7f2c-487f-9cd7-82ee588dfd0d")
-	)
-	(hierarchical_label "Motor"
-		(shape bidirectional)
-		(at 227.33 48.26 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "2e9e7f52-4dd1-4ae7-819f-e33e64e70711")
+		(uuid "2e95a418-6104-4c89-9632-688dc79ce350")
 	)
 	(hierarchical_label "Hall"
 		(shape bidirectional)
@@ -4714,6 +4703,17 @@
 			(justify left)
 		)
 		(uuid "3b0ffcc9-5ff8-4c3a-a869-8f63c4b99e51")
+	)
+	(hierarchical_label "Motor"
+		(shape bidirectional)
+		(at 196.85 63.5 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "466ee15f-1b7c-4984-83a9-513f12444cdb")
 	)
 	(hierarchical_label "BootSPI"
 		(shape bidirectional)
@@ -4737,6 +4737,17 @@
 		)
 		(uuid "4ec36cd7-ecfa-4ad0-8700-236362a8de28")
 	)
+	(hierarchical_label "UTach"
+		(shape input)
+		(at 196.85 66.04 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "5b7a989b-1ef4-4ba2-ad87-9f046f84d29f")
+	)
 	(hierarchical_label "BootDown"
 		(shape bidirectional)
 		(at 100.33 139.7 0)
@@ -4747,6 +4758,17 @@
 			(justify left)
 		)
 		(uuid "649685b7-80fa-4211-b928-2936773e9e16")
+	)
+	(hierarchical_label "UPWM"
+		(shape input)
+		(at 227.33 48.26 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "676442a1-5fb9-490f-9832-657369483f79")
 	)
 	(hierarchical_label "LTach"
 		(shape input)
@@ -4781,16 +4803,16 @@
 		)
 		(uuid "7c32fcbd-44a0-4117-97d7-b112e2751009")
 	)
-	(hierarchical_label "UPWM"
+	(hierarchical_label "LPWM"
 		(shape input)
-		(at 196.85 63.5 180)
+		(at 196.85 50.8 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right)
 		)
-		(uuid "8390754c-a6e2-4723-9738-a5d053a79cc7")
+		(uuid "8ecfa254-a51a-4463-ac22-d9c579b66cf6")
 	)
 	(hierarchical_label "TXD0"
 		(shape input)
@@ -4967,28 +4989,6 @@
 			(justify left)
 		)
 		(uuid "f0746249-7387-47a1-8837-bae914550336")
-	)
-	(hierarchical_label "LTach"
-		(shape input)
-		(at 196.85 48.26 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "f282721f-952a-45e6-ace6-a1b13f3158fc")
-	)
-	(hierarchical_label "UTach"
-		(shape input)
-		(at 196.85 66.04 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "f695a94b-bf4d-4b19-91c0-636c81311eac")
 	)
 	(hierarchical_label "Therm"
 		(shape input)
@@ -5643,7 +5643,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
 			(at 217.932 123.19 90)
 			(effects
 				(font
@@ -7260,7 +7260,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
 			(at 189.992 123.19 90)
 			(effects
 				(font
