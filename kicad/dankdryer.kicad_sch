@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-03-26")
-		(rev "2.1.1")
+		(date "2025-03-27")
+		(rev "2.1.5")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -7760,7 +7760,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
 			(at 243.84 34.5948 0)
 			(effects
 				(font
