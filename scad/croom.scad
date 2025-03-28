@@ -31,17 +31,18 @@ module pcbmounts(){
     }
 }
 
-// RP-SMA antenna will be glued in
+// RP-SMA female connector will anchor the antenna.
+// it is .24in in diameter (6.19mm, 3.095mm radius)
 module antennahole(){
-	rpsmal = 25;
-	rpsmar = rpsmal / 4;
-	translate([-topalt / 2, -botalt + 10, croomz - 30]){
-        rotate([theta, 0, 0]){
+	rpsmad = 6.19;
+	l = croomwall * 3;
+	translate([topalt / 2, -botalt + l / 4, croomz - 30]){
+		rotate([theta, 0, 0]){
             rotate([90, 0, 0]){
-				cylinder(rpsmal, rpsmar, rpsmar, true);
+				ScrewThread(rpsmad, l);
 			}
-        }
-    }
+		}
+	}
 }
 
 // hole for hotbox fan wires
@@ -189,6 +190,8 @@ module hotboxcornerplug(){
 
 module croom(iech = 20){
 	difference(){
+	union(){
+	difference(){
 		difference(){
 			croomcore();
 			difference(){
@@ -198,7 +201,6 @@ module croom(iech = 20){
 		//lcdset();
 		fancablehole();
 		rockerhole(iech);
-		antennahole();
 		translate([0, -botalt, croomz / 2]){
 			rotate([theta, 0, 0]){
 				fanhole(10);
@@ -226,6 +228,9 @@ module croom(iech = 20){
 		}
 	}
 	croombottom(botrad, wallz);
+	}
+	antennahole();		
+	}
 }
 
 multicolor("lightblue"){
