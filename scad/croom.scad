@@ -15,16 +15,16 @@ pcbmountc = 6;
 module pcbmounts(){
 	rh = 4;
 	th = 5;
-	d = 5;
+	d = 4.5;
     translate([45, -0.95 * totalxy / 2 + mh + 15, 0]){
         mount(pcbmountc, rh, th, d);
         translate([-90, 0, 0]){
 			mount(pcbmountc, rh, th, d);
         }
-        translate([0, 65, 0]){
+        translate([0, 66, 0]){
 			mount(pcbmountc, rh, th, d);
 			// this one is off-corner
-			translate([-65, 0, 0]){
+			translate([-66, 0, 0]){
 				mount(pcbmountc, rh, th, d);
 			}
         }
@@ -78,7 +78,7 @@ acadapterw = 50;
 acadapterl = 135;
 acmounth = 2;
 module acadaptermount(){
-	d = 4; // M4
+	d = 3.8;
 	c = 7; // total length of cutout
 	// 3 on z matches ct in acadapterstand()
     translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, acmounth]){
