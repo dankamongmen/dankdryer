@@ -15,7 +15,7 @@ pcbmountc = 6;
 module pcbmounts(){
 	rh = 4;
 	th = 5;
-	d = 4.5;
+	d = 4.75; // 4.5 is too small, 5 too big (ASA)
     translate([45, -0.95 * totalxy / 2 + mh + 15, 0]){
         mount(pcbmountc, rh, th, d);
         translate([-90, 0, 0]){
@@ -34,7 +34,7 @@ module pcbmounts(){
 // RP-SMA female connector will anchor the antenna.
 // it is .24in in diameter (6.19mm, 3.095mm radius)
 module antennahole(){
-	rpsmad = 6.19;
+	rpsmad = 6.3; // 6.19 is too small (ASA)
 	l = croomwall * 3;
 	translate([topalt / 2, -botalt + l / 4, croomz - 30]){
 		rotate([theta, 0, 0]){
