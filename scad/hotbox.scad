@@ -276,7 +276,7 @@ module hotbox(){
 		ptfeconn();
 	}
 	translate([50, -botinalt + 25, wallz]){
-		rotate([0, 0, 225]){
+		rotate([0, 0, 215]){
 			idtext();
 		}
 	}
