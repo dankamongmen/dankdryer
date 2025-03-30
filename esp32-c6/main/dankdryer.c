@@ -374,6 +374,9 @@ setup_nau7802(i2c_master_bus_handle_t master){
   if(nau7802_set_pga_cap(NAU7802, true)){
     return -1;
   }
+  if(nau7802_enable_ldo(NAU7802, NAU7802_LDO_33V, true)){
+    return -1;
+  }
   // FIXME set gain?
   NAUAvailable = true;
   return 0;
@@ -642,9 +645,9 @@ getLM35(adc_channel_t channel){
     // result is read * Vmax / Dmax
     o = raw * 1750.0 / 4095;
   }
-  printf("ADC1: %d -> %f\n", raw, o);
-  o /= 10.0; // 10 mV per C
-  return o;
+  float ret = o / 10.0; // 10 mV per C
+  printf("adc1: %d -> %f -> %f\n", raw, o, ret);
+  return ret;
 }
 
 // if the upper chamber temperature as measured is a valid sample, update
@@ -652,7 +655,6 @@ getLM35(adc_channel_t channel){
 static float
 update_upper_temp(void){
   float utemp = getLM35(Thermchan);
-  printf("lm35: %f\n", utemp);
   // if there is no drying scheduled, but the heater is on, we ought turn
   // it off even if we got an invalid temperature
   if(HeaterState && !DryEndsAt){
