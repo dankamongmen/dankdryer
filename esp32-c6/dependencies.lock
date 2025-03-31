@@ -1,6 +1,6 @@
 dependencies:
   dankamongmen/nau7802:
-    component_hash: 7fef6148ce279d0e4b582d60c2c1b0826c39745412f5207803e5ce134df7de7b
+    component_hash: 504ad4e9a6aeef0bad3219019941bff567e5a6ad407e4eb9151ff54aa4592eaf
     dependencies:
     - name: idf
       require: private
@@ -8,7 +8,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 0.1.1
+    version: 0.2.0
   espressif/led_strip:
     component_hash: b578eb926d9f6402fd45398b53c9bd5d1b7a15c1b2974d25aa3088e6c79b0b4c
     dependencies:
