@@ -9,8 +9,8 @@
 // 0--6 are connected to ADC1
 #define LOWER_TACHPIN GPIO_NUM_0   // lower chamber fan tach
 #define LOWER_PWMPIN  GPIO_NUM_1   // lower chamber fan pwm
-#define HALL_DATAPIN  GPIO_NUM_4   // hall sensor
-#define THERM_DATAPIN GPIO_NUM_5   // analog thermometer (ADC1)
+#define THERM_DATAPIN GPIO_NUM_4   // analog thermometer (ADC1)
+#define HALL_DATAPIN  GPIO_NUM_5   // hall sensor
 // 4 and 5 are strapping pins
 #define UPPER_PWMPIN  GPIO_NUM_6   // upper chamber fan pwm
 #define UPPER_TACHPIN GPIO_NUM_7   // upper chamber fan tach
