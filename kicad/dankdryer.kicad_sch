@@ -3357,29 +3357,6 @@
 		)
 		(uuid "3f23c64b-e498-4124-b91f-a2f2f02fd37d")
 	)
-	(text_box "ESP32-C6-MINI-1U-H4 3.3V"
-		(exclude_from_sim no)
-		(at 170.18 15.24 0)
-		(size 81.28 93.98)
-		(margins 1.905 1.905 1.905 1.905)
-		(stroke
-			(width 0)
-			(type default)
-			(color 0 0 0 1)
-		)
-		(fill
-			(type color)
-			(color 167 230 255 1)
-		)
-		(effects
-			(font
-				(size 2.54 2.54)
-				(color 0 0 0 1)
-			)
-			(justify left top)
-		)
-		(uuid "7f95f483-bd0a-4d0f-ba36-2507aa6c6e7e")
-	)
 	(text_box "I²C"
 		(exclude_from_sim no)
 		(at 170.18 111.76 0)
@@ -3502,7 +3479,7 @@
 		(uuid "54d57f54-f5f7-45a2-bb85-5f8a22009f72")
 	)
 	(junction
-		(at 182.88 60.96)
+		(at 182.88 58.42)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "560a7055-374e-4464-9acc-436f7a14a26c")
@@ -3839,7 +3816,7 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 60.96) (xy 196.85 60.96)
+			(xy 182.88 58.42) (xy 196.85 58.42)
 		)
 		(stroke
 			(width 0)
@@ -3866,16 +3843,6 @@
 			(type default)
 		)
 		(uuid "34315c93-e4b7-467a-997b-739c8fd7a168")
-	)
-	(wire
-		(pts
-			(xy 60.96 125.73) (xy 64.77 125.73)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "34f7019b-95a0-4715-bc8a-2d6652a0030f")
 	)
 	(wire
 		(pts
@@ -4079,6 +4046,16 @@
 	)
 	(wire
 		(pts
+			(xy 30.48 168.91) (xy 34.29 168.91)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "683e2b84-8771-4616-96b2-7770ff2f28e0")
+	)
+	(wire
+		(pts
 			(xy 135.89 31.75) (xy 140.97 31.75)
 		)
 		(stroke
@@ -4086,16 +4063,6 @@
 			(type default)
 		)
 		(uuid "6aee692b-1ba1-4d1a-a3fd-6ab5a854b0a8")
-	)
-	(wire
-		(pts
-			(xy 31.75 125.73) (xy 34.29 125.73)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6f295b08-f38c-40d4-a447-64e991aa7f2d")
 	)
 	(wire
 		(pts
@@ -4159,7 +4126,7 @@
 	)
 	(wire
 		(pts
-			(xy 179.07 60.96) (xy 182.88 60.96)
+			(xy 179.07 58.42) (xy 182.88 58.42)
 		)
 		(stroke
 			(width 0)
@@ -4229,6 +4196,16 @@
 	)
 	(wire
 		(pts
+			(xy 30.48 166.37) (xy 34.29 166.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a7550055-49e7-47e8-aa0b-63b8f25a823e")
+	)
+	(wire
+		(pts
 			(xy 31.75 123.19) (xy 34.29 123.19)
 		)
 		(stroke
@@ -4279,16 +4256,6 @@
 	)
 	(wire
 		(pts
-			(xy 60.96 123.19) (xy 64.77 123.19)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "bb197cf8-d6c0-4ceb-8187-ad3d13a75fc5")
-	)
-	(wire
-		(pts
 			(xy 121.92 29.21) (xy 121.92 31.75)
 		)
 		(stroke
@@ -4319,6 +4286,16 @@
 	)
 	(wire
 		(pts
+			(xy 60.96 123.19) (xy 64.77 123.19)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c4f5cd3d-fea0-4846-a8ac-cc1d48bdc0e0")
+	)
+	(wire
+		(pts
 			(xy 116.84 31.75) (xy 121.92 31.75)
 		)
 		(stroke
@@ -4326,6 +4303,16 @@
 			(type default)
 		)
 		(uuid "c9e2513c-9c2a-4f1e-a51b-39affc2614de")
+	)
+	(wire
+		(pts
+			(xy 30.48 163.83) (xy 34.29 163.83)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cc913fe7-eed3-4e6f-8fd9-b6ce5077a8fc")
 	)
 	(wire
 		(pts
@@ -4366,16 +4353,6 @@
 			(type default)
 		)
 		(uuid "d3604523-be5d-4b5d-a409-3d6c2081917f")
-	)
-	(wire
-		(pts
-			(xy 64.77 128.27) (xy 60.96 128.27)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "db425096-19cb-42ab-94f6-e31a9317d5a7")
 	)
 	(wire
 		(pts
@@ -4627,17 +4604,6 @@
 			)
 		)
 	)
-	(hierarchical_label "ACNeutral"
-		(shape input)
-		(at 64.77 123.19 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "0c6da411-5963-4803-88f5-1f241ff1ebfb")
-	)
 	(hierarchical_label "SDA"
 		(shape bidirectional)
 		(at 31.75 123.19 180)
@@ -4693,6 +4659,17 @@
 		)
 		(uuid "2e95a418-6104-4c89-9632-688dc79ce350")
 	)
+	(hierarchical_label "SCL"
+		(shape input)
+		(at 64.77 123.19 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "3539cf8c-c2c4-43f5-87fc-2acd7d3f10a4")
+	)
 	(hierarchical_label "Hall"
 		(shape bidirectional)
 		(at 64.77 147.32 0)
@@ -4703,6 +4680,17 @@
 			(justify left)
 		)
 		(uuid "3b0ffcc9-5ff8-4c3a-a869-8f63c4b99e51")
+	)
+	(hierarchical_label "Hall"
+		(shape bidirectional)
+		(at 196.85 60.96 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "424f83a1-8d7c-4859-b1a9-646279caebc0")
 	)
 	(hierarchical_label "Motor"
 		(shape bidirectional)
@@ -4726,16 +4714,16 @@
 		)
 		(uuid "4b1e3c45-ab6e-4941-a91e-fa213b7aebcd")
 	)
-	(hierarchical_label "HeaterNeutral"
+	(hierarchical_label "SSRControl"
 		(shape input)
-		(at 64.77 125.73 0)
+		(at 30.48 168.91 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
+			(justify right)
 		)
-		(uuid "4ec36cd7-ecfa-4ad0-8700-236362a8de28")
+		(uuid "5acf8271-ae39-40a8-b991-bb2ce129df93")
 	)
 	(hierarchical_label "UTach"
 		(shape input)
@@ -4780,17 +4768,6 @@
 			(justify right)
 		)
 		(uuid "6aef3e89-2143-44a4-8c8c-a788b49a24fd")
-	)
-	(hierarchical_label "SCL"
-		(shape input)
-		(at 31.75 125.73 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "7400a02b-a783-4def-8380-6a9f4b736ab5")
 	)
 	(hierarchical_label "LPWM"
 		(shape input)
@@ -4849,7 +4826,7 @@
 	)
 	(hierarchical_label "Therm"
 		(shape bidirectional)
-		(at 179.07 60.96 180)
+		(at 179.07 58.42 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4868,6 +4845,17 @@
 			(justify left)
 		)
 		(uuid "b6aabbbe-eb30-429c-b913-d7abe93babe5")
+	)
+	(hierarchical_label "HeaterNeutral"
+		(shape input)
+		(at 30.48 166.37 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "b6c935ac-4a49-4d05-978a-94ad5e893b71")
 	)
 	(hierarchical_label "RXD0"
 		(shape bidirectional)
@@ -4891,17 +4879,6 @@
 		)
 		(uuid "be81a377-2a90-4309-ac3a-99cce92a53bd")
 	)
-	(hierarchical_label "SSRControl"
-		(shape input)
-		(at 64.77 128.27 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "c20f6358-9a79-4ca1-9e2d-6985d8f85508")
-	)
 	(hierarchical_label "SCL"
 		(shape output)
 		(at 227.33 53.34 0)
@@ -4912,17 +4889,6 @@
 			(justify left)
 		)
 		(uuid "cd4e7801-5015-43d5-ad21-c65019a2b7cf")
-	)
-	(hierarchical_label "Hall"
-		(shape bidirectional)
-		(at 196.85 58.42 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "d268b258-5402-45de-a9eb-9e7d669324a8")
 	)
 	(hierarchical_label "SCL"
 		(shape input)
@@ -4967,6 +4933,17 @@
 			(justify left)
 		)
 		(uuid "db3a545d-ed11-457b-807f-ff4cb0923111")
+	)
+	(hierarchical_label "ACNeutral"
+		(shape input)
+		(at 30.48 163.83 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "e5b622a5-0e77-460d-88d2-b1ff0f5e6a22")
 	)
 	(hierarchical_label "UPWM"
 		(shape input)
@@ -5209,7 +5186,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 182.88 64.77 0)
+		(at 182.88 62.23 0)
 		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
@@ -5218,7 +5195,7 @@
 		(dnp no)
 		(uuid "161e75c8-f780-4f60-9cb7-59d4f3492121")
 		(property "Reference" "C20"
-			(at 179.832 63.5 0)
+			(at 179.832 60.96 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5227,7 +5204,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 179.578 66.294 0)
+			(at 179.578 63.754 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5236,7 +5213,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
-			(at 181.9148 68.58 0)
+			(at 181.9148 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5245,7 +5222,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 182.88 64.77 0)
+			(at 182.88 62.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5254,7 +5231,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 182.88 64.77 0)
+			(at 182.88 62.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7036,7 +7013,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 182.88 68.58 0)
+		(at 182.88 66.04 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7045,7 +7022,7 @@
 		(fields_autoplaced yes)
 		(uuid "e810e2db-36d6-40b3-ad93-d807872eac31")
 		(property "Reference" "#PWR06"
-			(at 182.88 74.93 0)
+			(at 182.88 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7054,7 +7031,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 182.88 73.66 0)
+			(at 182.88 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7062,7 +7039,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 182.88 68.58 0)
+			(at 182.88 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7071,7 +7048,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 182.88 68.58 0)
+			(at 182.88 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7080,7 +7057,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 182.88 68.58 0)
+			(at 182.88 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7909,36 +7886,6 @@
 				(justify left top)
 			)
 		)
-		(pin "SSRControl" input
-			(at 60.96 128.27 0)
-			(uuid "132eab61-f4cb-4746-979e-65978428c285")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(pin "HeaterNeutral" input
-			(at 60.96 125.73 0)
-			(uuid "06f91596-0eed-4c97-865a-cb9664af55cf")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(pin "ACNeutral" input
-			(at 60.96 123.19 0)
-			(uuid "931f2cde-76cd-42eb-8ff7-58c0dbbd3fd7")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
 		(pin "SDA" bidirectional
 			(at 34.29 123.19 180)
 			(uuid "076600e1-9138-4f37-b6c6-2fbdee24acc2")
@@ -7950,13 +7897,13 @@
 			)
 		)
 		(pin "SCL" input
-			(at 34.29 125.73 180)
+			(at 60.96 123.19 0)
 			(uuid "41dfd3d2-41f2-4df5-a6ae-9bb70c64f5a7")
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
 		(pin "MotorPin" input
@@ -8018,6 +7965,79 @@
 		)
 	)
 	(sheet
+		(at 34.29 160.02)
+		(size 26.67 11.43)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "57a2c807-c2db-4e7b-be07-a29e012a165d")
+		(property "Sheetname" "Heating circuit"
+			(at 34.29 159.3084 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "heatercircuit.kicad_sch"
+			(at 34.29 172.0346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(pin "ACNeutral" input
+			(at 34.29 163.83 180)
+			(uuid "6aeccf7d-95d3-4de2-9949-6c4a9c108f70")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "HeaterNeutral" input
+			(at 34.29 166.37 180)
+			(uuid "50e5b5f7-df78-4756-989c-9f6c1cdf8c50")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SSRControl" input
+			(at 34.29 168.91 180)
+			(uuid "dedad560-4124-4f1b-b814-3741434224f7")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "dankdryer"
+				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
 		(at 34.29 144.78)
 		(size 26.67 5.08)
 		(exclude_from_sim no)
@@ -8073,7 +8093,7 @@
 		(instances
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611"
-					(page "3")
+					(page "4")
 				)
 			)
 		)

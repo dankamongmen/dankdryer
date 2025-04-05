@@ -1899,674 +1899,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Triac_Thyristor:Generic_Triac_A1GA2"
-			(pin_names
-				(offset 0)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "D"
-				(at 3.175 0.635 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "Generic_Triac_A1GA2"
-				(at 3.175 -1.27 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 1.905 0.635 90)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 90)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Triode for alternating current, anode1/gate/anode2"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "TRIAC"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "Generic_Triac_A1GA2_0_1"
-				(polyline
-					(pts
-						(xy -2.54 1.27) (xy 2.54 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 1.27) (xy -1.27 -1.27) (xy 0 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 -1.27) (xy 2.54 -1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 -2.54) (xy -0.635 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -1.27) (xy 1.27 1.27) (xy 2.54 -1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "Generic_Triac_A1GA2_1_1"
-				(pin input line
-					(at -3.81 -2.54 0)
-					(length 2.54)
-					(name "G"
-						(effects
-							(font
-								(size 0.635 0.635)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 3.81 270)
-					(length 2.54)
-					(name "A2"
-						(effects
-							(font
-								(size 0.635 0.635)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -3.81 90)
-					(length 2.54)
-					(name "A1"
-						(effects
-							(font
-								(size 0.635 0.635)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "dank:MOC3063SM"
-			(pin_names
-				(offset 1.016)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "OC1"
-				(at -11.176 1.524 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "MOC3063S"
-				(at -18.034 -0.762 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" "dank:MOC306XS_LTO"
-				(at -7.62 10.16 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-						(italic yes)
-					)
-					(justify left)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "https://www.tme.eu/Document/a814ef315551e230181c0a924579d1c4/MOC3061M.pdf"
-				(at -1.524 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-					(hide yes)
-				)
-			)
-			(property "Description" "SMDIP-6 Optocoupler, Phototriac output with zero-crossing detection, 4kV, 600V, Alternate KiCAD Library"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "Optocoupler triac phototriac ZCD zero crossing detection MOC3063M"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "DIP*W7.62mm*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "MOC3063SM_0_0"
-				(circle
-					(center 1.27 1.905)
-					(radius 0.1778)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(circle
-					(center 1.27 -1.905)
-					(radius 0.1778)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 4.445 0) (xy 4.445 1.905) (xy 1.27 1.905)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 4.445 -1.27) (xy 4.445 -1.905) (xy 1.27 -1.905)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(text "ZCD"
-					(at 4.445 -0.635 0)
-					(effects
-						(font
-							(size 0.7 0.7)
-						)
-					)
-				)
-			)
-			(symbol "MOC3063SM_0_1"
-				(polyline
-					(pts
-						(xy -5.715 -0.635) (xy -4.445 -0.635)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -5.08 -0.635) (xy -5.715 0.635) (xy -4.445 0.635) (xy -5.08 -0.635)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy -5.08 -2.54) (xy -5.08 -1.27) (xy -5.08 2.54)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -4.445 2.54) (xy 4.445 2.54)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -4.4675 -2.54)
-					(mid -6.9851 0)
-					(end -4.4675 2.54)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -3.81 2.54) (xy 1.397 2.54) (xy 2.159 2.54) (xy 4.064 2.54) (xy 5.207 2.413) (xy 6.223 1.905)
-						(xy 6.858 0.889) (xy 6.985 0) (xy 6.858 -0.889) (xy 6.35 -1.651) (xy 5.461 -2.286) (xy 4.572 -2.54)
-						(xy -5.08 -2.54) (xy -5.08 -2.54) (xy -5.842 -2.032) (xy -6.35 -1.778) (xy -6.858 -0.508) (xy -6.858 0.254)
-						(xy -6.858 1.016) (xy -6.35 1.778) (xy -5.588 2.286) (xy -4.826 2.54) (xy -3.81 2.54)
-					)
-					(stroke
-						(width 0.01)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.667 0.508) (xy -1.397 0.508) (xy -1.778 0.381) (xy -1.778 0.635) (xy -1.397 0.508)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.667 -0.508) (xy -1.397 -0.508) (xy -1.778 -0.635) (xy -1.778 -0.381) (xy -1.397 -0.508)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 3.175) (xy 1.27 1.27)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy 1.27 -2.54)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.905 -0.635) (xy 1.524 0)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 -0.635) (xy 1.905 -0.635)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 -0.635) (xy 3.175 -0.635)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.175 0)
-					(end 5.715 -1.27)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 4.4675 2.54)
-					(mid 6.9851 0)
-					(end 4.4675 -2.54)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 4.445 -2.54) (xy -4.445 -2.54)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "MOC3063SM_1_1"
-				(polyline
-					(pts
-						(xy 0 1.27) (xy 2.54 1.27)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 1.27) (xy 0.635 0) (xy 1.27 1.27)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 2.54 0)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy 1.905 1.27) (xy 2.54 0)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(pin passive line
-					(at -5.08 5.08 270)
-					(length 2.54)
-					(name "A"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -5.08 90)
-					(length 2.54)
-					(name "C"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin free line
-					(at -2.54 0 0)
-					(length 2.54)
-					(hide yes)
-					(name "NC"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 1.27 5.08 270)
-					(length 2.54)
-					(name "MT2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 1.27 -5.08 90)
-					(length 2.54)
-					(name "MT1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin no_connect line
-					(at 2.54 0 180)
-					(length 2.54)
-					(hide yes)
-					(name "NC"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "dank:NAU7802SGI"
 			(pin_names
 				(offset 0.254)
@@ -3296,7 +2628,7 @@
 	)
 	(text "A+\nA-\nE-\nE+"
 		(exclude_from_sim no)
-		(at 229.87 135.89 0)
+		(at 208.28 129.54 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3304,18 +2636,6 @@
 			(justify right)
 		)
 		(uuid "32aee328-e49e-4aab-a092-221a3e8fab04")
-	)
-	(text "0.005A minimum to drive MOC3063SM.\n3.3V / 330Ω = 0.01A (0.033W).\nMOC3063 has drop of 1.3-1.5V, forward current of 60mA.\nHeater neutral returns from 150C thermostat.\nHeater is resistive load, no need for snubber circuit.\n50W±20% max draw -> 60W / 120VAC -> 0.5A max switched in triac.\nT1210 wants 1.3V and latching 25-30mA / holding 15mA (max 0.039W),\n switches 12A continuous and 126A peak of 120VAC@60Hz.\nRK73H2As support 150V and 0.25W."
-		(exclude_from_sim no)
-		(at 16.51 159.766 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.1588)
-			)
-			(justify left)
-		)
-		(uuid "417f3b45-e6e9-4c35-b54b-d089db38e905")
 	)
 	(text "Motor is 12VDC at 0.7A (8.4W), stall 1.6A (19.2W).\nMOSFET: IRLML2502TRPbF 2A/4A max continuous/pulse drain current.\n10mA max current to MOSFET: 3.3V / 0.01A = 330Ω (0.033W).\nSchottky diode across motor +/- for EMP protection."
 		(exclude_from_sim no)
@@ -3351,19 +2671,6 @@
 		)
 		(uuid "b5e6a47c-14dc-434d-abea-3f16dea3eed7")
 	)
-	(text "AC—Danger!"
-		(exclude_from_sim no)
-		(at 66.04 107.95 0)
-		(effects
-			(font
-				(size 2.54 2.54)
-				(thickness 0.508)
-				(bold yes)
-			)
-			(justify left)
-		)
-		(uuid "b782a63e-8ef2-4d6a-aebf-a5d9b749a1c2")
-	)
 	(text "ST7789V runs on 3.3V.\nPin 2 is the blacklight control, which we leave at full power."
 		(exclude_from_sim no)
 		(at 99.06 166.37 0)
@@ -3374,27 +2681,6 @@
 			(justify left)
 		)
 		(uuid "d7f29461-e13e-4ce4-99c3-e16855606ec9")
-	)
-	(text_box "120VAC heater"
-		(exclude_from_sim no)
-		(at 15.24 104.14 0)
-		(size 76.2 66.04)
-		(margins 1.905 1.905 1.905 1.905)
-		(stroke
-			(width 0)
-			(type solid)
-		)
-		(fill
-			(type color)
-			(color 241 209 255 1)
-		)
-		(effects
-			(font
-				(size 2.54 2.54)
-			)
-			(justify left top)
-		)
-		(uuid "405a46af-d81a-46d4-9c2a-da37fa9469cd")
 	)
 	(text_box "LCD hookup"
 		(exclude_from_sim no)
@@ -3477,19 +2763,13 @@
 		(uuid "e13bfe6c-eaf7-47a6-8ece-ba412b6e072d")
 	)
 	(junction
-		(at 66.04 143.51)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "1b2a9738-beae-4eb6-a5de-cfed9ca2f0cc")
-	)
-	(junction
 		(at 156.21 44.45)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "21fd93d2-383c-4703-bda1-e89e329f3117")
 	)
 	(junction
-		(at 243.84 139.7)
+		(at 222.25 133.35)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "2ea5bf7e-f963-4104-8772-76761bf9d15f")
@@ -3505,12 +2785,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "3a700f93-9b17-4e96-8f6c-ee2904694b3d")
-	)
-	(junction
-		(at 66.04 120.65)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "3bb7b0f9-0b0f-4925-b165-99d384ffaa0c")
 	)
 	(junction
 		(at 238.76 26.67)
@@ -3553,12 +2827,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "86ff289d-4e1e-4b5c-8393-fc0ff0dbefe1")
-	)
-	(junction
-		(at 52.07 134.62)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "931e7efc-0163-4c4b-80c5-d26d77b70c98")
 	)
 	(junction
 		(at 69.85 48.26)
@@ -3658,26 +2926,6 @@
 	)
 	(wire
 		(pts
-			(xy 66.04 120.65) (xy 72.39 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "17747c70-0cfe-45ac-b924-7fb4730a6744")
-	)
-	(wire
-		(pts
-			(xy 52.07 134.62) (xy 52.07 135.89)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1c2d2eb1-9516-483d-8f07-5f759e23b876")
-	)
-	(wire
-		(pts
 			(xy 55.88 41.91) (xy 55.88 67.31)
 		)
 		(stroke
@@ -3748,7 +2996,7 @@
 	)
 	(wire
 		(pts
-			(xy 252.73 137.16) (xy 237.49 137.16)
+			(xy 231.14 130.81) (xy 215.9 130.81)
 		)
 		(stroke
 			(width 0)
@@ -3768,7 +3016,7 @@
 	)
 	(wire
 		(pts
-			(xy 242.57 132.08) (xy 237.49 132.08)
+			(xy 220.98 125.73) (xy 215.9 125.73)
 		)
 		(stroke
 			(width 0)
@@ -3848,16 +3096,6 @@
 	)
 	(wire
 		(pts
-			(xy 39.37 120.65) (xy 41.91 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "381d7d54-0ac2-4488-95ca-25fe3f6f8666")
-	)
-	(wire
-		(pts
 			(xy 54.61 30.48) (xy 69.85 30.48)
 		)
 		(stroke
@@ -3868,7 +3106,7 @@
 	)
 	(wire
 		(pts
-			(xy 242.57 134.62) (xy 237.49 134.62)
+			(xy 220.98 128.27) (xy 215.9 128.27)
 		)
 		(stroke
 			(width 0)
@@ -3885,26 +3123,6 @@
 			(type default)
 		)
 		(uuid "431b89a2-c1b5-45ac-b685-78e0e66fcceb")
-	)
-	(wire
-		(pts
-			(xy 66.04 143.51) (xy 71.12 143.51)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4641b6f9-fc0b-4fc4-9831-323ba088d02e")
-	)
-	(wire
-		(pts
-			(xy 52.07 130.81) (xy 48.26 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4ceef09b-1343-4421-bb72-42db85c1c026")
 	)
 	(wire
 		(pts
@@ -4038,23 +3256,13 @@
 	)
 	(wire
 		(pts
-			(xy 252.73 137.16) (xy 252.73 135.89)
+			(xy 231.14 130.81) (xy 231.14 129.54)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "6de1dd1d-88e6-4007-b1cc-8639af72b6bb")
-	)
-	(wire
-		(pts
-			(xy 52.07 134.62) (xy 62.23 134.62)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "76a8be03-d98c-4334-b458-684339fbba50")
 	)
 	(wire
 		(pts
@@ -4198,7 +3406,7 @@
 	)
 	(wire
 		(pts
-			(xy 237.49 139.7) (xy 243.84 139.7)
+			(xy 215.9 133.35) (xy 222.25 133.35)
 		)
 		(stroke
 			(width 0)
@@ -4218,17 +3426,7 @@
 	)
 	(wire
 		(pts
-			(xy 55.88 120.65) (xy 66.04 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b384efc9-1734-4541-9903-cabee3faa86e")
-	)
-	(wire
-		(pts
-			(xy 243.84 139.7) (xy 250.19 139.7)
+			(xy 222.25 133.35) (xy 228.6 133.35)
 		)
 		(stroke
 			(width 0)
@@ -4245,16 +3443,6 @@
 			(type default)
 		)
 		(uuid "b562fcd2-094f-4ced-936c-a71debb9014f")
-	)
-	(wire
-		(pts
-			(xy 52.07 143.51) (xy 66.04 143.51)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "bb84e034-b829-4f7f-b011-3263ff046eae")
 	)
 	(wire
 		(pts
@@ -4275,16 +3463,6 @@
 			(type default)
 		)
 		(uuid "c7c6ebb4-4fda-4b6a-a5f5-3aedab123393")
-	)
-	(wire
-		(pts
-			(xy 30.48 120.65) (xy 31.75 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c96ff26f-29a3-4177-9c04-70a444abd896")
 	)
 	(wire
 		(pts
@@ -4338,16 +3516,6 @@
 	)
 	(wire
 		(pts
-			(xy 52.07 130.81) (xy 52.07 134.62)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cfd851d6-bf41-4a46-add4-39d91e376466")
-	)
-	(wire
-		(pts
 			(xy 111.76 57.15) (xy 119.38 57.15)
 		)
 		(stroke
@@ -4365,16 +3533,6 @@
 			(type default)
 		)
 		(uuid "dadaf770-bca0-4e5a-bf09-99022cb97feb")
-	)
-	(wire
-		(pts
-			(xy 66.04 120.65) (xy 66.04 128.27)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "db69330c-240b-408e-8b9a-8e9143823832")
 	)
 	(wire
 		(pts
@@ -4448,16 +3606,6 @@
 	)
 	(wire
 		(pts
-			(xy 66.04 135.89) (xy 66.04 143.51)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f52becf7-4644-420d-8bc5-cfe94824ba43")
-	)
-	(wire
-		(pts
 			(xy 144.78 41.91) (xy 144.78 49.53)
 		)
 		(stroke
@@ -4520,7 +3668,7 @@
 	)
 	(global_label "E+"
 		(shape input)
-		(at 250.19 139.7 0)
+		(at 228.6 133.35 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4530,7 +3678,7 @@
 		)
 		(uuid "127e0955-b4d8-4440-9440-1f7d1d866d22")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 255.8966 139.7 0)
+			(at 234.3066 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4608,7 +3756,7 @@
 	)
 	(global_label "A+"
 		(shape input)
-		(at 242.57 132.08 0)
+		(at 220.98 125.73 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4618,7 +3766,7 @@
 		)
 		(uuid "984dd9d2-5464-4c06-b27d-16226d7d1aa1")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 248.2162 132.08 0)
+			(at 226.6262 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4652,7 +3800,7 @@
 	)
 	(global_label "A-"
 		(shape input)
-		(at 242.57 134.62 0)
+		(at 220.98 128.27 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4662,7 +3810,7 @@
 		)
 		(uuid "c74ad81f-a67e-4bff-ad6a-1854393bd246")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 248.2162 134.62 0)
+			(at 226.6262 128.27 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4793,17 +3941,6 @@
 		)
 		(uuid "4084e113-2dc8-4e34-a0cc-8dbe4bc1908d")
 	)
-	(hierarchical_label "ACNeutral"
-		(shape input)
-		(at 196.85 137.16 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "463eaa1e-3045-4674-a5f5-b21de9b343a9")
-	)
 	(hierarchical_label "LTach"
 		(shape input)
 		(at 69.85 63.5 180)
@@ -4826,18 +3963,6 @@
 		)
 		(uuid "6dbed387-bef9-4497-9423-08b0664babfb")
 	)
-	(hierarchical_label "SSRControl"
-		(shape input)
-		(at 30.48 120.65 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.1588)
-			)
-			(justify right)
-		)
-		(uuid "71125f22-defc-4527-9161-257232966a0f")
-	)
 	(hierarchical_label "UPWM"
 		(shape input)
 		(at 40.64 45.72 0)
@@ -4849,17 +3974,6 @@
 		)
 		(uuid "a0940a86-9ad0-47e2-b355-0b772cb6ffb1")
 	)
-	(hierarchical_label "ACNeutral"
-		(shape input)
-		(at 71.12 143.51 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "b3ad28be-bf6c-43f2-9241-5f40a22dd8f9")
-	)
 	(hierarchical_label "LPWM"
 		(shape input)
 		(at 67.31 45.72 180)
@@ -4870,28 +3984,6 @@
 			(justify right)
 		)
 		(uuid "beeb176b-ca19-44c1-aedb-e89cb6f438c7")
-	)
-	(hierarchical_label "HeaterNeutral"
-		(shape input)
-		(at 196.85 134.62 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "daba94b1-5d2e-4351-a1e3-81b290819742")
-	)
-	(hierarchical_label "HeaterNeutral"
-		(shape input)
-		(at 72.39 120.65 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "e03bfac8-8302-4c97-bbc9-b2b5e3d4214e")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -4962,7 +4054,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Screw_Terminal_01x04")
-		(at 232.41 137.16 180)
+		(at 210.82 130.81 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4970,7 +4062,7 @@
 		(dnp no)
 		(uuid "0249b70f-6520-4a32-a200-b1f08bd16a06")
 		(property "Reference" "J5"
-			(at 232.41 144.78 0)
+			(at 210.82 138.43 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4978,7 +4070,7 @@
 			)
 		)
 		(property "Value" "ScrewX4"
-			(at 232.41 142.494 0)
+			(at 210.82 136.144 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4986,7 +4078,7 @@
 			)
 		)
 		(property "Footprint" "TerminalBlock:TerminalBlock_bornier-4_P5.08mm"
-			(at 232.41 137.16 0)
+			(at 210.82 130.81 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4995,7 +4087,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 232.41 137.16 0)
+			(at 210.82 130.81 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5004,7 +4096,7 @@
 			)
 		)
 		(property "Description" "Generic screw terminal, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 232.41 137.16 0)
+			(at 210.82 130.81 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5237,142 +4329,6 @@
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "#PWR030")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:Screw_Terminal_01x02")
-		(at 201.93 134.62 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "1fbf77f7-f3f6-4c42-877e-47ad7de27f00")
-		(property "Reference" "J4"
-			(at 204.47 134.6199 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "ScrewX2"
-			(at 204.47 137.1599 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TerminalBlock:TerminalBlock_bornier-2_P5.08mm"
-			(at 201.93 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 201.93 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic screw terminal, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 201.93 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "8a80c164-4404-4c7a-b84c-3c6eb73e978f")
-		)
-		(pin "2"
-			(uuid "ce01a556-1aee-4c37-b766-721cb867e5f3")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "J4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 41.91 130.81 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "239870ed-2cd8-4a84-a383-111e05c9dfd9")
-		(property "Reference" "#PWR04"
-			(at 41.91 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 41.91 135.89 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 41.91 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 41.91 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 41.91 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ece24dca-7c6e-49fb-adfd-26818febae09")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "#PWR04")
 					(unit 1)
 				)
 			)
@@ -5721,76 +4677,8 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
-		(at 35.56 120.65 270)
-		(mirror x)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "3be04ae7-2ce2-4056-aa4f-e926e6f55c6c")
-		(property "Reference" "R2"
-			(at 35.56 114.3 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "330"
-			(at 35.56 116.84 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
-			(at 35.56 122.428 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 35.56 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 35.56 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "f964ca39-5ba5-4574-96e1-cb1c5a4b75b6")
-		)
-		(pin "1"
-			(uuid "a7a128ea-fd09-47b8-8125-fda3435e3219")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "R2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
-		(at 252.73 135.89 180)
+		(at 231.14 129.54 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5799,7 +4687,7 @@
 		(fields_autoplaced yes)
 		(uuid "497e78bf-0149-42ca-8c9b-8837c1d436f9")
 		(property "Reference" "#PWR018"
-			(at 252.73 129.54 0)
+			(at 231.14 123.19 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5808,7 +4696,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 252.73 130.81 0)
+			(at 231.14 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5816,7 +4704,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 252.73 135.89 0)
+			(at 231.14 129.54 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5825,7 +4713,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 252.73 135.89 0)
+			(at 231.14 129.54 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5834,7 +4722,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 252.73 135.89 0)
+			(at 231.14 129.54 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6056,7 +4944,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 243.84 143.51 0)
+		(at 222.25 137.16 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6065,7 +4953,7 @@
 		(fields_autoplaced yes)
 		(uuid "633fd505-7dbb-4929-b158-f90eef4807ec")
 		(property "Reference" "C5"
-			(at 247.65 142.2399 0)
+			(at 226.06 135.8899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6074,7 +4962,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 247.65 144.7799 0)
+			(at 226.06 138.4299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6083,7 +4971,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
-			(at 244.8052 147.32 0)
+			(at 223.2152 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6092,7 +4980,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 243.84 143.51 0)
+			(at 222.25 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6101,7 +4989,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 243.84 143.51 0)
+			(at 222.25 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6189,79 +5077,6 @@
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "C12")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Triac_Thyristor:Generic_Triac_A1GA2")
-		(at 66.04 132.08 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "6bdba016-dc11-42e8-9c38-731d76a7f92d")
-		(property "Reference" "D1"
-			(at 69.85 131.3814 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "T1210-800G-TR"
-			(at 69.85 133.9214 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "dank:T1210-800G-TR"
-			(at 67.945 131.445 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://www.st.com/content/ccc/resource/technical/document/datasheet/aa/8c/87/f6/18/fc/46/93/CD00002267.pdf/files/CD00002267.pdf/jcr:content/translations/en.CD00002267.pdf"
-			(at 66.04 132.08 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Triode for alternating current, anode1/gate/anode2"
-			(at 66.04 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "15cae975-428a-4957-93f1-1a8e12fd289d")
-		)
-		(pin "3"
-			(uuid "7f55a340-1789-45fe-b17d-c6503394a37e")
-		)
-		(pin "2"
-			(uuid "28fc900b-1c79-4c19-98e7-f95feb2bb974")
-		)
-		(instances
-			(project ""
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "D1")
 					(unit 1)
 				)
 			)
@@ -6945,7 +5760,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 243.84 147.32 0)
+		(at 222.25 140.97 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6954,7 +5769,7 @@
 		(fields_autoplaced yes)
 		(uuid "9fe2cec8-5264-472a-8128-823dcab51bfa")
 		(property "Reference" "#PWR035"
-			(at 243.84 153.67 0)
+			(at 222.25 147.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6963,7 +5778,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 243.84 152.4 0)
+			(at 222.25 146.05 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6971,7 +5786,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 243.84 147.32 0)
+			(at 222.25 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6980,7 +5795,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 243.84 147.32 0)
+			(at 222.25 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6989,7 +5804,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 243.84 147.32 0)
+			(at 222.25 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7069,76 +5884,6 @@
 			(project "dankdryer"
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "#PWR033")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 52.07 139.7 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "aa117a04-fc3c-4ccd-9cbd-c40e9b215854")
-		(property "Reference" "R4"
-			(at 54.61 138.4299 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "390"
-			(at 54.61 140.9699 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
-			(at 50.292 139.7 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 52.07 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 52.07 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "497a49fb-cc19-4862-a02b-df47eafc6f06")
-		)
-		(pin "1"
-			(uuid "19734043-7e9e-47d9-bcbe-dc2e7a53d8ae")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "R4")
 					(unit 1)
 				)
 			)
@@ -7225,158 +5970,6 @@
 			(project ""
 				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
 					(reference "J6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 52.07 120.65 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "b65d37a9-3d99-4b54-914d-efc18f9e91ae")
-		(property "Reference" "R3"
-			(at 52.07 114.3 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "100"
-			(at 52.07 116.84 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder"
-			(at 52.07 122.428 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 52.07 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 52.07 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "d21f196f-bbb7-4e19-bbc9-0cab1fde911b")
-		)
-		(pin "1"
-			(uuid "1705530a-7b2a-44ad-87ba-3ae394af309a")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "R3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "dank:MOC3063SM")
-		(at 46.99 125.73 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "c379ad8b-95b7-4e9c-b93c-292b3f03ae48")
-		(property "Reference" "OC1"
-			(at 35.814 124.206 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "MOC3063SM"
-			(at 27.686 126.492 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "dank:MOC306XS_LTO"
-			(at 39.37 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://www.tme.eu/Document/a814ef315551e230181c0a924579d1c4/MOC3061M.pdf"
-			(at 45.466 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Description" "SMDIP-6 Optocoupler, Phototriac output with zero-crossing detection, 4kV, 600V, Alternate KiCAD Library"
-			(at 46.99 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "4"
-			(uuid "ae84bda0-e75d-4cb9-a9a4-330f853b6002")
-		)
-		(pin "3"
-			(uuid "8cc672d8-459c-4ef1-aa7f-226bcd7c96dc")
-		)
-		(pin "5"
-			(uuid "c1b0260f-a25c-4e1c-bd82-36b5b07b5f8f")
-		)
-		(pin "6"
-			(uuid "ce28e168-d041-4c36-bafc-7ce568f1469d")
-		)
-		(pin "1"
-			(uuid "26a3be92-0d5d-46c9-9795-cd0c4b60bbca")
-		)
-		(pin "2"
-			(uuid "d7a03b44-68ca-478a-8b17-32154d896588")
-		)
-		(instances
-			(project "dankdryer"
-				(path "/0e28ce9c-097a-4614-9b8c-9333a7b96611/2a0e6a8d-8569-4b27-a15d-bed47a66289a"
-					(reference "OC1")
 					(unit 1)
 				)
 			)
