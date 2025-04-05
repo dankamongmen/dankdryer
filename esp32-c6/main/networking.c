@@ -263,6 +263,7 @@ mqtt_publish_hadiscovery(void){
   if(esp_mqtt_client_publish(MQTTHandle, topic, s, slen, 0, 0)){
     fprintf(stderr, "couldn't publish %zuB mqtt message\n", slen);
   }
+#undef DISCOVERYPREFIX
 }
 
 static void
@@ -271,6 +272,7 @@ mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
     printf("connected to mqtt\n");
     set_network_state(MQTT_ESTABLISHED);
     subscribe(MQTTHandle, MOTOR_CHANNEL);
+    subscribe(MQTTHandle, HEATER_CHANNEL);
     subscribe(MQTTHandle, LPWM_CHANNEL);
     subscribe(MQTTHandle, UPWM_CHANNEL);
     subscribe(MQTTHandle, DRY_CHANNEL);
@@ -281,7 +283,7 @@ mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }else if(id == MQTT_EVENT_DATA){
     handle_mqtt_msg(data);
   }else{
-    printf("unhandled mqtt event %ld\n", id);
+    printf("unhandled mqtt event %" PRId32 "\n", id);
   }
 }
 
@@ -417,7 +419,7 @@ wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }else if(id == WIFI_EVENT_HOME_CHANNEL_CHANGE){
     printf("wifi channel changed\n");
   }else{
-    fprintf(stderr, "unknown wifi event %ld\n", id);
+    fprintf(stderr, "unknown wifi event %" PRId32 "\n", id);
   }
 }
 
@@ -732,4 +734,3 @@ int setup_network(void){
   }
   return 0;
 }
-
