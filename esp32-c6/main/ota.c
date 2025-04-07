@@ -36,3 +36,8 @@ int ota_init(void){
   }
   return 0;
 }
+
+int attempt_ota(void){
+  // FIXME check for new package
+  return -1;
+}
