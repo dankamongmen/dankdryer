@@ -573,7 +573,7 @@ gatt_deviceid(uint16_t conn_handle, uint16_t attr_handle,
   ESP_LOGI(TAG, "access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-    char devid[DEVICEIDLEN];
+    unsigned char devid[DEVICEIDLEN];
     uint16_t olen;
     if(ble_hs_mbuf_to_flat(ctxt->om, devid, sizeof(devid), &olen) == 0){
       ESP_LOGI(TAG, "deviceID [%.*s]", olen, devid);

@@ -25,6 +25,21 @@ typedef struct device_id {
 
 static device_id DeviceID;
 
+static electronics_e
+elec_from_raw(uint16_t raw){
+  switch(raw){
+    case 100:
+      return ELECTRONICS_DEVKIT;
+    case 200:
+      return ELECTRONICS_PCB200;
+    case 220:
+      return ELECTRONICS_PCB220;
+    default:
+      ESP_LOGE(TAG, "invalid electronics %" PRIu16, raw);
+      return ELECTRONICS_UNDEFINED;
+  }
+}
+
 int load_device_id(void){
   device_id* did = &DeviceID;
   uint32_t r0 = esp_efuse_read_reg(EFUSE_BLK_USER_DATA, 0);
@@ -56,34 +71,80 @@ int load_device_id(void){
   }else{
     r0 = r0 - 1;
     r1 = r1 - 1;
-    did->product[1] = 'A' + (r0 % 26);
-    did->product[0] = 'A' + (r0 / 26);
-    uint32_t elec = r1 / 1000000ul;
-    switch(elec){
-      case 100:
-        did->elec = ELECTRONICS_DEVKIT;
-        break;
-      case 200:
-        did->elec = ELECTRONICS_PCB200;
-        break;
-      case 220:
-        did->elec = ELECTRONICS_PCB220;
-        break;
-      default:
-        ESP_LOGE(TAG, "invalid electronics %" PRIu32, elec);
-        break;
+    if((did->elec = elec_from_raw(r1 / 1000000ul)) == ELECTRONICS_UNDEFINED){
+      return -1;
     }
     did->serialnum = r1 % 1000000ul;
+    // do this last, because deviceid_configured() decides based on these
+    did->product[1] = 'A' + (r0 % 26);
+    did->product[0] = 'A' + (r0 / 26);
   }
   ESP_LOGI(TAG, "product id: %c%c serial: %03u-%03u-%03u", did->product[0], did->product[1],
                 did->elec, did->serialnum / 1000, did->serialnum % 1000);
   return 0;
 }
 
-int set_device_id(const char* devid){
+int set_device_id(const unsigned char* devid){
+  if(deviceid_configured()){
+    ESP_LOGE(TAG, "won't rewrite device ID");
+    return -1;
+  }
+  device_id d;
   // FIXME lex, validate, and convert
+  enum {
+    WANT_PID,
+    WANT_D1,
+    WANT_D2,
+    WANT_D3
+  } state_e = WANT_PID;
+  while(*devid){
+    switch(state_e){
+      case WANT_PID:
+        if(!isupper(devid[0]) || !isupper(devid[1]) || devid[2] != '-'){
+          goto badlex;
+        }
+        d.product[0] = devid[0];
+        d.product[1] = devid[1];
+        devid += 3;
+        state_e = WANT_D1;
+        break;
+      case WANT_D1:
+        if(!isdigit(devid[0]) || !isdigit(devid[1]) || !isdigit(devid[2]) || devid[3] != '-'){
+          goto badlex;
+        }
+        uint16_t elec = (devid[0] - '0') * 100 + (devid[1] - '0') * 10 + (devid[2] - '0');
+        d.elec = elec_from_raw(elec);
+        if(d.elec == ELECTRONICS_UNDEFINED){
+          goto badlex;
+        }
+        devid += 4;
+        state_e = WANT_D2;
+        break;
+      case WANT_D2:
+        if(!isdigit(devid[0]) || !isdigit(devid[1]) || !isdigit(devid[2]) || devid[3] != '-'){
+          goto badlex;
+        }
+        d.serialnum = (devid[0] - '0') * 100 + (devid[1] - '0') * 10 + (devid[2] - '0');
+        devid += 4;
+        state_e = WANT_D3;
+        break;
+      case WANT_D3:
+        if(!isdigit(devid[0]) || !isdigit(devid[1]) || !isdigit(devid[2]) || devid[3]){
+          goto badlex;
+        }
+        d.serialnum *= 1000;
+        d.serialnum += (devid[0] - '0') * 100 + (devid[1] - '0') * 10 + (devid[2] - '0');
+        devid += 4;
+        break;
+    }
+  }
+  ESP_LOGW(TAG, "received valid device ID, writing to eFuse");
   // FIXME write to eFuse
   return 0;
+
+badlex:
+  ESP_LOGE(TAG, "not writing invalid device ID");
+  return -1;
 }
 
 bool deviceid_configured(void){

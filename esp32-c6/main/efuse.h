@@ -22,6 +22,6 @@ bool electronics_use_lm35(void);
 
 // set the device id, writing it to the eFuse, iff devid is valid.
 // otherwise (and on eFuse error) return -1.
-int set_device_id(const char* devid);
+int set_device_id(const unsigned char* devid);
 
 #endif
