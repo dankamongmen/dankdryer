@@ -5,6 +5,8 @@
 
 #define TAG "efuse"
 
+#define SERIAL_REG 1
+
 // different hardware, encoded into the device ID
 typedef enum {
   ELECTRONICS_UNDEFINED, // who knows
@@ -64,19 +66,19 @@ int load_device_id(void){
   // capital letters. 0 is uninitialized. written value is
   // 1..676 inclusive.
   if(r0 > 26 * 26){
-    ESP_LOGE(TAG, "invalid product id: %" PRIu32);
+    ESP_LOGE(TAG, "invalid product id: %" PRIu32, r0);
     return -1;
   }
-  uint32_t r1 = esp_efuse_read_reg(EFUSE_BLK_USER_DATA, 1);
+  uint32_t r1 = esp_efuse_read_reg(EFUSE_BLK_USER_DATA, SERIAL_REG);
   // second register is the serial number, represented by three sets of three
   // base-10 digits. 0 is uninitialized. written value is 1..1B inclusive.
   if(r1 > 1000ul * 1000ul * 1000ul){
-    ESP_LOGE(TAG, "invalid serial number: %" PRIu32);
+    ESP_LOGE(TAG, "invalid serial number: %" PRIu32, r1);
     return -1;
   }
   // either both must be zero, or neither can be zero
   if(!!r0 != !!r1){
-    ESP_LOGE(TAG, "invalid prod/serial combo: %" PRIu32 " %" PRIu32);
+    ESP_LOGE(TAG, "invalid prod/serial combo: %" PRIu32 " %" PRIu32, r0, r1);
     return -1;
   }
   did->elec = ELECTRONICS_UNDEFINED;
@@ -105,14 +107,26 @@ static int
 write_device_id(const device_id* did){
   uint32_t r;
   esp_err_t e;
+  if((e = esp_efuse_batch_write_begin()) != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) beginning eFuse write", esp_err_to_name(e));
+    return -1;
+  }
   r = (did->product[0] - 'A') * 26 + (did->product[1] - 'A') + 1;
+  ESP_LOGI(TAG, "writing %" PRIu32 " to register 0", r);
   if((e = esp_efuse_write_reg(EFUSE_BLK_USER_DATA, 0, r)) != ESP_OK){
     ESP_LOGE(TAG, "error (%s) writing register 0", esp_err_to_name(e));
+    esp_efuse_batch_write_cancel();
     return -1;
   }
   r = elec_to_raw(did->elec) * 1000000ul + did->serialnum;
-  if((e = esp_efuse_write_reg(EFUSE_BLK_USER_DATA, 1, r)) != ESP_OK){
-    ESP_LOGE(TAG, "error (%s) writing register 1", esp_err_to_name(e));
+  ESP_LOGI(TAG, "writing %" PRIu32 " to register %d", r, SERIAL_REG);
+  if((e = esp_efuse_write_reg(EFUSE_BLK_USER_DATA, SERIAL_REG, r)) != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) writing register %d", esp_err_to_name(e), SERIAL_REG);
+    esp_efuse_batch_write_cancel();
+    return -1;
+  }
+  if((e = esp_efuse_batch_write_commit()) != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) committing eFuse write", esp_err_to_name(e));
     return -1;
   }
   ESP_LOGW(TAG, "rebooting");
