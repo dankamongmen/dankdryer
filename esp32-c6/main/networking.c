@@ -576,7 +576,8 @@ gatt_deviceid(uint16_t conn_handle, uint16_t attr_handle,
     unsigned char devid[DEVICEIDLEN];
     uint16_t olen;
     if(ble_hs_mbuf_to_flat(ctxt->om, devid, sizeof(devid), &olen) == 0){
-      ESP_LOGI(TAG, "deviceID [%.*s]", olen, devid);
+      devid[olen] = '\0';
+      ESP_LOGI(TAG, "deviceID [%s]", devid);
       r = set_device_id(devid);
     }
   }

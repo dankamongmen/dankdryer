@@ -1,6 +1,7 @@
 #include "efuse.h"
 #include "esp_efuse.h"
 #include <ctype.h>
+#include <esp_system.h>
 
 #define TAG "efuse"
 
@@ -27,6 +28,7 @@ static device_id DeviceID;
 
 static electronics_e
 elec_from_raw(uint16_t raw){
+  ESP_LOGI(TAG, "got raw %" PRIu16, raw);
   switch(raw){
     case 100:
       return ELECTRONICS_DEVKIT;
@@ -38,6 +40,21 @@ elec_from_raw(uint16_t raw){
       ESP_LOGE(TAG, "invalid electronics %" PRIu16, raw);
       return ELECTRONICS_UNDEFINED;
   }
+}
+
+static uint16_t
+elec_to_raw(electronics_e e){
+  switch(e){
+    case ELECTRONICS_DEVKIT:
+      return 100;
+    case ELECTRONICS_PCB200:
+      return 200;
+    case ELECTRONICS_PCB220:
+      return 220;
+    default:
+      break;
+  }
+  return 0;
 }
 
 int load_device_id(void){
@@ -84,23 +101,42 @@ int load_device_id(void){
   return 0;
 }
 
+static int
+write_device_id(const device_id* did){
+  uint32_t r;
+  esp_err_t e;
+  r = (did->product[0] - 'A') * 26 + (did->product[1] - 'A') + 1;
+  if((e = esp_efuse_write_reg(EFUSE_BLK_USER_DATA, 0, r)) != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) writing register 0", esp_err_to_name(e));
+    return -1;
+  }
+  r = elec_to_raw(did->elec) * 1000000ul + did->serialnum;
+  if((e = esp_efuse_write_reg(EFUSE_BLK_USER_DATA, 1, r)) != ESP_OK){
+    ESP_LOGE(TAG, "error (%s) writing register 1", esp_err_to_name(e));
+    return -1;
+  }
+  ESP_LOGW(TAG, "rebooting");
+  esp_restart();
+  return -1; // ought not reach here
+}
+
 int set_device_id(const unsigned char* devid){
   if(deviceid_configured()){
     ESP_LOGE(TAG, "won't rewrite device ID");
     return -1;
   }
   device_id d;
-  // FIXME lex, validate, and convert
   enum {
     WANT_PID,
     WANT_D1,
     WANT_D2,
-    WANT_D3
+    WANT_D3,
+    WANT_DONE
   } state_e = WANT_PID;
   while(*devid){
     switch(state_e){
       case WANT_PID:
-        if(!isupper(devid[0]) || !isupper(devid[1]) || devid[2] != '-'){
+        if(devid[0] != 'D' || devid[1] != 'D' || devid[2] != '-'){
           goto badlex;
         }
         d.product[0] = devid[0];
@@ -129,18 +165,25 @@ int set_device_id(const unsigned char* devid){
         state_e = WANT_D3;
         break;
       case WANT_D3:
-        if(!isdigit(devid[0]) || !isdigit(devid[1]) || !isdigit(devid[2]) || devid[3]){
+        if(!isdigit(devid[0]) || !isdigit(devid[1]) || !isdigit(devid[2])){
           goto badlex;
         }
         d.serialnum *= 1000;
         d.serialnum += (devid[0] - '0') * 100 + (devid[1] - '0') * 10 + (devid[2] - '0');
-        devid += 4;
+        devid += 3;
+        state_e = WANT_DONE;
         break;
+      case WANT_DONE:
+        ESP_LOGE(TAG, "useless crap at end %u", *devid);
+        goto badlex;
     }
   }
+  if(state_e != WANT_DONE){
+    ESP_LOGE(TAG, "bad state %d", state_e);
+    goto badlex;
+  }
   ESP_LOGW(TAG, "received valid device ID, writing to eFuse");
-  // FIXME write to eFuse
-  return 0;
+  return write_device_id(&d);
 
 badlex:
   ESP_LOGE(TAG, "not writing invalid device ID");
