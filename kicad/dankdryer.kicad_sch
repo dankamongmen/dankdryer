@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-03-27")
-		(rev "2.1.5")
+		(date "2025-04-07")
+		(rev "2.2.0")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -3288,7 +3288,7 @@
 		)
 		(uuid "12f63a6a-0a88-4c69-bf4f-8de95d4621eb")
 	)
-	(text "If GPIO9 is high, we use SPI boot. If GPIO9 is low and GPIO8 is\n high, we use download boot. Both low is an illegal configuration.\nGPIO9 and GPIO18 enable onboard 45kΩ pullup resistors.\nAlways take GPIO8 high, and allow a button to bring GPIO9 low\n to push code. Button is normally-open.\nHolding down factory reset button for 5s engages reset.\nGPIO8 sinks a steady 33μA (3.3V / 10000Ω).\nGPIO9 and GPIO18 sink 1mA (3.3V / 3300Ω) while pressed.\nB3F-1020 handles 50mA and 24V."
+	(text "If GPIO9 is high, we use SPI boot. If GPIO9 is low and GPIO8 is\n high, we use download boot. Both low is an illegal configuration.\nGPIO9 enables onboard 45kΩ pullup resistor.\nAlways take GPIO8 high, and allow a button to bring GPIO9 low\n to push code. Button is normally-open.\nHolding down factory reset button for 5s engages reset.\nGPIO8 sinks a steady 33μA (3.3V / 10000Ω).\nGPIO9 sinks 1mA (3.3V / 3300Ω) while pressed.\nB3F-1020 handles 50mA and 24V."
 		(exclude_from_sim no)
 		(at 84.836 150.876 0)
 		(effects
