@@ -1,6 +1,16 @@
-idf_component_register(SRCS "dankdryer.c" "fans.c" "networking.c" "ota.c"
-                            "dryer-network.h" "heater.c" "heater.h" "lcd.c"
-                            "networking.h" "pins.c" "pins.h" "reset.h" "reset.c"
+idf_component_register(SRCS "dankdryer.c"
+                            "dryer-network.h"
+                            "efuse.c" "efuse.h"
+                            "fans.c"
+                            "heater.c" "heater.h"
+                            "lcd.c"
+                            "networking.c" "networking.h"
+                            "ota.c"
+                            "pins.c" "pins.h"
+                            "reset.c" "reset.h"
                             "version.h"
-                    PRIV_REQUIRES app_update bt driver esp_adc esp_app_format esp_driver_gpio esp_http_server esp_lcd esp_wifi json mqtt nvs_flash openthread spi_flash
+                    PRIV_REQUIRES app_update bt driver efuse esp_adc
+                                  esp_app_format esp_driver_gpio esp_http_server
+                                  esp_lcd esp_wifi json mqtt nvs_flash
+                                  openthread spi_flash
                     INCLUDE_DIRS "")
