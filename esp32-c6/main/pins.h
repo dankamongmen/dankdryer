@@ -32,6 +32,7 @@
 // 24--30 are reserved for SPI flash
 
 int gpio_setup(gpio_num_t pin, gpio_mode_t mode, const char *mstr);
+int gpio_level(gpio_num_t pin, bool level);
 
 static inline int
 gpio_set_inputoutput_opendrain(gpio_num_t pin){

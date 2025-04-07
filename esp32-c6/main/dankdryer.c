@@ -49,7 +49,6 @@
 #define LOAD_CELL_MAX 5000 // 5kg capable
 
 static bool MotorState;
-static bool HeaterState;
 static bool StartupFailure;
 static float LastWeight = -1.0;
 static float TareWeight = -1.0;
@@ -584,16 +583,6 @@ set_failure(void){
   StartupFailure = true;
 }
 
-static int
-gpio_level(gpio_num_t pin, bool level){
-  esp_err_t e = gpio_set_level(pin, level);
-  if(e != ESP_OK){
-    fprintf(stderr, "error (%s) setting pin %d to %u\n", esp_err_to_name(e), pin, level);
-    return -1;
-  }
-  return 0;
-}
-
 static inline const char*
 bool_as_onoff(bool b){
   return b ? "on" : "off";
@@ -605,28 +594,18 @@ motor_state(void){
 }
 
 static inline const char*
-heater_state(void){
-  return bool_as_onoff(HeaterState);
+heater_state_str(void){
+  return bool_as_onoff(get_heater_state());
 }
 
 bool get_motor_state(void){
   return MotorState;
 }
 
-bool get_heater_state(void){
-  return HeaterState;
-}
-
 void set_motor(bool enabled){
   MotorState = enabled;
   gpio_level(MOTOR_GATEPIN, enabled);
   printf("set motor %s\n", motor_state());
-}
-
-void set_heater(bool enabled){
-  HeaterState = enabled;
-  gpio_level(SSR_GPIN, enabled);
-  printf("set heater %s\n", heater_state());
 }
 
 static float
@@ -663,14 +642,14 @@ update_upper_temp(void){
   float utemp = getLM35(Thermchan);
   // if there is no drying scheduled, but the heater is on, we ought turn
   // it off even if we got an invalid temperature
-  if(HeaterState && !DryEndsAt){
+  if(get_heater_state() && !DryEndsAt){
     set_heater(false);
   }
   if(temp_valid_p(utemp)){
     // take actions based on a valid read. even if we did just disable the
     // heater, we still want to update LastUpperTemp.
     LastUpperTemp = utemp;
-    if(HeaterState){
+    if(get_heater_state()){
       // turn it off if we're above the target temp
       if(utemp >= TargetTemp){
         set_heater(false);
@@ -859,7 +838,7 @@ void send_mqtt(int64_t curtime){
   }
   cJSON_AddNumberToObject(root, "tare", TareWeight);
   cJSON_AddNumberToObject(root, "motor", MotorState);
-  cJSON_AddNumberToObject(root, "heater", HeaterState);
+  cJSON_AddNumberToObject(root, "heater", get_heater_state());
   if(temp_valid_p(LastUpperTemp)){
     cJSON_AddNumberToObject(root, "htemp", LastUpperTemp);
   }
@@ -902,7 +881,7 @@ void app_main(void){
     printf("esp32 temp: %f weight: %f (%svalid)\n", ambient, weight,
             weight_valid_p(weight) ? "" : "in");
     printf("pwm-l: %u pwm-u: %u\n", get_lower_pwm(), get_upper_pwm());
-    printf("motor: %s heater: %s\n", motor_state(), heater_state());
+    printf("motor: %s heater: %s\n", motor_state(), heater_state_str());
     int64_t curtime = esp_timer_get_time();
     if(curtime - lasttachs > TACH_SAMPLE_QUANTUM_USEC){
       const float diffu = curtime - lasttachs;
