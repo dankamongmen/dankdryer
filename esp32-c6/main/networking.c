@@ -574,9 +574,11 @@ gatt_deviceid(uint16_t conn_handle, uint16_t attr_handle,
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
     char devid[DEVICEIDLEN];
-    ble_hs_mbuf_to_flat(ctxt->om, devid, sizeof(devid), NULL);
-    ESP_LOGI(TAG, "deviceID [%s]", devid);
-    r = set_device_id(devid);
+    uint16_t olen;
+    if(ble_hs_mbuf_to_flat(ctxt->om, devid, sizeof(devid), &olen) == 0){
+      ESP_LOGI(TAG, "deviceID [%.*s]", olen, devid);
+      r = set_device_id(devid);
+    }
   }
   return r;
 }
@@ -593,7 +595,9 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
     }
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
     if(SetupState == SETUP_STATE_NEEDWIFI){
-      ble_hs_mbuf_to_flat(ctxt->om, WifiEssid, sizeof(WifiEssid), NULL);
+      uint16_t olen;
+      ble_hs_mbuf_to_flat(ctxt->om, WifiEssid, sizeof(WifiEssid), &olen);
+      WifiEssid[olen] = '\0';
       printf("essid] [%s]\n", WifiEssid);
       if(strlen((const char*)WifiEssid) && strlen((const char*)WifiPSK)){
         connect_wifi();
@@ -611,7 +615,9 @@ gatt_psk(uint16_t conn_handle, uint16_t attr_handle,
   int r = BLE_ATT_ERR_UNLIKELY;
   if(SetupState == SETUP_STATE_NEEDWIFI){
     if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-      ble_hs_mbuf_to_flat(ctxt->om, WifiPSK, sizeof(WifiPSK), NULL);
+      uint16_t olen;
+      ble_hs_mbuf_to_flat(ctxt->om, WifiPSK, sizeof(WifiPSK), &olen);
+      WifiPSK[olen] = '\0';
       if(strlen((const char*)WifiEssid) && strlen((const char*)WifiPSK)){
         connect_wifi();
       }
