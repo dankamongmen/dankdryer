@@ -2,6 +2,7 @@
 #include "networking.h"
 #include "version.h"
 #include "efuse.h"
+#include "ota.h"
 #include <mdns.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>
@@ -48,6 +49,7 @@ static const ble_uuid128_t setup_state_chr_uuid =
 #define HEATER_CHANNEL CCHAN DEVICE "/heater"
 #define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
 #define UPWM_CHANNEL CCHAN DEVICE "/upwm"
+#define OTA_CHANNEL CCHAN DEVICE "/ota"
 #define DRY_CHANNEL CCHAN DEVICE "/dry"
 #define TARE_CHANNEL CCHAN DEVICE "/tare"
 #define CALIBRATE_CHANNEL CCHAN DEVICE "/calibrate"
@@ -253,6 +255,8 @@ handle_mqtt_msg(const esp_mqtt_event_t* e){
     }
   }else if(topic_matches(e, TARE_CHANNEL)){
     set_tare();
+  }else if(topic_matches(e, OTA_CHANNEL)){
+    attempt_ota();
   }else if(topic_matches(e, CALIBRATE_CHANNEL)){
     // FIXME get value, match against LastWeight - TareWeight
   }else if(topic_matches(e, FACTORYRESET_CHANNEL)){
@@ -304,6 +308,7 @@ mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
     subscribe(MQTTHandle, HEATER_CHANNEL);
     subscribe(MQTTHandle, LPWM_CHANNEL);
     subscribe(MQTTHandle, UPWM_CHANNEL);
+    subscribe(MQTTHandle, OTA_CHANNEL);
     subscribe(MQTTHandle, DRY_CHANNEL);
     subscribe(MQTTHandle, TARE_CHANNEL);
     subscribe(MQTTHandle, CALIBRATE_CHANNEL);
