@@ -25,13 +25,21 @@
 static const ble_uuid128_t setup_svc_uuid =
     BLE_UUID128_INIT(0x69, 0x3c, 0x9e, 0xa2, 0xcb, 0x76, 0x4a, 0xc3, 0x8e, 0x6b, 0xb0, 0x5d, 0x0b, 0xb5, 0x78, 0x45);
 
+// characteristics for setup service
+
+// write-only device ID LL-DDD-DDD-DDD
+static const ble_uuid128_t deviceid_uuid =
+    BLE_UUID128_INIT(0x09, 0x85, 0x82, 0x15, 0xd2, 0x5c, 0x41, 0x51, 0xb3, 0x9b, 0x76, 0xb3, 0x41, 0x45, 0x2a, 0x42);
+
 // c3868812-e56b-4059-8c0c-54695d0baf6d -- essid (read, write in setup state 0)
 static const ble_uuid128_t essid_chr_uuid =
     BLE_UUID128_INIT(0xc3, 0x86, 0x88, 0x12, 0xe5, 0x6b, 0x40, 0x59, 0x8c, 0x0c, 0x54, 0x69, 0x5d, 0x0b, 0xaf, 0x6d);
 
+// write-only preshared key
 static const ble_uuid128_t psk_chr_uuid =
     BLE_UUID128_INIT(0x06, 0x2e, 0xf3, 0x54, 0xfe, 0xa5, 0x42, 0x47, 0x98, 0xc9, 0x9f, 0x9d, 0xa1, 0xee, 0x4c, 0x2e);
 
+// read-only string representing state
 static const ble_uuid128_t setup_state_chr_uuid =
     BLE_UUID128_INIT(0xa1, 0x54, 0xe0, 0x6e, 0xb5, 0x62, 0x40, 0x2f, 0x90, 0x57, 0xd2, 0x59, 0x01, 0x38, 0x97, 0xe2);
 
@@ -554,6 +562,25 @@ connect_wifi(void){
   setup_wifi();
 }
 
+// write-only. if it gets a valid deviceID, it is written to the eFuse user
+// block, and we reset, coming up with our new hostname (no return value
+// will be provided to the client in this case; their connection will be
+// interrupted. who cares? this is done at the factory). an invalid clientID
+// will return an error.
+static int
+gatt_deviceid(uint16_t conn_handle, uint16_t attr_handle,
+              struct ble_gatt_access_ctxt *ctxt, void *arg){
+  ESP_LOGI(TAG, "access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
+  int r = BLE_ATT_ERR_UNLIKELY;
+  if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
+    char devid[DEVICEIDLEN];
+    ble_hs_mbuf_to_flat(ctxt->om, devid, sizeof(devid), NULL);
+    ESP_LOGI(TAG, "deviceID [%s]", devid);
+    r = set_device_id(devid);
+  }
+  return r;
+}
+
 static int
 gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
            struct ble_gatt_access_ctxt *ctxt, void *arg){
@@ -605,6 +632,28 @@ gatt_setup_state(uint16_t conn_handle, uint16_t attr_handle,
   }
   return r;
 }
+
+// until we have our device ID loaded, we only expose one characteristic
+static const struct ble_gatt_svc_def gatt_svr_svcs_early[] = {
+  {
+    .type = BLE_GATT_SVC_TYPE_PRIMARY,
+    .uuid = &setup_svc_uuid.u,
+    .includes = NULL,
+    .characteristics = (const struct ble_gatt_chr_def[]){
+      {
+        .uuid = &deviceid_uuid.u,
+        .access_cb = gatt_deviceid,
+        .arg = NULL,
+        .descriptors = NULL,
+        .flags = BLE_GATT_CHR_F_WRITE,
+        .min_key_size = 0,
+        .val_handle = NULL,
+        .cpfd = NULL,
+      }, { 0 }
+    }
+  }, { 0 },
+};
+
 
 static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
   {
@@ -723,11 +772,20 @@ setup_ble(void){
   ble_hs_cfg.sm_their_key_dist = 0;
   ble_svc_gap_init();
   ble_svc_gatt_init();
-  if((err = ble_gatts_count_cfg(gatt_svr_svcs)) != ESP_OK){
-    return -1;
-  }
-  if((err = ble_gatts_add_svcs(gatt_svr_svcs)) != ESP_OK){
-    return -1;
+  if(deviceid_configured()){
+    if((err = ble_gatts_count_cfg(gatt_svr_svcs)) != ESP_OK){
+      return -1;
+    }
+    if((err = ble_gatts_add_svcs(gatt_svr_svcs)) != ESP_OK){
+      return -1;
+    }
+  }else{
+    if((err = ble_gatts_count_cfg(gatt_svr_svcs_early)) != ESP_OK){
+      return -1;
+    }
+    if((err = ble_gatts_add_svcs(gatt_svr_svcs_early)) != ESP_OK){
+      return -1;
+    }
   }
   if((err = ble_svc_gap_device_name_set(clientID)) != ESP_OK){
     fprintf(stderr, "error (%s) setting BLE name\n", esp_err_to_name(err));

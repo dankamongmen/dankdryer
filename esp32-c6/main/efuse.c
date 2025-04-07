@@ -1,5 +1,6 @@
 #include "efuse.h"
 #include "esp_efuse.h"
+#include <ctype.h>
 
 #define TAG "efuse"
 
@@ -17,7 +18,7 @@ typedef enum {
 // printed form LL-DDD-DDD-DDD where L is any capital letter and DDD
 // is any number between 0 and 999 inclusive.
 typedef struct device_id {
-  char product[2];      // product ID (two letters)
+  unsigned char product[2];      // product ID (two letters)
   electronics_e elec;
   uint32_t serialnum;   // serial number 0--999999
 } device_id;
@@ -77,6 +78,17 @@ int load_device_id(void){
   ESP_LOGI(TAG, "product id: %c%c serial: %03u-%03u-%03u", did->product[0], did->product[1],
                 did->elec, did->serialnum / 1000, did->serialnum % 1000);
   return 0;
+}
+
+int set_device_id(const char* devid){
+  // FIXME lex, validate, and convert
+  // FIXME write to eFuse
+  return 0;
+}
+
+bool deviceid_configured(void){
+  // return false for both uninitialized zeroes and 'x'
+  return isupper(DeviceID.product[0]) && isupper(DeviceID.product[1]);
 }
 
 uint32_t get_serial_num(void){
