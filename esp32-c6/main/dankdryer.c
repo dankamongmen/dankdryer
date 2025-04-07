@@ -419,9 +419,15 @@ setup_adc_oneshot(adc_unit_t unit, adc_oneshot_unit_handle_t* handle,
     fprintf(stderr, "error (%s) getting adc unit\n", esp_err_to_name(e));
     return -1;
   }
+  // the ADC is designed around a 1100mV maximum input value. the LMT87 send
+  // a value between 3277 mV (-50C) and 538 mV (150C). to handle such values,
+  // we need attenuate the input signal. 12dB gives us up to 2450 mV, the
+  // furthest we can go. to get the full range, we'd need a voltage divider
+  // (something like 1000 + 470 ought work well). we don't really care about
+  // such low values, so 12dB it is.
   adc_oneshot_chan_cfg_t cconf = {
     .bitwidth = ADC_BITWIDTH_DEFAULT,
-    .atten = ADC_ATTEN_DB_6,
+    .atten = ADC_ATTEN_DB_12,
   };
   if((e = adc_oneshot_config_channel(*handle, channel, &cconf)) != ESP_OK){
     fprintf(stderr, "error (%s) configuring adc channel\n", esp_err_to_name(e));
@@ -660,9 +666,9 @@ update_upper_temp(void){
   if(HeaterState && !DryEndsAt){
     set_heater(false);
   }
-  // take actions based on a valid read. even if we did just disable the
-  // heater, we still want to update LastUpperTemp.
   if(temp_valid_p(utemp)){
+    // take actions based on a valid read. even if we did just disable the
+    // heater, we still want to update LastUpperTemp.
     LastUpperTemp = utemp;
     if(HeaterState){
       // turn it off if we're above the target temp
@@ -673,6 +679,9 @@ update_upper_temp(void){
     }else if(DryEndsAt && utemp < TargetTemp){
       set_heater(true);
     }
+  }else{
+    // without a valid upper chamber measurement, it's unsafe to run the heater
+    set_heater(false);
   }
   return utemp;
 }
