@@ -15,6 +15,8 @@ typedef struct device_id {
 } device_id;
 
 // returns 0 on success, -1 on an invalid device id/serial.
-int load_device_id(device_id* did);
+int load_device_id(void);
+
+uint32_t get_serial_num(void);
 
 #endif

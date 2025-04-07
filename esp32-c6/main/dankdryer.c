@@ -54,7 +54,6 @@ static bool StartupFailure;
 static float LastWeight = -1.0;
 static float TareWeight = -1.0;
 static time_t DryEndsAt; // dry stop time in seconds since epoch
-static device_id DeviceID;
 static uint32_t TargetTemp; // valid iff DryEndsAt != 0
 static uint32_t LastSpoolRPM;
 static adc_channel_t Thermchan;
@@ -867,7 +866,7 @@ info(void){
 
 void app_main(void){
   info();
-  load_device_id(&DeviceID);
+  load_device_id();
   setup(&Thermchan);
   int64_t lastpub = esp_timer_get_time();
   int64_t lasttachs = lastpub;

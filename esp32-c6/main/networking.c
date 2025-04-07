@@ -1,6 +1,7 @@
 #include "dryer-network.h"
 #include "networking.h"
 #include "version.h"
+#include "efuse.h"
 #include <mdns.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>
@@ -17,6 +18,8 @@
 #include <services/gap/ble_svc_gap.h>
 #include <services/gatt/ble_svc_gatt.h>
 #include <nimble/nimble_port_freertos.h>
+
+#define TAG "net"
 
 // 693c9ea2cb764ac38e6bb05d0bb57845 -- setup service
 static const ble_uuid128_t setup_svc_uuid =
@@ -41,13 +44,22 @@ static const ble_uuid128_t setup_state_chr_uuid =
 #define TARE_CHANNEL CCHAN DEVICE "/tare"
 #define CALIBRATE_CHANNEL CCHAN DEVICE "/calibrate"
 #define FACTORYRESET_CHANNEL CCHAN DEVICE "/factoryreset"
-// FIXME stir in some per-device data
-#define CLIENTID DEVICE VERSION
 
 static httpd_handle_t HTTPServ;
 static uint8_t WifiEssid[33];
 static uint8_t WifiPSK[65];
 static esp_mqtt_client_handle_t MQTTHandle;
+// we use the product name and the six digit serial number
+static char clientID[__builtin_strlen(DEVICE) + 6 + 1];
+
+// call during initialization to construct clientID
+static void
+set_client_name(void){
+  strcpy(clientID, DEVICE);
+  char* serial = clientID + __builtin_strlen(DEVICE);
+  sprintf(serial, "%06" PRIu32, get_serial_num());
+  ESP_LOGI(TAG, "using hostname %s", clientID);
+}
 
 static enum {
   SETUP_STATE_NEEDWIFI,
@@ -114,9 +126,9 @@ static const esp_mqtt_client_config_t MQTTConfig = {
 
 void mqtt_publish(const char *s){
   size_t slen = strlen(s);
-  printf("MQTT: %s\n", s);
+  ESP_LOGI(TAG, "MQTT: %s", s);
   if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, s, slen, 0, 0)){
-    fprintf(stderr, "couldn't publish %zuB mqtt message\n", slen);
+    ESP_LOGE(TAG, "couldn't publish %zuB mqtt message", slen);
   }
 }
 
@@ -192,7 +204,7 @@ handle_dry_req(const char* payload, size_t plen){
   return handle_dry(seconds, temp);
 
 err:
-  fprintf(stderr, "invalid dry payload [%.*s]\n", plen, payload);
+  ESP_LOGE(TAG, "invalid dry payload [%.*s]", plen, payload);
   return -1;
 }
 
@@ -239,7 +251,7 @@ handle_mqtt_msg(const esp_mqtt_event_t* e){
     factory_reset();
     // ought not reach here
   }else{
-    fprintf(stderr, "unknown topic [%.*s], ignoring message\n", e->topic_len, e->topic);
+    ESP_LOGE(TAG, "unknown topic [%.*s]", e->topic_len, e->topic);
   }
 }
 
@@ -247,23 +259,32 @@ static void
 subscribe(esp_mqtt_client_handle_t handle, const char* chan){
   int er;
   if((er = esp_mqtt_client_subscribe(handle, chan, 0)) < 0){
-    fprintf(stderr, "failure %d subscribing to %s\n", er, chan);
+    ESP_LOGE(TAG, "failure %d subscribing to %s", er, chan);
   }
 }
 
 // home assistant autodiscovery message
 static void
 mqtt_publish_hadiscovery(void){
-  #define DISCOVERYPREFIX "homeassistant/" // FIXME can be changed in HA
-  static const char topic[] = DISCOVERYPREFIX "device/" CLIENTID "/config";
+  #define DISCOVERYPREFIX "homeassistant" // FIXME can be changed in HA
+  #define DKEY "device"
+  #define CKEY "config"
+  char topic[__builtin_strlen(DISCOVERYPREFIX) + 1
+             + __builtin_strlen(DKEY) + 1
+             + sizeof(clientID) + 1
+             + __builtin_strlen(CKEY) + 1];
+  snprintf(topic, sizeof(topic), DISCOVERYPREFIX "/" DKEY "/%s/" CKEY, clientID); 
+
   static const char s[] = "";
   // FIXME set up discovery message
   size_t slen = strlen(s);
-  printf("HADiscovery: %s\n", s);
+  printf("HADiscovery to %s: [%s]\n", topic, s);
   if(esp_mqtt_client_publish(MQTTHandle, topic, s, slen, 0, 0)){
-    fprintf(stderr, "couldn't publish %zuB mqtt message\n", slen);
+    ESP_LOGE(TAG, "couldn't publish %zuB mqtt message", slen);
   }
-#undef DISCOVERYPREFIX
+  #undef CKEY
+  #undef DKEY
+  #undef DISCOVERYPREFIX
 }
 
 static void
@@ -292,7 +313,7 @@ httpd_get_handler(httpd_req_t *req){
 #define RESPBYTES 1024
   char* resp = malloc(RESPBYTES);
   if(!resp){
-    fprintf(stderr, "couldn't allocate httpd response\n");
+    ESP_LOGE(TAG, "couldn't allocate httpd response");
     return ESP_FAIL;
   }
   time_t now = time(NULL);
@@ -327,11 +348,11 @@ httpd_get_handler(httpd_req_t *req){
             );
   esp_err_t ret = ESP_FAIL;
   if(slen < 0 || slen >= RESPBYTES){
-    fprintf(stderr, "httpd response too large (%d)\n", slen);
+    ESP_LOGE(TAG, "httpd response too large (%d)", slen);
   }else{
     esp_err_t e = httpd_resp_send(req, resp, slen);
     if(e != ESP_OK){
-      fprintf(stderr, "failure (%s) sending http response\n", esp_err_to_name(e));
+      ESP_LOGE(TAG, "failure (%s) sending http response", esp_err_to_name(e));
     }else{
       ret = ESP_OK;
     }
@@ -346,7 +367,7 @@ setup_httpd(void){
   httpd_config_t hconf = HTTPD_DEFAULT_CONFIG();
   esp_err_t err;
   if((err = httpd_start(&HTTPServ, &hconf)) != ESP_OK){
-    fprintf(stderr, "failure (%s) initializing httpd\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "failure (%s) initializing httpd", esp_err_to_name(err));
     return -1;
   }
   const httpd_uri_t httpd_get = {
@@ -356,7 +377,7 @@ setup_httpd(void){
     .user_ctx = NULL,
   };
   if((err = httpd_register_uri_handler(HTTPServ, &httpd_get)) != ESP_OK){
-    fprintf(stderr, "failure (%s) preparing URI %s\n", esp_err_to_name(err), httpd_get.uri);
+    ESP_LOGE(TAG, "failure (%s) preparing URI %s", esp_err_to_name(err), httpd_get.uri);
     return -1;
   }
   return 0;
@@ -373,7 +394,7 @@ setup_sntp(void){
   sconf.ip_event_to_renew = IP_EVENT_STA_GOT_IP;
   esp_err_t e = esp_netif_sntp_init(&sconf);
   if(e != ESP_OK){
-    fprintf(stderr, "error (%s) initializing SNTP\n", esp_err_to_name(e));
+    ESP_LOGE(TAG, "error (%s) initializing SNTP", esp_err_to_name(e));
     return -1;
   }
   return 0;
@@ -383,11 +404,11 @@ static int
 setup_mdns(void){
   esp_err_t err;
   if((err = mdns_init()) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) initializing mDNS\n", err, esp_err_to_name(err));
+    ESP_LOGE(TAG, "failure %d (%s) initializing mDNS", err, esp_err_to_name(err));
     return -1;
   }
-  if((err = mdns_hostname_set(CLIENTID)) != ESP_OK){
-    fprintf(stderr, "failure %d (%s) initializing mDNS\n", err, esp_err_to_name(err));
+  if((err = mdns_hostname_set(clientID)) != ESP_OK){
+    ESP_LOGE(TAG, "failure %d (%s) initializing mDNS", err, esp_err_to_name(err));
     return -1;
   }
   mdns_instance_name_set("Dankdryer");
@@ -708,7 +729,7 @@ setup_ble(void){
   if((err = ble_gatts_add_svcs(gatt_svr_svcs)) != ESP_OK){
     return -1;
   }
-  if((err = ble_svc_gap_device_name_set(CLIENTID)) != ESP_OK){
+  if((err = ble_svc_gap_device_name_set(clientID)) != ESP_OK){
     fprintf(stderr, "error (%s) setting BLE name\n", esp_err_to_name(err));
     return -1;
   }
@@ -719,6 +740,7 @@ setup_ble(void){
 }
 
 int setup_network(void){
+  set_client_name();
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
     fprintf(stderr, "couldn't create mqtt client\n");
     return -1;

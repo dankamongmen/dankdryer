@@ -3,7 +3,10 @@
 
 #define TAG "efuse"
 
-int load_device_id(device_id* did){
+static device_id DeviceID;
+
+int load_device_id(void){
+  device_id* did = &DeviceID;
   uint32_t r0 = esp_efuse_read_reg(EFUSE_BLK_USER_DATA, 0);
   // first register is the product code, represented by two
   // capital letters. 0 is uninitialized. written value is
@@ -38,7 +41,11 @@ int load_device_id(device_id* did){
     did->electronics = r1 / 1000000ul;
     did->serialnum = r1 % 1000000ul;
   }
-  ESP_LOGI(TAG, "product id: %c%c serial: %u-%u-%u", did->product[0], did->product[1],
+  ESP_LOGI(TAG, "product id: %c%c serial: %03u-%03u-%03u", did->product[0], did->product[1],
                 did->electronics, did->serialnum / 1000, did->serialnum % 1000);
   return 0;
+}
+
+uint32_t get_serial_num(void){
+  return DeviceID.serialnum;
 }
