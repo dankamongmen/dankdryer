@@ -35,12 +35,12 @@ int setup_factory_reset(gpio_num_t pin){
     return -1;
   }
   esp_err_t e;
-  if((e = gpio_pullup_dis(pin)) != ESP_OK){
-    fprintf(stderr, "error (%s) disabling pullup on %d\n", esp_err_to_name(e), pin);
+  if((e = gpio_pulldown_dis(pin)) != ESP_OK){
+    fprintf(stderr, "error (%s) disabling pulldown on %d\n", esp_err_to_name(e), pin);
     return -1;
   }
-  if((e = gpio_pulldown_en(pin)) != ESP_OK){
-    fprintf(stderr, "error (%s) enabling pulldown on %d\n", esp_err_to_name(e), pin);
+  if((e = gpio_pullup_en(pin)) != ESP_OK){
+    fprintf(stderr, "error (%s) enabling pullup on %d\n", esp_err_to_name(e), pin);
     return -1;
   }
   if((e = gpio_set_intr_type(pin, GPIO_INTR_ANYEDGE)) != ESP_OK){
