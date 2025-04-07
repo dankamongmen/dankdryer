@@ -275,8 +275,8 @@ module hotbox(){
 		// hole in front left corner for PTFE connector
 		ptfeconn();
 	}
-	translate([50, -botinalt + 25, wallz]){
-		rotate([0, 0, 215]){
+	translate([10, -botinalt + 15, wallz]){
+		rotate([0, 0, 180]){
 			idtext();
 		}
 	}
