@@ -390,6 +390,7 @@ setup_httpd(void){
   }
   return 0;
 }
+
 // we want to use the NTP servers provided by DHCP, so don't provide any
 // static ones
 static int
@@ -419,9 +420,9 @@ setup_mdns(void){
     ESP_LOGE(TAG, "failure %d (%s) initializing mDNS", err, esp_err_to_name(err));
     return -1;
   }
-  mdns_instance_name_set("Dankdryer");
+  mdns_instance_name_set(clientID);
   mdns_service_add(NULL, "_http", "_tcp", 80, NULL, 0);
-  mdns_service_instance_name_set("_http", "_tcp", "Dankdryer webserver");
+  mdns_service_instance_name_set("_http", "_tcp", clientID);
   return 0;
 }
 
