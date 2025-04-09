@@ -22,10 +22,10 @@ module pcbmounts(){
         translate([-90, 0, 0]){
 			mount(pcbmountc, rh, th, d);
         }
-        translate([0, 66, 0]){
+        translate([0, 65, 0]){
 			mount(pcbmountc, rh, th, d);
 			// this one is off-corner
-			translate([-66, 0, 0]){
+			translate([-65, 0, 0]){
 				mount(pcbmountc, rh, th, d);
 			}
         }
