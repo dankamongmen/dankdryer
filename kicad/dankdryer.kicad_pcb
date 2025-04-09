@@ -9,7 +9,7 @@
 	(paper "USLetter")
 	(title_block
 		(title "hohlraum")
-		(date "2025-04-07")
+		(date "2025-04-09")
 		(rev "v2.2.0")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
@@ -15714,6 +15714,19 @@
 				(bold yes)
 			)
 			(justify left bottom)
+		)
+	)
+	(gr_text "E+/A-/A+/E- (GND)\nred, white, green, black"
+		(at 122.5 104.5 90)
+		(layer "F.SilkS")
+		(uuid "b03b6fba-51dc-4ee0-9249-a76be1a45f0f")
+		(effects
+			(font
+				(size 1 0.8)
+				(thickness 0.15)
+				(bold yes)
+			)
+			(justify bottom)
 		)
 	)
 	(gr_text "by nick black ${REVISION} ${ISSUE_DATE}"

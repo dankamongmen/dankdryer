@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-03-28")
-		(rev "2.1.9")
+		(date "2025-04-09")
+		(rev "2.2.0")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -2626,7 +2626,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "A+\nA-\nE+\nE-"
+	(text "E-\nA+\nA-\nE+"
 		(exclude_from_sim no)
 		(at 208.28 129.54 0)
 		(effects
