@@ -13,6 +13,8 @@
 #define LCD_HOST SPI2_HOST
 #define SPICLOCK (20lu * 1000lu * 1000lu)
 
+int setup_lcd(gpio_num_t sda, gpio_num_t scl, gpio_num_t dc, gpio_num_t cs, gpio_num_t rst);
+
 int setup_lcd(gpio_num_t sda, gpio_num_t scl, gpio_num_t dc,
               gpio_num_t cs, gpio_num_t rst){
     spi_bus_config_t buscfg = {

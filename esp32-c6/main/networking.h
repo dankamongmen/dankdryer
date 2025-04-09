@@ -11,7 +11,6 @@ int setup_network(void);
 int handle_dry(unsigned sec, unsigned temp);
 int extract_bool(const char* data, size_t dlen, bool* val);
 int extract_pwm(const char* data, size_t dlen);
-void set_heater(bool enabled);
 void set_motor(bool enabled);
 void set_lower_pwm(unsigned pwm);
 void set_upper_pwm(unsigned pwm);
@@ -36,6 +35,16 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
 int read_wifi_config(unsigned char* essid, size_t essidlen,
                      unsigned char* psk, size_t psklen,
                      int* setupstate);
-int setup_lcd(gpio_num_t sda, gpio_num_t scl, gpio_num_t dc, gpio_num_t cs, gpio_num_t rst);
+
+#define CCHAN "control/"
+#define MOTOR_CHANNEL CCHAN DEVICE "/motor"
+#define HEATER_CHANNEL CCHAN DEVICE "/heater"
+#define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
+#define UPWM_CHANNEL CCHAN DEVICE "/upwm"
+#define OTA_CHANNEL CCHAN DEVICE "/ota"
+#define DRY_CHANNEL CCHAN DEVICE "/dry"
+#define TARE_CHANNEL CCHAN DEVICE "/tare"
+#define CALIBRATE_CHANNEL CCHAN DEVICE "/calibrate"
+#define FACTORYRESET_CHANNEL CCHAN DEVICE "/factoryreset"
 
 #endif

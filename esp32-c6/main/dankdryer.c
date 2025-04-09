@@ -3,6 +3,7 @@
 #include "dankdryer.h"
 #include "version.h"
 #include "nau7802.h"
+#include "heater.h"
 #include "efuse.h"
 #include "reset.h"
 #include "pins.h"
@@ -14,6 +15,7 @@
 #include <ctype.h>
 #include <cJSON.h>
 #include <string.h>
+#include <esp_log.h>
 #include <stdatomic.h>
 #include <led_strip.h>
 #include <nvs_flash.h>
@@ -24,22 +26,20 @@
 #include <esp_app_desc.h>
 #include <hal/ledc_types.h>
 #include <esp_idf_version.h>
-#include <soc/adc_channel.h>
 //#include <esp32c6/rom/rtc.h>
 #include <esp_adc/adc_cali.h>
 #include <driver/i2c_master.h>
 #include <driver/gpio_filter.h>
-#include <esp_adc/adc_oneshot.h>
 #include <driver/temperature_sensor.h>
 
+#define TAG "main"
+
 #define UUIDLEN 16
-#define MIN_TEMP -80
-#define MAX_TEMP 200
 #define MAX_DRYREQ_TMP 150
 #define MIN_DRYREQ_TMP 50
 // minimum of 15s between mqtt publications
 #define MQTT_PUBLISH_QUANTUM_USEC 15000000ul
-// give tachs a longer period to smooth them out
+// give tachs a 5s period to smooth them out
 #define TACH_SAMPLE_QUANTUM_USEC 5000000ul
 
 #define BOOTCOUNT_RECNAME "bootcount"
@@ -54,12 +54,11 @@ static bool StartupFailure;
 static float LastWeight = -1.0;
 static float TareWeight = -1.0;
 static time_t DryEndsAt; // dry stop time in seconds since epoch
-static uint32_t TargetTemp; // valid iff DryEndsAt != 0
+static float LastLowerTemp;
+static uint32_t TargetTemp; // meaningful iff DryEndsAt != 0
 static uint32_t LastSpoolRPM;
-static adc_channel_t Thermchan;
 static i2c_master_dev_handle_t NAU7802;
 static i2c_master_bus_handle_t I2CMaster;
-static float LastLowerTemp, LastUpperTemp;
 static uint32_t LastLowerRPM, LastUpperRPM;
 
 // variables manipulated by interrupts
@@ -67,10 +66,7 @@ static _Atomic(uint32_t) HallPulses;
 
 // ESP-IDF objects
 static bool NAUAvailable;
-static bool ADC1Calibrated;
-static adc_oneshot_unit_handle_t ADC1;
 static temperature_sensor_handle_t temp;
-static adc_cali_handle_t ADC1Calibration;
 
 static void
 pulse_isr(void* pulsecount){
@@ -81,11 +77,6 @@ pulse_isr(void* pulsecount){
 static inline bool
 rpm_valid_p(unsigned rpm){
   return rpm < 3000;
-}
-
-static inline bool
-temp_valid_p(float temp){
-  return temp >= MIN_TEMP && temp <= MAX_TEMP;
 }
 
 static inline bool
@@ -157,10 +148,6 @@ get_hex(char c){
 
 float get_tare(void){
   return TareWeight;
-}
-
-float get_upper_temp(void){
-  return LastUpperTemp;
 }
 
 float get_lower_temp(void){
@@ -403,80 +390,6 @@ float getWeight(void){
   return newv;
 }
 
-// initialize and calibrate an ADC unit (ESP32-S3 has two, but ADC2 is
-// used by wifi). ADC1 supports GPIO 0--6.
-static int
-setup_adc_oneshot(adc_unit_t unit, adc_oneshot_unit_handle_t* handle,
-                  adc_cali_handle_t* cali, bool* calibrated,
-                  adc_channel_t channel){
-  *calibrated = false;
-  adc_oneshot_unit_init_cfg_t acfg = {
-    .unit_id = unit,
-    .ulp_mode = ADC_ULP_MODE_DISABLE,
-  };
-  esp_err_t e;
-  if((e = adc_oneshot_new_unit(&acfg, handle)) != ESP_OK){
-    fprintf(stderr, "error (%s) getting adc unit\n", esp_err_to_name(e));
-    return -1;
-  }
-  // the ADC is designed around a 1100mV maximum input value. the LMT87 send
-  // a value between 3277 mV (-50C) and 538 mV (150C). to handle such values,
-  // we need attenuate the input signal. 12dB gives us up to 2450 mV, the
-  // furthest we can go. to get the full range, we'd need a voltage divider
-  // (something like 1000 + 470 ought work well). we don't really care about
-  // such low values, so 12dB it is.
-  adc_oneshot_chan_cfg_t cconf = {
-    .bitwidth = ADC_BITWIDTH_DEFAULT,
-    .atten = ADC_ATTEN_DB_12,
-  };
-  if((e = adc_oneshot_config_channel(*handle, channel, &cconf)) != ESP_OK){
-    fprintf(stderr, "error (%s) configuring adc channel\n", esp_err_to_name(e));
-    adc_oneshot_del_unit(*handle);
-    return -1;
-  }
-  adc_cali_curve_fitting_config_t caliconf = {
-    .bitwidth = cconf.bitwidth,
-    .atten = cconf.atten,
-    .unit_id = unit,
-    .chan = channel,
-  };
-  if((e = adc_cali_create_scheme_curve_fitting(&caliconf, cali)) != ESP_OK){
-    fprintf(stderr, "error (%s) creating adc calibration\n", esp_err_to_name(e));
-  }else{
-    printf("using curve fitting adc calibration\n");
-    *calibrated = true;
-  }
-  return 0;
-}
-
-// the esp32-s3 has a built in temperature sensor, which we enable.
-// we furthermore set up the LM35 pin for input/ADC.
-static int
-setup_temp(gpio_num_t thermpin, adc_unit_t unit, adc_channel_t* channel){
-  temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
-  if(temperature_sensor_install(&conf, &temp) != ESP_OK){
-    fprintf(stderr, "failed to set up thermostat\n");
-    return -1;
-  }
-  if(temperature_sensor_enable(temp) != ESP_OK){
-    fprintf(stderr, "failed to enable thermostat\n");
-    return -1;
-  }
-  if(gpio_set_input(thermpin)){
-    return -1;
-  }
-  esp_err_t e;
-  if((e = gpio_pullup_dis(thermpin)) != ESP_OK){
-    fprintf(stderr, "error (%s) disabling pullup on %d\n", esp_err_to_name(e), thermpin);
-    return -1;
-  }
-  if((e = adc_oneshot_io_to_channel(thermpin, &unit, channel)) != ESP_OK){
-    fprintf(stderr, "error (%s) getting adc channel for %d\n", esp_err_to_name(e), thermpin);
-    return -1;
-  }
-  return 0;
-}
-
 static int
 init_pstore(void){
   printf("initializing persistent store...\n");
@@ -604,63 +517,6 @@ void set_motor(bool enabled){
   printf("set motor %s\n", motor_state());
 }
 
-static float
-getLM35(adc_channel_t channel){
-  esp_err_t e;
-  int raw;
-  float o;
-  // FIXME if we didn't get an ADC handle at all, need to elide read entirely
-  if(ADC1Calibrated){
-    if((e = adc_oneshot_get_calibrated_result(ADC1, ADC1Calibration, channel, &raw)) != ESP_OK){
-      fprintf(stderr, "error (%s) reading calibrated adc value %d\n", esp_err_to_name(e), raw);
-      return MIN_TEMP - 1;
-    }
-    o = raw;
-  }else{
-    if((e = adc_oneshot_read(ADC1, channel, &raw)) != ESP_OK){
-      fprintf(stderr, "error (%s) reading from adc\n", esp_err_to_name(e));
-      return MIN_TEMP - 1;
-    }
-    // Dmax is 4095 on single read mode, 8191 on continuous
-    // Vmax is 3100mA with ADC_ATTEN_DB_12, 1750 with _6, 1250 w/ _2_5
-    // result is read * Vmax / Dmax
-    o = raw * 1750.0 / 4095;
-  }
-  float ret = o / 10.0; // 10 mV per C
-  printf("adc1: %d -> %f -> %f\n", raw, o, ret);
-  return ret;
-}
-
-// if the upper chamber temperature as measured is a valid sample, update
-// LastUpperTemp, and turn heater on or off if appropriate.
-static float
-update_upper_temp(void){
-  float utemp = getLM35(Thermchan);
-  // if there is no drying scheduled, but the heater is on, we ought turn
-  // it off even if we got an invalid temperature
-  if(get_heater_state() && !DryEndsAt){
-    set_heater(false);
-  }
-  if(temp_valid_p(utemp)){
-    // take actions based on a valid read. even if we did just disable the
-    // heater, we still want to update LastUpperTemp.
-    LastUpperTemp = utemp;
-    if(get_heater_state()){
-      // turn it off if we're above the target temp
-      if(utemp >= TargetTemp){
-        set_heater(false);
-      }
-      // turn it on if we're below the target temp, and scheduled to dry
-    }else if(DryEndsAt && utemp < TargetTemp){
-      set_heater(true);
-    }
-  }else{
-    // without a valid upper chamber measurement, it's unsafe to run the heater
-    set_heater(false);
-  }
-  return utemp;
-}
-
 int handle_dry(unsigned seconds, unsigned temp){
   printf("dry request for %us at %uC\n", seconds, temp);
   if(temp > MAX_DRYREQ_TMP || temp < MIN_DRYREQ_TMP){
@@ -670,14 +526,14 @@ int handle_dry(unsigned seconds, unsigned temp){
   DryEndsAt = esp_timer_get_time() + seconds * 1000000ull;
   set_motor(seconds != 0);
   TargetTemp = temp;
-  update_upper_temp();
+  manage_heater(SSR_GPIN, DryEndsAt, TargetTemp);
   return 0;
 }
 
 void factory_reset(void){
   printf("requested factory reset, erasing nvs...\n");
   set_motor(false);
-  set_heater(false);
+  set_heater(SSR_GPIN, false);
   esp_err_t e = nvs_flash_erase();
   if(e != ESP_OK){
     fprintf(stderr, "error (%s) erasing nvs\n", esp_err_to_name(e));
@@ -700,7 +556,7 @@ setup_heater(gpio_num_t hrelaypin){
   if(gpio_set_output(hrelaypin)){
     return -1;
   }
-  set_heater(false);
+  set_heater(hrelaypin, false);
   return 0;
 }
 
@@ -735,7 +591,7 @@ print_reset_reason(void){
 }
 
 static void
-setup(adc_channel_t* thermchan){
+setup(void){
   printf(DEVICE " v" VERSION "\n");
   print_reset_reason();
   if(!init_pstore()){
@@ -766,10 +622,15 @@ setup(adc_channel_t* thermchan){
   /*if(setup_lcd(LCD_SDA_PIN, LCD_SCL_PIN, LCD_DC_PIN, LCD_CS_PIN, LCD_RST_PIN)){
     set_failure();
   }*/
-  if(setup_temp(THERM_DATAPIN, ADC_UNIT_1, thermchan)){
+  temperature_sensor_config_t conf = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
+  if(temperature_sensor_install(&conf, &temp) != ESP_OK){
+    ESP_LOGE(TAG, "failed to set up thermostat");
+    set_failure();
+  }else if(temperature_sensor_enable(temp) != ESP_OK){
+    ESP_LOGE(TAG, "failed to enable thermostat");
     set_failure();
   }
-  if(setup_adc_oneshot(ADC_UNIT_1, &ADC1, &ADC1Calibration, &ADC1Calibrated, *thermchan)){
+  if(setup_temp(THERM_DATAPIN, ADC_UNIT_1)){
     set_failure();
   }
   if(setup_heater(SSR_GPIN)){
@@ -806,6 +667,130 @@ getPulseCount(float scale, uint32_t(*getcount)(void), uint32_t *lastpcount){
   }
 }
 
+static inline bool
+topic_matches(const esp_mqtt_event_t* e, const char* chan){
+  if(strncmp(e->topic, chan, e->topic_len) == 0 && e->topic_len == strlen(chan)){
+    return true;
+  }
+  return false;
+}
+
+// arguments to dry are a target temp and number of seconds in the form
+// TEMP/SECONDS. a well-formed request replaces any existing one, including
+// cancelling it if SECONDS is 0. we allow leading and trailing space.
+static int
+handle_dry_req(const char* payload, size_t plen){
+  unsigned seconds = 0;
+  unsigned temp = 0;
+  size_t idx = 0;
+  enum {
+    PRESPACE,
+    TEMP,
+    SLASH,
+    SECONDS,
+    POSTSPACE
+  } state = PRESPACE;
+  // FIXME need address wrapping of temp and/or seconds
+  while(idx < plen){
+    printf("payload[%zu] = 0x%02x state: %d temp: %u\n", idx, payload[idx], state, temp);
+    if(payload[idx] >= 0x80 || payload[idx] <= 0){ // invalid character
+      goto err;
+    }
+    unsigned char c = payload[idx];
+    switch(state){
+      case PRESPACE:
+        if(!isspace(c)){
+          if(isdigit(c)){
+            state = TEMP;
+            temp = c - '0';
+          }else{
+            goto err;
+          }
+        }
+        break;
+      case TEMP:
+        if(isdigit(c)){
+          temp *= 10;
+          temp += c - '0';
+        }else if(c == '/'){
+          state = SLASH;
+        }else{
+          goto err;
+        }
+        break;
+      case SLASH:
+        if(isdigit(c)){
+          seconds = c - '0';
+          state = SECONDS;
+        }else{
+          goto err;
+        }
+        break;
+      case SECONDS:
+        if(isdigit(c)){
+          seconds *= 10;
+          seconds += c - '0';
+        }else if(isspace(c)){
+          state = POSTSPACE;
+        }else{
+          goto err;
+        }
+        break;
+      case POSTSPACE:
+        if(!isspace(c)){
+          goto err;
+        }
+        break;
+    }
+    ++idx;
+  }
+  return handle_dry(seconds, temp);
+
+err:
+  ESP_LOGE(TAG, "invalid dry payload [%.*s]", plen, payload);
+  return -1;
+}
+
+void handle_mqtt_msg(const esp_mqtt_event_t* e){
+  printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
+  if(topic_matches(e, DRY_CHANNEL)){
+    handle_dry_req(e->data, e->data_len);
+  }else if(topic_matches(e, MOTOR_CHANNEL)){
+    bool motor;
+    int ret = extract_bool(e->data, e->data_len, &motor);
+    if(ret == 0){
+      set_motor(motor);
+    }
+  }else if(topic_matches(e, HEATER_CHANNEL)){
+    bool heater;
+    int ret = extract_bool(e->data, e->data_len, &heater);
+    if(ret == 0){
+      set_heater(SSR_GPIN, heater);
+    }
+  }else if(topic_matches(e, LPWM_CHANNEL)){
+    int pwm = extract_pwm(e->data, e->data_len);
+    if(pwm >= 0){
+      set_lower_pwm(pwm);
+    }
+  }else if(topic_matches(e, UPWM_CHANNEL)){
+    int pwm = extract_pwm(e->data, e->data_len);
+    if(pwm >= 0){
+      set_upper_pwm(pwm);
+    }
+  }else if(topic_matches(e, TARE_CHANNEL)){
+    set_tare();
+  }else if(topic_matches(e, OTA_CHANNEL)){
+    attempt_ota();
+  }else if(topic_matches(e, CALIBRATE_CHANNEL)){
+    // FIXME get value, match against LastWeight - TareWeight
+  }else if(topic_matches(e, FACTORYRESET_CHANNEL)){
+    factory_reset();
+    // ought not reach here
+  }else{
+    ESP_LOGE(TAG, "unknown topic [%.*s]", e->topic_len, e->topic);
+  }
+}
+
 void send_mqtt(int64_t curtime){
   cJSON* root = cJSON_CreateObject();
   if(root == NULL){
@@ -814,7 +799,7 @@ void send_mqtt(int64_t curtime){
   }
   cJSON_AddNumberToObject(root, "uptimesec", curtime / 1000000ll);
   if(temp_valid_p(LastLowerTemp)){
-    cJSON_AddNumberToObject(root, "dtemp", LastLowerTemp);
+    cJSON_AddNumberToObject(root, "ltempC", LastLowerTemp);
   }
   // UINT_MAX is sentinel for known bad reading, but anything over 3KRPM on
   // these Noctua NF-A8 fans is indicative of error; they max out at 2500.
@@ -835,11 +820,12 @@ void send_mqtt(int64_t curtime){
   cJSON_AddNumberToObject(root, "tare", TareWeight);
   cJSON_AddNumberToObject(root, "motor", MotorState);
   cJSON_AddNumberToObject(root, "heater", get_heater_state());
-  if(temp_valid_p(LastUpperTemp)){
-    cJSON_AddNumberToObject(root, "htemp", LastUpperTemp);
+  float utemp = get_upper_temp();
+  if(temp_valid_p(utemp)){
+    cJSON_AddNumberToObject(root, "utempC", utemp);
   }
-  cJSON_AddNumberToObject(root, "ttemp", TargetTemp);
-  cJSON_AddNumberToObject(root, "dryends", DryEndsAt);
+  cJSON_AddNumberToObject(root, "ttempC", TargetTemp);
+  cJSON_AddNumberToObject(root, "dryendsec", DryEndsAt);
   char* s = cJSON_Print(root);
   if(s){
     mqtt_publish(s);
@@ -862,7 +848,7 @@ info(void){
 void app_main(void){
   info();
   load_device_id();
-  setup(&Thermchan);
+  setup();
   int64_t lastpub = esp_timer_get_time();
   int64_t lasttachs = lastpub;
   while(1){
@@ -894,7 +880,7 @@ void app_main(void){
       set_motor(false);
       DryEndsAt = 0;
     }
-    update_upper_temp();
+    manage_heater(SSR_GPIN, DryEndsAt, TargetTemp);
     if(curtime - lastpub > MQTT_PUBLISH_QUANTUM_USEC){
       send_mqtt(curtime);
       lastpub = curtime;

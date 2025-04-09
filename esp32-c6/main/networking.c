@@ -1,5 +1,6 @@
 #include "dryer-network.h"
 #include "networking.h"
+#include "dankdryer.h"
 #include "version.h"
 #include "efuse.h"
 #include "ota.h"
@@ -43,17 +44,6 @@ static const ble_uuid128_t psk_chr_uuid =
 // read-only string representing state
 static const ble_uuid128_t setup_state_chr_uuid =
     BLE_UUID128_INIT(0xa1, 0x54, 0xe0, 0x6e, 0xb5, 0x62, 0x40, 0x2f, 0x90, 0x57, 0xd2, 0x59, 0x01, 0x38, 0x97, 0xe2);
-
-#define CCHAN "control/"
-#define MOTOR_CHANNEL CCHAN DEVICE "/motor"
-#define HEATER_CHANNEL CCHAN DEVICE "/heater"
-#define LPWM_CHANNEL CCHAN DEVICE "/lpwm"
-#define UPWM_CHANNEL CCHAN DEVICE "/upwm"
-#define OTA_CHANNEL CCHAN DEVICE "/ota"
-#define DRY_CHANNEL CCHAN DEVICE "/dry"
-#define TARE_CHANNEL CCHAN DEVICE "/tare"
-#define CALIBRATE_CHANNEL CCHAN DEVICE "/calibrate"
-#define FACTORYRESET_CHANNEL CCHAN DEVICE "/factoryreset"
 
 static httpd_handle_t HTTPServ;
 static uint8_t WifiEssid[33];
@@ -139,131 +129,6 @@ void mqtt_publish(const char *s){
   ESP_LOGI(TAG, "MQTT: %s", s);
   if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, s, slen, 0, 0)){
     ESP_LOGE(TAG, "couldn't publish %zuB mqtt message", slen);
-  }
-}
-
-// arguments to dry are a target temp and number of seconds in the form
-// TEMP/SECONDS. a well-formed request replaces any existing one, including
-// cancelling it if SECONDS is 0. we allow leading and trailing space.
-static int
-handle_dry_req(const char* payload, size_t plen){
-  unsigned seconds = 0;
-  unsigned temp = 0;
-  size_t idx = 0;
-  enum {
-    PRESPACE,
-    TEMP,
-    SLASH,
-    SECONDS,
-    POSTSPACE
-  } state = PRESPACE;
-  // FIXME need address wrapping of temp and/or seconds
-  while(idx < plen){
-    printf("payload[%zu] = 0x%02x state: %d temp: %u\n", idx, payload[idx], state, temp);
-    if(payload[idx] >= 0x80 || payload[idx] <= 0){ // invalid character
-      goto err;
-    }
-    unsigned char c = payload[idx];
-    switch(state){
-      case PRESPACE:
-        if(!isspace(c)){
-          if(isdigit(c)){
-            state = TEMP;
-            temp = c - '0';
-          }else{
-            goto err;
-          }
-        }
-        break;
-      case TEMP:
-        if(isdigit(c)){
-          temp *= 10;
-          temp += c - '0';
-        }else if(c == '/'){
-          state = SLASH;
-        }else{
-          goto err;
-        }
-        break;
-      case SLASH:
-        if(isdigit(c)){
-          seconds = c - '0';
-          state = SECONDS;
-        }else{
-          goto err;
-        }
-        break;
-      case SECONDS:
-        if(isdigit(c)){
-          seconds *= 10;
-          seconds += c - '0';
-        }else if(isspace(c)){
-          state = POSTSPACE;
-        }else{
-          goto err;
-        }
-        break;
-      case POSTSPACE:
-        if(!isspace(c)){
-          goto err;
-        }
-        break;
-    }
-    ++idx;
-  }
-  return handle_dry(seconds, temp);
-
-err:
-  ESP_LOGE(TAG, "invalid dry payload [%.*s]", plen, payload);
-  return -1;
-}
-
-static inline bool
-topic_matches(const esp_mqtt_event_t* e, const char* chan){
-  if(strncmp(e->topic, chan, e->topic_len) == 0 && e->topic_len == strlen(chan)){
-    return true;
-  }
-  return false;
-}
-
-static void
-handle_mqtt_msg(const esp_mqtt_event_t* e){
-  printf("control message [%.*s] [%.*s]\n", e->topic_len, e->topic, e->data_len, e->data);
-  if(topic_matches(e, DRY_CHANNEL)){
-    handle_dry_req(e->data, e->data_len);
-  }else if(topic_matches(e, MOTOR_CHANNEL)){
-    bool motor;
-    int ret = extract_bool(e->data, e->data_len, &motor);
-    if(ret == 0){
-      set_motor(motor);
-    }
-  }else if(topic_matches(e, HEATER_CHANNEL)){
-    bool heater;
-    int ret = extract_bool(e->data, e->data_len, &heater);
-    if(ret == 0){
-      set_heater(heater);
-    }
-  }else if(topic_matches(e, LPWM_CHANNEL)){
-    int pwm = extract_pwm(e->data, e->data_len);
-    if(pwm >= 0){
-      set_lower_pwm(pwm);
-    }
-  }else if(topic_matches(e, UPWM_CHANNEL)){
-    int pwm = extract_pwm(e->data, e->data_len);
-    if(pwm >= 0){
-      set_upper_pwm(pwm);
-    }
-  }else if(topic_matches(e, TARE_CHANNEL)){
-    set_tare();
-  }else if(topic_matches(e, OTA_CHANNEL)){
-    attempt_ota();
-  }else if(topic_matches(e, CALIBRATE_CHANNEL)){
-    // FIXME get value, match against LastWeight - TareWeight
-  }else if(topic_matches(e, FACTORYRESET_CHANNEL)){
-    factory_reset();
-    // ought not reach here
-  }else{
-    ESP_LOGE(TAG, "unknown topic [%.*s]", e->topic_len, e->topic);
   }
 }
 
