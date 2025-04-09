@@ -2,6 +2,7 @@
 // filament dryer, intended to be printed in PC
 // or PA. holds the PCB, scale, AC adapter, etc.
 include <core.scad>
+include <acadapter.scad>
 
 module fullmount(c, h){
 	translate([0, 0, wallz + h / 2]){
@@ -56,75 +57,9 @@ module fancablehole(){
     }
 }
 
-// hole for four-prong rocker switch + receptacle.
-// https://www.amazon.com/dp/B0CW2XJ339
-// 45.7mm wide, 20mm high. if we can't print
-// the bridge, we'll have to reorient it.
-// model with fuse is 30mm
-//rockerh = 20;
-rockerh = 30;
-rockerw = 45.7;
-module rockerhole(iech){
-	translate([-botinalt - 2, 0, iech / 2 + 15]){
-	    rotate([0, 180 - theta, 0]){
-			cube([croomwall + 2, rockerw, rockerh], true);
-		}
-	}
-}
-
-//acadapterh = 30; // old model
-acadapterh = 22;
-acadapterw = 50;
-acadapterl = 135;
-acmounth = 2;
-module acadaptermount(){
-	d = 3.8;
-	c = 7; // total length of cutout
-	// 3 on z matches ct in acadapterstand()
-    translate([acadapterl / 2 - 2, -acadapterw / 2 + 7, acmounth]){
-		linear_extrude(acmounth){
-			hull(){
-				circle(d / 2);
-				translate([c - d, 0, 0]){
-					circle(d / 2);
-				}
-			}
-		}
-    }
-}
-
-// the stand without the plug, since our AC
-// adapters only have two places to screw
-module acadapterstand(){
-	translate([acadapterl / 2 - 0.5, -acadapterw / 2 + 7, acmounth / 2]){
-		cube([8, 6, acmounth], true);
-	}
-}
-
-// 60mm wide total
-// screw holes are 6mm in from sides, so they start at
-// 6mm (through 10mm) and 50mm (through 54mm)
-// they have 2mm radius and 3mm height
-module acadapterscrews(){
-	translate([0, acadapterw, 0]){
-        acadaptermount();
-		acadapterstand();
-        mirror([0, 1, 0]){
-			acadapterstand();
-			mirror([1, 0, 0]){
-                acadaptermount();
-				acadapterstand();
-            }
-        }
-		mirror([1, 0, 0]){
-			acadapterstand();
-		}
-    }
-}
-
 module croombottom(rad, z){
 	translate([0, 0, wallz]){
-		acadapterscrews();
+		acadapterstands();
 		loadcellmountx = (-loadcelll + loadcellmountl) / 2;
 		translate([loadcellmountx, 0, 0]){
 			loadcellmount(loadcellmounth);
@@ -190,46 +125,47 @@ module hotboxcornerplug(){
 
 module croom(iech = 20){
 	difference(){
-	union(){
-	difference(){
-		difference(){
-			croomcore();
+		union(){
 			difference(){
-				croominnercore();
+				difference(){
+					croomcore();
+					croominnercore();
+				}
+				//lcdset();
+				fancablehole();
+				rockerhole(iech);
+				translate([0, -botalt, croomz / 2]){
+					rotate([theta, 0, 0]){
+						fanhole(10);
+					}
+				}
 			}
-		}
-		//lcdset();
-		fancablehole();
-		rockerhole(iech);
-		translate([0, -botalt, croomz / 2]){
-			rotate([theta, 0, 0]){
-				fanhole(10);
+			translate([botinalt - 10, 10, wallz]){
+				rotate([0, 0, 270]){
+						idtext();
+				}
 			}
-		}
-	}
-	translate([botinalt - 10, 10, wallz]){
-		rotate([0, 0, 270]){
-			idtext();
-		}
-	}
-	hotboxinnerplug();
-	hotboxcornerplug();
-	rotate([0, 0, 90]){
-		hotboxinnerplug();
-		hotboxcornerplug();
-		rotate([0, 0, 90]){
-			// plugs on the fan side never seem to
-			// work; leave them off
+			hotboxinnerplug();
 			hotboxcornerplug();
 			rotate([0, 0, 90]){
 				hotboxinnerplug();
 				hotboxcornerplug();
+				rotate([0, 0, 90]){
+					// plugs on the fan side never seem to
+					// work; leave them off
+					hotboxcornerplug();
+					rotate([0, 0, 90]){
+						hotboxinnerplug();
+						hotboxcornerplug();
+					}
+				}
 			}
+			croombottom(botrad, wallz);
 		}
-	}
-	croombottom(botrad, wallz);
-	}
-	antennahole();		
+		antennahole();
+		translate([0, 0, wallz + acmounth]){
+			acadapterholes();
+		}
 	}
 }
 
@@ -245,12 +181,6 @@ module pcb(){
 		rotate([0, 0, 180]){
 			import("dankdryer.stl");
 		}
-	}
-}
-
-module acadapter(){
-	translate([0, 0, acadapterh / 2]){
-		cube([acadapterl, acadapterw, acadapterh], true);
 	}
 }
 

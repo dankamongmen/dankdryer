@@ -254,7 +254,7 @@ module lowercoupling(){
 		union(){
 			bracel = couplingl / 2 - loadcellmountl;
 			translate([-loadcellmountl / 2, 0, 0]){
-				loadcellmount(loadcellsupph);
+				loadcellmount(loadcellsupph + 1);
 			}
 			lowercouplingtri(couplingl / 2);
 			mirror([0, 1, 0]){
@@ -305,7 +305,7 @@ module lowercoupling(){
 
 /*bracel = loadcelll / 2 - loadcellmountl;
 translate([-bracel + 3, 0, 0]){
-	loadcellmount(loadcellsupph);
+	loadcellmount(loadcellsupph + 1);
 }*/
 //lowercoupling();
 
