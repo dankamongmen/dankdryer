@@ -585,11 +585,6 @@ set_failure(void){
 }
 
 static inline const char*
-bool_as_onoff(bool b){
-  return b ? "on" : "off";
-}
-
-static inline const char*
 motor_state(void){
   return bool_as_onoff(MotorState);
 }
