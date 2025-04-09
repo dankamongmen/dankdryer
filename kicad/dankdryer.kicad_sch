@@ -3479,7 +3479,7 @@
 		(uuid "54d57f54-f5f7-45a2-bb85-5f8a22009f72")
 	)
 	(junction
-		(at 182.88 60.96)
+		(at 182.88 58.42)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "560a7055-374e-4464-9acc-436f7a14a26c")
@@ -3816,7 +3816,7 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 60.96) (xy 196.85 60.96)
+			(xy 182.88 58.42) (xy 196.85 58.42)
 		)
 		(stroke
 			(width 0)
@@ -4126,7 +4126,7 @@
 	)
 	(wire
 		(pts
-			(xy 179.07 60.96) (xy 182.88 60.96)
+			(xy 179.07 58.42) (xy 182.88 58.42)
 		)
 		(stroke
 			(width 0)
@@ -4670,6 +4670,17 @@
 		)
 		(uuid "3b0ffcc9-5ff8-4c3a-a869-8f63c4b99e51")
 	)
+	(hierarchical_label "Hall"
+		(shape bidirectional)
+		(at 196.85 60.96 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "4537faea-9047-4c32-9240-606d4445566f")
+	)
 	(hierarchical_label "Motor"
 		(shape bidirectional)
 		(at 196.85 63.5 180)
@@ -4804,7 +4815,7 @@
 	)
 	(hierarchical_label "Therm"
 		(shape bidirectional)
-		(at 179.07 60.96 180)
+		(at 179.07 58.42 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4944,17 +4955,6 @@
 			(justify left)
 		)
 		(uuid "eddd8582-847a-4fb2-aca5-a5cdc79c9d87")
-	)
-	(hierarchical_label "Hall"
-		(shape bidirectional)
-		(at 196.85 58.42 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "efa950a3-36a4-46e2-81ac-47bbe8df4dd0")
 	)
 	(hierarchical_label "SDA"
 		(shape bidirectional)
@@ -5186,7 +5186,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 182.88 64.77 0)
+		(at 182.88 62.23 0)
 		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
@@ -5195,7 +5195,7 @@
 		(dnp no)
 		(uuid "161e75c8-f780-4f60-9cb7-59d4f3492121")
 		(property "Reference" "C20"
-			(at 179.832 63.5 0)
+			(at 179.832 60.96 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5204,7 +5204,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 179.578 66.294 0)
+			(at 179.578 63.754 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5213,7 +5213,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
-			(at 181.9148 68.58 0)
+			(at 181.9148 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5222,7 +5222,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 182.88 64.77 0)
+			(at 182.88 62.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5231,7 +5231,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 182.88 64.77 0)
+			(at 182.88 62.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7013,7 +7013,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 182.88 68.58 0)
+		(at 182.88 66.04 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7022,7 +7022,7 @@
 		(fields_autoplaced yes)
 		(uuid "e810e2db-36d6-40b3-ad93-d807872eac31")
 		(property "Reference" "#PWR06"
-			(at 182.88 74.93 0)
+			(at 182.88 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7031,7 +7031,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 182.88 73.66 0)
+			(at 182.88 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7039,7 +7039,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 182.88 68.58 0)
+			(at 182.88 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7048,7 +7048,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 182.88 68.58 0)
+			(at 182.88 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7057,7 +7057,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 182.88 68.58 0)
+			(at 182.88 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
