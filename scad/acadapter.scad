@@ -11,7 +11,21 @@ rockerw = 45.7;
 module rockerhole(iech){
 	translate([-botinalt - 2, 0, iech / 2 + 15]){
 	    rotate([0, 180 - theta, 0]){
-			cube([croomwall + 2, rockerw, rockerh], true);
+			difference(){
+				cube([croomwall + 2, rockerw, rockerh], true);
+				// two thin clips to hold the plug in
+				// depth: 1mm height: 1.5mm
+				translate([-1, 0, 0]){
+					union(){
+						translate([0, 0, rockerh / 2 - 0.75]){
+							cube([1, rockerw, 1.5], true);
+						}
+						translate([0, 0, -rockerh / 2 + 0.75]){
+							cube([1, rockerw, 1.5], true);
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -49,11 +63,12 @@ module acadapterstands(){
     }
 }
 
+// hole in the AC adapter stand for screw
 module acadapterhole(){
-		translate([acadapterl / 2 - 0.5, -acadapterw / 2 + 7, 0]){
-			holed = 3.6;
-			ScrewThread(holed, 5);
-		}
+	translate([acadapterl / 2 - 0.5, -acadapterw / 2 + 7, 0]){
+		holed = 3.6;
+		ScrewThread(holed, 5);
+	}
 }
 
 // screw holes for mounting ac adapter in two corners
