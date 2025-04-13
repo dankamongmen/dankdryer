@@ -8,4 +8,3 @@ int gpio_level(gpio_num_t pin, bool level){
   }
   return 0;
 }
-

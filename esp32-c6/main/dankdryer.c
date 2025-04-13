@@ -54,6 +54,7 @@ static bool StartupFailure;
 static float LastWeight = -1.0;
 static float TareWeight = -1.0;
 static time_t DryEndsAt; // dry stop time in seconds since epoch
+static uint32_t Bootcount;  // preserved across factory reset
 static float LastLowerTemp;
 static uint32_t TargetTemp; // meaningful iff DryEndsAt != 0
 static uint32_t LastSpoolRPM;
@@ -381,18 +382,18 @@ float getWeight(void){
 
 static int
 init_pstore(void){
-  printf("initializing persistent store...\n");
+  ESP_LOGI(TAG, "initializing persistent store...");
   esp_err_t err = nvs_flash_init();
   if(err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND){
     printf("erasing flash...\n");
     err = nvs_flash_erase();
     if(err == ESP_OK){
-      printf("initializing flash...\n");
+      ESP_LOGI(TAG, "initializing flash...");
       err = nvs_flash_init();
     }
   }
   if(err){
-    fprintf(stderr, "failure (%d) initializing nvs!\n", err);
+    ESP_LOGE(TAG, "error (%s) initializing nvs", esp_err_to_name(err));
     return -1;
   }
   return 0;
@@ -438,7 +439,8 @@ nvs_get_opt_float(nvs_handle_t nh, const char* recname, float* val){
 
 // read and update boot count, read configurable defaults from pstore if they
 // are present (we do not write defaults to pstore, so we can differentiate
-// between defaults and a configured value).
+// between defaults and a configured value). bootcount can be specified so
+// that it can be preserved across a factory reset.
 static int
 read_pstore(void){
   nvs_handle_t nvsh;
@@ -447,16 +449,15 @@ read_pstore(void){
     ESP_LOGE(TAG, "error (%s) opening nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
     return -1;
   }
-  uint32_t bootcount = 0;
-  err = nvs_get_u32(nvsh, BOOTCOUNT_RECNAME, &bootcount);
+  err = nvs_get_u32(nvsh, BOOTCOUNT_RECNAME, &Bootcount);
   if(err && err != ESP_ERR_NVS_NOT_FOUND){
     ESP_LOGE(TAG, "error (%s) reading " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME, esp_err_to_name(err));
     nvs_close(nvsh);
     return -1;
   }
-  ++bootcount;
-  ESP_LOGI(TAG, "this is boot #%" PRIu32, bootcount);
-  err = nvs_set_u32(nvsh, BOOTCOUNT_RECNAME, bootcount);
+  ++Bootcount;
+  ESP_LOGI(TAG, "this is boot #%" PRIu32, Bootcount);
+  err = nvs_set_u32(nvsh, BOOTCOUNT_RECNAME, Bootcount);
   if(err){
     ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME, esp_err_to_name(err));
     nvs_close(nvsh);
@@ -509,7 +510,7 @@ void set_motor(bool enabled){
 int handle_dry(unsigned seconds, unsigned temp){
   printf("dry request for %us at %uC\n", seconds, temp);
   if(temp > MAX_DRYREQ_TMP || temp < MIN_DRYREQ_TMP){
-    fprintf(stderr, "invalid temp request (%u)\n", temp);
+    ESP_LOGE(TAG, "invalid temp request (%u)", temp);
     return -1;
   }
   DryEndsAt = esp_timer_get_time() + seconds * 1000000ull;
@@ -527,6 +528,9 @@ void factory_reset(void){
   esp_err_t e = nvs_flash_erase();
   if(e != ESP_OK){
     fprintf(stderr, "error (%s) erasing nvs\n", esp_err_to_name(e));
+  }
+  if(!init_pstore()){
+    read_pstore();
   }
   printf("rebooting\n");
   esp_restart();
@@ -564,7 +568,7 @@ setup_i2c(i2c_master_bus_handle_t *master, gpio_num_t sda, gpio_num_t scl){
   }
   esp_err_t e = i2c_new_master_bus(&i2ccnf, master);
   if(e != ESP_OK){
-    fprintf(stderr, "failure (%s) initializing i2c master\n", esp_err_to_name(e));
+    ESP_LOGE(TAG, "error (%s) initializing i2c master", esp_err_to_name(e));
     return -1;
   }
   return 0;
@@ -577,12 +581,12 @@ print_reset_reason(void){
     "power on" : r == ESP_RST_SW ?
     "esp_restart()" : r == ESP_RST_PANIC ?
     "panic" : "unknown"; // FIXME there are more
-  printf("reset code %d (%s)\n", r, s);
+  ESP_LOGI(TAG, "reset code %d (%s)", r, s);
 }
 
 static void
 setup(void){
-  printf(DEVICE " v" VERSION "\n");
+  ESP_LOGI(TAG, DEVICE " v" VERSION);
   print_reset_reason();
   if(!init_pstore()){
     read_pstore();
@@ -594,7 +598,7 @@ setup(void){
   // to per-pin interrupt handlers.
   esp_err_t e = gpio_install_isr_service(0);
   if(e != ESP_OK){
-    fprintf(stderr, "error (%s) installing isr service\n", esp_err_to_name(e));
+    ESP_LOGE(TAG, "error (%s) installing isr service", esp_err_to_name(e));
     set_failure();
   }
   if(setup_intr(HALL_DATAPIN, &HallPulses)){
@@ -633,7 +637,7 @@ setup(void){
     set_failure();
   }
   //gpio_dump_io_configuration(stdout, SOC_GPIO_VALID_GPIO_MASK);
-  printf("initialization %ssuccessful v" VERSION "\n", StartupFailure ? "un" : "");
+  ESP_LOGI(TAG, "initialization %ssuccessful v" VERSION, StartupFailure ? "un" : "");
 }
 
 static uint32_t
@@ -836,6 +840,7 @@ info(void){
 }
 
 void app_main(void){
+  // FIXME turn off heater/motor as first thing
   info();
   load_device_id();
   setup();
