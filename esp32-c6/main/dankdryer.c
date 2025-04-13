@@ -84,17 +84,6 @@ weight_valid_p(float weight){
   return weight >= 0 && weight <= LOAD_CELL_MAX;
 }
 
-// gpio_reset_pin() disables input and output, selects for GPIO, and enables pullup
-int gpio_setup(gpio_num_t pin, gpio_mode_t mode, const char *mstr){
-  gpio_reset_pin(pin);
-  esp_err_t err;
-  if((err = gpio_set_direction(pin, mode)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting %d to %s\n", esp_err_to_name(err), pin, mstr);
-    return -1;
-  }
-  return 0;
-}
-
 int setup_intr(gpio_num_t pin, _Atomic(uint32_t)* arg){
   if(gpio_set_input(pin)){
     return -1;
@@ -431,19 +420,19 @@ nvs_get_opt_float(nvs_handle_t nh, const char* recname, float* val){
   unsigned blen = sizeof(buf);
   esp_err_t err = nvs_get_str(nh, recname, buf, &blen);
   if(err == ESP_ERR_NVS_NOT_FOUND){
-    printf("no record '%s' in nvs\n", recname);
+    ESP_LOGI(TAG, "no record '%s' in nvs", recname);
     return -1;
   }else if(err){
-    fprintf(stderr, "failure (%s) reading %s\n", esp_err_to_name(err), recname);
+    ESP_LOGE(TAG, "error (%s) reading %s", esp_err_to_name(err), recname);
     return -1;
   }
   char* bend;
   *val = strtof(buf, &bend);
   if(bend || !*val || isnan(*val)){
-    fprintf(stderr, "couldn't convert [%s] to float for nvs:%s\n", buf, recname);
+    ESP_LOGE(TAG, "couldn't convert [%s] to float for nvs:%s", buf, recname);
     return -1;
   }
-  printf("read configured default %f from nvs:%s\n", *val, recname);
+  ESP_LOGI(TAG, "read configured default %f from nvs:%s", *val, recname);
   return 0;
 }
 
@@ -455,27 +444,27 @@ read_pstore(void){
   nvs_handle_t nvsh;
   esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
   if(err){
-    fprintf(stderr, "failure (%d) opening nvs:" NVS_HANDLE_NAME "\n", err);
+    ESP_LOGE(TAG, "error (%s) opening nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
     return -1;
   }
   uint32_t bootcount = 0;
   err = nvs_get_u32(nvsh, BOOTCOUNT_RECNAME, &bootcount);
   if(err && err != ESP_ERR_NVS_NOT_FOUND){
-    fprintf(stderr, "failure (%d) reading " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME "\n", err);
+    ESP_LOGE(TAG, "error (%s) reading " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME, esp_err_to_name(err));
     nvs_close(nvsh);
     return -1;
   }
   ++bootcount;
-  printf("this is boot #%lu\n", bootcount);
+  ESP_LOGI(TAG, "this is boot #%" PRIu32, bootcount);
   err = nvs_set_u32(nvsh, BOOTCOUNT_RECNAME, bootcount);
   if(err){
-    fprintf(stderr, "failure (%d) writing " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME "\n", err);
+    ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":" BOOTCOUNT_RECNAME, esp_err_to_name(err));
     nvs_close(nvsh);
     return -1;
   }
   err = nvs_commit(nvsh);
   if(err){
-    fprintf(stderr, "failure (%d) committing nvs:" NVS_HANDLE_NAME "\n", err);
+    ESP_LOGE(TAG, "error (%s) committing nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
     nvs_close(nvsh);
     return -1;
   }
@@ -485,7 +474,7 @@ read_pstore(void){
     if(weight_valid_p(tare)){
       TareWeight = tare;
     }else{
-      fprintf(stderr, "read invalid tare offset %f\n", tare);
+      ESP_LOGE(TAG, "read invalid tare offset %f", tare);
     }
   }
   nvs_close(nvsh);
@@ -530,6 +519,7 @@ int handle_dry(unsigned seconds, unsigned temp){
   return 0;
 }
 
+// FIXME ought preserve boot count
 void factory_reset(void){
   printf("requested factory reset, erasing nvs...\n");
   set_motor(false);

@@ -31,8 +31,21 @@
 */
 // 24--30 are reserved for SPI flash
 
-int gpio_setup(gpio_num_t pin, gpio_mode_t mode, const char *mstr);
+// set the logic level for the pin, which ought have output enabled.
 int gpio_level(gpio_num_t pin, bool level);
+
+// gpio_reset_pin() disables input and output, selects for GPIO, enables
+// pullup, and disables pulldown.
+static inline int
+gpio_setup(gpio_num_t pin, gpio_mode_t mode, const char *mstr){
+  gpio_reset_pin(pin);
+  esp_err_t err;
+  if((err = gpio_set_direction(pin, mode)) != ESP_OK){
+    fprintf(stderr, "failure (%s) setting %d to %s\n", esp_err_to_name(err), pin, mstr);
+    return -1;
+  }
+  return 0;
+}
 
 static inline int
 gpio_set_inputoutput_opendrain(gpio_num_t pin){
