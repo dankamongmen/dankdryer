@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "dankdryer")
-		(date "2025-04-09")
-		(rev "2.2.0")
+		(date "2025-04-12")
+		(rev "2.2.1")
 		(company "dirty south supercomputing")
 		(comment 1 "nick black")
 	)
@@ -2637,9 +2637,9 @@
 		)
 		(uuid "32aee328-e49e-4aab-a092-221a3e8fab04")
 	)
-	(text "Motor is 12VDC at 0.7A (8.4W), stall 1.6A (19.2W).\nMOSFET: IRLML2502TRPbF 2A/4A max continuous/pulse drain current.\n10mA max current to MOSFET: 3.3V / 0.01A = 330Ω (0.033W).\nSchottky diode across motor +/- for EMP protection."
+	(text "Motor is 12VDC at 0.7A (8.4W), stall 1.6A (19.2W).\nMOSFET: IRLML2502TRPbF 2A/4A max continuous/pulse drain current.\nVDS: 20V VGS: ±12 RDS: 0.045Ω VTH: 1.2V Ci: 740pF Qg: 12nC.\n10mA max current to MOSFET: 3.3V / 0.01A = 330Ω (0.033W).\nSchottky diode across motor +/- for EMP protection."
 		(exclude_from_sim no)
-		(at 98.044 97.028 0)
+		(at 98.298 95.504 0)
 		(effects
 			(font
 				(size 1.27 1.27)
