@@ -127,7 +127,7 @@ static const esp_mqtt_client_config_t MQTTConfig = {
 
 void mqtt_publish(const char *s){
   size_t slen = strlen(s);
-  ESP_LOGI(TAG, "MQTT: %s", s);
+  //ESP_LOGI(TAG, "MQTT: %s", s);
   if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, s, slen, 0, 0)){
     ESP_LOGE(TAG, "couldn't publish %zuB mqtt message", slen);
   }
