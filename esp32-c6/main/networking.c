@@ -5,6 +5,7 @@
 #include "efuse.h"
 #include "ota.h"
 #include <mdns.h>
+#include <esp_log.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>
 #include <lwip/netif.h>
@@ -155,7 +156,7 @@ mqtt_publish_hadiscovery(void){
   static const char s[] = "";
   // FIXME set up discovery message
   size_t slen = strlen(s);
-  printf("HADiscovery to %s: [%s]\n", topic, s);
+  ESP_LOGI(TAG, "HADiscovery to %s: [%s]", topic, s);
   if(esp_mqtt_client_publish(MQTTHandle, topic, s, slen, 0, 0)){
     ESP_LOGE(TAG, "couldn't publish %zuB mqtt message", slen);
   }
@@ -167,7 +168,7 @@ mqtt_publish_hadiscovery(void){
 static void
 mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   if(id == MQTT_EVENT_CONNECTED){
-    printf("connected to mqtt\n");
+    ESP_LOGI(TAG, "connected to mqtt");
     set_network_state(MQTT_ESTABLISHED);
     subscribe(MQTTHandle, MOTOR_CHANNEL);
     subscribe(MQTTHandle, HEATER_CHANNEL);
@@ -308,16 +309,16 @@ wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
     if((err = esp_wifi_connect()) != ESP_OK){
       ESP_LOGE(TAG, "error (%s) connecting to wifi", esp_err_to_name(err));
     }else{
-      printf("attempting to connect to wifi\n");
+      ESP_LOGI(TAG, "attempting to connect to wifi");
     }
   }else if(id == WIFI_EVENT_STA_CONNECTED){
     set_network_state(NET_CONNECTING);
-    printf("connected to wifi, looking for ip\n");
+    ESP_LOGI(TAG, "connected to wifi, looking for ip");
     uint16_t aid = 65535u;
     esp_wifi_sta_get_aid(&aid);
-    printf("association id: %u\n", aid);
+    ESP_LOGI(TAG, "association id: %u", aid);
   }else if(id == WIFI_EVENT_HOME_CHANNEL_CHANGE){
-    printf("wifi channel changed\n");
+    ESP_LOGI(TAG, "wifi channel changed");
   }else{
     ESP_LOGE(TAG, "unknown wifi event %" PRId32, id);
   }
@@ -331,7 +332,7 @@ ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
     return;
   }
   if(id == IP_EVENT_STA_GOT_IP || id == IP_EVENT_GOT_IP6){
-    printf("got network address, connecting to mqtt/sntp\n");
+    ESP_LOGI(TAG, "got network address, connecting to mqtt/sntp");
     if(SetupState != SETUP_STATE_CONFIGURED){
       SetupState = SETUP_STATE_CONFIGURED;
       write_wifi_config(WifiEssid, WifiPSK, SetupState);
@@ -367,7 +368,7 @@ setup_wifi(void){
   };
   strcpy((char *)stacfg.sta.ssid, (const char*)WifiEssid);
   strcpy((char *)stacfg.sta.password, (const char*)WifiPSK);
-  //printf("[%s][%s]\n", stacfg.sta.ssid, stacfg.sta.password);
+  //ESP_LOGI(TAG, "[%s][%s]", stacfg.sta.ssid, stacfg.sta.password);
   if((err = esp_netif_init()) != ESP_OK){
     ESP_LOGE(TAG, "error (%s) initializing tcp/ip", esp_err_to_name(err));
     return -1;
@@ -458,7 +459,7 @@ gatt_deviceid(uint16_t conn_handle, uint16_t attr_handle,
 static int
 gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
            struct ble_gatt_access_ctxt *ctxt, void *arg){
-  ESP_LOGI(TAG, "essid] access op %d conn %hu attr %hu\n", ctxt->op, conn_handle, attr_handle);
+  ESP_LOGI(TAG, "essid] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
     r = os_mbuf_append(ctxt->om, WifiEssid, strlen((const char*)WifiEssid) + 1);
@@ -470,7 +471,7 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
       uint16_t olen;
       ble_hs_mbuf_to_flat(ctxt->om, WifiEssid, sizeof(WifiEssid), &olen);
       WifiEssid[olen] = '\0';
-      printf("essid] [%s]\n", WifiEssid);
+      ESP_LOGI(TAG, "essid] [%s]", WifiEssid);
       if(strlen((const char*)WifiEssid) && strlen((const char*)WifiPSK)){
         connect_wifi();
       }
@@ -483,7 +484,7 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
 static int
 gatt_psk(uint16_t conn_handle, uint16_t attr_handle,
          struct ble_gatt_access_ctxt *ctxt, void *arg){
-  ESP_LOGI(TAG, "psk] access op %d conn %hu attr %hu\n", ctxt->op, conn_handle, attr_handle);
+  ESP_LOGI(TAG, "psk] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(SetupState == SETUP_STATE_NEEDWIFI){
     if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
@@ -502,7 +503,7 @@ gatt_psk(uint16_t conn_handle, uint16_t attr_handle,
 static int
 gatt_setup_state(uint16_t conn_handle, uint16_t attr_handle,
                  struct ble_gatt_access_ctxt *ctxt, void *arg){
-  ESP_LOGI(TAG, "setupstate] access op %d conn %hu attr %hu\n", ctxt->op, conn_handle, attr_handle);
+  ESP_LOGI(TAG, "setupstate] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
     const char* s = state_str();
@@ -574,20 +575,20 @@ static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
 static void
 bletask(void* v){
   nimble_port_run();
-  printf("bletask] NimBLE stack exited, deinitializing task\n");
+  ESP_LOGI(TAG, "bletask] NimBLE stack exited, deinitializing task");
   nimble_port_freertos_deinit();
 }
 
 static void
 ble_sync_cb(void){
-  printf("sync] enabling advertisements\n");
+  ESP_LOGI(TAG, "sync] enabling advertisements");
   ble_addr_t addr;
   esp_err_t e;
   if((e = ble_hs_id_gen_rnd(1, &addr)) != ESP_OK){
-    ESP_LOGE(TAG, "sync] failure (%s) generating address", esp_err_to_name(e));
+    ESP_LOGE(TAG, "sync] error (%s) generating address", esp_err_to_name(e));
   }else{
     if((e = ble_hs_id_set_rnd(addr.val)) != ESP_OK){
-      ESP_LOGE(TAG, "sync] failure (%s) setting address", esp_err_to_name(e));
+      ESP_LOGE(TAG, "sync] error (%s) setting address", esp_err_to_name(e));
     }
   }
   struct ble_hs_adv_fields fields;
@@ -596,7 +597,7 @@ ble_sync_cb(void){
   fields.tx_pwr_lvl_is_present = 1;
   fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
   fields.name = (const uint8_t*)ble_svc_gap_device_name();
-  printf("sync] got gap device name [%s]\n", fields.name);
+  ESP_LOGI(TAG, "sync] got gap device name [%s]", fields.name);
   fields.name_len = strlen((const char*)fields.name);
   fields.name_is_complete = 1;
   memset(&fields.uuids16, 0, sizeof(ble_uuid16_t));
@@ -615,17 +616,17 @@ ble_sync_cb(void){
 
 static void
 ble_reset_cb(int reason){
-  printf("reset] callback (reason: %d)\n", reason);
+  ESP_LOGI(TAG, "reset] callback (reason: %d)", reason);
 }
 
 static void
 ble_gatts_register_cb(struct ble_gatt_register_ctxt *bctx, void *v){
-  printf("gatts] register callback %p %p\n", bctx, v);
+  ESP_LOGI(TAG, "gatts] register callback %p %p", bctx, v);
 }
 
 static int
 ble_store_status_cb(struct ble_store_status_event *bevent, void *v){
-  printf("storestatus] callback %p %p\n", bevent, v);
+  ESP_LOGI(TAG, "storestatus] callback %p %p", bevent, v);
   return 0;
 }
 
@@ -671,7 +672,7 @@ setup_ble(void){
   }
   ble_gatts_show_local();
   nimble_port_freertos_init(bletask);
-  printf("successfully initialized BLE\n");
+  ESP_LOGI(TAG, "successfully initialized BLE");
   return 0;
 }
 
