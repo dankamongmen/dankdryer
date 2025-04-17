@@ -334,7 +334,7 @@ static float
 getAmbient(void){
   float t;
   if(temperature_sensor_get_celsius(temp, &t)){
-    fprintf(stderr, "failed acquiring temperature\n");
+    ESP_LOGE(TAG, "failed acquiring temperature");
     return MIN_TEMP - 1;
   }
   return t;
@@ -367,7 +367,7 @@ float getWeight(void){
     }
   }
   if(nau7802_read(NAU7802, &v) || v < 0){
-    fprintf(stderr, "bad nau7802 read %ld\n", v);
+    ESP_LOGE(TAG, "bad nau7802 read %" PRId32, v);
     return -1.0;
   }
   float tare = 0;
@@ -375,7 +375,7 @@ float getWeight(void){
     tare = TareWeight;
   }
   float newv = (float)v * LOAD_CELL_MAX / 0xfffffful;
-  printf("scaling ADC of %ld to %f, tare (%f) to %f\n", v, newv, tare, newv - tare);
+  ESP_LOGI(TAG, "scaling ADC of %" PRId32 " to %f, tare (%f) to %f", v, newv, tare, newv - tare);
   newv -= tare;
   return newv;
 }
