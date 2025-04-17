@@ -96,31 +96,31 @@ int setup_intr(gpio_num_t pin, _Atomic(uint32_t)* arg){
   };
   gpio_glitch_filter_handle_t gfilter;
   if((e = gpio_new_pin_glitch_filter(&fconf, &gfilter)) != ESP_OK){
-    fprintf(stderr, "error (%s) creating glitch filter on %d\n", esp_err_to_name(e), pin);
+    ESP_LOGE(TAG, "error (%s) creating glitch filter on %d", esp_err_to_name(e), pin);
     return -1;
   }
   if((e = gpio_glitch_filter_enable(gfilter)) != ESP_OK){
-    fprintf(stderr, "error (%s) enabling glitch filter on %d\n", esp_err_to_name(e), pin);
+    ESP_LOGE(TAG, "error (%s) enabling glitch filter on %d", esp_err_to_name(e), pin);
     return -1;
   }
   if((e = gpio_pullup_dis(pin)) != ESP_OK){
-    fprintf(stderr, "error (%s) disabling pullup on %d\n", esp_err_to_name(e), pin);
+    ESP_LOGE(TAG, "error (%s) disabling pullup on %d", esp_err_to_name(e), pin);
     return -1;
   }
   if((e = gpio_pulldown_en(pin)) != ESP_OK){
-    fprintf(stderr, "error (%s) enabling pulldown on %d\n", esp_err_to_name(e), pin);
+    ESP_LOGE(TAG, "error (%s) enabling pulldown on %d", esp_err_to_name(e), pin);
     return -1;
   }
   if((e = gpio_set_intr_type(pin, GPIO_INTR_NEGEDGE)) != ESP_OK){
-    fprintf(stderr, "failure (%s) installing %d interrupt\n", esp_err_to_name(e), pin);
+    ESP_LOGE(TAG, "failure (%s) installing %d interrupt", esp_err_to_name(e), pin);
     return -1;
   }
   if((e = gpio_isr_handler_add(pin, pulse_isr, arg)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting %d isr\n", esp_err_to_name(e), pin);
+    ESP_LOGE(TAG, "failure (%s) setting %d isr", esp_err_to_name(e), pin);
     return -1;
   }
   if((e = gpio_intr_enable(pin)) != ESP_OK){
-    fprintf(stderr, "failure (%s) enabling %d interrupt\n", esp_err_to_name(e), pin);
+    ESP_LOGE(TAG, "failure (%s) enabling %d interrupt", esp_err_to_name(e), pin);
     return -1;
   }
   return 0;
@@ -174,15 +174,15 @@ int read_wifi_config(unsigned char* essid, size_t essidlen,
   nvs_handle_t nvsh;
   esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
   if(err){
-    fprintf(stderr, "failure (%d) opening nvs:" NVS_HANDLE_NAME "\n", err);
+    ESP_LOGE(TAG, "failure (%d) opening nvs:" NVS_HANDLE_NAME "", err);
     return -1;
   }
   if(nvs_get_str(nvsh, ESSID_RECNAME, (char*)essid, &essidlen) != ESP_OK){
-    fprintf(stderr, "failure (%s) reading essid\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "failure (%s) reading essid", esp_err_to_name(err));
     goto err;
   }
   if(nvs_get_str(nvsh, PSK_RECNAME, (char*)psk, &psklen) != ESP_OK){
-    fprintf(stderr, "failure (%s) reading psk\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "failure (%s) reading psk", esp_err_to_name(err));
     goto err;
   }
   printf("read configured %zuB essid [%s] %zuB psk\n", essidlen - 1, essid, psklen - 1);
@@ -195,7 +195,7 @@ int read_wifi_config(unsigned char* essid, size_t essidlen,
       *setupstate = rawstate;
       printf("read setup state %d, applied\n", *setupstate);
     }else{
-      fprintf(stderr, "read invalid setup state %lu\n", rawstate);
+      ESP_LOGE(TAG, "read invalid setup state %lu", rawstate);
       goto err;
     }
   }
@@ -213,30 +213,30 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
   nvs_handle_t nvsh;
   esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
   if(err){
-    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) opening nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
     return -1;
   }
   err = nvs_set_str(nvsh, ESSID_RECNAME, (const char*)essid);
   if(err){
-    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), ESSID_RECNAME);
+    ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), ESSID_RECNAME);
     nvs_close(nvsh);
     return -1;
   }
   err = nvs_set_str(nvsh, PSK_RECNAME, (const char*)psk);
   if(err){
-    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), PSK_RECNAME);
+    ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), PSK_RECNAME);
     nvs_close(nvsh);
     return -1;
   }
   err = nvs_set_u32(nvsh, SETUPSTATE_RECNAME, state);
   if(err){
-    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), SETUPSTATE_RECNAME);
+    ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), SETUPSTATE_RECNAME);
     nvs_close(nvsh);
     return -1;
   }
   err = nvs_commit(nvsh);
   if(err){
-    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) committing nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
     nvs_close(nvsh);
     return -1;
   }
@@ -250,22 +250,22 @@ write_tare_offset(float tare){
   nvs_handle_t nvsh;
   esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
   if(err){
-    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) opening nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
     return -1;
   }
   char buf[20];
   if(snprintf(buf, sizeof(buf), "%.8f", tare) > sizeof(buf)){
-    fprintf(stderr, "warning: couldn't store tare offset %f in buf\n", tare);
+    ESP_LOGW(TAG, "warning: couldn't store tare offset %f in buf", tare);
   }
   err = nvs_set_str(nvsh, TAREOFFSET_RECNAME, buf);
   if(err){
-    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":" TAREOFFSET_RECNAME "\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":" TAREOFFSET_RECNAME, esp_err_to_name(err));
     nvs_close(nvsh);
     return -1;
   }
   err = nvs_commit(nvsh);
   if(err){
-    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) committing nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
     nvs_close(nvsh);
     return -1;
   }
@@ -277,9 +277,9 @@ void set_tare(void){
   if(weight_valid_p(LastWeight)){
     TareWeight = LastWeight;
     write_tare_offset(TareWeight);
-    printf("tared at %f\n", TareWeight);
+    ESP_LOGI(TAG, "tared at %f", TareWeight);
   }else{
-    fprintf(stderr, "requested tare, but no valid measurements yet\n");
+    ESP_LOGE(TAG, "requested tare, but no valid measurements yet");
   }
 }
 
@@ -407,7 +407,7 @@ int nvs_get_opt_u32(nvs_handle_t nh, const char* recname, uint32_t* val){
     printf("no record '%s' in nvs\n", recname);
     return 0;
   }else if(err){
-    fprintf(stderr, "failure (%d) reading %s\n", err, recname);
+    ESP_LOGE(TAG, "failure (%d) reading %s", err, recname);
     return -1;
   }
   printf("read configured default %lu from nvs:%s\n", *val, recname);
@@ -527,7 +527,7 @@ void factory_reset(void){
   set_heater(SSR_GPIN, false);
   esp_err_t e = nvs_flash_erase();
   if(e != ESP_OK){
-    fprintf(stderr, "error (%s) erasing nvs\n", esp_err_to_name(e));
+    ESP_LOGE(TAG, "error (%s) erasing nvs", esp_err_to_name(e));
   }
   if(!init_pstore()){
     read_pstore();
@@ -788,7 +788,7 @@ void handle_mqtt_msg(const esp_mqtt_event_t* e){
 void send_mqtt(int64_t curtime){
   cJSON* root = cJSON_CreateObject();
   if(root == NULL){
-    fprintf(stderr, "couldn't create JSON object\n");
+    ESP_LOGE(TAG, "couldn't create JSON object\n");
     return;
   }
   cJSON_AddNumberToObject(root, "uptimesec", curtime / 1000000ll);
@@ -825,7 +825,7 @@ void send_mqtt(int64_t curtime){
     mqtt_publish(s);
     cJSON_free(s);
   }else{
-    fprintf(stderr, "couldn't stringize JSON object\n");
+    ESP_LOGE(TAG, "couldn't stringize JSON object");
   }
   cJSON_Delete(root);
 }
