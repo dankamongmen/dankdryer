@@ -99,13 +99,13 @@ getLM35(adc_channel_t channel){
   // FIXME if we didn't get an ADC handle at all, need to elide read entirely
   if(ADC1Calibrated){
     if((e = adc_oneshot_get_calibrated_result(ADC1, ADC1Calibration, channel, &raw)) != ESP_OK){
-      fprintf(stderr, "error (%s) reading calibrated adc value %d\n", esp_err_to_name(e), raw);
+      ESP_LOGE(TAG, "error (%s) reading calibrated adc value %d", esp_err_to_name(e), raw);
       return MIN_TEMP - 1;
     }
     o = raw;
   }else{
     if((e = adc_oneshot_read(ADC1, channel, &raw)) != ESP_OK){
-      fprintf(stderr, "error (%s) reading from adc\n", esp_err_to_name(e));
+      ESP_LOGE(TAG, "error (%s) reading from adc", esp_err_to_name(e));
       return MIN_TEMP - 1;
     }
     // Dmax is 4095 on single read mode, 8191 on continuous

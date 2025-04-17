@@ -182,7 +182,7 @@ mqtt_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }else if(id == MQTT_EVENT_DATA){
     handle_mqtt_msg(data);
   }else{
-    printf("unhandled mqtt event %" PRId32 "\n", id);
+    ESP_LOGE(TAG, "unhandled mqtt event %" PRId32, id);
   }
 }
 
@@ -283,11 +283,11 @@ static int
 setup_mdns(void){
   esp_err_t err;
   if((err = mdns_init()) != ESP_OK){
-    ESP_LOGE(TAG, "failure %d (%s) initializing mDNS", err, esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) initializing mDNS", esp_err_to_name(err));
     return -1;
   }
   if((err = mdns_hostname_set(clientID)) != ESP_OK){
-    ESP_LOGE(TAG, "failure %d (%s) initializing mDNS", err, esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) initializing mDNS", esp_err_to_name(err));
     return -1;
   }
   mdns_instance_name_set(clientID);
@@ -300,13 +300,13 @@ static void
 wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   esp_err_t err;
   if(strcmp(base, WIFI_EVENT)){
-    fprintf(stderr, "non-wifi event %s in wifi handler\n", base);
+    ESP_LOGE(TAG, "non-wifi event %s in wifi handler", base);
     return;
   }
   if(id == WIFI_EVENT_STA_START || id == WIFI_EVENT_STA_DISCONNECTED){
     set_network_state(WIFI_CONNECTING);
     if((err = esp_wifi_connect()) != ESP_OK){
-      fprintf(stderr, "error (%s) connecting to wifi\n", esp_err_to_name(err));
+      ESP_LOGE(TAG, "error (%s) connecting to wifi", esp_err_to_name(err));
     }else{
       printf("attempting to connect to wifi\n");
     }
@@ -319,7 +319,7 @@ wifi_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   }else if(id == WIFI_EVENT_HOME_CHANNEL_CHANGE){
     printf("wifi channel changed\n");
   }else{
-    fprintf(stderr, "unknown wifi event %" PRId32 "\n", id);
+    ESP_LOGE(TAG, "unknown wifi event %" PRId32, id);
   }
 }
 
@@ -327,7 +327,7 @@ static void
 ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
   esp_err_t err;
   if(strcmp(base, IP_EVENT)){
-    fprintf(stderr, "non-ip event %s in ip handler\n", base);
+    ESP_LOGE(TAG, "non-ip event %s in ip handler", base);
     return;
   }
   if(id == IP_EVENT_STA_GOT_IP || id == IP_EVENT_GOT_IP6){
@@ -337,16 +337,16 @@ ip_event_handler(void* arg, esp_event_base_t base, int32_t id, void* data){
       write_wifi_config(WifiEssid, WifiPSK, SetupState);
     }
     if((err = esp_netif_sntp_start()) != ESP_OK){
-      fprintf(stderr, "error (%s) starting SNTP\n", esp_err_to_name(err));
+      ESP_LOGE(TAG, "error (%s) starting SNTP", esp_err_to_name(err));
     }
     set_network_state(MQTT_CONNECTING);
     if((err = esp_mqtt_client_start(MQTTHandle)) != ESP_OK){
-      fprintf(stderr, "error (%s) connecting to mqtt\n", esp_err_to_name(err));
+      ESP_LOGE(TAG, "error (%s) connecting to mqtt", esp_err_to_name(err));
     }
   }else if(id == IP_EVENT_STA_LOST_IP){
-    fprintf(stderr, "lost ip address\n");
+    ESP_LOGE(TAG, "lost ip address");
   }else{
-    fprintf(stderr, "unknown ip event %ld\n", id);
+    ESP_LOGE(TAG, "unknown ip event %ld", id);
   }
 }
 
@@ -369,54 +369,54 @@ setup_wifi(void){
   strcpy((char *)stacfg.sta.password, (const char*)WifiPSK);
   //printf("[%s][%s]\n", stacfg.sta.ssid, stacfg.sta.password);
   if((err = esp_netif_init()) != ESP_OK){
-    fprintf(stderr, "failure (%s) initializing tcp/ip\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) initializing tcp/ip", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_event_loop_create_default()) != ESP_OK){
-    fprintf(stderr, "failure (%s) creating loop\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) creating loop", esp_err_to_name(err));
     return -1;
   }
   if(!esp_netif_create_default_wifi_sta()){
-    fprintf(stderr, "failure creating default STA\n");
+    ESP_LOGE(TAG, "error creating default STA");
     return -1;
   }
   if((err = esp_wifi_init(&wificfg)) != ESP_OK){
-    fprintf(stderr, "failure (%s) initializing wifi\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) initializing wifi", esp_err_to_name(err));
     return -1;
   }
   esp_event_handler_instance_t wid;
   if((err = esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, wifi_event_handler, NULL, &wid)) != ESP_OK){
-    fprintf(stderr, "failure (%s) registering wifi events\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) registering wifi events", esp_err_to_name(err));
     return -1;
   }
   esp_event_handler_instance_t ipd;
   if((err = esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, ip_event_handler, NULL, &ipd)) != ESP_OK){
-    fprintf(stderr, "failure (%s) registering ip events\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) registering ip events", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_CONNECTED, mqtt_event_handler, NULL)) != ESP_OK){
-    fprintf(stderr, "failure (%s) registering mqtt events\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) registering mqtt events", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_mqtt_client_register_event(MQTTHandle, MQTT_EVENT_DATA, mqtt_event_handler, NULL)) != ESP_OK){
-    fprintf(stderr, "failure (%s) registering mqtt events\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) registering mqtt events", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_wifi_set_mode(WIFI_MODE_STA)) != ESP_OK){
-    fprintf(stderr, "failure (%s) setting STA mode\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) setting STA mode", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_wifi_set_config(WIFI_IF_STA, &stacfg)) != ESP_OK){
-    fprintf(stderr, "failure (%s) configuring wifi\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) configuring wifi", esp_err_to_name(err));
     return -1;
   }
   if((err = esp_wifi_start()) != ESP_OK){
-    fprintf(stderr, "failure (%s) starting wifi\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) starting wifi", esp_err_to_name(err));
     return -1;
   }
   const int8_t txpower = 84;
   if((err = esp_wifi_set_max_tx_power(txpower)) != ESP_OK){
-    fprintf(stderr, "warning: error (%s) setting tx power to %hd\n", esp_err_to_name(err), txpower);
+    ESP_LOGW(TAG, "warning: error (%s) setting tx power to %hd", esp_err_to_name(err), txpower);
   }
   setup_sntp(); // allow a failure
   setup_mdns(); // allow a failure
@@ -458,7 +458,7 @@ gatt_deviceid(uint16_t conn_handle, uint16_t attr_handle,
 static int
 gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
            struct ble_gatt_access_ctxt *ctxt, void *arg){
-  fprintf(stderr, "essid] access op %d conn %hu attr %hu\n", ctxt->op, conn_handle, attr_handle);
+  ESP_LOGI(TAG, "essid] access op %d conn %hu attr %hu\n", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
     r = os_mbuf_append(ctxt->om, WifiEssid, strlen((const char*)WifiEssid) + 1);
@@ -483,7 +483,7 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
 static int
 gatt_psk(uint16_t conn_handle, uint16_t attr_handle,
          struct ble_gatt_access_ctxt *ctxt, void *arg){
-  fprintf(stderr, "psk] access op %d conn %hu attr %hu\n", ctxt->op, conn_handle, attr_handle);
+  ESP_LOGI(TAG, "psk] access op %d conn %hu attr %hu\n", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(SetupState == SETUP_STATE_NEEDWIFI){
     if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
@@ -502,7 +502,7 @@ gatt_psk(uint16_t conn_handle, uint16_t attr_handle,
 static int
 gatt_setup_state(uint16_t conn_handle, uint16_t attr_handle,
                  struct ble_gatt_access_ctxt *ctxt, void *arg){
-  fprintf(stderr, "setupstate] access op %d conn %hu attr %hu\n", ctxt->op, conn_handle, attr_handle);
+  ESP_LOGI(TAG, "setupstate] access op %d conn %hu attr %hu\n", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
     const char* s = state_str();
@@ -584,10 +584,10 @@ ble_sync_cb(void){
   ble_addr_t addr;
   esp_err_t e;
   if((e = ble_hs_id_gen_rnd(1, &addr)) != ESP_OK){
-    fprintf(stderr, "sync] failure (%s) generating address\n", esp_err_to_name(e));
+    ESP_LOGE(TAG, "sync] failure (%s) generating address", esp_err_to_name(e));
   }else{
     if((e = ble_hs_id_set_rnd(addr.val)) != ESP_OK){
-      fprintf(stderr, "sync] failure (%s) setting address\n", esp_err_to_name(e));
+      ESP_LOGE(TAG, "sync] failure (%s) setting address", esp_err_to_name(e));
     }
   }
   struct ble_hs_adv_fields fields;
@@ -603,13 +603,13 @@ ble_sync_cb(void){
   fields.num_uuids16 = 1;
   fields.uuids16_is_complete = 1;
   if((e = ble_gap_adv_set_fields(&fields)) != ESP_OK){
-    fprintf(stderr, "sync] failure (%s) enabling ibeacon\n", esp_err_to_name(e));
+    ESP_LOGE(TAG, "sync] failure (%s) enabling ibeacon", esp_err_to_name(e));
   }
   struct ble_gap_adv_params advcfg = { 0 };
   advcfg.conn_mode = BLE_GAP_CONN_MODE_UND;
   advcfg.disc_mode = BLE_GAP_DISC_MODE_GEN;
   if((e = ble_gap_adv_start(BLE_OWN_ADDR_RANDOM, NULL, BLE_HS_FOREVER, &advcfg, NULL, NULL)) != ESP_OK){
-    fprintf(stderr, "sync] failure (%s) enabling advertisements\n", esp_err_to_name(e));
+    ESP_LOGE(TAG, "sync] failure (%s) enabling advertisements", esp_err_to_name(e));
   }
 }
 
@@ -633,7 +633,7 @@ static int
 setup_ble(void){
   esp_err_t err;
   if((err = nimble_port_init()) != ESP_OK){
-    fprintf(stderr, "error (%s) initializing NimBLE\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) initializing NimBLE", esp_err_to_name(err));
     return -1;
   }
   ble_hs_cfg.reset_cb = ble_reset_cb;
@@ -666,7 +666,7 @@ setup_ble(void){
     }
   }
   if((err = ble_svc_gap_device_name_set(clientID)) != ESP_OK){
-    fprintf(stderr, "error (%s) setting BLE name\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) setting BLE name", esp_err_to_name(err));
     return -1;
   }
   ble_gatts_show_local();
@@ -678,7 +678,7 @@ setup_ble(void){
 int setup_network(void){
   set_client_name();
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
-    fprintf(stderr, "couldn't create mqtt client\n");
+    ESP_LOGE(TAG, "couldn't create mqtt client");
     return -1;
   }
   int sstate;

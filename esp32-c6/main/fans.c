@@ -1,10 +1,13 @@
+#include "dankdryer.h"
 #include "fans.h"
 #include "pins.h"
-#include "dankdryer.h"
 #include <nvs.h>
 #include <string.h>
+#include <esp_log.h>
 #include <driver/ledc.h>
 #include <driver/gpio.h>
+
+#define TAG "fans"
 
 #define FANPWM_BIT_NUM LEDC_TIMER_8_BIT
 #define RPMMAX (1u << 14u)
@@ -27,7 +30,7 @@ pwm_valid_p(int pwm){
 static int
 set_pwm(const ledc_channel_t channel, unsigned pwm){
   if(ledc_set_duty_and_update(LEDCMODE, channel, pwm, MAXPWMDUTY) != ESP_OK){
-    fprintf(stderr, "error setting pwm!\n");
+    ESP_LOGE(TAG, "error setting pwm!");
     return -1;
   }
   printf("set pwm to %u on channel %d\n", pwm, channel);
@@ -39,18 +42,18 @@ write_pwm(const char* recname, uint32_t pwm){
   nvs_handle_t nvsh;
   esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
   if(err){
-    fprintf(stderr, "error (%s) opening nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) opening nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
     return -1;
   }
   err = nvs_set_u32(nvsh, recname, pwm);
   if(err){
-    fprintf(stderr, "error (%s) writing " NVS_HANDLE_NAME ":%s\n", esp_err_to_name(err), recname);
+    ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), recname);
     nvs_close(nvsh);
     return -1;
   }
   err = nvs_commit(nvsh);
   if(err){
-    fprintf(stderr, "error (%s) committing nvs:" NVS_HANDLE_NAME "\n", esp_err_to_name(err));
+    ESP_LOGE(TAG, "error (%s) committing nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
     nvs_close(nvsh);
     return -1;
   }
@@ -84,7 +87,7 @@ int read_fans_pstore(nvs_handle_t nvsh){
     if(pwm_valid_p(lpwm)){
       LowerPWM = lpwm;
     }else{
-      fprintf(stderr, "read invalid lower pwm %lu\n", lpwm);
+      ESP_LOGE(TAG, "read invalid lower pwm %lu", lpwm);
     }
   }
   uint32_t upwm = get_upper_pwm();
@@ -92,7 +95,7 @@ int read_fans_pstore(nvs_handle_t nvsh){
     if(pwm_valid_p(upwm)){
       UpperPWM = upwm;
     }else{
-      fprintf(stderr, "read invalid upper pwm %lu\n", upwm);
+      ESP_LOGE(TAG, "read invalid upper pwm %lu", upwm);
     }
   }
   return 0;
@@ -110,7 +113,7 @@ initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_t ti
   ledc_timer.timer_num = timer;
   ledc_timer.freq_hz = freq;
   if(ledc_timer_config(&ledc_timer) != ESP_OK){
-    fprintf(stderr, "error (timer config)!\n");
+    ESP_LOGE(TAG, "error (timer config)!\n");
     return -1;
   }
   ledc_channel_config_t conf;
@@ -123,7 +126,7 @@ initialize_pwm(ledc_channel_t channel, gpio_num_t pin, int freq, ledc_timer_t ti
   conf.channel = channel;
   printf("setting up pin %d for %dHz PWM\n", pin, freq);
   if(ledc_channel_config(&conf) != ESP_OK){
-    fprintf(stderr, "error (channel config)!\n");
+    ESP_LOGE(TAG, "error (channel config)!\n");
     return -1;
   }
   return 0;
@@ -139,7 +142,7 @@ int setup_fans(gpio_num_t lowerppin, gpio_num_t upperppin,
   int ret = 0;
   esp_err_t e;
   if((e = ledc_fade_func_install(0)) != ESP_OK){
-    fprintf(stderr, "error (%s) installing ledc interrupt\n", esp_err_to_name(e));
+    ESP_LOGE(TAG, "error (%s) installing ledc interrupt", esp_err_to_name(e));
     ret = -1;
   }
   if(setup_intr(lowertpin, &LowerFanPulses)){
