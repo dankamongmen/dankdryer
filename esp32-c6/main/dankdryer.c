@@ -360,24 +360,27 @@ setup_nau7802(i2c_master_bus_handle_t master){
 }
 
 float getWeight(void){
-  int32_t v;
+  float v;
   if(!NAUAvailable){
     if(setup_nau7802(I2CMaster)){
       return -1.0;
     }
   }
-  if(nau7802_read(NAU7802, &v) || v < 0){
-    ESP_LOGE(TAG, "bad nau7802 read %" PRId32, v);
+  if(nau7802_read_scaled(NAU7802, &v, LOAD_CELL_MAX)){
+    return -1.0;
+  }
+  v += LOAD_CELL_MAX / 2;
+  if(v > LOAD_CELL_MAX || v < 0){
+    ESP_LOGE(TAG, "bad nau7802 read %f", v);
     return -1.0;
   }
   float tare = 0;
   if(weight_valid_p(TareWeight)){
     tare = TareWeight;
   }
-  float newv = (float)v * LOAD_CELL_MAX / 0xfffffful;
-  ESP_LOGI(TAG, "scaling ADC of %" PRId32 " to %f, tare (%f) to %f", v, newv, tare, newv - tare);
-  newv -= tare;
-  return newv;
+  float tared = v - tare;
+  ESP_LOGI(TAG, "tare (%f) %f to %f", tare, v, tared);
+  return tared;
 }
 
 static int
