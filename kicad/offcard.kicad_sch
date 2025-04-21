@@ -2660,7 +2660,7 @@
 		)
 		(uuid "89a2def1-962d-406e-b8ef-57fbb7300ca0")
 	)
-	(text "2.7-5.5V input; we use 3.3V.\nAVDD must not exceed DVDD.\n400 pF capacitive load per bus line.\n330 pF Cfilter recommended for 3.3V (p27), requires PGA_CAP_EN[7] = 1."
+	(text "2.7-5.5V input; we use 3.3V.\n400 pF capacitive load per bus line.\nAVDD must not exceed DVDD (but we use LDO@3.3V anyway).\n330 pF Cfilter recommended for 3.3V (p27), requires PGA_CAP_EN[7] = 1."
 		(exclude_from_sim no)
 		(at 178.816 96.52 0)
 		(effects
