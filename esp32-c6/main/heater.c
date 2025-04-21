@@ -114,7 +114,7 @@ getLM35(adc_channel_t channel){
     o = raw * 1750.0 / 4095;
   }
   float ret = o / 10.0; // 10 mV per C
-  ESP_LOGI(TAG, "%d -> %f -> %f\n", raw, o, ret);
+  ESP_LOGI(TAG, "%d -> %f -> %f", raw, o, ret);
   return ret;
 }
 
