@@ -47,7 +47,7 @@
 #define ESSID_RECNAME "essid"
 #define PSK_RECNAME "psk"
 #define SETUPSTATE_RECNAME "sstate"
-#define LOAD_CELL_MAX 5000 // 5kg capable
+#define LOAD_CELL_MAX 5000000 // 5kg capable, at mg
 
 static bool MotorState;
 static bool StartupFailure;
@@ -357,10 +357,9 @@ setup_nau7802(i2c_master_bus_handle_t master){
   if(nau7802_set_pga_cap(NAU7802, true)){
     return -1;
   }
-  // FIXME set gain?
-  /*if(nau7802_set_gain(NAU7802, 32)){
+  if(nau7802_set_gain(NAU7802, 32)){
     return -1;
-  }*/
+  }
   NAUAvailable = true;
   return 0;
 }
@@ -371,33 +370,24 @@ float getWeight(void){
       return -1.0;
     }
   }
-  int32_t iv;
-  if(nau7802_read(NAU7802, &iv)){
+  float v;
+  if(nau7802_multisample(NAU7802, &v, NAU7802_MULTISAMPLE_DEFAULT)){
     NAUAvailable = false;
     // don't immediately retry setup, which might hide error
     return -1.0;
   }
-  /*float v;
-  if(nau7802_read_scaled(NAU7802, &v, LOAD_CELL_MAX)){
+  if(v < 0){
+    ESP_LOGE(TAG, "bad nau7802 read %" PRId32, v);
     return -1.0;
   }
-  if(v > LOAD_CELL_MAX || v < 0){
-    ESP_LOGE(TAG, "bad nau7802 read %f", v);
-    return -1.0;
-  }*/
-  ESP_LOGI(TAG, "raw %" PRId32 " 0x%08x", iv, iv);
-  if(iv < 0){
-    ESP_LOGE(TAG, "bad nau7802 read %" PRId32, iv);
-    return -1.0;
-  }
-  /*float tare = 0;
+  ESP_LOGI(TAG, "raw %f 0x%08x", v, v);
+  float tare = 0;
   if(weight_valid_p(TareWeight)){
     tare = TareWeight;
   }
   float tared = v - tare;
   ESP_LOGI(TAG, "tare (%f) %f to %f", tare, v, tared);
-  return tared;*/
-  return iv;
+  return tared;
 }
 
 static int
@@ -878,7 +868,6 @@ void app_main(void){
     }
     printf("esp32 temp: %f weight: %f (%svalid)\n", ambient, weight,
             weight_valid_p(weight) ? "" : "in");
-    printf("pwm-l: %u pwm-u: %u\n", get_lower_pwm(), get_upper_pwm());
     printf("motor: %s heater: %s\n", motor_state(), heater_state_str());
     int64_t curtime = esp_timer_get_time();
     if(curtime - lasttachs > TACH_SAMPLE_QUANTUM_USEC){
@@ -888,6 +877,7 @@ void app_main(void){
 			getPulseCount(scale, get_lower_tach, &LastLowerRPM);
 			getPulseCount(scale, get_upper_tach, &LastUpperRPM);
       lasttachs = curtime;
+      ESP_LOGI(TAG, "pwm-l: %u pwm-u: %u\n", get_lower_pwm(), get_upper_pwm());
     }
     //printf("dryends: %lld cursec: %lld\n", DryEndsAt, curtime);
     if(DryEndsAt && curtime >= DryEndsAt){
