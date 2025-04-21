@@ -231,62 +231,40 @@ module motor(){
 motorholderh = 3;
 mlength = motorboxh + motorholderh;
 
-tril = loadcelll / 2 + 5;
-module lowercouplingtri(l){
-	linear_extrude(loadcellsupph){
-		polygon([
-			[-l + tril, loadcellmountw / 2],
-			[-l + tril, (motorboxd - loadcellsupph) / 2],
-			[-l, loadcellmountw / 2]
-		]);
-	}
-}
-
 module lowercoupling(){
-	// the brace comes out to the center
-	// of the load cell. the bearing
-	// holder rises from the center--the
-	// shaft must be in the dead center
+	// the center must be in the dead center
 	// of the structure.
 	outerr = (motorboxd + 2) / 2;
 	// we add 1mm for the carbon fiber, as
 	// it has no flex (0.5 added to innerr)
 	innerr = motorboxd / 2 + 0.5;
-	// total length of the lower coupling is
-	// one side of the load cell through the
-	// opposite outside of the coupling, aka:
-	couplingl = loadcelll / 2 + outerr;
 	difference(){
 		union(){
-			bracel = couplingl / 2 - loadcellmountl;
-			translate([-loadcellmountl / 2, 0, 0]){
-				loadcellmount(loadcellsupph + 1);
-			}
-			lowercouplingtri(couplingl / 2);
-			mirror([0, 1, 0]){
-				lowercouplingtri(couplingl / 2);
-			}
 			couplingh = 40;
 			// primary motor holder
-			translate([couplingl / 2 - outerr + 5, 0, 0]){
-				difference(){
-					translate([0, 0, couplingh / 2 + loadcellsupph]){
-						cylinder(couplingh, outerr, outerr, true);
-					}
-					translate([0, 0, loadcellsupph + couplingh / 2]){
-						cylinder(couplingh, innerr, innerr, true);
-					}
+			difference(){
+				translate([0, 0, couplingh / 2 + loadcellsupph]){
+					cylinder(couplingh, outerr, outerr, true);
 				}
-				// fill in the bottom, except for the
-				// front, where we need leave space
-				// for the head of a bolt
+				translate([0, 0, loadcellsupph + couplingh / 2]){
+					cylinder(couplingh, innerr, innerr, true);
+				}
+			}
+			// fill in the bottom
+			difference(){
 				cylinder(loadcellsupph, (motorboxd - loadcellsupph) / 2, outerr);
+				translate([-loadcellmountholegap / 2, 0, 0]){
+					ScrewThread(4, loadcellsupph);	
+				}
+				translate([loadcellmountholegap / 2, 0, 0]){
+					ScrewThread(4, loadcellsupph);	
+				}
 			}
 		}
 		// holes in the bottom for wires, polarity
-		// legend, and center for load cell bump
-		translate([couplingl / 2 - outerr + 5, 0, loadcellsupph / 2]){
-			cube([innerr, loadcellh, loadcellsupph], true);
+		// legend, and also boltholes
+		translate([0, 0, loadcellsupph / 2]){
+			//cube([innerr, loadcellh, loadcellsupph], true);
 			translate([0, innerr - 7, 0]){
 				cylinder(loadcellsupph, 3, 3, true);
 			}
@@ -295,16 +273,10 @@ module lowercoupling(){
 			}
 		}
 		// designate positive side
-		translate([couplingl / 2 - outerr + 2, -13, 0]){
-			rotate([0, 0, 90]){
-				linear_extrude(loadcellsupph){
-					text("+", size=7, font="Prosto One");
-				}
+		translate([4, -15, 0]){
+			linear_extrude(loadcellsupph){
+				text("+", size=7, font="Prosto One");
 			}
-		}
-		// cut out the front for farside bolt
-		translate([couplingl / 2 + 4, 0, 0]){
-			sphere(7);
 		}
 	}
 }
@@ -312,8 +284,8 @@ module lowercoupling(){
 /*bracel = loadcelll / 2 - loadcellmountl;
 translate([-bracel + 3, 0, 0]){
 	loadcellmount(loadcellsupph + 1);
-}*/
-//lowercoupling();
+}
+lowercoupling();*/
 
 // the actual platform should cover a good chunk
 // of area, to keep the spool steady. cuts both
@@ -465,11 +437,11 @@ module assembly(){
 				loadcell();
 			}
 		}
-		translate([-10.5, 0, loadcellh]){
+		translate([0, 0, loadcellh]){
 			mirror([0, 1, 0]){
 				lowercoupling();
 			}
-			translate([10.5, 0, motorboxh / 2 + loadcellsupph]){
+			translate([0, 0, motorboxh / 2 + loadcellsupph]){
 				motor();
 				translate([0, 0, 25]){
 					rotor();

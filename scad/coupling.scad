@@ -43,4 +43,4 @@ multicolor("pink"){
 		assembly();
 	}
 }
-//*/
+*/
