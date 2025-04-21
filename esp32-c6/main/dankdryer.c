@@ -47,7 +47,7 @@
 #define ESSID_RECNAME "essid"
 #define PSK_RECNAME "psk"
 #define SETUPSTATE_RECNAME "sstate"
-#define LOAD_CELL_MAX 5000000 // 5kg capable, at mg
+#define LOAD_CELL_MAX 500000 // 5kg capable, at 10mg
 
 static bool MotorState;
 static bool StartupFailure;
@@ -370,8 +370,8 @@ float getWeight(void){
       return -1.0;
     }
   }
-  float v;
-  if(nau7802_multisample(NAU7802, &v, NAU7802_MULTISAMPLE_DEFAULT)){
+  int32_t v;
+  if(nau7802_read(NAU7802, &v)){
     NAUAvailable = false;
     // don't immediately retry setup, which might hide error
     return -1.0;
@@ -380,14 +380,17 @@ float getWeight(void){
     ESP_LOGE(TAG, "bad nau7802 read %" PRId32, v);
     return -1.0;
   }
-  ESP_LOGI(TAG, "raw %f 0x%08x", v, v);
-  float tare = 0;
+  ESP_LOGI(TAG, "raw %" PRId32 " 0x%08x", v, v);
+  // we use a single-ended signal (not differential)
+  // and thus lose half of our range, yielding 1 << 22.
+  float sv = v * ((float)LOAD_CELL_MAX / (1u << 22u));
   if(weight_valid_p(TareWeight)){
-    tare = TareWeight;
+    sv -= TareWeight;
+    ESP_LOGI(TAG, "tare (%f) %f", TareWeight, sv);
+  }else{
+    ESP_LOGI(TAG, "no tare, returning %f", sv);
   }
-  float tared = v - tare;
-  ESP_LOGI(TAG, "tare (%f) %f to %f", tare, v, tared);
-  return tared;
+  return sv;
 }
 
 static int
