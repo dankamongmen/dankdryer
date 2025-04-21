@@ -348,39 +348,56 @@ setup_nau7802(i2c_master_bus_handle_t master){
   if(nau7802_poweron(NAU7802)){
     return -1;
   }
+  if(nau7802_enable_ldo(NAU7802, NAU7802_LDO_30V, false)){
+    return -1;
+  }
+  if(nau7802_set_bandgap_chop(NAU7802, false)){
+    return -1;
+  }
   if(nau7802_set_pga_cap(NAU7802, true)){
     return -1;
   }
-  if(nau7802_enable_ldo(NAU7802, NAU7802_LDO_33V, true)){
-    return -1;
-  }
   // FIXME set gain?
+  /*if(nau7802_set_gain(NAU7802, 32)){
+    return -1;
+  }*/
   NAUAvailable = true;
   return 0;
 }
 
 float getWeight(void){
-  float v;
   if(!NAUAvailable){
     if(setup_nau7802(I2CMaster)){
       return -1.0;
     }
   }
+  int32_t iv;
+  if(nau7802_read(NAU7802, &iv)){
+    NAUAvailable = false;
+    // don't immediately retry setup, which might hide error
+    return -1.0;
+  }
+  /*float v;
   if(nau7802_read_scaled(NAU7802, &v, LOAD_CELL_MAX)){
     return -1.0;
   }
-  v += LOAD_CELL_MAX / 2;
   if(v > LOAD_CELL_MAX || v < 0){
     ESP_LOGE(TAG, "bad nau7802 read %f", v);
     return -1.0;
+  }*/
+  ESP_LOGI(TAG, "raw %" PRId32 " 0x%08x", iv, iv);
+  if(iv < 0){
+    ESP_LOGE(TAG, "bad nau7802 read %" PRId32, iv);
+    return -1.0;
   }
-  float tare = 0;
+  /*float tare = 0;
   if(weight_valid_p(TareWeight)){
     tare = TareWeight;
   }
   float tared = v - tare;
   ESP_LOGI(TAG, "tare (%f) %f to %f", tare, v, tared);
-  return tared;
+  return tared;*/
+  return iv;
 }
 
 static int
