@@ -161,11 +161,6 @@ module fanhole(h){
 loadcellh = 12.7;
 //loadcelll = 76;
 loadcelll = 80;
-module loadcell(){
-    // https://amazon.com/gp/product/B07BGXXHSW
-    cube([loadcelll, loadcellh, loadcellh], true);
-}
-
 // there is 5mm from each side to the center of
 // hole closest to it, and 15mm between the centers
 // of holes on a side. there are 40mm between the
@@ -179,6 +174,17 @@ loadcellmountl = loadcellmountholeside +
 loadcellmounth = 17;
 loadcellsupph = 4;
 loadcellmountw = loadcellh;
+// we need the load-side holes of the load cell
+// to be centered around the chamber center.
+// the load-side center is at (loadcellmountholegap
+// plus loadcellmountholeside) / 2.
+loadcelloffx =
+ (loadcellmountholegap + loadcellmountholeside) / 2
+ - (loadcelll / 2);
+module loadcell(){
+    // https://amazon.com/gp/product/B07BGXXHSW
+    cube([loadcelll, loadcellh, loadcellh], true);
+}
 
 // load cell mounting base with two threads
 module loadcellmount(baseh){
@@ -455,7 +461,9 @@ module rotor(){
 module assembly(){
 	translate([0, 0, loadcellmounth + wallz]){
 		translate([0, 0, loadcellh / 2]){
-			loadcell();
+			translate([loadcelloffx, 0, 0]){
+				loadcell();
+			}
 		}
 		translate([-10.5, 0, loadcellh]){
 			mirror([0, 1, 0]){

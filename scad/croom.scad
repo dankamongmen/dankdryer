@@ -60,7 +60,7 @@ module fancablehole(){
 module croombottom(rad, z){
 	translate([0, 0, wallz]){
 		acadapterstands();
-		loadcellmountx = (-loadcelll + loadcellmountl) / 2;
+		loadcellmountx = (-loadcelll + loadcellmountl) / 2 + loadcelloffx;
 		translate([loadcellmountx, 0, 0]){
 			loadcellmount(loadcellmounth);
 		}
@@ -184,8 +184,8 @@ module pcb(){
 	}
 }
 
-/*
 // testing + full assemblage
+/*
 multicolor("white"){
     assembly();
 }
