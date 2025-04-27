@@ -17,7 +17,7 @@ module multicolor(color, opacity=1) {
 }
 
 module idtext(){
-  text3d("v2.2.2", h=1.2, size=6);
+  text3d("v2.8.0", h=1.2, size=6);
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
@@ -189,9 +189,15 @@ module loadcell(){
 // load cell mounting base with two threads
 module loadcellmount(baseh){
     difference(){
-        translate([0, 0, baseh / 2]){
-            cube([loadcellmountl, loadcellh, baseh], true);
-        }
+		translate([0, 0, baseh / 2]){
+			//cube([loadcellmountl, loadcellh, baseh], true);
+			diff(){
+				cuboid([loadcellmountl, loadcellh, baseh], 
+					rounding=-2, edges=BOT)
+				edge_profile(TOP)
+					mask2d_roundover(r=2);
+			}
+        }	
         translate([-loadcellmountholegap / 2, 0, 0]){
 			ScrewThread(5, baseh);
         }
@@ -200,6 +206,8 @@ module loadcellmount(baseh){
         }
     }
 }
+
+//loadcellmount(loadcellmounth);
 
 // height of inverse cone supporting bearing holder
 couplingh = 10;
@@ -238,43 +246,66 @@ module lowercoupling(){
 	// we add 1mm for the carbon fiber, as
 	// it has no flex (0.5 added to innerr)
 	innerr = motorboxd / 2 + 0.5;
+	boltheadh = 4;
+	boltheadr = 3.5;
+	th = loadcellsupph + boltheadh;
+	couplingh = 40;
+	// primary motor holder
+	difference(){
+		translate([0, 0, couplingh / 2 + loadcellsupph]){
+			cylinder(couplingh, outerr, outerr, true);
+		}
+		translate([0, 0, loadcellsupph + couplingh / 2]){
+			cylinder(couplingh, innerr, innerr, true);
+		}
+	}
+	// fill in the bottom
 	difference(){
 		union(){
-			couplingh = 40;
-			// primary motor holder
-			difference(){
-				translate([0, 0, couplingh / 2 + loadcellsupph]){
-					cylinder(couplingh, outerr, outerr, true);
-				}
-				translate([0, 0, loadcellsupph + couplingh / 2]){
-					cylinder(couplingh, innerr, innerr, true);
+			cylinder(loadcellsupph,
+					(motorboxd - loadcellsupph) / 2,
+					outerr);
+			translate([0, 0, loadcellsupph]){
+				cylinder(boltheadh, outerr, outerr);
+			}
+		}
+		translate([0, 0, loadcellsupph + boltheadh / 2]){	
+			// two M4 screws couple to the
+			// load cell, but only the heads
+			// remain
+			// printing polycarbonate, which
+			// tends to shrink). we then need
+			// embed the 7x4 head in the floor
+			translate([-loadcellmountholegap / 2, 0, loadcellsupph / 2]){
+				rotate([180, 0, 0]){
+					RodStart(boltheadr * 2,
+							 boltheadh,
+							 thread_len=loadcellsupph,
+							 thread_diam=5);
 				}
 			}
-			// fill in the bottom
-			difference(){
-				cylinder(loadcellsupph, (motorboxd - loadcellsupph) / 2, outerr);
-				translate([-loadcellmountholegap / 2, 0, 0]){
-					ScrewThread(4, loadcellsupph);	
-				}
-				translate([loadcellmountholegap / 2, 0, 0]){
-					ScrewThread(4, loadcellsupph);	
+			translate([loadcellmountholegap / 2, 0, loadcellsupph / 2]){
+				rotate([180, 0, 0]){
+					RodStart(boltheadr * 2,
+							 boltheadh,
+							 thread_len=loadcellsupph,
+							 thread_diam=5);
 				}
 			}
 		}
 		// holes in the bottom for wires, polarity
 		// legend, and also boltholes
-		translate([0, 0, loadcellsupph / 2]){
-			//cube([innerr, loadcellh, loadcellsupph], true);
+		translate([0, 0, th / 2]){
 			translate([0, innerr - 7, 0]){
-				cylinder(loadcellsupph, 3, 3, true);
+				cylinder(th, 3, 3, true);
 			}
 			translate([0, -innerr + 7, 0]){
-				cylinder(loadcellsupph, 3, 3, true);
+				cylinder(th, 3, 3, true);
 			}
 		}
 		// designate positive side
 		translate([4, -15, 0]){
-			linear_extrude(loadcellsupph){
+			linear_extrude(th){
 				text("+", size=7, font="Prosto One");
 			}
 		}
@@ -284,8 +315,8 @@ module lowercoupling(){
 /*bracel = loadcelll / 2 - loadcellmountl;
 translate([-bracel + 3, 0, 0]){
 	loadcellmount(loadcellsupph + 1);
-}
-lowercoupling();*/
+}*/
+//lowercoupling();
 
 // the actual platform should cover a good chunk
 // of area, to keep the spool steady. cuts both

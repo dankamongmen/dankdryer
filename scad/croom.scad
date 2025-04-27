@@ -163,7 +163,7 @@ module croom(iech = 20){
 			croombottom(botrad, wallz);
 		}
 		antennahole();
-		translate([0, 0, wallz + acmounth]){
+		translate([0, 0, wallz]){
 			acadapterholes();
 		}
 	}

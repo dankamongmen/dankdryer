@@ -1,4 +1,5 @@
 include <core.scad>
+include <BOSL2/std.scad>
 
 // hole for four-prong rocker switch + receptacle.
 // https://www.amazon.com/dp/B0CW2XJ339
@@ -9,19 +10,21 @@ include <core.scad>
 rockerh = 30;
 rockerw = 45.7;
 module rockerhole(iech){
-	translate([-botinalt - 2, 0, iech / 2 + 15]){
-	    rotate([0, 180 - theta, 0]){
-			difference(){
-				cube([croomwall + 2, rockerw, rockerh], true);
-				// two thin clips to hold the plug in
-				// depth: 1mm height: 1.5mm
-				translate([-1, 0, 0]){
-					union(){
-						translate([0, 0, rockerh / 2 - 0.75]){
-							cube([1, rockerw, 1.5], true);
-						}
-						translate([0, 0, -rockerh / 2 + 0.75]){
-							cube([1, rockerw, 1.5], true);
+	translate([-botinalt - 2, 0, iech / 2 + 25]){
+		rotate([90, 0, 0]){
+			rotate([0, 180 - theta, 0]){
+				difference(){
+					cube([croomwall + 2, rockerw, rockerh], true);
+					// two thin clips to hold the plug in
+					// depth: 1mm height: 1.5mm
+					translate([-1, 0, 0]){
+						union(){
+							translate([0, 0, rockerh / 2 - 0.75]){
+								cube([1, rockerw, 1.5], true);
+							}
+							translate([0, 0, -rockerh / 2 + 0.75]){
+								cube([1, rockerw, 1.5], true);
+							}
 						}
 					}
 				}
@@ -34,13 +37,18 @@ module rockerhole(iech){
 acadapterh = 22;
 acadapterw = 50;
 acadapterl = 135;
-acmounth = 4;
+acmounth = 6;
 
 // the stand without the plug, since our AC
 // adapters only have two places to screw
 module acadapterstand(){
 	translate([acadapterl / 2 - 0.5, -acadapterw / 2 + 7, acmounth / 2]){
-		cube([8, 6, acmounth], true);
+		diff(){
+			cuboid([8, 6, acmounth], 
+					rounding=-1, edges=BOT)
+				edge_profile(except=[TOP,BOT])
+					mask2d_roundover(r=1);
+		}
 	}
 }
 
@@ -67,13 +75,13 @@ module acadapterstands(){
 module acadapterhole(){
 	translate([acadapterl / 2 - 0.5, -acadapterw / 2 + 7, 0]){
 		holed = 3.6;
-		ScrewThread(holed, 5);
+		ScrewThread(holed, acmounth);
 	}
 }
 
 // screw holes for mounting ac adapter in two corners
 module acadapterholes(){
-	translate([0, acadapterw, -acmounth]){
+	translate([0, acadapterw, 0]){
 		acadapterhole();
 		mirror([0, 1, 0]){
 			mirror([1, 0, 0]){
@@ -89,6 +97,8 @@ module acadapter(){
 	}
 }
 
-//acadapterstands();
-//acadapterholes();
+/*difference(){
+	acadapterstands();
+	acadapterholes();
+}*/
 //acadapter();
