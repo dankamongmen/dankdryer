@@ -17,7 +17,7 @@ module multicolor(color, opacity=1) {
 }
 
 module idtext(){
-  text3d("v2.8.0", h=1.2, size=6);
+  text3d("v2.8.1", h=1.2, size=6);
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
@@ -190,10 +190,9 @@ module loadcell(){
 module loadcellmount(baseh){
     difference(){
 		translate([0, 0, baseh / 2]){
-			//cube([loadcellmountl, loadcellh, baseh], true);
 			diff(){
 				cuboid([loadcellmountl, loadcellh, baseh], 
-					rounding=-2, edges=BOT)
+					rounding=-5, edges=BOT)
 				edge_profile(TOP)
 					mask2d_roundover(r=2);
 			}
