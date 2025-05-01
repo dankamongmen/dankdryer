@@ -17,7 +17,7 @@ module multicolor(color, opacity=1) {
 }
 
 module idtext(){
-  text3d("v2.8.1", h=1.2, size=6);
+  text3d("v2.8.3", h=1.2, size=6);
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
@@ -150,8 +150,9 @@ module fanmounts(h){
 //fanmounts(9);
 
 module fanhole(h){
+	fanmm = 80 - 5;
     rotate([90, 0, 0]){
-        cylinder(h, 80 / 2, 80 / 2, true);
+        cylinder(h, fanmm / 2, fanmm / 2, true);
     }
     fanmounts(h);
 }
@@ -191,10 +192,11 @@ module loadcellmount(baseh){
     difference(){
 		translate([0, 0, baseh / 2]){
 			diff(){
-				cuboid([loadcellmountl, loadcellh, baseh], 
-					rounding=-5, edges=BOT)
-				edge_profile(TOP)
-					mask2d_roundover(r=2);
+				cuboid([loadcellmountl + 2,
+						loadcellh + 2, baseh], 
+						rounding=-5, edges=BOT)
+					edge_profile(TOP)
+						mask2d_roundover(r=2);
 			}
         }	
         translate([-loadcellmountholegap / 2, 0, 0]){
