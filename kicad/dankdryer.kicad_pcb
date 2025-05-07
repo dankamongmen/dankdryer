@@ -14096,7 +14096,7 @@
 			(net 1 "GND")
 			(pinfunction "PGND__2")
 			(pintype "power_in")
-			(uuid "a1d417a6-5ed9-47be-ae45-29cbe238da33")
+			(uuid "3746de02-57b1-448c-8623-b0202ea0d06f")
 		)
 		(pad "17" smd rect
 			(at 0 0 270)
@@ -14107,7 +14107,7 @@
 			(pinfunction "PGND__2")
 			(pintype "power_in")
 			(zone_connect 2)
-			(uuid "9d37424d-3296-4b48-acbf-73a18da18c4a")
+			(uuid "3746de02-57b1-448c-8623-b0202ea0d06f")
 		)
 		(pad "17" smd rect
 			(at 0 0 270)
@@ -14118,7 +14118,7 @@
 			(pinfunction "PGND__2")
 			(pintype "power_in")
 			(zone_connect 2)
-			(uuid "55063f6c-10e4-4342-923d-7e374c46f9bc")
+			(uuid "3746de02-57b1-448c-8623-b0202ea0d06f")
 		)
 		(pad "17" thru_hole circle
 			(at 0.59 -0.59 270)
@@ -14130,7 +14130,7 @@
 			(net 1 "GND")
 			(pinfunction "PGND__2")
 			(pintype "power_in")
-			(uuid "84ad50e0-f7c3-4f04-99bc-bef923f31b58")
+			(uuid "3746de02-57b1-448c-8623-b0202ea0d06f")
 		)
 		(pad "17" thru_hole circle
 			(at 0.59 0.59 270)
@@ -14142,10 +14142,10 @@
 			(net 1 "GND")
 			(pinfunction "PGND__2")
 			(pintype "power_in")
-			(uuid "046ce6e2-726a-4c1a-8970-4daa19b18d5f")
+			(uuid "3746de02-57b1-448c-8623-b0202ea0d06f")
 		)
 		(embedded_fonts no)
-		(model "${KICAD9_3DMODEL_DIR}/Package_DFN_QFN.3dshapes/VQFN-16-1EP_3x3mm_P0.5mm_EP1.68x1.68mm.wrl"
+		(model "/home/dank/files/kicad/3dmodels/TPS62132RGTR.step"
 			(offset
 				(xyz 0 0 0)
 			)
