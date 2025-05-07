@@ -244,9 +244,11 @@ module lowercoupling(){
 	// the center must be in the dead center
 	// of the structure.
 	outerr = (motorboxd + 2) / 2;
-	// we add 1mm for the carbon fiber, as
-	// it has no flex (0.5 added to innerr)
-	innerr = motorboxd / 2 + 0.5;
+	// we add 0.5mm for the polycarbonate (1 for
+	// CF/GF), as it has no flex (0.25 to innerr)
+	innerr = motorboxd / 2 + 0.25;
+	// hole in middle to accommodate 10mm shaft
+	holer = 10 / 2;
 	boltheadh = 4;
 	boltheadr = 3.5;
 	th = loadcellsupph + boltheadh;
@@ -270,6 +272,7 @@ module lowercoupling(){
 				cylinder(boltheadh, outerr, outerr);
 			}
 		}
+		cylinder(th, holer, holer);
 		translate([0, 0, loadcellsupph + boltheadh / 2]){	
 			// two M4 screws couple to the
 			// load cell, but only the heads
