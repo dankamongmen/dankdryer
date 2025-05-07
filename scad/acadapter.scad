@@ -8,7 +8,7 @@ include <BOSL2/std.scad>
 // model with fuse is 30mm
 //rockerh = 20;
 rockerh = 30;
-rockerw = 45.7;
+rockerw = 46; // a bit of skoosh viz 45.7
 module rockerhole(iech){
 	translate([-botinalt - 2, 0, iech / 2 + 25]){
 		rotate([90, 0, 0]){
