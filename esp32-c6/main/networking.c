@@ -513,8 +513,10 @@ gatt_mqtt_broker(uint16_t conn_handle, uint16_t attr_handle,
   ESP_LOGI(TAG, "mqttbroker] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
-    mqtt_lock();
-      r = os_mbuf_append(ctxt->om, MQTTBroker, strlen((const char*)MQTTBroker) + 1);
+    if(mqtt_lock()){
+      return -1;
+    }
+    r = os_mbuf_append(ctxt->om, MQTTBroker, strlen((const char*)MQTTBroker) + 1);
     mqtt_unlock();
     if(r){
       r = BLE_ATT_ERR_INSUFFICIENT_RES;
@@ -530,9 +532,11 @@ gatt_mqtt_broker(uint16_t conn_handle, uint16_t attr_handle,
     ble_hs_mbuf_to_flat(ctxt->om, broker, MAX_BROKER_NAMELEN, &olen);
     broker[olen] = '\0';
     ESP_LOGI(TAG, "mqttbroker] [%s]", broker);
-    mqtt_lock();
-      free(MQTTBroker);
-      MQTTBroker = broker;
+    if(mqtt_lock()){
+      return -1;
+    }
+    free(MQTTBroker);
+    MQTTBroker = broker;
     mqtt_unlock();
     r = 0;
   }
@@ -760,6 +764,7 @@ reconfig_mqtt(const esp_mqtt_client_config_t* conf){
   }
   oldmqtt = MQTTHandle;
   MQTTHandle = newmqtt;
+  write_mqtt_config(MQTTBroker, MQTTUser, MQTTPass, MQTTTopic);
   mqtt_unlock();
   esp_mqtt_client_destroy(oldmqtt);
   return false;

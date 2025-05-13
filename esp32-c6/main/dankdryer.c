@@ -220,7 +220,7 @@ int read_mqtt_config(char** broker, char** user, char** pass,
                      char** topic){
   *broker = *user = *pass = *topic = NULL;
   nvs_handle_t nvsh;
-  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READONLY, &nvsh);
   if(err){
     ESP_LOGE(TAG, "failure (%d) opening nvs:" NVS_HANDLE_NAME "", err);
     return -1;
@@ -256,7 +256,7 @@ int read_wifi_config(unsigned char* essid, size_t essidlen,
                      unsigned char* psk, size_t psklen,
                      int* setupstate){
   nvs_handle_t nvsh;
-  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READONLY, &nvsh);
   if(err){
     ESP_LOGE(TAG, "failure (%d) opening nvs:" NVS_HANDLE_NAME "", err);
     return -1;
@@ -293,6 +293,57 @@ err:
   return -1;
 }
 
+static esp_err_t
+write_record(nvs_handle_t nvsh, const char* recname, const char* str){
+  esp_err_t err;
+  err = nvs_set_str(nvsh, recname, str);
+  if(err){
+    ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), recname);
+  }
+  return err;
+}
+
+static esp_err_t
+commit(nvs_handle_t nvsh){
+  esp_err_t err = nvs_commit(nvsh);
+  if(err){
+    ESP_LOGE(TAG, "error (%s) committing nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
+  }
+  return err;
+}
+
+int write_mqtt_config(const char* broker, const char* user, const char* pass,
+                      const char* topic){
+  nvs_handle_t nvsh;
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  if(err){
+    ESP_LOGE(TAG, "error (%s) opening nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
+    return -1;
+  }
+  // FIXME what about a partially failed update? we'd like to avoid them!
+  if((err = write_record(nvsh, MQTTBROKER_RECNAME, broker)) != ESP_OK){
+    goto err;
+  }
+  if((err = write_record(nvsh, MQTTUSER_RECNAME, user)) != ESP_OK){
+    goto err;
+  }
+  if((err = write_record(nvsh, MQTTPASS_RECNAME, pass)) != ESP_OK){
+    goto err;
+  }
+  if((err = write_record(nvsh, MQTTTOPIC_RECNAME, topic)) != ESP_OK){
+    goto err;
+  }
+  if(commit(nvsh)){
+    goto err;
+  }
+  nvs_close(nvsh);
+  return 0;
+
+err:
+  nvs_close(nvsh);
+  return -1;
+}
+
 int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
                       uint32_t state){
   nvs_handle_t nvsh;
@@ -301,14 +352,10 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
     ESP_LOGE(TAG, "error (%s) opening nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
     return -1;
   }
-  err = nvs_set_str(nvsh, ESSID_RECNAME, (const char*)essid);
-  if(err){
-    ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), ESSID_RECNAME);
+  if((err = write_record(nvsh, ESSID_RECNAME, (const char*)essid)) != ESP_OK){
     goto err;
   }
-  err = nvs_set_str(nvsh, PSK_RECNAME, (const char*)psk);
-  if(err){
-    ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), PSK_RECNAME);
+  if((err = write_record(nvsh, PSK_RECNAME, (const char*)psk)) != ESP_OK){
     goto err;
   }
   err = nvs_set_u32(nvsh, SETUPSTATE_RECNAME, state);
@@ -316,9 +363,7 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
     ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), SETUPSTATE_RECNAME);
     goto err;
   }
-  err = nvs_commit(nvsh);
-  if(err){
-    ESP_LOGE(TAG, "error (%s) committing nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
+  if(commit(nvsh)){
     goto err;
   }
   nvs_close(nvsh);
