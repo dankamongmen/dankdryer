@@ -47,6 +47,10 @@
 #define ESSID_RECNAME "essid"
 #define PSK_RECNAME "psk"
 #define SETUPSTATE_RECNAME "sstate"
+#define MQTTBROKER_RECNAME "mqttbroker"
+#define MQTTTOPIC_RECNAME "mqtttopic"
+#define MQTTUSER_RECNAME "mqttuser"
+#define MQTTPASS_RECNAME "mqttpass"
 #define LOAD_CELL_MAX 500000 // 5kg capable, at 10mg
 
 static bool MotorState;
@@ -168,6 +172,86 @@ unsigned get_upper_rpm(void){
   return LastUpperRPM;
 }
 
+// if record is not present, set *str to NULL and *len to 0, and return ESP_OK.
+// if we encounter an error, same deal but with an error code. otherwise, *str
+// is a heap-allocated copy of the record, and *len is its length.
+static esp_err_t
+nvs_get_opt_str(nvs_handle_t nh, const char* recname, char** str, size_t* len){
+  *str = NULL;
+  *len = 0;
+#define MAX_NVS_STR 512
+  size_t blen = MAX_NVS_STR + 1;
+  char* buf = malloc(blen);
+  if(!buf){
+    return ESP_ERR_NO_MEM;
+  }
+  esp_err_t err = nvs_get_str(nh, recname, buf, &blen);
+  if(err == ESP_ERR_NVS_NOT_FOUND){
+    ESP_LOGI(TAG, "no record '%s' in nvs", recname);
+    free(buf);
+    return ESP_OK;
+  }else if(err){
+    ESP_LOGE(TAG, "error (%s) reading %s", esp_err_to_name(err), recname);
+    free(buf);
+    return err;
+  }
+  size_t rlen = strnlen(buf, MAX_NVS_STR);
+  if(rlen >= MAX_NVS_STR){
+    ESP_LOGE(TAG, "invalid record '%s'", recname);
+    free(buf);
+    return ESP_ERR_INVALID_SIZE;
+  }
+  // FIXME maybe also check for sanity? all isprint() etc?
+  *str = strdup(buf); // get a smaller allocation, maybe
+  free(buf);
+  if(!*str){
+    return ESP_ERR_NO_MEM;
+  }
+  *len = rlen;
+  ESP_LOGI(TAG, "read '%s' from nvs:%s", *str, recname);
+  return ESP_OK;
+#undef MAX_NVS_STR
+}
+
+// load broker, user, and password from flash if they are present. anything
+// that is not present is initialized to an empty string. all strings are
+// heap-allocated.
+int read_mqtt_config(char** broker, char** user, char** pass,
+                     char** topic){
+  *broker = *user = *pass = *topic = NULL;
+  nvs_handle_t nvsh;
+  esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
+  if(err){
+    ESP_LOGE(TAG, "failure (%d) opening nvs:" NVS_HANDLE_NAME "", err);
+    return -1;
+  }
+  size_t blen;
+  if(nvs_get_opt_str(nvsh, MQTTBROKER_RECNAME, broker, &blen) != ESP_OK){
+    goto err;
+  }
+  if(nvs_get_opt_str(nvsh, MQTTUSER_RECNAME, user, &blen) != ESP_OK){
+    goto err;
+  }
+  if(nvs_get_opt_str(nvsh, MQTTPASS_RECNAME, pass, &blen) != ESP_OK){
+    goto err;
+  }
+  if(nvs_get_opt_str(nvsh, MQTTTOPIC_RECNAME, pass, &blen) != ESP_OK){
+    goto err;
+  }
+  nvs_close(nvsh);
+  return 0;
+#undef MAX_MQTT_RECORDLEN
+
+err:
+  nvs_close(nvsh);
+  free(*broker);
+  free(*topic);
+  free(*user);
+  free(*pass);
+  *broker = *user = *pass = *topic = NULL;
+  return -1;
+}
+
 int read_wifi_config(unsigned char* essid, size_t essidlen,
                      unsigned char* psk, size_t psklen,
                      int* setupstate){
@@ -199,6 +283,7 @@ int read_wifi_config(unsigned char* essid, size_t essidlen,
       goto err;
     }
   }
+  nvs_close(nvsh);
   return 0;
 
 err:
@@ -219,29 +304,29 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
   err = nvs_set_str(nvsh, ESSID_RECNAME, (const char*)essid);
   if(err){
     ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), ESSID_RECNAME);
-    nvs_close(nvsh);
-    return -1;
+    goto err;
   }
   err = nvs_set_str(nvsh, PSK_RECNAME, (const char*)psk);
   if(err){
     ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), PSK_RECNAME);
-    nvs_close(nvsh);
-    return -1;
+    goto err;
   }
   err = nvs_set_u32(nvsh, SETUPSTATE_RECNAME, state);
   if(err){
     ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), SETUPSTATE_RECNAME);
-    nvs_close(nvsh);
-    return -1;
+    goto err;
   }
   err = nvs_commit(nvsh);
   if(err){
     ESP_LOGE(TAG, "error (%s) committing nvs:" NVS_HANDLE_NAME, esp_err_to_name(err));
-    nvs_close(nvsh);
-    return -1;
+    goto err;
   }
   nvs_close(nvsh);
   return 0;
+
+err:
+  nvs_close(nvsh);
+  return -1;
 }
 
 // update NVS with tare offset
