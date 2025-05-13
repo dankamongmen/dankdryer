@@ -30,9 +30,6 @@ ESP-IDF environment (i.e. the various `IDF_*` environment variables
 must be set), along with CMake. `idf.py` ought be in your `$PATH`,
 and work when invoked.
 
-A network configuration file must be created and populated at
-`esp32-s3/dankdryer/dryer-network.h`.
-
 ## Firmware
 * [esp-idf](https://github.com/espressif/esp-idf) 5.3+
 * [CMake](https://gitlab.kitware.com/cmake/cmake) 3.16+
