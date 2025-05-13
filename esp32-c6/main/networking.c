@@ -150,21 +150,6 @@ set_network_state(int state){
   }
 }
 
-// update only while holding mqtt mutex
-static esp_mqtt_client_config_t MQTTConfig = {
-  .broker = {
-    .address = {
-      .uri = NULL,
-    },
-  },
-  .credentials = {
-    .username = NULL,
-    .authentication = {
-      .password = NULL,
-    },
-  },
-};
-
 void mqtt_publish(const char *s){
   size_t slen = strlen(s);
   //ESP_LOGI(TAG, "MQTT: %s", s);
@@ -602,6 +587,7 @@ gatt_mqtt_broker(uint16_t conn_handle, uint16_t attr_handle,
     }
     free(MQTTBroker);
     MQTTBroker = broker;
+    // FIXME reconfig_mqtt()?
     mqtt_unlock();
     r = 0;
   }
@@ -858,36 +844,61 @@ setup_ble(void){
   return 0;
 }
 
-// create new mqtt_client
-// block on any running MQTT operation
-// set MQTTHandle
-// unlock it
-// free old handle
-static bool
-reconfig_mqtt(const esp_mqtt_client_config_t* conf){
-  esp_mqtt_client_handle_t newmqtt, oldmqtt;
-  if((newmqtt = esp_mqtt_client_init(conf)) == NULL){
-    ESP_LOGE(TAG, "couldn't create mqtt client");
-    return true;
+// mqtt lock must be held around call
+// if successful, returns any old handle, which must be destroyed
+//  (this can and should be done after unlocking mqtt_lock)
+static esp_mqtt_client_handle_t
+reconfig_mqtt(void){
+  // FIXME sanity check proposed config?
+  esp_mqtt_client_config_t conf = {
+   .broker = {
+    .address = {
+      .uri = MQTTBroker,
+    },
+  },
+  .credentials = {
+    .username = MQTTUser,
+    .authentication = {
+      .password = MQTTPass,
+    },
+  },
+  };
+  esp_mqtt_client_handle_t oldmqtt = NULL;
+  if(conf.broker.address.uri){
+    esp_mqtt_client_handle_t newmqtt;
+    if((newmqtt = esp_mqtt_client_init(&conf)) == NULL){
+      ESP_LOGE(TAG, "couldn't create mqtt client"); // FIXME logging while locked?
+      return NULL;
+    }
+    oldmqtt = MQTTHandle;
+    MQTTHandle = newmqtt;
   }
-  if(mqtt_lock()){
-    return true;
-  }
-  oldmqtt = MQTTHandle;
-  MQTTHandle = newmqtt;
+  return oldmqtt; // FIXME how to distinguish error from no prior handle?
+}
+
+// call with mqtt_lock held. unlocks mqtt_lock on all paths. frees any old
+// mqtt handle we obsoleted.
+static inline bool
+reconfig_and_free_mqtt(void){
   write_mqtt_config(MQTTBroker, MQTTUser, MQTTPass, MQTTTopic);
+  esp_mqtt_client_handle_t oldmqtt = reconfig_mqtt();
   mqtt_unlock();
-  esp_mqtt_client_destroy(oldmqtt);
+  if(oldmqtt){
+    esp_mqtt_client_destroy(oldmqtt);
+  }
   return false;
 }
 
 int setup_network(void){
   set_client_name();
-  if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
-    return -1;
-  }
   int sstate;
   read_mqtt_config(&MQTTBroker, &MQTTUser, &MQTTPass, &MQTTTopic);
+  if(mqtt_lock() == 0){
+    // don't call reconfig_and_free_mqtt() here; it would force a useless
+    // write per boot of what we just read
+    reconfig_mqtt();
+    mqtt_unlock();
+  }
   if(!read_wifi_config(WifiEssid, sizeof(WifiEssid), WifiPSK, sizeof(WifiPSK), &sstate)){
     if((SetupState = sstate) != SETUP_STATE_NEEDWIFI){
       setup_wifi();
