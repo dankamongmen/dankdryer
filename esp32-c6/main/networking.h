@@ -37,6 +37,8 @@ int read_wifi_config(unsigned char* essid, size_t essidlen,
                      int* setupstate);
 int read_mqtt_config(char** broker, char** user, char** pass,
                      char** topic);
+int write_mqtt_config(const char* broker, const char* user, const char* pass,
+                      const char* topic);
 
 #define CCHAN "control/"
 #define MOTOR_CHANNEL CCHAN DEVICE "/motor"
