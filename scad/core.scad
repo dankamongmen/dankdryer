@@ -17,7 +17,7 @@ module multicolor(color, opacity=1) {
 }
 
 module idtext(){
-  text3d("v2.8.3", h=1.2, size=6);
+  text3d("v2.8.4", h=1.2, size=6);
 }
 
 // we need to hold a spool up to 205mm in diameter and 75mm wide
@@ -607,7 +607,9 @@ module chamberinnerplug(){
 // external chamberclip().
 // slightly wider than the chamberclip, because
 // we can be.
-module chamberclipinverse(skoosh = 0.2){
+// skoosh = 0.2 is good for GF
+// skoosh = 0.5 is more up to speed for CF
+module chamberclipinverse(skoosh = 0.5){
 	cube([cclipw - 2 + skoosh, cclipr + skoosh, ccliph], true);
 }
 
