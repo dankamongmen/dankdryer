@@ -92,6 +92,51 @@ static void mqtt_unlock(void){
   xSemaphoreGive(MQTTSemaphore);
 }
 
+// mqtt lock must be held around call
+// if successful, returns any old handle, which must be destroyed
+//  (this can and should be done after unlocking mqtt_lock)
+static esp_mqtt_client_handle_t
+reconfig_mqtt(void){
+  // FIXME sanity check proposed config?
+  esp_mqtt_client_config_t conf = {
+   .broker = {
+    .address = {
+      .uri = MQTTBroker,
+    },
+  },
+  .credentials = {
+    .username = MQTTUser,
+    .authentication = {
+      .password = MQTTPass,
+    },
+  },
+  };
+  esp_mqtt_client_handle_t oldmqtt = NULL;
+  if(conf.broker.address.uri){
+    esp_mqtt_client_handle_t newmqtt;
+    if((newmqtt = esp_mqtt_client_init(&conf)) == NULL){
+      ESP_LOGE(TAG, "couldn't create mqtt client"); // FIXME logging while locked?
+      return NULL;
+    }
+    oldmqtt = MQTTHandle;
+    MQTTHandle = newmqtt;
+  }
+  return oldmqtt; // FIXME how to distinguish error from no prior handle?
+}
+
+// call with mqtt_lock held. unlocks mqtt_lock on all paths. frees any old
+// mqtt handle we obsoleted.
+static inline int
+reconfig_and_free_mqtt(void){
+  write_mqtt_config(MQTTBroker, MQTTUser, MQTTPass, MQTTTopic);
+  esp_mqtt_client_handle_t oldmqtt = reconfig_mqtt();
+  mqtt_unlock();
+  if(oldmqtt){
+    esp_mqtt_client_destroy(oldmqtt);
+  }
+  return 0;
+}
+
 // call during initialization to construct clientID
 static void
 set_client_name(void){
@@ -587,9 +632,7 @@ gatt_mqtt_broker(uint16_t conn_handle, uint16_t attr_handle,
     }
     free(MQTTBroker);
     MQTTBroker = broker;
-    // FIXME reconfig_mqtt()?
-    mqtt_unlock();
-    r = 0;
+    r = reconfig_and_free_mqtt();
   }
   return r;
 }
@@ -842,51 +885,6 @@ setup_ble(void){
   nimble_port_freertos_init(bletask);
   ESP_LOGI(TAG, "successfully initialized BLE");
   return 0;
-}
-
-// mqtt lock must be held around call
-// if successful, returns any old handle, which must be destroyed
-//  (this can and should be done after unlocking mqtt_lock)
-static esp_mqtt_client_handle_t
-reconfig_mqtt(void){
-  // FIXME sanity check proposed config?
-  esp_mqtt_client_config_t conf = {
-   .broker = {
-    .address = {
-      .uri = MQTTBroker,
-    },
-  },
-  .credentials = {
-    .username = MQTTUser,
-    .authentication = {
-      .password = MQTTPass,
-    },
-  },
-  };
-  esp_mqtt_client_handle_t oldmqtt = NULL;
-  if(conf.broker.address.uri){
-    esp_mqtt_client_handle_t newmqtt;
-    if((newmqtt = esp_mqtt_client_init(&conf)) == NULL){
-      ESP_LOGE(TAG, "couldn't create mqtt client"); // FIXME logging while locked?
-      return NULL;
-    }
-    oldmqtt = MQTTHandle;
-    MQTTHandle = newmqtt;
-  }
-  return oldmqtt; // FIXME how to distinguish error from no prior handle?
-}
-
-// call with mqtt_lock held. unlocks mqtt_lock on all paths. frees any old
-// mqtt handle we obsoleted.
-static inline bool
-reconfig_and_free_mqtt(void){
-  write_mqtt_config(MQTTBroker, MQTTUser, MQTTPass, MQTTTopic);
-  esp_mqtt_client_handle_t oldmqtt = reconfig_mqtt();
-  mqtt_unlock();
-  if(oldmqtt){
-    esp_mqtt_client_destroy(oldmqtt);
-  }
-  return false;
 }
 
 int setup_network(void){
