@@ -37,16 +37,33 @@ static const ble_uuid128_t deviceid_uuid =
 static const ble_uuid128_t essid_chr_uuid =
     BLE_UUID128_INIT(0xc3, 0x86, 0x88, 0x12, 0xe5, 0x6b, 0x40, 0x59, 0x8c, 0x0c, 0x54, 0x69, 0x5d, 0x0b, 0xaf, 0x6d);
 
-static const ble_uuid128_t mqtt_chr_uuid =
-    BLE_UUID128_INIT(0x2e, 0xe6, 0x20, 0x3e, 0xb3, 0xc4, 0x47, 0x84, 0xab, 0x02, 0x83, 0xee, 0x7e, 0xe8, 0x76, 0xdd);
-
-// write-only preshared key
+// WPA preshared key (write-only)
 static const ble_uuid128_t psk_chr_uuid =
     BLE_UUID128_INIT(0x06, 0x2e, 0xf3, 0x54, 0xfe, 0xa5, 0x42, 0x47, 0x98, 0xc9, 0x9f, 0x9d, 0xa1, 0xee, 0x4c, 0x2e);
 
-// read-only string representing state
+// string representing state (read-only)
 static const ble_uuid128_t setup_state_chr_uuid =
     BLE_UUID128_INIT(0xa1, 0x54, 0xe0, 0x6e, 0xb5, 0x62, 0x40, 0x2f, 0x90, 0x57, 0xd2, 0x59, 0x01, 0x38, 0x97, 0xe2);
+
+// mqtt configuration service
+static const ble_uuid128_t mqtt_svc_uuid =
+    BLE_UUID128_INIT(0x45, 0x13, 0x4f, 0xbd, 0x48, 0x0f, 0x45, 0xee, 0x9b, 0x39, 0x78, 0x7e, 0x00, 0x68, 0x32, 0x44);
+
+// mqtt broker (read, write)
+static const ble_uuid128_t mqttbroker_chr_uuid =
+    BLE_UUID128_INIT(0x2e, 0xe6, 0x20, 0x3e, 0xb3, 0xc4, 0x47, 0x84, 0xab, 0x02, 0x83, 0xee, 0x7e, 0xe8, 0x76, 0xdd);
+
+// mqtt user (read, write)
+static const ble_uuid128_t mqttuser_chr_uuid =
+    BLE_UUID128_INIT(0x2f, 0x5c, 0x13, 0xf7, 0x05, 0x98, 0x4f, 0xbf, 0x92, 0x16, 0xbc, 0x6d, 0xae, 0x53, 0x29, 0xb1);
+
+// mqtt pass (write-only)
+static const ble_uuid128_t mqttpass_chr_uuid =
+    BLE_UUID128_INIT(0x5a, 0x15, 0x45, 0x14, 0xe1, 0x85, 0x45, 0x31, 0xaa, 0x36, 0xf3, 0xed, 0xad, 0x6a, 0xe8, 0x53);
+
+// mqtt topic
+static const ble_uuid128_t mqtttopic_chr_uuid =
+    BLE_UUID128_INIT(0x0c, 0x3c, 0x1b, 0xc0, 0xe9, 0x98, 0x44, 0xda, 0x8f, 0x97, 0x50, 0xe0, 0xbd, 0xc4, 0x32, 0x82);
 
 static SemaphoreHandle_t MQTTSemaphore;
 static char* MQTTUser;
@@ -508,19 +525,67 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
 }
 
 static int
+ble_reply_characteristic(struct ble_gatt_access_ctxt* ctxt, const char* s){
+  int r;
+  if(mqtt_lock()){
+    return -1; // FIXME probably want value from BLE return values
+  }
+  if(s){
+    r = os_mbuf_append(ctxt->om, s, strlen(s) + 1);
+  }else{
+    r = os_mbuf_append(ctxt->om, "", 1);
+  }
+  mqtt_unlock();
+  if(r){
+    r = BLE_ATT_ERR_INSUFFICIENT_RES;
+  }
+  return r;
+}
+
+static int
+gatt_mqtt_user(uint16_t conn_handle, uint16_t attr_handle,
+               struct ble_gatt_access_ctxt *ctxt, void *arg){
+  ESP_LOGI(TAG, "mqttuser] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
+  int r = BLE_ATT_ERR_UNLIKELY;
+  if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
+    r = ble_reply_characteristic(ctxt, MQTTUser);
+  }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
+    // FIXME
+  }
+  return r;
+}
+
+static int
+gatt_mqtt_pass(uint16_t conn_handle, uint16_t attr_handle,
+               struct ble_gatt_access_ctxt *ctxt, void *arg){
+  ESP_LOGI(TAG, "mqttpass] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
+  int r = BLE_ATT_ERR_UNLIKELY;
+  if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
+    // FIXME
+  }
+  return r;
+}
+
+static int
+gatt_mqtt_topic(uint16_t conn_handle, uint16_t attr_handle,
+                struct ble_gatt_access_ctxt *ctxt, void *arg){
+  ESP_LOGI(TAG, "mqtttopic] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
+  int r = BLE_ATT_ERR_UNLIKELY;
+  if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
+    r = ble_reply_characteristic(ctxt, MQTTTopic);
+  }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
+    // FIXME
+  }
+  return r;
+}
+
+static int
 gatt_mqtt_broker(uint16_t conn_handle, uint16_t attr_handle,
                  struct ble_gatt_access_ctxt *ctxt, void *arg){
   ESP_LOGI(TAG, "mqttbroker] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
-    if(mqtt_lock()){
-      return -1;
-    }
-    r = os_mbuf_append(ctxt->om, MQTTBroker, strlen((const char*)MQTTBroker) + 1);
-    mqtt_unlock();
-    if(r){
-      r = BLE_ATT_ERR_INSUFFICIENT_RES;
-    }
+    r = ble_reply_characteristic(ctxt, MQTTBroker);
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
     #define MAX_BROKER_NAMELEN 256
     char* broker;
@@ -621,7 +686,27 @@ static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
         .val_handle = NULL,
         .cpfd = NULL,
       }, {
-        .uuid = &mqtt_chr_uuid.u,
+        .uuid = &setup_state_chr_uuid.u,
+        .access_cb = gatt_setup_state,
+        .arg = NULL,
+        .descriptors = NULL,
+        .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
+        .min_key_size = 0,
+        .val_handle = NULL,
+        .cpfd = NULL,
+      }, { 0 }
+    }
+  }, { 0 },
+};
+
+static const struct ble_gatt_svc_def gatt_mqtt_svcs[] = {
+  {
+    .type = BLE_GATT_SVC_TYPE_PRIMARY,
+    .uuid = &mqtt_svc_uuid.u,
+    .includes = NULL,
+    .characteristics = (const struct ble_gatt_chr_def[]){
+      {
+        .uuid = &mqttbroker_chr_uuid.u,
         .access_cb = gatt_mqtt_broker,
         .arg = NULL,
         .descriptors = NULL,
@@ -630,11 +715,29 @@ static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
         .val_handle = NULL,
         .cpfd = NULL,
       }, {
-        .uuid = &setup_state_chr_uuid.u,
-        .access_cb = gatt_setup_state,
+        .uuid = &mqttuser_chr_uuid.u,
+        .access_cb = gatt_mqtt_user,
         .arg = NULL,
         .descriptors = NULL,
-        .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
+        .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
+        .min_key_size = 0,
+        .val_handle = NULL,
+        .cpfd = NULL,
+      }, {
+        .uuid = &mqttpass_chr_uuid.u,
+        .access_cb = gatt_mqtt_pass,
+        .arg = NULL,
+        .descriptors = NULL,
+        .flags = BLE_GATT_CHR_F_WRITE,
+        .min_key_size = 0,
+        .val_handle = NULL,
+        .cpfd = NULL,
+      }, {
+        .uuid = &mqtttopic_chr_uuid.u,
+        .access_cb = gatt_mqtt_topic,
+        .arg = NULL,
+        .descriptors = NULL,
+        .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
         .min_key_size = 0,
         .val_handle = NULL,
         .cpfd = NULL,
@@ -722,6 +825,7 @@ setup_ble(void){
   ble_hs_cfg.sm_their_key_dist = 0;
   ble_svc_gap_init();
   ble_svc_gatt_init();
+  // wifi service depends on state
   if(deviceid_configured()){
     if((err = ble_gatts_count_cfg(gatt_svr_svcs)) != ESP_OK){
       return -1;
@@ -736,6 +840,13 @@ setup_ble(void){
     if((err = ble_gatts_add_svcs(gatt_svr_svcs_early)) != ESP_OK){
       return -1;
     }
+  }
+  // always add mqtt service
+  if((err = ble_gatts_count_cfg(gatt_mqtt_svcs)) != ESP_OK){
+    return -1;
+  }
+  if((err = ble_gatts_add_svcs(gatt_mqtt_svcs)) != ESP_OK){
+    return -1;
   }
   if((err = ble_svc_gap_device_name_set(clientID)) != ESP_OK){
     ESP_LOGE(TAG, "error (%s) setting BLE name", esp_err_to_name(err));
