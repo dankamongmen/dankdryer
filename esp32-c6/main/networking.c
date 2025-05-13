@@ -1,4 +1,3 @@
-#include "dryer-network.h"
 #include "networking.h"
 #include "dankdryer.h"
 #include "version.h"
@@ -38,6 +37,9 @@ static const ble_uuid128_t deviceid_uuid =
 static const ble_uuid128_t essid_chr_uuid =
     BLE_UUID128_INIT(0xc3, 0x86, 0x88, 0x12, 0xe5, 0x6b, 0x40, 0x59, 0x8c, 0x0c, 0x54, 0x69, 0x5d, 0x0b, 0xaf, 0x6d);
 
+static const ble_uuid128_t mqtt_chr_uuid =
+    BLE_UUID128_INIT(0x2e, 0xe6, 0x20, 0x3e, 0xb3, 0xc4, 0x47, 0x84, 0xab, 0x02, 0x83, 0xee, 0x7e, 0xe8, 0x76, 0xdd);
+
 // write-only preshared key
 static const ble_uuid128_t psk_chr_uuid =
     BLE_UUID128_INIT(0x06, 0x2e, 0xf3, 0x54, 0xfe, 0xa5, 0x42, 0x47, 0x98, 0xc9, 0x9f, 0x9d, 0xa1, 0xee, 0x4c, 0x2e);
@@ -46,12 +48,32 @@ static const ble_uuid128_t psk_chr_uuid =
 static const ble_uuid128_t setup_state_chr_uuid =
     BLE_UUID128_INIT(0xa1, 0x54, 0xe0, 0x6e, 0xb5, 0x62, 0x40, 0x2f, 0x90, 0x57, 0xd2, 0x59, 0x01, 0x38, 0x97, 0xe2);
 
+static SemaphoreHandle_t MQTTSemaphore;
+static char* MQTTUser;
+static char* MQTTPass;
+static char* MQTTTopic;
+static char* MQTTBroker;
+static esp_mqtt_client_handle_t MQTTHandle;
+
 static httpd_handle_t HTTPServ;
 static uint8_t WifiEssid[33];
 static uint8_t WifiPSK[65];
-static esp_mqtt_client_handle_t MQTTHandle;
 // we use the product name and the six digit serial number
 static char clientID[__builtin_strlen(DEVICE) + 6 + 1];
+
+// unsafe from ISR context
+static bool mqtt_lock(void){
+  if(xSemaphoreTake(MQTTSemaphore, portMAX_DELAY) == pdTRUE){
+    return false;
+  }
+  ESP_LOGE(TAG, "couldn't take mqtt lock");
+  return true;
+}
+
+// unsafe from ISR context
+static void mqtt_unlock(void){
+  xSemaphoreGive(MQTTSemaphore);
+}
 
 // call during initialization to construct clientID
 static void
@@ -111,16 +133,17 @@ set_network_state(int state){
   }
 }
 
-static const esp_mqtt_client_config_t MQTTConfig = {
+// update only while holding mqtt mutex
+static esp_mqtt_client_config_t MQTTConfig = {
   .broker = {
     .address = {
-      .uri = MQTTURI,
+      .uri = NULL,
     },
   },
   .credentials = {
-    .username = MQTTUSER,
+    .username = NULL,
     .authentication = {
-      .password = MQTTPASS,
+      .password = NULL,
     },
   },
 };
@@ -128,9 +151,15 @@ static const esp_mqtt_client_config_t MQTTConfig = {
 void mqtt_publish(const char *s){
   size_t slen = strlen(s);
   //ESP_LOGI(TAG, "MQTT: %s", s);
-  if(esp_mqtt_client_publish(MQTTHandle, MQTTTOPIC, s, slen, 0, 0)){
-    ESP_LOGE(TAG, "couldn't publish %zuB mqtt message", slen);
+  if(mqtt_lock()){
+    return;
   }
+  if(MQTTHandle && MQTTTopic){
+    if(esp_mqtt_client_publish(MQTTHandle, MQTTTopic, s, slen, 0, 0)){
+      ESP_LOGE(TAG, "couldn't publish %zuB mqtt message", slen);
+    }
+  }
+  mqtt_unlock();
 }
 
 static void
@@ -153,13 +182,10 @@ mqtt_publish_hadiscovery(void){
              + __builtin_strlen(CKEY) + 1];
   snprintf(topic, sizeof(topic), DISCOVERYPREFIX "/" DKEY "/%s/" CKEY, clientID); 
 
-  static const char s[] = "";
   // FIXME set up discovery message
-  size_t slen = strlen(s);
+  static const char s[] = "";
   ESP_LOGI(TAG, "HADiscovery to %s: [%s]", topic, s);
-  if(esp_mqtt_client_publish(MQTTHandle, topic, s, slen, 0, 0)){
-    ESP_LOGE(TAG, "couldn't publish %zuB mqtt message", slen);
-  }
+  mqtt_publish(s);
   #undef CKEY
   #undef DKEY
   #undef DISCOVERYPREFIX
@@ -482,6 +508,38 @@ gatt_essid(uint16_t conn_handle, uint16_t attr_handle,
 }
 
 static int
+gatt_mqtt_broker(uint16_t conn_handle, uint16_t attr_handle,
+                 struct ble_gatt_access_ctxt *ctxt, void *arg){
+  ESP_LOGI(TAG, "mqttbroker] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
+  int r = BLE_ATT_ERR_UNLIKELY;
+  if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
+    mqtt_lock();
+      r = os_mbuf_append(ctxt->om, MQTTBroker, strlen((const char*)MQTTBroker) + 1);
+    mqtt_unlock();
+    if(r){
+      r = BLE_ATT_ERR_INSUFFICIENT_RES;
+    }
+  }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
+    #define MAX_BROKER_NAMELEN 256
+    char* broker;
+    uint16_t olen;
+    if((broker = malloc(MAX_BROKER_NAMELEN)) == NULL){
+      ESP_LOGE(TAG, "mqttbroker] allocation failure");
+      return BLE_ATT_ERR_INSUFFICIENT_RES;
+    }
+    ble_hs_mbuf_to_flat(ctxt->om, broker, MAX_BROKER_NAMELEN, &olen);
+    broker[olen] = '\0';
+    ESP_LOGI(TAG, "mqttbroker] [%s]", broker);
+    mqtt_lock();
+      free(MQTTBroker);
+      MQTTBroker = broker;
+    mqtt_unlock();
+    r = 0;
+  }
+  return r;
+}
+
+static int
 gatt_psk(uint16_t conn_handle, uint16_t attr_handle,
          struct ble_gatt_access_ctxt *ctxt, void *arg){
   ESP_LOGI(TAG, "psk] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
@@ -555,6 +613,15 @@ static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
         .arg = NULL,
         .descriptors = NULL,
         .flags = BLE_GATT_CHR_F_WRITE,
+        .min_key_size = 0,
+        .val_handle = NULL,
+        .cpfd = NULL,
+      }, {
+        .uuid = &mqtt_chr_uuid.u,
+        .access_cb = gatt_mqtt_broker,
+        .arg = NULL,
+        .descriptors = NULL,
+        .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
         .min_key_size = 0,
         .val_handle = NULL,
         .cpfd = NULL,
@@ -676,13 +743,35 @@ setup_ble(void){
   return 0;
 }
 
+// create new mqtt_client
+// block on any running MQTT operation
+// set MQTTHandle
+// unlock it
+// free old handle
+static bool
+reconfig_mqtt(const esp_mqtt_client_config_t* conf){
+  esp_mqtt_client_handle_t newmqtt, oldmqtt;
+  if((newmqtt = esp_mqtt_client_init(conf)) == NULL){
+    ESP_LOGE(TAG, "couldn't create mqtt client");
+    return true;
+  }
+  if(mqtt_lock()){
+    return true;
+  }
+  oldmqtt = MQTTHandle;
+  MQTTHandle = newmqtt;
+  mqtt_unlock();
+  esp_mqtt_client_destroy(oldmqtt);
+  return false;
+}
+
 int setup_network(void){
   set_client_name();
   if((MQTTHandle = esp_mqtt_client_init(&MQTTConfig)) == NULL){
-    ESP_LOGE(TAG, "couldn't create mqtt client");
     return -1;
   }
   int sstate;
+  read_mqtt_config(&MQTTBroker, &MQTTUser, &MQTTPass, &MQTTTopic);
   if(!read_wifi_config(WifiEssid, sizeof(WifiEssid), WifiPSK, sizeof(WifiPSK), &sstate)){
     if((SetupState = sstate) != SETUP_STATE_NEEDWIFI){
       setup_wifi();

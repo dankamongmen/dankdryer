@@ -1,5 +1,4 @@
 idf_component_register(SRCS "dankdryer.c"
-                            "dryer-network.h"
                             "efuse.c" "efuse.h"
                             "fans.c"
                             "heater.c" "heater.h"

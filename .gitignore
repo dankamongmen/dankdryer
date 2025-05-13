@@ -1,9 +1,7 @@
 blockdiagram.png
 esp32-c6/build/
-esp32-c6/main/dryer-network.h
 esp32-c6/managed_components/
 esp32-s3/build/
-esp32-s3/main/dryer-network.h
 esp32-s3/managed_components/
 kicad/dankdryer-backups/
 kicad/*.csv
