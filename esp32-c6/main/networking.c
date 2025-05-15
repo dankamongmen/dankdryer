@@ -66,6 +66,8 @@ static const ble_uuid128_t mqtttopic_chr_uuid =
     BLE_UUID128_INIT(0x0c, 0x3c, 0x1b, 0xc0, 0xe9, 0x98, 0x44, 0xda, 0x8f, 0x97, 0x50, 0xe0, 0xbd, 0xc4, 0x32, 0x82);
 
 static SemaphoreHandle_t MQTTSemaphore;
+// these might not reflect the current mqtt connection; they're used by the
+// BLE to build up a config over writes to several characteristics.
 static char* MQTTUser;
 static char* MQTTPass;
 static char* MQTTTopic;
@@ -133,6 +135,7 @@ reconfig_mqtt(void){
       ESP_LOGE(TAG, "couldn't create mqtt client"); // FIXME logging while locked?
       return NULL;
     }
+    write_mqtt_config(MQTTBroker, MQTTUser, MQTTPass, MQTTTopic);
   }else{
     newmqtt = NULL;
   }
@@ -145,7 +148,6 @@ reconfig_mqtt(void){
 // mqtt handle we obsoleted.
 static inline int
 reconfig_and_free_mqtt(void){
-  write_mqtt_config(MQTTBroker, MQTTUser, MQTTPass, MQTTTopic);
   esp_mqtt_client_handle_t oldmqtt = reconfig_mqtt();
   mqtt_unlock();
   if(oldmqtt){
@@ -590,6 +592,27 @@ ble_reply_characteristic(struct ble_gatt_access_ctxt* ctxt, const char* s){
 }
 
 static int
+ble_accept_characteristic(struct ble_gatt_access_ctxt* ctxt, char** s){
+    #define MAX_CHARACTERISTIC 256
+    char* buf;
+    uint16_t olen;
+    if((buf = malloc(MAX_CHARACTERISTIC)) == NULL){
+      ESP_LOGE(TAG, "mqtt] allocation failure");
+      return BLE_ATT_ERR_INSUFFICIENT_RES;
+    }
+    ble_hs_mbuf_to_flat(ctxt->om, buf, MAX_CHARACTERISTIC, &olen);
+    buf[olen] = '\0';
+    ESP_LOGI(TAG, "mqtt] got [%s]", buf);
+    if(mqtt_lock()){
+      return -1;
+    }
+    free(*s);
+    *s = buf;
+    return reconfig_and_free_mqtt();
+    #undef MAX_CHARACTERISTIC
+}
+
+static int
 gatt_mqtt_user(uint16_t conn_handle, uint16_t attr_handle,
                struct ble_gatt_access_ctxt *ctxt, void *arg){
   ESP_LOGI(TAG, "mqttuser] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
@@ -634,22 +657,7 @@ gatt_mqtt_broker(uint16_t conn_handle, uint16_t attr_handle,
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
     r = ble_reply_characteristic(ctxt, MQTTBroker);
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-    #define MAX_BROKER_NAMELEN 256
-    char* broker;
-    uint16_t olen;
-    if((broker = malloc(MAX_BROKER_NAMELEN)) == NULL){
-      ESP_LOGE(TAG, "mqttbroker] allocation failure");
-      return BLE_ATT_ERR_INSUFFICIENT_RES;
-    }
-    ble_hs_mbuf_to_flat(ctxt->om, broker, MAX_BROKER_NAMELEN, &olen);
-    broker[olen] = '\0';
-    ESP_LOGI(TAG, "mqttbroker] [%s]", broker);
-    if(mqtt_lock()){
-      return -1;
-    }
-    free(MQTTBroker);
-    MQTTBroker = broker;
-    r = reconfig_and_free_mqtt();
+    r = ble_accept_characteristic(ctxt, &MQTTBroker);
   }
   return r;
 }
