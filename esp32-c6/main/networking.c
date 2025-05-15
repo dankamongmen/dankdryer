@@ -620,7 +620,7 @@ gatt_mqtt_user(uint16_t conn_handle, uint16_t attr_handle,
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
     r = ble_reply_characteristic(ctxt, MQTTUser);
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-    // FIXME
+    r = ble_accept_characteristic(ctxt, &MQTTUser);
   }
   return r;
 }
@@ -631,7 +631,7 @@ gatt_mqtt_pass(uint16_t conn_handle, uint16_t attr_handle,
   ESP_LOGI(TAG, "mqttpass] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-    // FIXME
+    r = ble_accept_characteristic(ctxt, &MQTTPass);
   }
   return r;
 }
@@ -644,7 +644,7 @@ gatt_mqtt_topic(uint16_t conn_handle, uint16_t attr_handle,
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
     r = ble_reply_characteristic(ctxt, MQTTTopic);
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-    // FIXME
+    r = ble_accept_characteristic(ctxt, &MQTTTopic);
   }
   return r;
 }
