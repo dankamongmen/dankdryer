@@ -92,36 +92,53 @@ static void mqtt_unlock(void){
   xSemaphoreGive(MQTTSemaphore);
 }
 
+static inline bool
+string_nonempty_p(const char* s){
+  return s && strlen(s);
+}
+
 // mqtt lock must be held around call
 // if successful, returns any old handle, which must be destroyed
 //  (this can and should be done after unlocking mqtt_lock)
 static esp_mqtt_client_handle_t
 reconfig_mqtt(void){
-  // FIXME sanity check proposed config?
   esp_mqtt_client_config_t conf = {
-   .broker = {
-    .address = {
-      .uri = MQTTBroker,
+    .broker = {
+      .address = {
+        .uri = MQTTBroker,
+      },
     },
-  },
-  .credentials = {
-    .username = MQTTUser,
-    .authentication = {
-      .password = MQTTPass,
+    .credentials = {
+      .username = MQTTUser,
+      .authentication = {
+        .password = MQTTPass,
+      },
     },
-  },
   };
-  esp_mqtt_client_handle_t oldmqtt = NULL;
+  // if a username is provided, a password must be provided. if a username
+  // is not provided, a password must not be provided.
+  if(string_nonempty_p(conf.credentials.username) !=
+      string_nonempty_p(conf.credentials.authentication.password)){
+    ESP_LOGE(TAG, "not using config missing user or password");
+    return NULL;
+  }
+  // if we don't specify a broker, don't allow a username or password
+  if(string_nonempty_p(conf.credentials.username) && !string_nonempty_p(conf.broker.address.uri)){
+    ESP_LOGE(TAG, "not using config with user but no broker");
+    return NULL;
+  }
+  esp_mqtt_client_handle_t oldmqtt, newmqtt;
   if(conf.broker.address.uri){
-    esp_mqtt_client_handle_t newmqtt;
     if((newmqtt = esp_mqtt_client_init(&conf)) == NULL){
       ESP_LOGE(TAG, "couldn't create mqtt client"); // FIXME logging while locked?
       return NULL;
     }
-    oldmqtt = MQTTHandle;
-    MQTTHandle = newmqtt;
+  }else{
+    newmqtt = NULL;
   }
-  return oldmqtt; // FIXME how to distinguish error from no prior handle?
+  oldmqtt = MQTTHandle;
+  MQTTHandle = newmqtt;
+  return oldmqtt; // can't distinguish error from no prior handle, hrmm
 }
 
 // call with mqtt_lock held. unlocks mqtt_lock on all paths. frees any old
