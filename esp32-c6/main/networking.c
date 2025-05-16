@@ -66,12 +66,12 @@ static const ble_uuid128_t mqtttopic_chr_uuid =
     BLE_UUID128_INIT(0x0c, 0x3c, 0x1b, 0xc0, 0xe9, 0x98, 0x44, 0xda, 0x8f, 0x97, 0x50, 0xe0, 0xbd, 0xc4, 0x32, 0x82);
 
 static SemaphoreHandle_t MQTTSemaphore;
-// these might not reflect the current mqtt connection; they're used by the
-// BLE to build up a config over writes to several characteristics.
-static char* MQTTUser;
-static char* MQTTPass;
-static char* MQTTTopic;
-static char* MQTTBroker;
+
+// MQTTConfig is the actual config we're working with. BLEConfig is one being
+// built up via a series of BLE GATT characteristic writes. When we commit the
+// BLEConfig, we copy the entries into MQTTConfig.
+static mqttconfig MQTTConfig, BLEConfig;
+
 static esp_mqtt_client_handle_t MQTTHandle;
 
 static httpd_handle_t HTTPServ;
@@ -103,17 +103,17 @@ string_nonempty_p(const char* s){
 // if successful, returns any old handle, which must be destroyed
 //  (this can and should be done after unlocking mqtt_lock)
 static esp_mqtt_client_handle_t
-reconfig_mqtt(void){
-  esp_mqtt_client_config_t conf = {
+reconfig_mqtt(const mqttconfig* newconfig){
+  const esp_mqtt_client_config_t conf = {
     .broker = {
       .address = {
-        .uri = MQTTBroker,
+        .uri = newconfig->broker,
       },
     },
     .credentials = {
-      .username = MQTTUser,
+      .username = newconfig->user,
       .authentication = {
-        .password = MQTTPass,
+        .password = newconfig->pass,
       },
     },
   };
@@ -135,7 +135,8 @@ reconfig_mqtt(void){
       ESP_LOGE(TAG, "couldn't create mqtt client"); // FIXME logging while locked?
       return NULL;
     }
-    write_mqtt_config(MQTTBroker, MQTTUser, MQTTPass, MQTTTopic);
+    // FIXME copy newconfig to MQTTConfig
+    write_mqtt_config(&MQTTConfig);
   }else{
     newmqtt = NULL;
   }
@@ -148,7 +149,7 @@ reconfig_mqtt(void){
 // mqtt handle we obsoleted.
 static inline int
 reconfig_and_free_mqtt(void){
-  esp_mqtt_client_handle_t oldmqtt = reconfig_mqtt();
+  esp_mqtt_client_handle_t oldmqtt = reconfig_mqtt(&BLEConfig);
   mqtt_unlock();
   if(oldmqtt){
     esp_mqtt_client_destroy(oldmqtt);
@@ -220,8 +221,8 @@ void mqtt_publish(const char *s){
   if(mqtt_lock()){
     return;
   }
-  if(MQTTHandle && MQTTTopic){
-    if(esp_mqtt_client_publish(MQTTHandle, MQTTTopic, s, slen, 0, 0)){
+  if(MQTTHandle && MQTTConfig.topic){
+    if(esp_mqtt_client_publish(MQTTHandle, MQTTConfig.topic, s, slen, 0, 0)){
       ESP_LOGE(TAG, "couldn't publish %zuB mqtt message", slen);
     }
   }
@@ -618,9 +619,9 @@ gatt_mqtt_user(uint16_t conn_handle, uint16_t attr_handle,
   ESP_LOGI(TAG, "mqttuser] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
-    r = ble_reply_characteristic(ctxt, MQTTUser);
+    r = ble_reply_characteristic(ctxt, BLEConfig.user);
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-    r = ble_accept_characteristic(ctxt, &MQTTUser);
+    r = ble_accept_characteristic(ctxt, &BLEConfig.user);
   }
   return r;
 }
@@ -631,7 +632,7 @@ gatt_mqtt_pass(uint16_t conn_handle, uint16_t attr_handle,
   ESP_LOGI(TAG, "mqttpass] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-    r = ble_accept_characteristic(ctxt, &MQTTPass);
+    r = ble_accept_characteristic(ctxt, &BLEConfig.pass);
   }
   return r;
 }
@@ -642,9 +643,9 @@ gatt_mqtt_topic(uint16_t conn_handle, uint16_t attr_handle,
   ESP_LOGI(TAG, "mqtttopic] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
-    r = ble_reply_characteristic(ctxt, MQTTTopic);
+    r = ble_reply_characteristic(ctxt, BLEConfig.topic);
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-    r = ble_accept_characteristic(ctxt, &MQTTTopic);
+    r = ble_accept_characteristic(ctxt, &BLEConfig.topic);
   }
   return r;
 }
@@ -655,9 +656,9 @@ gatt_mqtt_broker(uint16_t conn_handle, uint16_t attr_handle,
   ESP_LOGI(TAG, "mqttbroker] access op %d conn %hu attr %hu", ctxt->op, conn_handle, attr_handle);
   int r = BLE_ATT_ERR_UNLIKELY;
   if(ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR){
-    r = ble_reply_characteristic(ctxt, MQTTBroker);
+    r = ble_reply_characteristic(ctxt, BLEConfig.broker);
   }else if(ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR){
-    r = ble_accept_characteristic(ctxt, &MQTTBroker);
+    r = ble_accept_characteristic(ctxt, &BLEConfig.broker);
   }
   return r;
 }
@@ -913,13 +914,14 @@ setup_ble(void){
 }
 
 int setup_network(void){
+  mqttconfig mqttconf;
   set_client_name();
   int sstate;
-  read_mqtt_config(&MQTTBroker, &MQTTUser, &MQTTPass, &MQTTTopic);
+  read_mqtt_config(&mqttconf);
   if(mqtt_lock() == 0){
     // don't call reconfig_and_free_mqtt() here; it would force a useless
     // write per boot of what we just read
-    reconfig_mqtt();
+    reconfig_mqtt(&mqttconf);
     mqtt_unlock();
   }
   if(!read_wifi_config(WifiEssid, sizeof(WifiEssid), WifiPSK, sizeof(WifiPSK), &sstate)){

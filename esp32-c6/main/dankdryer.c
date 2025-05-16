@@ -216,9 +216,8 @@ nvs_get_opt_str(nvs_handle_t nh, const char* recname, char** str, size_t* len){
 // load broker, user, and password from flash if they are present. anything
 // that is not present is initialized to an empty string. all strings are
 // heap-allocated.
-int read_mqtt_config(char** broker, char** user, char** pass,
-                     char** topic){
-  *broker = *user = *pass = *topic = NULL;
+int read_mqtt_config(mqttconfig* config){
+  config->broker = config->user = config->pass = config->topic = NULL;
   nvs_handle_t nvsh;
   esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READONLY, &nvsh);
   if(err){
@@ -226,16 +225,16 @@ int read_mqtt_config(char** broker, char** user, char** pass,
     return -1;
   }
   size_t blen;
-  if(nvs_get_opt_str(nvsh, MQTTBROKER_RECNAME, broker, &blen) != ESP_OK){
+  if(nvs_get_opt_str(nvsh, MQTTBROKER_RECNAME, &config->broker, &blen) != ESP_OK){
     goto err;
   }
-  if(nvs_get_opt_str(nvsh, MQTTUSER_RECNAME, user, &blen) != ESP_OK){
+  if(nvs_get_opt_str(nvsh, MQTTUSER_RECNAME, &config->user, &blen) != ESP_OK){
     goto err;
   }
-  if(nvs_get_opt_str(nvsh, MQTTPASS_RECNAME, pass, &blen) != ESP_OK){
+  if(nvs_get_opt_str(nvsh, MQTTPASS_RECNAME, &config->pass, &blen) != ESP_OK){
     goto err;
   }
-  if(nvs_get_opt_str(nvsh, MQTTTOPIC_RECNAME, pass, &blen) != ESP_OK){
+  if(nvs_get_opt_str(nvsh, MQTTTOPIC_RECNAME, &config->topic, &blen) != ESP_OK){
     goto err;
   }
   nvs_close(nvsh);
@@ -244,11 +243,11 @@ int read_mqtt_config(char** broker, char** user, char** pass,
 
 err:
   nvs_close(nvsh);
-  free(*broker);
-  free(*topic);
-  free(*user);
-  free(*pass);
-  *broker = *user = *pass = *topic = NULL;
+  free(config->broker);
+  free(config->topic);
+  free(config->user);
+  free(config->pass);
+  config->broker = config->user = config->pass = config->topic = NULL;
   return -1;
 }
 
@@ -293,10 +292,11 @@ err:
   return -1;
 }
 
+// if str is NULL, we write an empty string
 static esp_err_t
 write_record(nvs_handle_t nvsh, const char* recname, const char* str){
   esp_err_t err;
-  err = nvs_set_str(nvsh, recname, str);
+  err = nvs_set_str(nvsh, recname, str ? str : "");
   if(err){
     ESP_LOGE(TAG, "error (%s) writing " NVS_HANDLE_NAME ":%s", esp_err_to_name(err), recname);
   }
@@ -312,8 +312,7 @@ commit(nvs_handle_t nvsh){
   return err;
 }
 
-int write_mqtt_config(const char* broker, const char* user, const char* pass,
-                      const char* topic){
+int write_mqtt_config(const mqttconfig* conf){
   nvs_handle_t nvsh;
   esp_err_t err = nvs_open(NVS_HANDLE_NAME, NVS_READWRITE, &nvsh);
   if(err){
@@ -321,16 +320,16 @@ int write_mqtt_config(const char* broker, const char* user, const char* pass,
     return -1;
   }
   // FIXME what about a partially failed update? we'd like to avoid them!
-  if((err = write_record(nvsh, MQTTBROKER_RECNAME, broker)) != ESP_OK){
+  if((err = write_record(nvsh, MQTTBROKER_RECNAME, conf->broker)) != ESP_OK){
     goto err;
   }
-  if((err = write_record(nvsh, MQTTUSER_RECNAME, user)) != ESP_OK){
+  if((err = write_record(nvsh, MQTTUSER_RECNAME, conf->user)) != ESP_OK){
     goto err;
   }
-  if((err = write_record(nvsh, MQTTPASS_RECNAME, pass)) != ESP_OK){
+  if((err = write_record(nvsh, MQTTPASS_RECNAME, conf->pass)) != ESP_OK){
     goto err;
   }
-  if((err = write_record(nvsh, MQTTTOPIC_RECNAME, topic)) != ESP_OK){
+  if((err = write_record(nvsh, MQTTTOPIC_RECNAME, conf->topic)) != ESP_OK){
     goto err;
   }
   if(commit(nvsh)){

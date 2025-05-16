@@ -35,10 +35,16 @@ int write_wifi_config(const unsigned char* essid, const unsigned char* psk,
 int read_wifi_config(unsigned char* essid, size_t essidlen,
                      unsigned char* psk, size_t psklen,
                      int* setupstate);
-int read_mqtt_config(char** broker, char** user, char** pass,
-                     char** topic);
-int write_mqtt_config(const char* broker, const char* user, const char* pass,
-                      const char* topic);
+
+typedef struct mqttconfig {
+  char* broker;
+  char* user;
+  char* pass;
+  char* topic;
+} mqttconfig;
+
+int read_mqtt_config(mqttconfig* conf);
+int write_mqtt_config(const mqttconfig* conf);
 
 #define CCHAN "control/"
 #define MOTOR_CHANNEL CCHAN DEVICE "/motor"
