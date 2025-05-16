@@ -243,10 +243,7 @@ int read_mqtt_config(mqttconfig* config){
 
 err:
   nvs_close(nvsh);
-  free(config->broker);
-  free(config->topic);
-  free(config->user);
-  free(config->pass);
+  mqttconfig_free(config);
   config->broker = config->user = config->pass = config->topic = NULL;
   return -1;
 }

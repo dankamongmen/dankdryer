@@ -94,6 +94,16 @@ static void mqtt_unlock(void){
   xSemaphoreGive(MQTTSemaphore);
 }
 
+// frees the members of conf, but not conf itself
+void mqttconfig_free(mqttconfig *conf){
+  if(conf){
+    free(conf->broker);
+    free(conf->user);
+    free(conf->pass);
+    free(conf->topic);
+  }
+}
+
 static inline bool
 string_nonempty_p(const char* s){
   return s && strlen(s);
@@ -921,9 +931,11 @@ int setup_network(void){
   if(mqtt_lock() == 0){
     // don't call reconfig_and_free_mqtt() here; it would force a useless
     // write per boot of what we just read
+    // FIXME need to seed BLEConfig
     reconfig_mqtt(&mqttconf);
     mqtt_unlock();
   }
+  mqttconfig_free(&mqttconf);
   if(!read_wifi_config(WifiEssid, sizeof(WifiEssid), WifiPSK, sizeof(WifiPSK), &sstate)){
     if((SetupState = sstate) != SETUP_STATE_NEEDWIFI){
       setup_wifi();
