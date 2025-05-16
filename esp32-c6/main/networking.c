@@ -94,6 +94,48 @@ static void mqtt_unlock(void){
   xSemaphoreGive(MQTTSemaphore);
 }
 
+// copies the incoming configuration. if that went without problem, frees the
+// old configuration, and installs the copied elements.
+static bool
+mqttconfig_copy(mqttconfig *old, const mqttconfig* newconf){
+  char *broker, *topic, *user, *pass;
+  broker = topic = user = pass = NULL;
+  if(newconf->broker){
+    if((broker = strdup(newconf->broker)) == NULL){
+      goto err;
+    }
+  }
+  if(newconf->user){
+    if((user = strdup(newconf->user)) == NULL){
+      goto err;
+    }
+  }
+  if(newconf->pass){
+    if((pass = strdup(newconf->pass)) == NULL){
+      goto err;
+    }
+  }
+  if(newconf->topic){
+    if((topic = strdup(newconf->topic)) == NULL){
+      goto err;
+    }
+  }
+  // any necessary copies succeeded; install it
+  mqttconfig_free(old);
+  old->broker = broker;
+  old->user = user;
+  old->pass = pass;
+  old->topic = topic;
+  return false;
+
+err:
+  free(broker);
+  free(topic);
+  free(user);
+  free(pass);
+  return true;
+}
+
 // frees the members of conf, but not conf itself
 void mqttconfig_free(mqttconfig *conf){
   if(conf){
@@ -145,8 +187,11 @@ reconfig_mqtt(const mqttconfig* newconfig){
       ESP_LOGE(TAG, "couldn't create mqtt client"); // FIXME logging while locked?
       return NULL;
     }
-    // FIXME copy newconfig to MQTTConfig
-    write_mqtt_config(&MQTTConfig);
+    if(!mqttconfig_copy(&MQTTConfig, newconfig)){
+      write_mqtt_config(&MQTTConfig);
+    }else{
+      esp_mqtt_client_destroy(newmqtt);
+    }
   }else{
     newmqtt = NULL;
   }
