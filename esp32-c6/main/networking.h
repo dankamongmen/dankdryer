@@ -45,6 +45,7 @@ typedef struct mqttconfig {
 
 int read_mqtt_config(mqttconfig* conf);
 int write_mqtt_config(const mqttconfig* conf);
+void mqttconfig_free(mqttconfig *conf);
 
 #define CCHAN "control/"
 #define MOTOR_CHANNEL CCHAN DEVICE "/motor"
