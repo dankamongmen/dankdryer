@@ -85,7 +85,7 @@ static bool mqtt_lock(void){
   if(xSemaphoreTake(MQTTSemaphore, portMAX_DELAY) == pdTRUE){
     return false;
   }
-  ESP_LOGE(TAG, "couldn't take mqtt lock");
+  ESP_LOGE(TAG, "failure taking mqtt lock");
   return true;
 }
 
@@ -181,6 +181,12 @@ reconfig_mqtt(const mqttconfig* newconfig){
     ESP_LOGE(TAG, "not using config with user but no broker");
     return NULL;
   }
+  // if we don't specify a topic, don't allow a broker
+  if(string_nonempty_p(conf.broker.address.uri) !=
+      string_nonempty_p(newconfig->topic)){
+    ESP_LOGE(TAG, "not using config with broker but no topic");
+    return NULL;
+  }
   esp_mqtt_client_handle_t oldmqtt, newmqtt;
   if(conf.broker.address.uri){
     if((newmqtt = esp_mqtt_client_init(&conf)) == NULL){
@@ -272,7 +278,7 @@ set_network_state(int state){
 
 void mqtt_publish(const char *s){
   size_t slen = strlen(s);
-  //ESP_LOGI(TAG, "MQTT: %s", s);
+  ESP_LOGI(TAG, "MQTT: %s", s);
   if(mqtt_lock()){
     return;
   }
@@ -970,6 +976,10 @@ setup_ble(void){
 
 int setup_network(void){
   mqttconfig mqttconf;
+  if((MQTTSemaphore = xSemaphoreCreateMutex()) == NULL){
+    ESP_LOGE(TAG, "error creating semaphore");
+    return -1;
+  }
   set_client_name();
   int sstate;
   read_mqtt_config(&mqttconf);
