@@ -906,7 +906,7 @@ ble_sync_cb(void){
 
 static void
 ble_reset_cb(int reason){
-  ESP_LOGI(TAG, "reset] callback (reason: %d)", reason);
+  ESP_LOGE(TAG, "reset] callback (reason: %d)", reason);
 }
 
 static void
